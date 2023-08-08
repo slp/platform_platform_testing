@@ -59,7 +59,7 @@ class MaterialYouColors(
      * Important: No resource resolution must have be done on the context given to that method.
      */
     fun apply(context: Context) {
-        RemoteViews.ColorResources.create(context, colors).apply(context)
+        RemoteViews.ColorResources.create(context, colors)?.apply(context)
     }
 
     companion object {
