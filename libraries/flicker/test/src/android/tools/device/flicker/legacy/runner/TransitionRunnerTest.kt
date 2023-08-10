@@ -61,7 +61,9 @@ class TransitionRunnerTest {
 
     @After
     fun assertTracingStopped() {
-        val windowManager = WindowManagerGlobal.getWindowManagerService()
+        val windowManager =
+            WindowManagerGlobal.getWindowManagerService()
+                ?: error("Unable to acquire WindowManager")
         Truth.assertWithMessage("Layers Trace running").that(windowManager.isLayerTracing).isFalse()
         Truth.assertWithMessage("WM Trace running")
             .that(windowManager.isWindowTraceEnabled)

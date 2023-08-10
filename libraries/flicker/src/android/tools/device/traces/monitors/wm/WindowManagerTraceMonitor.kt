@@ -24,7 +24,8 @@ import java.io.File
 
 /** Captures [WindowManagerTrace] from WindowManager. */
 open class WindowManagerTraceMonitor : TraceMonitor() {
-    private val windowManager = WindowManagerGlobal.getWindowManagerService()
+    private val windowManager =
+        WindowManagerGlobal.getWindowManagerService() ?: error("Unable to acquire WindowManager")
     override val traceType = TraceType.WM
     override val isEnabled
         get() = windowManager.isWindowTraceEnabled

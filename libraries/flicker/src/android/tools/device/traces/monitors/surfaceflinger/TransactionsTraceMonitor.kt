@@ -25,7 +25,8 @@ import java.io.File
 
 /** Captures [TransactionsTrace] from SurfaceFlinger. */
 open class TransactionsTraceMonitor : TraceMonitor() {
-    private val windowManager = WindowManagerGlobal.getWindowManagerService()
+    private val windowManager =
+        WindowManagerGlobal.getWindowManagerService() ?: error("Unable to acquire WindowManager")
     override val isEnabled = true
     override val traceType = TraceType.TRANSACTION
 

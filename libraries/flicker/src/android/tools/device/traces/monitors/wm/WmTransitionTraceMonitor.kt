@@ -24,7 +24,8 @@ import java.io.File
 
 /** Captures [TransitionsTrace] from SurfaceFlinger. */
 open class WmTransitionTraceMonitor : TraceMonitor() {
-    private val windowManager = WindowManagerGlobal.getWindowManagerService()
+    private val windowManager =
+        WindowManagerGlobal.getWindowManagerService() ?: error("Unable to acquire WindowManager")
     override val traceType = TraceType.WM_TRANSITION
     override val isEnabled
         get() = windowManager.isTransitionTraceEnabled

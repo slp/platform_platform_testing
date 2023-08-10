@@ -26,7 +26,8 @@ import java.io.File
 /** Captures [LayersTrace] from SurfaceFlinger. */
 open class LayersTraceMonitor @JvmOverloads constructor(private val traceFlags: Int = TRACE_FLAGS) :
     TraceMonitor() {
-    private val windowManager = WindowManagerGlobal.getWindowManagerService()
+    private val windowManager =
+        WindowManagerGlobal.getWindowManagerService() ?: error("Unable to acquire WindowManager")
     override val traceType = TraceType.SF
     override val isEnabled
         get() = windowManager.isLayerTracing

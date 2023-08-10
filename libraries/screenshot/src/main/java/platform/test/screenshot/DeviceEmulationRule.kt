@@ -130,6 +130,7 @@ class DeviceEmulationRule(private val spec: DeviceEmulationSpec) : TestRule {
 
     private fun setDisplayDensity(density: Int) {
         val wm = WindowManagerGlobal.getWindowManagerService()
+            ?: error("Unable to acquire WindowManager")
         wm.setForcedDisplayDensityForUser(
             Display.DEFAULT_DISPLAY,
             density,
@@ -143,6 +144,7 @@ class DeviceEmulationRule(private val spec: DeviceEmulationSpec) : TestRule {
         height: Int
     ) {
         val wm = WindowManagerGlobal.getWindowManagerService()
+            ?: error("Unable to acquire WindowManager")
         wm.setForcedDisplaySize(Display.DEFAULT_DISPLAY, width, height)
         prevWidth = width
         prevHeight = height
