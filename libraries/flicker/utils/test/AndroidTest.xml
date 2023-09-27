@@ -31,9 +31,7 @@
         <option name="package" value="android.tools"/>
         <option name="hidden-api-checks" value="false"/>
         <!-- PerfettoListener related arguments -->
-        <!-- TODO(b/288396763): re-enable when PerfettoListener is fixed
         <option name="device-listeners" value="android.device.collectors.PerfettoListener"/>
-        -->
         <option name="instrumentation-arg" key="perfetto_config_text_proto" value="true"/>
         <option name="instrumentation-arg"
                 key="perfetto_config_file"
