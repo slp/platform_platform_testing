@@ -20,7 +20,7 @@ import android.tools.common.Timestamp
 import android.tools.common.Timestamps
 import android.tools.common.traces.wm.TransitionsTrace
 
-class TransitionTraceParser {
+class LegacyTransitionTraceParser {
     private val wmTransitionTraceParser = WmTransitionTraceParser()
     private val shellTransitionTraceParser = ShellTransitionTraceParser()
 
