@@ -17,10 +17,13 @@
 package android.tools.device.traces.monitors
 
 import android.tools.common.io.TraceType
+import android.tools.device.apphelpers.BrowserAppHelper
 import android.tools.device.traces.parsers.perfetto.LayersTraceParser
 import android.tools.device.traces.parsers.perfetto.TraceProcessorSession
+import android.tools.device.traces.parsers.perfetto.TransitionsTraceParser
 import android.tools.utils.CleanFlickerEnvironmentRule
 import com.google.common.truth.Truth
+import org.junit.Assume.assumeTrue
 import org.junit.ClassRule
 import org.junit.FixMethodOrder
 import org.junit.Test
@@ -32,7 +35,7 @@ import org.junit.runners.MethodSorters
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class PerfettoTraceMonitorTest : TraceMonitorTest<PerfettoTraceMonitor>() {
-    override val traceType = TraceType.SF
+    override val traceType = TraceType.PERFETTO
     override fun getMonitor() =
         PerfettoTraceMonitor.newBuilder().enableLayersTrace().enableTransactionsTrace().build()
 
@@ -51,6 +54,18 @@ class PerfettoTraceMonitorTest : TraceMonitorTest<PerfettoTraceMonitor>() {
     }
 
     @Test
+    fun withTransactionsTracingTest() {
+        val trace = withTransactionsTracing {
+            device.pressHome()
+            device.pressRecentApps()
+        }
+
+        Truth.assertWithMessage("Could not obtain transactions trace")
+            .that(trace.entries)
+            .isNotEmpty()
+    }
+
+    @Test
     fun layersDump() {
         val traceData = PerfettoTraceMonitor.newBuilder().enableLayersDump().build().withTracing {}
         assertTrace(traceData)
@@ -62,6 +77,31 @@ class PerfettoTraceMonitorTest : TraceMonitorTest<PerfettoTraceMonitor>() {
         Truth.assertWithMessage("Could not obtain layers dump")
             .that(trace.entries.size)
             .isEqualTo(1)
+    }
+
+    @Test
+    fun withTransitionTracingTest() {
+        assumeTrue(
+            "PerfettoTransitionTracing flag should be enabled",
+            android.tracing.Flags.perfettoTransitionTracing()
+        )
+
+        val traceMonitor = PerfettoTraceMonitor.newBuilder().enableTransitionsTrace().build()
+        val traceData =
+            traceMonitor.withTracing {
+                BrowserAppHelper().launchViaIntent()
+                device.pressHome()
+                device.pressRecentApps()
+            }
+        assertTrace(traceData)
+
+        val trace =
+            TraceProcessorSession.loadPerfettoTrace(traceData) { session ->
+                TransitionsTraceParser().parse(session)
+            }
+        Truth.assertWithMessage("Could not obtain transition trace")
+            .that(trace.entries)
+            .isNotEmpty()
     }
 
     companion object {
