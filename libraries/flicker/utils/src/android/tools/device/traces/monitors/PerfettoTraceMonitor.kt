@@ -28,25 +28,10 @@ import perfetto.protos.PerfettoConfig.SurfaceFlingerTransactionsConfig
 import perfetto.protos.PerfettoConfig.TraceConfig
 
 /* Captures traces from Perfetto. */
-open class PerfettoTraceMonitor : TraceMonitor() {
-    override val traceType = TraceType.SF // TODO: is this ok for the time being?
+open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
+    override val traceType = TraceType.PERFETTO
     override val isEnabled
         get() = perfettoPid != null
-
-    private val DEFAULT_SF_LAYER_FLAGS =
-        listOf(
-            SurfaceFlingerLayersConfig.TraceFlag.TRACE_FLAG_INPUT,
-            SurfaceFlingerLayersConfig.TraceFlag.TRACE_FLAG_COMPOSITION,
-            SurfaceFlingerLayersConfig.TraceFlag.TRACE_FLAG_VIRTUAL_DISPLAYS
-        )
-
-    private var isLayersTraceEnabled = false
-    private var layersTraceFlags = DEFAULT_SF_LAYER_FLAGS
-
-    private var isLayersDumpEnabled = false
-    private var layersDumpFlags = DEFAULT_SF_LAYER_FLAGS
-
-    private var isTransactionsTraceEnabled = false
 
     private var perfettoPid: Int? = null
     private var configFileInPerfettoDir: File? = null
@@ -55,58 +40,12 @@ open class PerfettoTraceMonitor : TraceMonitor() {
     private val PERFETTO_CONFIGS_DIR = File("/data/misc/perfetto-configs")
     private val PERFETTO_TRACES_DIR = File("/data/misc/perfetto-traces")
 
-    fun enableLayersTrace(
-        flags: List<SurfaceFlingerLayersConfig.TraceFlag>? = null
-    ): PerfettoTraceMonitor {
-        isLayersTraceEnabled = true
-        if (flags != null) {
-            layersTraceFlags = flags
-        }
-        return this
-    }
-
-    fun enableLayersDump(
-        flags: List<SurfaceFlingerLayersConfig.TraceFlag>? = null
-    ): PerfettoTraceMonitor {
-        isLayersDumpEnabled = true
-        if (flags != null) {
-            layersDumpFlags = flags
-        }
-        return this
-    }
-
-    fun enableTransactionsTrace(): PerfettoTraceMonitor {
-        isTransactionsTraceEnabled = true
-        return this
-    }
-
     override fun doStart() {
         val configFile = File.createTempFile("flickerlib-config-", ".cfg")
         configFileInPerfettoDir = PERFETTO_CONFIGS_DIR.resolve(requireNotNull(configFile).name)
 
         traceFile = File.createTempFile(traceType.fileName, "")
         traceFileInPerfettoDir = PERFETTO_TRACES_DIR.resolve(requireNotNull(traceFile).name)
-
-        val configBuilder =
-            TraceConfig.newBuilder()
-                .setDurationMs(0)
-                .addBuffers(
-                    TraceConfig.BufferConfig.newBuilder().setSizeKb(TRACE_BUFFER_SIZE_KB).build()
-                )
-
-        if (isLayersTraceEnabled) {
-            configBuilder.addDataSources(createLayersTraceDataSourceConfig())
-        }
-
-        if (isLayersDumpEnabled) {
-            configBuilder.addDataSources(createLayersDumpDataSourceConfig())
-        }
-
-        if (isTransactionsTraceEnabled) {
-            configBuilder.addDataSources(createTransactionsDataSourceConfig())
-        }
-
-        val config = configBuilder.build()
 
         FileOutputStream(configFile).use { config.writeTo(it) }
         IoUtils.moveFile(requireNotNull(configFile), requireNotNull(configFileInPerfettoDir))
@@ -136,51 +75,137 @@ open class PerfettoTraceMonitor : TraceMonitor() {
         return requireNotNull(traceFile)
     }
 
-    private fun createLayersTraceDataSourceConfig(): TraceConfig.DataSource {
-        return TraceConfig.DataSource.newBuilder()
-            .setConfig(
-                DataSourceConfig.newBuilder()
-                    .setName(SF_LAYERS_DATA_SOURCE)
-                    .setSurfaceflingerLayersConfig(
-                        SurfaceFlingerLayersConfig.newBuilder()
-                            .setMode(SurfaceFlingerLayersConfig.Mode.MODE_ACTIVE)
-                            .apply { layersTraceFlags.forEach { addTraceFlags(it) } }
-                            .build()
-                    )
-                    .build()
+    class Builder {
+        private val DEFAULT_SF_LAYER_FLAGS =
+            listOf(
+                SurfaceFlingerLayersConfig.TraceFlag.TRACE_FLAG_INPUT,
+                SurfaceFlingerLayersConfig.TraceFlag.TRACE_FLAG_COMPOSITION,
+                SurfaceFlingerLayersConfig.TraceFlag.TRACE_FLAG_VIRTUAL_DISPLAYS
             )
-            .build()
-    }
 
-    private fun createLayersDumpDataSourceConfig(): TraceConfig.DataSource {
-        return TraceConfig.DataSource.newBuilder()
-            .setConfig(
-                DataSourceConfig.newBuilder()
-                    .setName(SF_LAYERS_DATA_SOURCE)
-                    .setSurfaceflingerLayersConfig(
-                        SurfaceFlingerLayersConfig.newBuilder()
-                            .setMode(SurfaceFlingerLayersConfig.Mode.MODE_DUMP)
-                            .apply { layersDumpFlags.forEach { addTraceFlags(it) } }
-                            .build()
-                    )
-                    .build()
-            )
-            .build()
-    }
+        private var isLayersTraceEnabled = false
+        private var layersTraceFlags = DEFAULT_SF_LAYER_FLAGS
 
-    private fun createTransactionsDataSourceConfig(): TraceConfig.DataSource {
-        return TraceConfig.DataSource.newBuilder()
-            .setConfig(
-                DataSourceConfig.newBuilder()
-                    .setName(SF_TRANSACTIONS_DATA_SOURCE)
-                    .setSurfaceflingerTransactionsConfig(
-                        SurfaceFlingerTransactionsConfig.newBuilder()
-                            .setMode(SurfaceFlingerTransactionsConfig.Mode.MODE_ACTIVE)
+        private var isLayersDumpEnabled = false
+        private var layersDumpFlags = DEFAULT_SF_LAYER_FLAGS
+
+        private var isTransactionsTraceEnabled = false
+
+        private var isTransitionsTraceEnabled = false
+
+        private val customDataSources = mutableSetOf<String>()
+
+        fun enableLayersTrace(flags: List<SurfaceFlingerLayersConfig.TraceFlag>? = null): Builder =
+            apply {
+                isLayersTraceEnabled = true
+                if (flags != null) {
+                    layersTraceFlags = flags
+                }
+            }
+
+        fun enableLayersDump(flags: List<SurfaceFlingerLayersConfig.TraceFlag>? = null): Builder =
+            apply {
+                isLayersDumpEnabled = true
+                if (flags != null) {
+                    layersDumpFlags = flags
+                }
+            }
+
+        fun enableTransactionsTrace(): Builder = apply { isTransactionsTraceEnabled = true }
+
+        fun enableTransitionsTrace(): Builder = apply { isTransitionsTraceEnabled = true }
+
+        fun build(): PerfettoTraceMonitor {
+            val configBuilder =
+                TraceConfig.newBuilder()
+                    .setDurationMs(0)
+                    .addBuffers(
+                        TraceConfig.BufferConfig.newBuilder()
+                            .setSizeKb(TRACE_BUFFER_SIZE_KB)
                             .build()
                     )
-                    .build()
-            )
-            .build()
+
+            if (isLayersTraceEnabled) {
+                configBuilder.addDataSources(createLayersTraceDataSourceConfig())
+            }
+
+            if (isLayersDumpEnabled) {
+                configBuilder.addDataSources(createLayersDumpDataSourceConfig())
+            }
+
+            if (isTransactionsTraceEnabled) {
+                configBuilder.addDataSources(createTransactionsDataSourceConfig())
+            }
+
+            if (isTransitionsTraceEnabled) {
+                configBuilder.addDataSources(createTransitionsDataSourceConfig())
+            }
+
+            for (customDataSourceName in customDataSources) {
+                configBuilder.addDataSources(createCustomDataSourceConfig(customDataSourceName))
+            }
+
+            return PerfettoTraceMonitor(config = configBuilder.build())
+        }
+
+        private fun createLayersTraceDataSourceConfig(): TraceConfig.DataSource {
+            return TraceConfig.DataSource.newBuilder()
+                .setConfig(
+                    DataSourceConfig.newBuilder()
+                        .setName(SF_LAYERS_DATA_SOURCE)
+                        .setSurfaceflingerLayersConfig(
+                            SurfaceFlingerLayersConfig.newBuilder()
+                                .setMode(SurfaceFlingerLayersConfig.Mode.MODE_ACTIVE)
+                                .apply { layersTraceFlags.forEach { addTraceFlags(it) } }
+                                .build()
+                        )
+                        .build()
+                )
+                .build()
+        }
+
+        private fun createLayersDumpDataSourceConfig(): TraceConfig.DataSource {
+            return TraceConfig.DataSource.newBuilder()
+                .setConfig(
+                    DataSourceConfig.newBuilder()
+                        .setName(SF_LAYERS_DATA_SOURCE)
+                        .setSurfaceflingerLayersConfig(
+                            SurfaceFlingerLayersConfig.newBuilder()
+                                .setMode(SurfaceFlingerLayersConfig.Mode.MODE_DUMP)
+                                .apply { layersDumpFlags.forEach { addTraceFlags(it) } }
+                                .build()
+                        )
+                        .build()
+                )
+                .build()
+        }
+
+        private fun createTransactionsDataSourceConfig(): TraceConfig.DataSource {
+            return TraceConfig.DataSource.newBuilder()
+                .setConfig(
+                    DataSourceConfig.newBuilder()
+                        .setName(SF_TRANSACTIONS_DATA_SOURCE)
+                        .setSurfaceflingerTransactionsConfig(
+                            SurfaceFlingerTransactionsConfig.newBuilder()
+                                .setMode(SurfaceFlingerTransactionsConfig.Mode.MODE_ACTIVE)
+                                .build()
+                        )
+                        .build()
+                )
+                .build()
+        }
+
+        private fun createTransitionsDataSourceConfig(): TraceConfig.DataSource {
+            return TraceConfig.DataSource.newBuilder()
+                .setConfig(DataSourceConfig.newBuilder().setName(TRANSITIONS_DATA_SOURCE).build())
+                .build()
+        }
+
+        private fun createCustomDataSourceConfig(dataSourceName: String): TraceConfig.DataSource {
+            return TraceConfig.DataSource.newBuilder()
+                .setConfig(DataSourceConfig.newBuilder().setName(dataSourceName).build())
+                .build()
+        }
     }
 
     companion object {
@@ -188,9 +213,14 @@ open class PerfettoTraceMonitor : TraceMonitor() {
 
         private const val SF_LAYERS_DATA_SOURCE = "android.surfaceflinger.layers"
         private const val SF_TRANSACTIONS_DATA_SOURCE = "android.surfaceflinger.transactions"
+        private const val TRANSITIONS_DATA_SOURCE = "android.tracing.shell_transitions"
 
         private val allPerfettoPids = mutableListOf<Int>()
         private val allPerfettoPidsLock = ReentrantLock()
+
+        fun newBuilder(): Builder {
+            return Builder()
+        }
 
         fun stopAllSessions() {
             allPerfettoPidsLock.lock()

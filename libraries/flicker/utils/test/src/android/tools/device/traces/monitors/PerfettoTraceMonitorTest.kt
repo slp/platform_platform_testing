@@ -33,7 +33,8 @@ import org.junit.runners.MethodSorters
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class PerfettoTraceMonitorTest : TraceMonitorTest<PerfettoTraceMonitor>() {
     override val traceType = TraceType.SF
-    override fun getMonitor() = PerfettoTraceMonitor().enableLayersTrace().enableTransactionsTrace()
+    override fun getMonitor() =
+        PerfettoTraceMonitor.newBuilder().enableLayersTrace().enableTransactionsTrace().build()
 
     override fun assertTrace(traceData: ByteArray) {
         Truth.assertThat(traceData.size).isGreaterThan(0)
@@ -51,7 +52,7 @@ class PerfettoTraceMonitorTest : TraceMonitorTest<PerfettoTraceMonitor>() {
 
     @Test
     fun layersDump() {
-        val traceData = PerfettoTraceMonitor().enableLayersDump().withTracing {}
+        val traceData = PerfettoTraceMonitor.newBuilder().enableLayersDump().build().withTracing {}
         assertTrace(traceData)
 
         val trace =

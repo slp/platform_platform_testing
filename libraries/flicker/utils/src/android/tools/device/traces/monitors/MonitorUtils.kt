@@ -26,6 +26,7 @@ import android.tools.common.ScenarioBuilder
 import android.tools.common.Tag
 import android.tools.common.io.Reader
 import android.tools.common.traces.surfaceflinger.LayersTrace
+import android.tools.common.traces.surfaceflinger.TransactionsTrace
 import android.tools.common.traces.wm.WindowManagerTrace
 import android.tools.device.traces.SERVICE_TRACE_CONFIG
 import android.tools.device.traces.io.ResultReaderWithLru
@@ -33,8 +34,22 @@ import android.tools.device.traces.io.ResultWriter
 import android.tools.device.traces.monitors.wm.WindowManagerTraceMonitor
 import android.tools.device.traces.parsers.perfetto.LayersTraceParser
 import android.tools.device.traces.parsers.perfetto.TraceProcessorSession
+import android.tools.device.traces.parsers.perfetto.TransactionsTraceParser
+import android.tools.device.traces.parsers.wm.WindowManagerTraceParser
 import java.io.File
 import perfetto.protos.PerfettoConfig.SurfaceFlingerLayersConfig
+
+/**
+ * Acquire the [WindowManagerTrace] with the device state changes that happen when executing the
+ * commands defined in the [predicate].
+ *
+ * @param predicate Commands to execute
+ * @throws UnsupportedOperationException If tracing is already activated
+ */
+fun withWMTracing(predicate: () -> Unit): WindowManagerTrace {
+    return WindowManagerTraceParser()
+        .parse(WindowManagerTraceMonitor().withTracing(Tag.ALL, predicate))
+}
 
 /**
  * Acquire the [LayersTrace] with the device state changes that happen when executing the commands
@@ -49,9 +64,32 @@ fun withSFTracing(
     flags: List<SurfaceFlingerLayersConfig.TraceFlag>? = null,
     predicate: () -> Unit
 ): LayersTrace {
-    val trace = PerfettoTraceMonitor().enableLayersTrace(flags).withTracing(Tag.ALL, predicate)
+    val trace =
+        PerfettoTraceMonitor.newBuilder()
+            .enableLayersTrace(flags)
+            .build()
+            .withTracing(Tag.ALL, predicate)
     return TraceProcessorSession.loadPerfettoTrace(trace) { session ->
         LayersTraceParser().parse(session)
+    }
+}
+
+/**
+ * Acquire the [TransactionsTrace] with the device state changes that happen when executing the
+ * commands defined in the [predicate].
+ *
+ * @param predicate Commands to execute
+ * @throws UnsupportedOperationException If tracing is already activated
+ */
+@JvmOverloads
+fun withTransactionsTracing(predicate: () -> Unit): TransactionsTrace {
+    val trace =
+        PerfettoTraceMonitor.newBuilder()
+            .enableTransactionsTrace()
+            .build()
+            .withTracing(Tag.ALL, predicate)
+    return TraceProcessorSession.loadPerfettoTrace(trace) { session ->
+        TransactionsTraceParser().parse(session)
     }
 }
 
@@ -66,7 +104,7 @@ fun withTracing(
     traceMonitors: List<TraceMonitor> =
         listOf(
             WindowManagerTraceMonitor(),
-            PerfettoTraceMonitor().enableLayersTrace().enableTransactionsTrace(),
+            PerfettoTraceMonitor.newBuilder().enableLayersTrace().enableTransactionsTrace().build(),
         ),
     predicate: () -> Unit
 ): Reader {
@@ -83,4 +121,22 @@ fun withTracing(
         traceMonitors.forEach { it.stop(writer) }
     }
     return ResultReaderWithLru(writer.write(), SERVICE_TRACE_CONFIG)
+}
+
+/**
+ * Acquire the [WindowManagerTrace] and [LayersTrace] with the device state changes that happen when
+ * executing the commands defined in the [predicate].
+ *
+ * @param predicate Commands to execute
+ * @return a pair containing the WM and SF traces
+ * @throws UnsupportedOperationException If tracing is already activated
+ */
+fun recordTraces(predicate: () -> Unit): Pair<ByteArray, ByteArray> {
+    var wmTraceData = ByteArray(0)
+    val layersTraceData =
+        PerfettoTraceMonitor.newBuilder().enableLayersTrace().build().withTracing {
+            wmTraceData = WindowManagerTraceMonitor().withTracing(Tag.ALL, predicate)
+        }
+
+    return Pair(wmTraceData, layersTraceData)
 }

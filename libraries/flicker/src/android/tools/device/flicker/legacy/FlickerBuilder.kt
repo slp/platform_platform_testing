@@ -49,7 +49,12 @@ class FlickerBuilder(
     private val traceMonitors: MutableList<ITransitionMonitor> =
         mutableListOf<ITransitionMonitor>().also {
             it.add(WindowManagerTraceMonitor())
-            it.add(PerfettoTraceMonitor().enableLayersTrace().enableTransactionsTrace())
+            it.add(
+                PerfettoTraceMonitor.newBuilder()
+                    .enableLayersTrace()
+                    .enableTransactionsTrace()
+                    .build()
+            )
             it.add(WmTransitionTraceMonitor())
             it.add(ShellTransitionTraceMonitor())
             it.add(ScreenRecorder(instrumentation.targetContext))

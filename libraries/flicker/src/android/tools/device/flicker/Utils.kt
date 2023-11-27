@@ -42,7 +42,10 @@ object Utils {
                 WmTransitionTraceMonitor(),
                 ShellTransitionTraceMonitor(),
                 WindowManagerTraceMonitor(),
-                PerfettoTraceMonitor().enableLayersTrace().enableTransactionsTrace(),
+                PerfettoTraceMonitor.newBuilder()
+                    .enableLayersTrace()
+                    .enableTransactionsTrace()
+                    .build(),
                 EventLogMonitor(),
                 ViewTraceMonitor(),
                 ScreenRecorder(InstrumentationRegistry.getInstrumentation().targetContext)
