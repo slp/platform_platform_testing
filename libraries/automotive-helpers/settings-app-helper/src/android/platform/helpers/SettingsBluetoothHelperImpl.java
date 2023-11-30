@@ -118,6 +118,22 @@ public class SettingsBluetoothHelperImpl extends AbstractStandardAppHelper
 
     /** {@inheritDoc} */
     @Override
+    public void pressMediaToggleOnDevice(String deviceName) {
+
+        /**
+         * Note: this method currently does not select strictly within the passed-in device name.
+         */
+        BySelector toggleSelector = getUiElementFromConfig(AutomotiveConfigConstants.MEDIA_BUTTON);
+
+        UiObject2 toggleButton = getSpectatioUiUtil().findUiObject(toggleSelector);
+
+        getSpectatioUiUtil()
+                .validateUiObject(toggleButton, AutomotiveConfigConstants.TOGGLE_DEVICE_BLUETOOTH);
+        getSpectatioUiUtil().clickAndWait(toggleButton);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void pressPhoneToggleOnDevice(String deviceName) {
 
         /*
