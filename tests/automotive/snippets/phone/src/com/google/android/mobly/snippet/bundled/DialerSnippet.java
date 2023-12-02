@@ -71,9 +71,20 @@ public class DialerSnippet implements Snippet {
         mDialerHelper.get().openCallHistory();
     }
 
+    /** Open Dialer settings from the Dialer app */
+    @Rpc(description = "Open Dialer Settings from the Dialer app.")
+    public void openDialerSettings() {
+        mDialerHelper.get().openDialerSettings();
+    }
+
     @Rpc(description = "Call Contact From Contact List.")
     public void callContact(String contactName) {
         mDialerHelper.get().callContact(contactName);
+    }
+
+    @Rpc(description = "Return whether the \"Connected Phone\" field holds the given name.")
+    public String getConnectedPhoneName() {
+        return mDialerHelper.get().getConnectedPhoneName();
     }
 
     @Rpc(description = "Delete the dialed number on Dial Pad.")

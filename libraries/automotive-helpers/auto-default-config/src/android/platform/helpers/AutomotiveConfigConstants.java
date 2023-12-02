@@ -75,6 +75,10 @@ public class AutomotiveConfigConstants {
     public static final String CALL_MOBILE_BUTTON = "CALL_MOBILE_BUTTON";
     public static final String CONTACT_SETTINGS = "CONTACT_SETTINGS";
     public static final String DIAL_PAD_FRAGMENT = "DIAL_PAD_FRAGMENT";
+
+    public static final String DIALER_SETTINGS_BUTTON = "DIALER_SETTINGS_BUTTON";
+
+    public static final String DIALER_CONNECTED_PHONE_NAME = "DIALER_CONNECTED_PHONE_NAME";
     public static final String DIGIT_ZERO = "0";
     public static final String DIGIT_ONE = "1";
     public static final String DIGIT_TWO = "2";

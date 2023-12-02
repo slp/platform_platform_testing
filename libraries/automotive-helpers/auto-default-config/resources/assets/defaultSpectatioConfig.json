@@ -254,6 +254,31 @@
       "VALUE": "call_action_id",
       "PACKAGE": "com.android.car.dialer"
     },
+    "DIALER_CONNECTED_PHONE_NAME": {
+      "TYPE": "MULTIPLE",
+      "SPECIFIERS": [
+        {
+          "TYPE": "RESOURCE_ID",
+          "VALUE": "summary"
+        },
+        {
+          "TYPE": "HAS_ANCESTOR",
+          "MAX_DEPTH": 1,
+          "ANCESTOR": {
+            "TYPE": "HAS_DESCENDANT",
+            "MAX_DEPTH": 1,
+            "DESCENDANT": {
+              "TYPE": "TEXT",
+              "VALUE": "Connected Phone"
+            }
+          }
+        }
+      ]
+    },
+    "DIALER_SETTINGS_BUTTON": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "car_ui_toolbar_menu_item_icon_container"
+    },
     "SEARCH_CONTACT": {
       "TYPE": "RESOURCE_ID",
       "VALUE": "car_ui_toolbar_menu_item_icon_container"

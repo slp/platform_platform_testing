@@ -122,6 +122,11 @@ class CallUtils:
         logging.info("Opening bluetooth settings (via the Status Bar)")
         self.device.mbs.openBluetoothSettings()
 
+    def open_dialer_settings(self):
+        """Open dialer settings"""
+        logging.info('Opening Dialer settings')
+        self.device.mbs.openDialerSettings()
+
     def press_bluetooth_toggle_on_device(self, device_name):
         logging.info('Attempting to press the bluetooth toggle on device: \'%s\'' % device_name)
         self.device.mbs.pressBluetoothToggleOnDevice(device_name)
