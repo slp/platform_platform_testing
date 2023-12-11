@@ -1933,6 +1933,14 @@
       "VALUE": "date_time_view",
       "PACKAGE": "com.android.car.messenger"
     },
+    "TAP_TO_READ_ALOUD": {
+      "TYPE": "TEXT",
+      "VALUE": "Tap to read aloud"
+    },
+    "ASSISTANT_SMS_TRANSCRIPTION_PLATE": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "transcription_immersive_container"
+    },
     "SMS_EMPTY_MESSAGE": {
       "TYPE": "RESOURCE_ID",
       "VALUE": "empty_message",

@@ -604,6 +604,9 @@ public class AutomotiveConfigConstants {
     public static final String SMS_UNREAD_BADGE = "SMS_UNREAD_BADGE";
     public static final String SMS_PREVIEW_TEXT = "SMS_PREVIEW_TEXT";
     public static final String SMS_PREVIEW_TIMESTAMP = "SMS_PREVIEW_TIMESTAMP";
+    public static final String TAP_TO_READ_ALOUD = "TAP_TO_READ_ALOUD";
+    public static final String ASSISTANT_SMS_TRANSCRIPTION_PLATE =
+            "ASSISTANT_SMS_TRANSCRIPTION_PLATE";
     public static final String SMS_EMPTY_MESSAGE = "SMS_EMPTY_MESSAGE";
 
     // Bluetooth Tests Constants
