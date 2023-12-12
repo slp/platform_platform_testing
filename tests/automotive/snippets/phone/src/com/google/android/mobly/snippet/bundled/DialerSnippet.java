@@ -130,6 +130,16 @@ public class DialerSnippet implements Snippet {
         mDialerHelper.get().dialFromList(contact);
     }
 
+    @Rpc(description = "Returns whether a call is currently ongoing and in full-screen mode.")
+    public boolean isOngoingCallInFullScreen() {
+        return mDialerHelper.get().isOngoingCallInFullScreen();
+    }
+
+    @Rpc(description = "Return whether the Active Call toggle is chechked")
+    public boolean isActiveCallEnabled() {
+        return mDialerHelper.get().isActiveCallEnabled();
+    }
+
     @Rpc(description = "Dial a number in call dial pad when call is in progress.")
     public void inCallDialPad(String phoneNumber) {
         mDialerHelper.get().inCallDialPad(phoneNumber);
@@ -233,6 +243,18 @@ public class DialerSnippet implements Snippet {
     @Rpc(description = "Open Contacts List.")
     public void openContacts() {
         mDialerHelper.get().openContacts();
+    }
+
+    /** Press 'Device' prompt which comes up when trying to transfer files to a device. */
+    @Rpc(description = "Press 'Device' on a prompt, if present.")
+    public void pressDevice() {
+        mDialerHelper.get().pressDeviceOnPrompt();
+    }
+
+    /** Press Active Call toggle */
+    @Rpc(description = "Press Active Call toggle")
+    public void pressActiveCallToggle() {
+        mDialerHelper.get().pressActiveCallToggle();
     }
 
     /** Rpc to press the Mobile call action button on a contact page */

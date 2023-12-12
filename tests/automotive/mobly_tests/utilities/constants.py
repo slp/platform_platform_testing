@@ -41,7 +41,7 @@ DEFAULT_DIAL_PAD_ENTRY = "Dial a number"
 CONNECTED_SUMMARY_STATUS = "Connected"
 DISCONNECTED_SUMMARY_STATUS = "Disconnected"
 DECLINE_CALL_TEXT = "Decline"
-ACCEPT_CALL_TEXT = "Accept"
+ACCEPT_CALL_TEXT = "Answer"
 
 BTSNOOP_LOG_PATH_ON_DEVICE = '/data/misc/bluetooth/logs/btsnoop_hci.log'
 BTSNOOP_LAST_LOG_PATH_ON_DEVICE = (

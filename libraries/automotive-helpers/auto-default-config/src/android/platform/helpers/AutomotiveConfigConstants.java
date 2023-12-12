@@ -76,8 +76,6 @@ public class AutomotiveConfigConstants {
     public static final String CONTACT_SETTINGS = "CONTACT_SETTINGS";
     public static final String DIAL_PAD_FRAGMENT = "DIAL_PAD_FRAGMENT";
 
-    public static final String DIALER_SETTINGS_BUTTON = "DIALER_SETTINGS_BUTTON";
-
     public static final String DIALER_CONNECTED_PHONE_NAME = "DIALER_CONNECTED_PHONE_NAME";
     public static final String DIGIT_ZERO = "0";
     public static final String DIGIT_ONE = "1";
@@ -651,6 +649,9 @@ public class AutomotiveConfigConstants {
     public static final String DIALER_CONTACTS = "DIALER_CONTACTS";
     public static final String DIALER_FAVORITES = "DIALER_FAVORITES";
     public static final String DIALER_DIALPAD = "DIALER_DIALPAD";
+    public static final String DIALER_ACTIVE_CALL_TOGGLE = "DIALER_ACTIVE_CALL_TOGGLE";
+    public static final String DIALER_ONGOING_CALL_CONTROL_BAR = "DIALER_ONGOING_CALL_CONTROL_BAR";
+    public static final String DIALER_SETTINGS_BUTTON = "DIALER_SETTINGS_BUTTON";
 
     // Phone Device Identifiers
     public static final String MOBILE_CALL_BUTTON = "MOBILE_CALL_BUTTON";

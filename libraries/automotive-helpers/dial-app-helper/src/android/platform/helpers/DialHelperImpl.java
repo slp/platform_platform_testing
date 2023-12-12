@@ -98,6 +98,21 @@ public class DialHelperImpl extends AbstractStandardAppHelper implements IAutoDi
 
     /** {@inheritDoc} */
     @Override
+    public void pressActiveCallToggle() {
+        BySelector toggleSelector =
+                getUiElementFromConfig(AutomotiveConfigConstants.DIALER_ACTIVE_CALL_TOGGLE);
+
+        UiObject2 activeCallToggle = getSpectatioUiUtil().findUiObject(toggleSelector);
+
+        getSpectatioUiUtil()
+                .validateUiObject(
+                        activeCallToggle, AutomotiveConfigConstants.DIALER_ACTIVE_CALL_TOGGLE);
+
+        getSpectatioUiUtil().clickAndWait(activeCallToggle);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void pressContactResult(String expectedName) {
         BySelector searchResultSelector =
                 getUiElementFromConfig(AutomotiveConfigConstants.CONTACT_SEARCH_RESULT);
@@ -252,6 +267,25 @@ public class DialHelperImpl extends AbstractStandardAppHelper implements IAutoDi
                 .validateUiObject(
                         dialedContactName, AutomotiveConfigConstants.DIALED_CONTACT_TITLE);
         return dialedContactName.getText();
+    }
+    /** {@inheritDoc} */
+    @Override
+    public boolean isActiveCallEnabled() {
+        return buttonChecked(AutomotiveConfigConstants.DIALER_ACTIVE_CALL_TOGGLE);
+    }
+
+    /**
+     * Assumes passed in BySelector title is a checkable button that is currently onscreen
+     *
+     * @param buttonName - The button whose status is to be checked.
+     * @return - Whether or not the button element with the given name as a descriptor is checked.
+     */
+    public boolean buttonChecked(String buttonName) {
+        BySelector toggleSelector = getUiElementFromConfig(buttonName);
+        UiObject2 toggleButton = getSpectatioUiUtil().findUiObject(toggleSelector);
+        getSpectatioUiUtil().validateUiObject(toggleButton, buttonName);
+
+        return toggleButton.isChecked();
     }
 
     /** {@inheritDoc} */
@@ -589,17 +623,22 @@ public class DialHelperImpl extends AbstractStandardAppHelper implements IAutoDi
     /** {@inheritDoc} */
     @Override
     public void openDialerSettings() {
-        BySelector dialerSettingsSelector =
+        BySelector settingsButtonSelector =
                 getUiElementFromConfig(AutomotiveConfigConstants.DIALER_SETTINGS_BUTTON);
 
         ArrayList<UiObject2> buttonCandidates =
-                new ArrayList<>(getSpectatioUiUtil().findUiObjects(dialerSettingsSelector));
+                new ArrayList<>(getSpectatioUiUtil().findUiObjects(settingsButtonSelector));
 
-        UiObject2 dialerSettingsButton = buttonCandidates.get(1);
+        // This is an awkward hard-coding to compensate for the fact that currently the
+        // search button and the settings button have identical metadata.
+        // (The Settings button is the second of the two, hence index 1)
+        // TODO: b/287706588 - Rewrite this UiObject selection to use a new Content Descriptor
+        UiObject2 contactMenuButton = buttonCandidates.get(1);
+
         getSpectatioUiUtil()
                 .validateUiObject(
-                        dialerSettingsButton, AutomotiveConfigConstants.DIALER_SETTINGS_BUTTON);
-        getSpectatioUiUtil().clickAndWait(dialerSettingsButton);
+                        contactMenuButton, AutomotiveConfigConstants.DIALER_SETTINGS_BUTTON);
+        getSpectatioUiUtil().clickAndWait(contactMenuButton);
     }
 
     /** {@inheritDoc} */
@@ -757,6 +796,17 @@ public class DialHelperImpl extends AbstractStandardAppHelper implements IAutoDi
         BySelector ongoingCallSelector =
                 getUiElementFromConfig(AutomotiveConfigConstants.ONGOING_CALL);
         return getSpectatioUiUtil().hasUiElement(ongoingCallSelector);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isOngoingCallInFullScreen() {
+        // Whether an ongoing call is currently showing onscreen can be indicated
+        // by whether an ongoing call control bar is currently on the screen,
+        // but other methods of detecting this can be used.
+        BySelector controlBarSelector =
+                getUiElementFromConfig(AutomotiveConfigConstants.DIALER_ONGOING_CALL_CONTROL_BAR);
+        return getSpectatioUiUtil().hasUiElement(controlBarSelector);
     }
 
     /** This method opens the phone app on tapping the home phone card on home screen */
