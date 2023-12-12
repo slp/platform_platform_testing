@@ -235,11 +235,6 @@ public class DialerSnippet implements Snippet {
         mDialerHelper.get().openContacts();
     }
 
-    @Rpc(description = "Press 'Device' on a prompt, if present.")
-    public void pressDevice() {
-        mDialerHelper.get().pressDeviceOnPrompt();
-    }
-
     /** Rpc to press the Mobile call action button on a contact page */
     @Rpc(description = "Press the Mobile call button on a contact page")
     public void pressMobileCallOnContact() {

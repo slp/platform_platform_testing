@@ -651,4 +651,11 @@ public class AutomotiveConfigConstants {
     public static final String DIALER_CONTACTS = "DIALER_CONTACTS";
     public static final String DIALER_FAVORITES = "DIALER_FAVORITES";
     public static final String DIALER_DIALPAD = "DIALER_DIALPAD";
+
+    // Phone Device Identifiers
+    public static final String MOBILE_CALL_BUTTON = "MOBILE_CALL_BUTTON";
+    public static final String MOBILE_DIAL_PAD_ICON = "MOBILE_DIALPAD_ICON";
+    public static final String MOBILE_PHONE_ICON = "MOBILE_PHONE_ICON";
+    public static final String PHONE_DEVICE_PACKAGE = "PHONE_DEVICE_PACAKAGE";
+    public static final String MOBILE_DIALPAD_INPUT = "MOBILE_DIALPAD_INPUT";
 }

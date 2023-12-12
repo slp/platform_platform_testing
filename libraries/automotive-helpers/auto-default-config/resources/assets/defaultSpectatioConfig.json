@@ -75,10 +75,33 @@
     "OPEN_CAR_UI": "am crash com.android.car"
   },
   "UI_ELEMENTS": {
-    "MAKE_CALL": {
+
+
+
+    "MOBILE_PHONE_ICON": {
+      "TYPE": "TEXT",
+      "VALUE": "Phone"
+    },
+    "MOBILE_CALL_BUTTON": {
+      "TYPE": "MULTIPLE",
+      "SPECIFIERS": [
+        {
+          "TYPE": "TEXT",
+          "VALUE": "Call"
+        },
+        {
+          "TYPE": "CLASS",
+          "VALUE": "android.widget.Button"
+        }
+      ]
+    },
+    "MOBILE_DIALPAD_ICON": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "call_button",
-      "PACKAGE": "com.android.car.dialer"
+      "VALUE": "dialpad_fab"
+    },
+    "MOBILE_DIALPAD_INPUT": {
+      "TYPE": "CLASS",
+      "VALUE": "android.widget.EditText"
     },
     "END_CALL": {
       "TYPE": "RESOURCE_ID",

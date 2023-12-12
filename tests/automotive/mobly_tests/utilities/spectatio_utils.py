@@ -37,7 +37,6 @@ class CallUtils:
     def __init__(self, device):
         self.device = device
 
-
     def device_displays_connected(self):
         """Assumes the device bluetooth connection settings page is open"""
         logging.info('Checking whether device is connected.')
