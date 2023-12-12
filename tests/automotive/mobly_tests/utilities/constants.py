@@ -126,3 +126,10 @@ TIMEZONE_DICT = {
 CLEAR_MESSAGING_APP = 'pm clear com.google.android.apps.messaging'
 DELETE_MESSAGING_DB = 'rm /data/data/com.android.providers.telephony/databases/mmssms.db'
 OPEN_NOTIFICATION = 'service call statusbar 1'
+
+# Dialer Page
+NO_PHONE_MESSAGE = "To complete your call, first connect your phone to your car via Bluetooth."
+DIALER_RECENTS_LABEL = "Recents"
+DIALER_CONTACTS_LABEL = "Contacts"
+DIALER_FAVORITES_LABEL = "Favorites"
+DIALER_DIALPAD_LABEL = "Dialpad"
