@@ -117,6 +117,8 @@ DEFAULT_YOUTUBE_MUSIC_PLAYLIST = 'am start -a android.intent.action.VIEW -d http
 
 # SMS
 SMS_TEXT = "sms_test"
+REPLY_SMS= "Okay"
+SMS_REPLY_TEXT = "SMS Reply"
 TIMEZONE_DICT = {
     "PST": "Pacific Standard Time",
     "PDT": "Pacific Daylight Time",
