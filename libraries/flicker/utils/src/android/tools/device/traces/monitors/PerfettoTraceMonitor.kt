@@ -48,7 +48,7 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
         traceFileInPerfettoDir = PERFETTO_TRACES_DIR.resolve(requireNotNull(traceFile).name)
 
         FileOutputStream(configFile).use { config.writeTo(it) }
-        IoUtils.moveFile(requireNotNull(configFile), requireNotNull(configFileInPerfettoDir))
+        IoUtils.moveFile(configFile, requireNotNull(configFileInPerfettoDir))
 
         val command =
             "perfetto --background-wait" +
@@ -93,7 +93,9 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
 
         private var isTransitionsTraceEnabled = false
 
-        private val customDataSources = mutableSetOf<String>()
+        private val customDataSources = mutableSetOf<DataSourceConfig>()
+
+        private var incrementalTimeoutMs: Int? = null
 
         fun enableLayersTrace(flags: List<SurfaceFlingerLayersConfig.TraceFlag>? = null): Builder =
             apply {
@@ -114,6 +116,12 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
         fun enableTransactionsTrace(): Builder = apply { isTransactionsTraceEnabled = true }
 
         fun enableTransitionsTrace(): Builder = apply { isTransitionsTraceEnabled = true }
+
+        fun enableCustomTrace(dataSourceConfig: DataSourceConfig): Builder = apply {
+            customDataSources.add(dataSourceConfig)
+        }
+
+        fun setIncrementalTimeout(timeoutMs: Int) = apply { incrementalTimeoutMs = timeoutMs }
 
         fun build(): PerfettoTraceMonitor {
             val configBuilder =
@@ -141,8 +149,16 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
                 configBuilder.addDataSources(createTransitionsDataSourceConfig())
             }
 
-            for (customDataSourceName in customDataSources) {
-                configBuilder.addDataSources(createCustomDataSourceConfig(customDataSourceName))
+            for (customDataSourceConfig in customDataSources) {
+                configBuilder.addDataSources(createCustomDataSourceConfig(customDataSourceConfig))
+            }
+
+            val incrementalTimeoutMs = incrementalTimeoutMs
+            if (incrementalTimeoutMs != null) {
+                configBuilder.setIncrementalStateConfig(
+                    TraceConfig.IncrementalStateConfig.newBuilder()
+                        .setClearPeriodMs(incrementalTimeoutMs)
+                )
             }
 
             return PerfettoTraceMonitor(config = configBuilder.build())
@@ -201,10 +217,10 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
                 .build()
         }
 
-        private fun createCustomDataSourceConfig(dataSourceName: String): TraceConfig.DataSource {
-            return TraceConfig.DataSource.newBuilder()
-                .setConfig(DataSourceConfig.newBuilder().setName(dataSourceName).build())
-                .build()
+        private fun createCustomDataSourceConfig(
+            dataSourceConfig: DataSourceConfig
+        ): TraceConfig.DataSource {
+            return TraceConfig.DataSource.newBuilder().setConfig(dataSourceConfig).build()
         }
     }
 
@@ -218,6 +234,7 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
         private val allPerfettoPids = mutableListOf<Int>()
         private val allPerfettoPidsLock = ReentrantLock()
 
+        @JvmStatic
         fun newBuilder(): Builder {
             return Builder()
         }
