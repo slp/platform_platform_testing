@@ -181,6 +181,13 @@ public interface IAutoDialHelper extends IAppHelper, Scrollable {
     void callMostRecentHistory();
 
     /**
+     * Setup expectations: The Phone Dialer Settings page is open.
+     *
+     * <p>This method returns the phone name recorded under the "Connected Phone" settings field.
+     */
+    String getConnectedPhoneName();
+
+    /**
      * Setup expectations: The app is open and there is an ongoing call.
      *
      * <p>This method is used to get the contact name being called.
@@ -264,10 +271,13 @@ public interface IAutoDialHelper extends IAppHelper, Scrollable {
     void openDialPad();
 
     /**
-     * Setup expectations: The app is open.
+     * Setup expectations: The dialer app page is open.
      *
-     * <p>This method is used to check if phone is paired.
+     * <p>This method opens the dialer settings page (via the Settings icon button on the dialer
+     * page.
      */
+    void openDialerSettings();
+
     boolean isPhonePaired();
     /**
      * Setup expectations: The app is open.

@@ -477,6 +477,33 @@ python_test_host {
 }
 
 python_test_host {
+    name: "BTConnectedPhoneTest",
+    main: "dialer_test_connected_phone_in_settings.py",
+    srcs: ["dialer_test_connected_phone_in_settings.py"],
+    libs: [
+        "mobly",
+        "utilities",
+        "bluetooth_test"
+    ],
+    test_suites: [
+        "catbox",
+    ],
+    test_options: {
+        unit_test: false,
+    },
+    data: [
+        // Package the snippet with the mobly test
+        ":AutomotiveSnippet",
+        ":PhoneSnippet",
+    ],
+    version: {
+        py3: {
+            embedded_launcher: true,
+        },
+    },
+}
+
+python_test_host {
     name: "BTDialerVerifyCallHistoryTest",
     main: "dialer_test_verify_call_history.py",
     srcs: ["dialer_test_verify_call_history.py"],

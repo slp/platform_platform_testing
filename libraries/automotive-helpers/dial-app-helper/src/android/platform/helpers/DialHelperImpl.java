@@ -282,6 +282,23 @@ public class DialHelperImpl extends AbstractStandardAppHelper implements IAutoDi
         getSpectatioUiUtil().clickAndWait(muteButton);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public String getConnectedPhoneName() {
+
+        BySelector connectedPhoneNameSelector =
+                getUiElementFromConfig(AutomotiveConfigConstants.DIALER_CONNECTED_PHONE_NAME);
+
+        // Since this field should be at the top of the Settings page,
+        // we shouldn't need to scroll to find it.
+        UiObject2 phoneName = getSpectatioUiUtil().findUiObject(connectedPhoneNameSelector);
+
+        getSpectatioUiUtil()
+                .validateUiObject(phoneName, AutomotiveConfigConstants.DIALER_CONNECTED_PHONE_NAME);
+
+        return phoneName.getText();
+    }
+
     private UiObject2 getContactFromContactList(String contact) {
         BySelector contactSelector = By.text(contact);
         UiObject2 contactFromList =
@@ -567,6 +584,22 @@ public class DialHelperImpl extends AbstractStandardAppHelper implements IAutoDi
         getSpectatioUiUtil()
                 .validateUiObject(contactMenuButton, AutomotiveConfigConstants.DIALER_DIALPAD);
         getSpectatioUiUtil().clickAndWait(contactMenuButton);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void openDialerSettings() {
+        BySelector dialerSettingsSelector =
+                getUiElementFromConfig(AutomotiveConfigConstants.DIALER_SETTINGS_BUTTON);
+
+        ArrayList<UiObject2> buttonCandidates =
+                new ArrayList<>(getSpectatioUiUtil().findUiObjects(dialerSettingsSelector));
+
+        UiObject2 dialerSettingsButton = buttonCandidates.get(1);
+        getSpectatioUiUtil()
+                .validateUiObject(
+                        dialerSettingsButton, AutomotiveConfigConstants.DIALER_SETTINGS_BUTTON);
+        getSpectatioUiUtil().clickAndWait(dialerSettingsButton);
     }
 
     /** {@inheritDoc} */
