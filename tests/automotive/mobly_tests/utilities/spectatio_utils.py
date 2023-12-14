@@ -145,6 +145,10 @@ class CallUtils:
         logging.info("Pressing home screen button")
         self.device.mbs.pressHomeScreen()
 
+    def press_phone_toggle_on_device(self, device_name):
+        logging.info('Attempting to press the media toggle on device: \'%s\'' % device_name)
+        self.device.mbs.pressPhoneToggleOnDevice(device_name)
+
     def device_displays_connected(self):
         """Assumes the device bluetooth connection settings page is open"""
         logging.info('Checking whether device is connected.')
