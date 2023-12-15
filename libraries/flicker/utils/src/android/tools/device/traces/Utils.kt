@@ -108,7 +108,7 @@ fun getCurrentState(
         }
     val layersTraceData =
         if (dumpTypes.contains(TraceType.SF_DUMP)) {
-            PerfettoTraceMonitor().enableLayersDump().withTracing {}
+            PerfettoTraceMonitor.newBuilder().enableLayersDump().build().withTracing {}
         } else {
             ByteArray(0)
         }

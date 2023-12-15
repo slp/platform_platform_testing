@@ -18,7 +18,6 @@ package android.tools
 
 import android.app.Instrumentation
 import android.tools.common.Scenario
-import android.tools.common.ScenarioBuilder
 import android.tools.common.io.PERFETTO_EXT
 import android.tools.common.io.Reader
 import android.tools.common.io.WINSCOPE_EXT
@@ -27,17 +26,9 @@ import android.tools.device.flicker.datastore.CachedResultWriter
 import android.tools.device.flicker.legacy.AbstractFlickerTestData
 import android.tools.device.flicker.legacy.FlickerBuilder
 import android.tools.device.flicker.legacy.FlickerTestData
-import android.tools.device.traces.TRACE_CONFIG_REQUIRE_CHANGES
-import android.tools.device.traces.io.ResultReader
-import android.tools.device.traces.io.ResultWriter
 import android.tools.device.traces.monitors.ITransitionMonitor
 import android.tools.device.traces.monitors.PerfettoTraceMonitor
-import android.tools.device.traces.monitors.ScreenRecorder
-import android.tools.device.traces.monitors.events.EventLogMonitor
-import android.tools.device.traces.monitors.view.ViewTraceMonitor
-import android.tools.device.traces.monitors.wm.ShellTransitionTraceMonitor
 import android.tools.device.traces.monitors.wm.WindowManagerTraceMonitor
-import android.tools.device.traces.monitors.wm.WmTransitionTraceMonitor
 import android.tools.device.traces.parsers.WindowManagerStateHelper
 import android.tools.device.traces.parsers.perfetto.LayersTraceParser
 import android.tools.device.traces.parsers.perfetto.TraceProcessorSession
@@ -125,7 +116,10 @@ fun createMockedFlicker(
     val uiDevice: UiDevice = UiDevice.getInstance(instrumentation)
     val mockedFlicker = Mockito.mock(AbstractFlickerTestData::class.java)
     val monitors: MutableList<ITransitionMonitor> =
-        mutableListOf(WindowManagerTraceMonitor(), PerfettoTraceMonitor().enableLayersTrace())
+        mutableListOf(
+            WindowManagerTraceMonitor(),
+            PerfettoTraceMonitor.newBuilder().enableLayersTrace().build()
+        )
     extraMonitor?.let { monitors.add(it) }
     Mockito.`when`(mockedFlicker.wmHelper).thenReturn(WindowManagerStateHelper())
     Mockito.`when`(mockedFlicker.device).thenReturn(uiDevice)
@@ -135,37 +129,6 @@ fun createMockedFlicker(
     Mockito.`when`(mockedFlicker.transitionTeardown).thenReturn(teardown)
     Mockito.`when`(mockedFlicker.transitions).thenReturn(transitions)
     return mockedFlicker
-}
-
-fun captureTrace(scenario: Scenario, actions: () -> Unit): ResultReader {
-    if (scenario.isEmpty) {
-        ScenarioBuilder().forClass("UNNAMED_CAPTURE").build()
-    }
-    val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
-    val writer =
-        ResultWriter()
-            .forScenario(scenario)
-            .withOutputDir(createTempDirectory().toFile())
-            .setRunComplete()
-    val monitors =
-        listOf(
-            ScreenRecorder(instrumentation.targetContext),
-            EventLogMonitor(),
-            WmTransitionTraceMonitor(),
-            ShellTransitionTraceMonitor(),
-            WindowManagerTraceMonitor(),
-            ViewTraceMonitor(),
-            PerfettoTraceMonitor().enableLayersTrace().enableTransactionsTrace(),
-        )
-    try {
-        monitors.forEach { it.start() }
-        actions.invoke()
-    } finally {
-        monitors.forEach { it.stop(writer) }
-    }
-    val result = writer.write()
-
-    return ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)
 }
 
 internal fun newTestCachedResultWriter(scenario: Scenario = TEST_SCENARIO) =

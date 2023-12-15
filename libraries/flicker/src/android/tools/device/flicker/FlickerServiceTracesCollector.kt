@@ -41,7 +41,7 @@ class FlickerServiceTracesCollector(
     private val traceMonitors =
         listOf(
             WindowManagerTraceMonitor(),
-            PerfettoTraceMonitor().enableLayersTrace().enableTransactionsTrace(),
+            PerfettoTraceMonitor.newBuilder().enableLayersTrace().enableTransactionsTrace().build(),
             WmTransitionTraceMonitor(),
             ShellTransitionTraceMonitor(),
             EventLogMonitor(),
