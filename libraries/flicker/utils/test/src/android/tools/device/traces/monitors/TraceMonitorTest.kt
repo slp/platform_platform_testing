@@ -83,6 +83,8 @@ abstract class TraceMonitorTest<T : TraceMonitor> {
     @Throws(Exception::class)
     fun captureTrace() {
         traceMonitor.start()
+        device.pressHome()
+        device.pressRecentApps()
         val writer = newTestResultWriter()
         traceMonitor.stop(writer)
         val result = writer.write()
