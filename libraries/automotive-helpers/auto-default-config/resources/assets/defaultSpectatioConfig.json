@@ -1543,8 +1543,7 @@
     },
     "SEARCH_BOX": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "car_ui_toolbar_search_bar",
-      "PACKAGE": "com.android.settings.intelligence"
+      "VALUE": "car_ui_toolbar_search_bar"
     },
     "SEARCH_RESULTS": {
       "TYPE": "MULTIPLE",
@@ -2085,7 +2084,7 @@
           "SCROLL_DIRECTION": "VERTICAL",
           "SCROLL_ELEMENT": {
             "TYPE": "RESOURCE_ID",
-            "VALUE": "car_ui_internal_recycler_view"
+            "VALUE": "car_ui_recycler_view"
           }
         }
       }
@@ -2119,7 +2118,7 @@
           "SCROLL_DIRECTION": "VERTICAL",
           "SCROLL_ELEMENT": {
             "TYPE": "RESOURCE_ID",
-            "VALUE": "car_ui_internal_recycler_view"
+            "VALUE": "car_ui_recycler_view"
           }
         }
       }
@@ -2153,7 +2152,7 @@
           "SCROLL_DIRECTION": "VERTICAL",
           "SCROLL_ELEMENT": {
             "TYPE": "RESOURCE_ID",
-            "VALUE": "car_ui_internal_recycler_view"
+            "VALUE": "car_ui_recycler_view"
           }
         }
       }
@@ -2187,7 +2186,7 @@
           "SCROLL_DIRECTION": "VERTICAL",
           "SCROLL_ELEMENT": {
             "TYPE": "RESOURCE_ID",
-            "VALUE": "car_ui_internal_recycler_view"
+            "VALUE": "car_ui_recycler_view"
           }
         }
       }
@@ -2221,7 +2220,7 @@
           "SCROLL_DIRECTION": "VERTICAL",
           "SCROLL_ELEMENT": {
             "TYPE": "RESOURCE_ID",
-            "VALUE": "car_ui_internal_recycler_view"
+            "VALUE": "car_ui_recycler_view"
           }
         }
       }
@@ -2255,7 +2254,7 @@
           "SCROLL_DIRECTION": "VERTICAL",
           "SCROLL_ELEMENT": {
             "TYPE": "RESOURCE_ID",
-            "VALUE": "car_ui_internal_recycler_view"
+            "VALUE": "car_ui_recycler_view"
           }
         }
       }
@@ -2289,7 +2288,7 @@
           "SCROLL_DIRECTION": "VERTICAL",
           "SCROLL_ELEMENT": {
             "TYPE": "RESOURCE_ID",
-            "VALUE": "car_ui_internal_recycler_view"
+            "VALUE": "car_ui_recycler_view"
           },
           "SCROLL_MARGIN": "8",
           "SCROLL_WAIT_TIME": "3"
@@ -2325,7 +2324,7 @@
           "SCROLL_DIRECTION": "VERTICAL",
           "SCROLL_ELEMENT": {
             "TYPE": "RESOURCE_ID",
-            "VALUE": "car_ui_internal_recycler_view"
+            "VALUE": "car_ui_recycler_view"
           }
         }
       }
@@ -2359,7 +2358,7 @@
           "SCROLL_DIRECTION": "VERTICAL",
           "SCROLL_ELEMENT": {
             "TYPE": "RESOURCE_ID",
-            "VALUE": "car_ui_internal_recycler_view"
+            "VALUE": "car_ui_recycler_view"
           },
           "SCROLL_MARGIN": "8",
           "SCROLL_WAIT_TIME": "3"
@@ -2395,7 +2394,7 @@
           "SCROLL_DIRECTION": "VERTICAL",
           "SCROLL_ELEMENT": {
             "TYPE": "RESOURCE_ID",
-            "VALUE": "car_ui_internal_recycler_view"
+            "VALUE": "car_ui_recycler_view"
           }
         }
       },
@@ -2448,7 +2447,7 @@
           "SCROLL_DIRECTION": "VERTICAL",
           "SCROLL_ELEMENT": {
             "TYPE": "RESOURCE_ID",
-            "VALUE": "car_ui_internal_recycler_view"
+            "VALUE": "car_ui_recycler_view"
           }
         }
       }
