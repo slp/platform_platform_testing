@@ -21,8 +21,10 @@ import android.app.Instrumentation
 import android.app.WindowConfiguration
 import android.os.SystemClock
 import android.os.Trace
+import android.tools.common.CrossPlatform
 import android.tools.common.Logger
 import android.tools.common.Rotation
+import android.tools.common.TimestampFactory
 import android.tools.common.datatypes.Region
 import android.tools.common.traces.Condition
 import android.tools.common.traces.ConditionsFactory
@@ -43,7 +45,9 @@ import android.tools.common.traces.wm.IConfigurationContainer
 import android.tools.common.traces.wm.WindowManagerState
 import android.tools.common.traces.wm.WindowManagerTrace
 import android.tools.common.traces.wm.WindowState
+import android.tools.device.AndroidLogger
 import android.tools.device.traces.LOG_TAG
+import android.tools.device.traces.formatRealTimestamp
 import android.tools.device.traces.getCurrentStateDump
 import android.view.Display
 import androidx.test.platform.app.InstrumentationRegistry
@@ -64,6 +68,11 @@ constructor(
     /** Interval between wait for state dumps during wait conditions */
     private val retryIntervalMs: Long = DEFAULT_RETRY_INTERVAL_MS
 ) {
+    init {
+        CrossPlatform.setLogger(AndroidLogger())
+            .setTimestampFactory(TimestampFactory { formatRealTimestamp(it) })
+    }
+
     private var internalState: DeviceStateDump? = null
 
     /** Queries the supplier for a new device state */
