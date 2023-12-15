@@ -59,6 +59,9 @@ public interface IAutoDialHelper extends IAppHelper, Scrollable {
     /** Assumes contact page is open. Press the mobile call button on a contact page. */
     void pressMobileCallOnContact();
 
+    /** Assumes Dialer settings page is open. Press the active call toggle. */
+    void pressActiveCallToggle();
+
     /**
      * Setup expectations: The app is open and there is an ongoing call.
      *
@@ -302,6 +305,13 @@ public interface IAutoDialHelper extends IAppHelper, Scrollable {
     boolean isOngoingCallDisplayedOnHome();
 
     /**
+     * Setup expectations: None
+     *
+     * @return Whether the screen currently shows an ongoing call (in full-screen mode).
+     */
+    boolean isOngoingCallInFullScreen();
+
+    /**
      * Setup expectations: The home screen is open
      *
      * <p>This method is used for opening phone app from homescreen
@@ -321,6 +331,13 @@ public interface IAutoDialHelper extends IAppHelper, Scrollable {
      * @return - The number of call histrory entries currently on screen.
      */
     int getNumberOfCallHistoryEntries();
+
+    /**
+     * Setup expectations: the Dialer Settings page is open.
+     *
+     * <p>Returns true if the Active Call feature is enabled, false otherwise.
+     */
+    boolean isActiveCallEnabled();
 
     /**
      * Setup expectations: bluetooth is off
