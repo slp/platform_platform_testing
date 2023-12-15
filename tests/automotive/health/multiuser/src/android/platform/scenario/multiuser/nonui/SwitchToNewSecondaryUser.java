@@ -24,6 +24,7 @@ import android.platform.test.scenario.annotation.Scenario;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -98,6 +99,7 @@ public class SwitchToNewSecondaryUser {
             mTargetUserId = mMultiUserHelper
                 .createUser(MultiUserConstants.SECONDARY_USER_NAME, false);
         }
+        Assume.assumeTrue("Target user id must be greater than 10", mTargetUserId > 10);
         mMultiUserHelper.switchToUserId(mTargetUserId);
 
         // Drop elevated permissions
