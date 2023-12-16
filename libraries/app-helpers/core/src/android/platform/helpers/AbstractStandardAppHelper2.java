@@ -19,6 +19,8 @@ package android.platform.helpers;
 import static android.content.pm.PackageManager.FLAG_PERMISSION_USER_SET;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
+import static com.android.systemui.Flags.keyguardBottomAreaRefactor;
+
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.ActivityManager;
@@ -101,6 +103,12 @@ public abstract class AbstractStandardAppHelper2 implements IAppHelper {
     // Spectatio Utils
     private SpectatioConfigUtil mSpectatioConfigUtil;
     private SpectatioUiUtil mSpectatioUiUtil;
+
+    private static final BySelector KEYGUARD_BOTTOM_AREA_VIEW =
+            By.res("com.android.systemui", "keyguard_bottom_area");
+
+    private static final BySelector KEYGUARD_ROOT_VIEW =
+            By.res("com.android.systemui", "keyguard_root_view");
 
     public AbstractStandardAppHelper2(Instrumentation instr) {
         mInstrumentation = instr;
@@ -224,9 +232,17 @@ public abstract class AbstractStandardAppHelper2 implements IAppHelper {
         } finally {
             Trace.endSection();
         }
+
+        BySelector screenLock;
+        if (keyguardBottomAreaRefactor()) {
+            screenLock = KEYGUARD_ROOT_VIEW;
+        } else {
+            screenLock = KEYGUARD_BOTTOM_AREA_VIEW;
+        }
+
         // Unlock the screen if necessary.
         Trace.beginSection("unlock screen");
-        if (mDevice.hasObject(By.res("com.android.systemui", "keyguard_bottom_area"))) {
+        if (mDevice.hasObject(screenLock)) {
             mDevice.pressMenu();
             mDevice.waitForIdle();
         }

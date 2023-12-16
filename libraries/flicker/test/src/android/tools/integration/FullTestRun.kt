@@ -37,7 +37,7 @@ import android.tools.common.flicker.subject.layers.LayersTraceSubject
 import android.tools.common.flicker.subject.region.RegionSubject
 import android.tools.common.flicker.subject.wm.WindowManagerTraceSubject
 import android.tools.common.io.Reader
-import android.tools.device.apphelpers.BrowserAppHelper
+import android.tools.device.apphelpers.MessagingAppHelper
 import android.tools.device.flicker.junit.FlickerServiceJUnit4ClassRunner
 import android.tools.device.traces.parsers.WindowManagerStateHelper
 import androidx.test.platform.app.InstrumentationRegistry
@@ -51,7 +51,7 @@ import org.junit.runner.RunWith
 class FullTestRun {
     private val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
     private val wmHelper = WindowManagerStateHelper(instrumentation)
-    private val testApp = BrowserAppHelper(instrumentation)
+    private val testApp = MessagingAppHelper(instrumentation)
 
     @Before
     fun setup() {

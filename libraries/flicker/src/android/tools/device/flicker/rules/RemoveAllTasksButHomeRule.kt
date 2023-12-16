@@ -20,15 +20,21 @@ import android.app.ActivityTaskManager
 import android.app.WindowConfiguration
 import android.tools.common.FLICKER_TAG
 import android.tools.common.Logger
+import android.tools.device.traces.parsers.WindowManagerStateHelper
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
 /** Test rule to ensure no tasks as running before executing the test */
 class RemoveAllTasksButHomeRule() : TestWatcher() {
     override fun starting(description: Description?) {
-        Logger.withTracing("RemoveAllTasksButHomeRule:finished") {
+        Logger.withTracing("$RemoveAllTasksButHomeRule:starting") {
             Logger.v(FLICKER_TAG, "Removing all tasks (except home)")
             removeAllTasksButHome()
+            WindowManagerStateHelper()
+                .StateSyncBuilder()
+                .withAppTransitionIdle()
+                .withHomeActivityVisible()
+                .waitForAndVerify()
         }
     }
 

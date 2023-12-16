@@ -17,13 +17,12 @@
 package android.tools.device.traces.monitors
 
 import android.app.Instrumentation
+import android.tools.common.Tag
 import android.tools.common.io.RunStatus
 import android.tools.common.io.TraceType
-import android.tools.common.traces.DeviceTraceDump
 import android.tools.device.traces.TRACE_CONFIG_REQUIRE_CHANGES
 import android.tools.device.traces.deleteIfExists
 import android.tools.device.traces.io.ResultReader
-import android.tools.device.traces.parsers.DeviceDumpParser
 import android.tools.utils.CleanFlickerEnvironmentRule
 import android.tools.utils.newTestResultWriter
 import android.tools.utils.outputFileName
@@ -40,6 +39,7 @@ abstract class TraceMonitorTest<T : TraceMonitor> {
     abstract fun assertTrace(traceData: ByteArray)
     abstract val traceType: TraceType
 
+    protected open val tag = Tag.ALL
     protected val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
     protected val device: UiDevice = UiDevice.getInstance(instrumentation)
     private val traceMonitor by lazy { getMonitor() }
@@ -83,53 +83,32 @@ abstract class TraceMonitorTest<T : TraceMonitor> {
     @Throws(Exception::class)
     fun captureTrace() {
         traceMonitor.start()
+        device.pressHome()
+        device.pressRecentApps()
         val writer = newTestResultWriter()
         traceMonitor.stop(writer)
         val result = writer.write()
         val reader = ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)
         Truth.assertWithMessage("Trace file exists ${traceMonitor.traceType}")
-            .that(reader.hasTraceFile(traceMonitor.traceType))
+            .that(reader.hasTraceFile(traceMonitor.traceType, tag))
             .isTrue()
 
         val trace =
-            reader.readBytes(traceMonitor.traceType)
+            reader.readBytes(traceMonitor.traceType, tag)
                 ?: error("Missing trace file ${traceMonitor.traceType}")
-        Truth.assertWithMessage("Trace file has data").that(trace.size).isGreaterThan(0)
+        Truth.assertWithMessage("Trace file size").that(trace.size).isGreaterThan(0)
         assertTrace(trace)
-    }
-
-    private fun validateTrace(dump: DeviceTraceDump) {
-        Truth.assertWithMessage("Could not obtain SF trace")
-            .that(dump.layersTrace?.entries ?: emptyArray())
-            .asList()
-            .isNotEmpty()
-        Truth.assertWithMessage("Could not obtain WM trace")
-            .that(dump.wmTrace?.entries ?: emptyArray())
-            .asList()
-            .isNotEmpty()
     }
 
     @Test
     fun withTracing() {
         val trace =
-            android.tools.device.traces.monitors.withTracing {
+            traceMonitor.withTracing(tag) {
                 device.pressHome()
                 device.pressRecentApps()
             }
 
-        this.validateTrace(trace)
-    }
-
-    @Test
-    fun recordTraces() {
-        val trace =
-            android.tools.device.traces.monitors.recordTraces {
-                device.pressHome()
-                device.pressRecentApps()
-            }
-
-        val dump = DeviceDumpParser.fromTrace(trace.first, trace.second, clearCache = true)
-        this.validateTrace(dump)
+        assertTrace(trace)
     }
 
     companion object {

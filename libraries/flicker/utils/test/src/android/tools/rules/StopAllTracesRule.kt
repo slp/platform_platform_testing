@@ -18,6 +18,7 @@ package android.tools.rules
 
 import android.tools.device.traces.monitors.PerfettoTraceMonitor
 import android.tools.device.traces.monitors.TraceMonitor
+import android.tools.device.traces.monitors.view.ViewTraceMonitor
 import android.tools.device.traces.monitors.wm.ShellTransitionTraceMonitor
 import android.tools.device.traces.monitors.wm.WindowManagerTraceMonitor
 import android.tools.device.traces.monitors.wm.WmTransitionTraceMonitor
@@ -34,6 +35,7 @@ class StopAllTracesRule : TestRule {
                 ShellTransitionTraceMonitor().stopIfEnabled()
                 WindowManagerTraceMonitor().stopIfEnabled()
                 WmTransitionTraceMonitor().stopIfEnabled()
+                ViewTraceMonitor().stopIfEnabled()
 
                 base?.evaluate()
             }

@@ -21,6 +21,8 @@ import kotlin.js.JsName
 
 @JsExport
 abstract class DataType {
+    private val hashCode by lazy { doPrintValue().hashCode() }
+
     @JsName("isEmpty") abstract val isEmpty: Boolean
 
     val isNotEmpty
@@ -32,13 +34,13 @@ abstract class DataType {
 
     final override fun toString() = prettyPrint()
 
-    final override fun hashCode() = doPrintValue().hashCode()
+    final override fun hashCode() = hashCode
 
     final override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is DataType) return false
         if (this::class != other::class) return false
 
-        return doPrintValue() == other.doPrintValue()
+        return hashCode == other.hashCode
     }
 }

@@ -24,8 +24,8 @@ import android.tools.common.flicker.config.ScenarioId
 import android.tools.common.flicker.extractors.ScenarioExtractor
 import android.tools.common.flicker.extractors.TraceSlice
 import android.tools.getTraceReaderFromScenario
-import org.junit.ClassRule
 import org.junit.FixMethodOrder
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runners.MethodSorters
 import org.mockito.Mockito
@@ -33,6 +33,7 @@ import org.mockito.Mockito
 /** Contains [FlickerService] tests. To run this test: `atest FlickerLibTest:FlickerServiceTest` */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class FlickerServiceTest {
+    @get:Rule val cleanUp = CleanFlickerEnvironmentRuleWithDataStore()
 
     @Test
     fun generatesAssertionsFromExtractedScenarios() {
@@ -80,9 +81,5 @@ class FlickerServiceTest {
         service.detectScenarios(reader)
 
         Mockito.verify(mockScenarioExtractor).extract(reader)
-    }
-
-    companion object {
-        @ClassRule @JvmField val ENV_CLEANUP = CleanFlickerEnvironmentRuleWithDataStore()
     }
 }

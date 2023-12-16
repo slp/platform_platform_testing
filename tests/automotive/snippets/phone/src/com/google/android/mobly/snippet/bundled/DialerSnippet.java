@@ -40,6 +40,12 @@ public class DialerSnippet implements Snippet {
         mDialerHelper.get().open();
     }
 
+    /** Opens the dial pad from the dialer main screen. */
+    @Rpc(description = "Open Dial Pad.")
+    public void openDialPad() {
+        mDialerHelper.get().openDialPad();
+    }
+
     @Rpc(description = "Open Dial Pad and dial in a number using keypad.")
     public void dialANumber(String phoneNumber) {
         mDialerHelper.get().dialANumber(phoneNumber);
@@ -65,9 +71,20 @@ public class DialerSnippet implements Snippet {
         mDialerHelper.get().openCallHistory();
     }
 
+    /** Open Dialer settings from the Dialer app */
+    @Rpc(description = "Open Dialer Settings from the Dialer app.")
+    public void openDialerSettings() {
+        mDialerHelper.get().openDialerSettings();
+    }
+
     @Rpc(description = "Call Contact From Contact List.")
     public void callContact(String contactName) {
         mDialerHelper.get().callContact(contactName);
+    }
+
+    @Rpc(description = "Return whether the \"Connected Phone\" field holds the given name.")
+    public String getConnectedPhoneName() {
+        return mDialerHelper.get().getConnectedPhoneName();
     }
 
     @Rpc(description = "Delete the dialed number on Dial Pad.")
@@ -75,14 +92,14 @@ public class DialerSnippet implements Snippet {
         mDialerHelper.get().deleteDialedNumber();
     }
 
-    @Rpc(description = "Get the dialed number when the call is in progress.")
-    public String getDialedNumber() {
-        return mDialerHelper.get().getDialedNumber();
+    @Rpc(description = "Get the dialed number while the call is in progress.")
+    public String getDialingNumber() {
+        return mDialerHelper.get().getDialingNumber();
     }
 
     @Rpc(description = "Get the entered on dial pad.")
-    public String getDialInNumber() {
-        return mDialerHelper.get().getDialInNumber();
+    public String getNumberInDialPad() {
+        return mDialerHelper.get().getNumberInDialPad();
     }
 
     @Rpc(description = "Get the home address from an open contacts page.")
@@ -100,11 +117,27 @@ public class DialerSnippet implements Snippet {
         return mDialerHelper.get().getRecentCallHistory();
     }
 
+    /** RPC to get the number of call history entries */
+    @Rpc(description = "Get the number of entries in the display call history.")
+    public int getNumCallHistoryEntries() {
+        return mDialerHelper.get().getNumberOfCallHistoryEntries();
+    }
+
     @Rpc(
             description =
                     "Call contact from list open in foreground e.g. Favorites, Recents, Contacts.")
     public void dialFromList(String contact) {
         mDialerHelper.get().dialFromList(contact);
+    }
+
+    @Rpc(description = "Returns whether a call is currently ongoing and in full-screen mode.")
+    public boolean isOngoingCallInFullScreen() {
+        return mDialerHelper.get().isOngoingCallInFullScreen();
+    }
+
+    @Rpc(description = "Return whether the Active Call toggle is chechked")
+    public boolean isActiveCallEnabled() {
+        return mDialerHelper.get().isActiveCallEnabled();
     }
 
     @Rpc(description = "Dial a number in call dial pad when call is in progress.")
@@ -167,7 +200,7 @@ public class DialerSnippet implements Snippet {
         mDialerHelper.get().searchContactsByNumber(number);
     }
 
-    @Rpc(description = "Get first search result.")
+    @Rpc(description = "Get first contact search result.")
     public String getFirstSearchResult() {
         return mDialerHelper.get().getFirstSearchResult();
     }
@@ -212,9 +245,28 @@ public class DialerSnippet implements Snippet {
         mDialerHelper.get().openContacts();
     }
 
+    /** Press 'Device' prompt which comes up when trying to transfer files to a device. */
     @Rpc(description = "Press 'Device' on a prompt, if present.")
     public void pressDevice() {
         mDialerHelper.get().pressDeviceOnPrompt();
+    }
+
+    /** Press Active Call toggle */
+    @Rpc(description = "Press Active Call toggle")
+    public void pressActiveCallToggle() {
+        mDialerHelper.get().pressActiveCallToggle();
+    }
+
+    /** Rpc to press the Mobile call action button on a contact page */
+    @Rpc(description = "Press the Mobile call button on a contact page")
+    public void pressMobileCallOnContact() {
+        mDialerHelper.get().pressMobileCallOnContact();
+    }
+
+    /** Rpc to press a search result with a given name */
+    @Rpc(description = "Press search result with a given name")
+    public void pressContactResult(String expectedName) {
+        mDialerHelper.get().pressContactResult(expectedName);
     }
 
     @Rpc(description = "Get list of visible contacts")

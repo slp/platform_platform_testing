@@ -34,6 +34,7 @@ public class AutomotiveConfigConstants {
     public static final String DIAL_IN_NUMBER = "DIAL_IN_NUMBER";
     public static final String DIALED_CONTACT_TITLE = "DIALED_CONTACT_TITLE";
     public static final String SWITCH_TO_DIAL_PAD = "SWITCH_TO_DIAL_PAD";
+    public static final String DIAL_PAD_BUTTON = "DIAL_PAD_BUTTON";
     public static final String MUTE_CALL = "MUTE_CALL";
     public static final String CONTACT_LIST_SCROLL_ACTION = "CONTACT_LIST_SCROLL_ACTION";
     public static final String CONTACT_LIST_SCROLL_FORWARD = "CONTACT_LIST_SCROLL_FORWARD";
@@ -44,7 +45,10 @@ public class AutomotiveConfigConstants {
     public static final String VOICE_CHANNEL_PHONE = "VOICE_CHANNEL_PHONE";
     public static final String VOICE_CHANNEL_CAR = "VOICE_CHANNEL_CAR";
     public static final String DIALED_CONTACT_TYPE = "DIALED_CONTACT_TYPE";
+    public static final String DIALING_NUMBER = "DIALING_NUMBER";
     public static final String CONTACT_SEARCH_BAR = "CONTACT_SEARCH_BAR";
+    public static final String CONTACT_SEARCH_RESULT = "CONTACT_SEARCH_RESULT";
+    public static final String CONTACT_SEARCH_RESULT_NAME = "CONTACT_SEARCH_RESULT_NAME";
     public static final String SEARCH_RESULT = "SEARCH_RESULT";
     public static final String SEARCH_BACK_BUTTON = "SEARCH_BACK_BUTTON";
     public static final String CONTACT_SETTING_SCROLL_ACTION = "CONTACT_SETTING_SCROLL_ACTION";
@@ -67,8 +71,12 @@ public class AutomotiveConfigConstants {
     public static final String CONTACT_DETAIL = "CONTACT_DETAIL";
     public static final String CALL_HISTORY_INFO = "CALL_HISTORY_INFO";
     public static final String SEARCH_CONTACT = "SEARCH_CONTACT";
+
+    public static final String CALL_MOBILE_BUTTON = "CALL_MOBILE_BUTTON";
     public static final String CONTACT_SETTINGS = "CONTACT_SETTINGS";
     public static final String DIAL_PAD_FRAGMENT = "DIAL_PAD_FRAGMENT";
+
+    public static final String DIALER_CONNECTED_PHONE_NAME = "DIALER_CONNECTED_PHONE_NAME";
     public static final String DIGIT_ZERO = "0";
     public static final String DIGIT_ONE = "1";
     public static final String DIGIT_TWO = "2";
@@ -319,6 +327,7 @@ public class AutomotiveConfigConstants {
     public static final String MEDIA_APP_DROP_DOWN_MENU = "MEDIA_APP_DROP_DOWN_MENU";
     public static final String MEDIA_APP_NAVIGATION_ICON = "MEDIA_APP_NAVIGATION_ICON";
     public static final String MEDIA_APP_NO_LOGIN_MSG = "MEDIA_APP_NO_LOGIN_MSG";
+    public static final String MOW_PLAYING_LABEL = "MOW_PLAYING_LABEL";
     // Test Media App
     public static final String TEST_MEDIA_ACCOUNT_TYPE = "TEST_MEDIA_ACCOUNT_TYPE";
     public static final String TEST_MEDIA_ACCOUNT_TYPE_PAID = "TEST_MEDIA_ACCOUNT_TYPE_PAID";
@@ -336,6 +345,7 @@ public class AutomotiveConfigConstants {
             "MEDIA_APP_SCROLL_BACKWARD_BUTTON";
     public static final String MEDIA_APP_SCROLL_ELEMENT = "MEDIA_APP_SCROLL_ELEMENT";
     public static final String BLUETOOTH_DISCONNECTED_LABEL = "BLUETOOTH_DISCONNECTED_LABEL";
+    public static final String MEDIA_PLAYLIST_ICON = "MEDIA_PLAYLIST_ICON";
 
     // SETTINGS CONSTANTS
     public static final String OPEN_SETTINGS_COMMAND = "OPEN_SETTINGS_COMMAND";
@@ -381,6 +391,12 @@ public class AutomotiveConfigConstants {
     public static final String LOCATION_SETTINGS_RECENTLY_ACCESSED_MAPS =
             "LOCATION_SETTINGS_RECENTLY_ACCESSED_MAPS";
     public static final String LOCATION_SETTINGS_VIEW_ALL = "LOCATION_SETTINGS_VIEW_ALL";
+    public static final String START_ANDROID_AUTO_POPUP = "START_ANDROID_AUTO_POPUP";
+    public static final String NOT_NOW_START_ANDROID_AUTO_POPUP_BUTTON =
+            "NOT_NOW_START_ANDROID_AUTO_POPUP_BUTTON";
+    public static final String SKIP_ASSISTANT_IMPROVEMENT_PAGE_BUTTON =
+            "SKIP_ASSISTANT_IMPROVEMENT_PAGE_BUTTON";
+    public static final String ASSISTANT_IMPROVEMENT_POPUP = "ASSISTANT_IMPROVEMENT_POPUP";
 
     // App Info Settings Constants
     public static final String APP_INFO_SETTINGS_APP_NAME_ELEMENT =
@@ -633,4 +649,14 @@ public class AutomotiveConfigConstants {
     public static final String DIALER_CONTACTS = "DIALER_CONTACTS";
     public static final String DIALER_FAVORITES = "DIALER_FAVORITES";
     public static final String DIALER_DIALPAD = "DIALER_DIALPAD";
+    public static final String DIALER_ACTIVE_CALL_TOGGLE = "DIALER_ACTIVE_CALL_TOGGLE";
+    public static final String DIALER_ONGOING_CALL_CONTROL_BAR = "DIALER_ONGOING_CALL_CONTROL_BAR";
+    public static final String DIALER_SETTINGS_BUTTON = "DIALER_SETTINGS_BUTTON";
+
+    // Phone Device Identifiers
+    public static final String MOBILE_CALL_BUTTON = "MOBILE_CALL_BUTTON";
+    public static final String MOBILE_DIAL_PAD_ICON = "MOBILE_DIALPAD_ICON";
+    public static final String MOBILE_PHONE_ICON = "MOBILE_PHONE_ICON";
+    public static final String PHONE_DEVICE_PACKAGE = "PHONE_DEVICE_PACAKAGE";
+    public static final String MOBILE_DIALPAD_INPUT = "MOBILE_DIALPAD_INPUT";
 }

@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2023 The Android Open Source Project
  *
@@ -33,14 +32,9 @@ object SysuiRestarter {
 
     private val sysuiProcessUtils = ProcessUtil(UI_PACKAGE_NAME_SYSUI)
 
+    // https://hsv.googleplex.com/5130837462876160?node=117
     private val PAGE_TITLE_SELECTOR_PATTERN =
-        Pattern.compile(
-            String.format(
-                "com.android.systemui:id/(%s|%s)",
-                "lockscreen_clock_view",
-                "lockscreen_clock_view_large"
-            )
-        )
+        Pattern.compile(String.format("com.android.systemui:id/%s", "keyguard_clock_container"))
     private val PAGE_TITLE_SELECTOR = By.res(PAGE_TITLE_SELECTOR_PATTERN)
 
     /**

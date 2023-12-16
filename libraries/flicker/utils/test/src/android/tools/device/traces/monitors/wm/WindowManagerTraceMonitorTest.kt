@@ -20,7 +20,6 @@ import android.tools.common.io.TraceType
 import android.tools.device.traces.TRACE_CONFIG_REQUIRE_CHANGES
 import android.tools.device.traces.io.ResultReader
 import android.tools.device.traces.monitors.TraceMonitorTest
-import android.tools.device.traces.monitors.withWMTracing
 import android.tools.utils.CleanFlickerEnvironmentRule
 import android.tools.utils.newTestResultWriter
 import com.android.server.wm.nano.WindowManagerTraceFileProto
@@ -44,16 +43,6 @@ class WindowManagerTraceMonitorTest : TraceMonitorTest<WindowManagerTraceMonitor
                     32 or
                     WindowManagerTraceFileProto.MAGIC_NUMBER_L.toLong()
             )
-    }
-
-    @Test
-    fun withWMTracingTest() {
-        val trace = withWMTracing {
-            device.pressHome()
-            device.pressRecentApps()
-        }
-
-        Truth.assertWithMessage("Could not obtain WM trace").that(trace.entries).isNotEmpty()
     }
 
     @Test

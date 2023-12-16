@@ -16,12 +16,12 @@
 
 package android.tools.device.traces.monitors.events
 
-import android.tools.common.FLICKER_TAG
 import android.tools.common.Logger
 import android.tools.common.Timestamp
 import android.tools.common.io.TraceType
 import android.tools.common.traces.events.EventLog
 import android.tools.device.traces.executeShellCommand
+import android.tools.device.traces.monitors.LOG_TAG
 import android.tools.device.traces.monitors.TraceMonitor
 import android.tools.device.traces.now
 import java.io.File
@@ -54,7 +54,7 @@ open class EventLogMonitor : TraceMonitor() {
             val command =
                 "logcat -b events -v threadtime -v printable -v uid -v nsec " +
                     "-v epoch -t $sinceTime >> $outputFile"
-            Logger.d(FLICKER_TAG, "Running '$command'")
+            Logger.d(LOG_TAG, "Running '$command'")
             val eventLogString = executeShellCommand(command)
             it.write(eventLogString)
         }

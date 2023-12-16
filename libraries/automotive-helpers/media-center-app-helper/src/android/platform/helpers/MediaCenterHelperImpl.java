@@ -541,6 +541,13 @@ public class MediaCenterHelperImpl extends AbstractStandardAppHelper implements 
                 getUiElementFromConfig(AutomotiveConfigConstants.BLUETOOTH_DISCONNECTED_LABEL);
         return getSpectatioUiUtil().hasUiElement(isBluetoothAudioDisconnectedLabel);
     }
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConnectToBluetoothLabelVisible() {
+        BySelector connectToBluetoothLabel =
+                getUiElementFromConfig(AutomotiveConfigConstants.CONNECT_TO_BLUETOOTH);
+        return getSpectatioUiUtil().hasUiElement(connectToBluetoothLabel);
+    }
 
     private UiObject2 scrollAndFindApp(BySelector selector) {
 
@@ -686,5 +693,41 @@ public class MediaCenterHelperImpl extends AbstractStandardAppHelper implements 
         getSpectatioUiUtil()
                 .validateUiObject(objectSongMaxPlayingTime, AutomotiveConfigConstants.MAX_SONG_TIME);
         return objectSongMaxPlayingTime.getText().trim();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isNowPlayingLabelVisible() {
+        BySelector isNowPlayingLabel =
+                getUiElementFromConfig(AutomotiveConfigConstants.MOW_PLAYING_LABEL);
+        return getSpectatioUiUtil().hasUiElement(isNowPlayingLabel);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isPlaylistIconVisible() {
+        BySelector playlistIcon =
+                getUiElementFromConfig(AutomotiveConfigConstants.MEDIA_PLAYLIST_ICON);
+        return getSpectatioUiUtil().hasUiElement(playlistIcon);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clickOnPlaylistIcon() {
+        BySelector playlistIcon =
+                getUiElementFromConfig(AutomotiveConfigConstants.MEDIA_PLAYLIST_ICON);
+        UiObject2 playlistIconObject =
+                getSpectatioUiUtil().findUiObject(playlistIcon);
+        getSpectatioUiUtil()
+                .validateUiObject(
+                        playlistIconObject,
+                        AutomotiveConfigConstants.MEDIA_PLAYLIST_ICON);
+        getSpectatioUiUtil().clickAndWait(playlistIconObject);
     }
 }

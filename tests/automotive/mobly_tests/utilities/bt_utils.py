@@ -34,6 +34,32 @@ class BTUtils:
         self.target = target
         self.target_adrr = None
 
+    # Skip Android Auto pop-up
+    # TODO @vitalidim remove this function after b/314385914 resolved
+    def handle_android_auto_pop_up(self):
+        logging.info('Checking for Android Auto pop-up on HU')
+        if self.discoverer.mbs.isStartAndroidAutoPopUpPresent():
+            logging.info('Android Auto pop-up is present on HU')
+            logging.info('Click on <NOT NOW> button on HU')
+            self.discoverer.mbs.skipStartAndroidAutoPopUp()
+            asserts.assert_false(self.discoverer.mbs.isStartAndroidAutoPopUpPresent(),
+                                 'Android Auto pop-up should be closed')
+        else:
+            logging.info('Android Auto pop-up is not present on HU')
+
+    # Skip Assistant pop-up
+    # TODO @vitalidim remove this function after b/314386661 resolved
+    def handle_assistant_pop_up(self):
+        logging.info('Checking for Assistant pop-up on HU')
+        if self.discoverer.mbs.isAssistantImprovementPopUpPresent():
+            logging.info('Assistant pop-up is present on HU')
+            logging.info('Click on <CONTINUE> button on HU')
+            self.discoverer.mbs.skipImprovementCallingAndTextingPopUp()
+            asserts.assert_false(self.discoverer.mbs.isAssistantImprovementPopUpPresent(),
+                                 'Assistant pop-up should be closed')
+        else:
+            logging.info('Assistant pop-up is not present on HU')
+
     def get_info_from_devices(self, discovered_devices):
         discovered_names = [device['Name'] for device in discovered_devices]
         discovered_addresses = [device['Address'] for device in discovered_devices]
@@ -69,7 +95,7 @@ class BTUtils:
         # Discovery of target device is tried 5 times.
         discovered_devices = self.discoverer.mbs.btDiscoverAndGetResults()
         self.discoverer.mbs.btPairDevice(target_address)
-        logging.info('Allowing time for contacts to sync.')
+        logging.info('Allowing time for contacts to sync')
         time.sleep(constants.SYNC_WAIT_TIME)
         self.press_allow_on_phone()
         paired_devices = self.discoverer.mbs.btGetPairedDevices()
@@ -78,22 +104,36 @@ class BTUtils:
             target_address in paired_addresses,
             'Failed to pair the target device %s over Bluetooth.' %
             target_address)
+        time.sleep(constants.DEFAULT_WAIT_TIME_FIVE_SECS)
+        self.handle_android_auto_pop_up()
+        self.handle_assistant_pop_up()
 
     def unpair(self):
-        # unpair target from discoverer
+        # unpair Discoverer device from Target
+        logging.info("Unpair Discoverer device from Target")
         discoverer_address = self.discoverer.mbs.btGetAddress()
+        logging.info(f"Discoverer device address: {discoverer_address}")
         target_paired_devices = self.target.mbs.btGetPairedDevices()
         _, target_paired_addresses = self.get_info_from_devices(target_paired_devices)
+        logging.info(f"Paired devices to Target: {target_paired_devices}")
         if discoverer_address in target_paired_addresses:
-            logging.info(f"forget {discoverer_address}")
+            logging.info(f"Forget Discoverer device <{discoverer_address}> on Target device")
             self.target.mbs.btUnpairDevice(discoverer_address)
-        # unpair discoverer from target
+        else:
+            logging.info("Discoverer device not founded on Target device")
+        # unpair Target device from Discoverer
+        logging.info("Unpair Target device from Discoverer")
         target_address = self.target.mbs.btGetAddress()
+        logging.info(f"Target device address: {target_address}")
         discoverer_paired_devices = self.discoverer.mbs.btGetPairedDevices()
-        _, discoverer_paired_addresses = self.get_info_from_devices(discoverer_paired_devices)
+        _, discoverer_paired_addresses = self.get_info_from_devices(
+            discoverer_paired_devices)
+        logging.info(f"Paired devices to Discoverer: {discoverer_paired_devices}")
         if target_address in discoverer_paired_addresses:
-            logging.info(f"forget {target_address}")
+            logging.info(f"Forget Target device <{target_address}> on Discoverer device")
             self.discoverer.mbs.btUnpairDevice(target_address)
+        else:
+            logging.info("Target device not founded on Discoverer device")
 
     def press_allow_on_phone(self):
         """ Repeatedly presses "Allow" on prompts until no more prompts appear"""

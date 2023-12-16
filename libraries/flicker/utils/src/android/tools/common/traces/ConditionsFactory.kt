@@ -227,6 +227,12 @@ object ConditionsFactory {
             it.layerState.getLayerById(layerId)?.isVisible ?: false
         }
 
+    /** Condition to check if the given layer is opaque */
+    fun isLayerOpaque(componentMatcher: IComponentMatcher): Condition<DeviceStateDump> =
+        Condition("isLayerOpaque[${componentMatcher.toLayerIdentifier()}]") {
+            it.layerState.getLayerWithBuffer(componentMatcher)?.color?.isOpaque ?: false
+        }
+
     fun isLayerColorAlphaOne(componentMatcher: IComponentMatcher): Condition<DeviceStateDump> =
         Condition("isLayerColorAlphaOne[${componentMatcher.toLayerIdentifier()}]") {
             it.layerState.visibleLayers
@@ -311,6 +317,7 @@ object ConditionsFactory {
             listOf(
                 isImeOnDisplay(displayId),
                 isLayerVisible(ComponentNameMatcher.IME),
+                isLayerOpaque(ComponentNameMatcher.IME),
                 isImeSurfaceShown(),
                 isWindowSurfaceShown(ComponentNameMatcher.IME)
             )

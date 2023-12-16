@@ -47,7 +47,7 @@ class SearchShowingFoundContact(bluetooth_base_test.BluetoothBaseTest):
        self.call_utils.open_phone_app()
        self.call_utils.dial_a_number(first_digit_of_search_contact_number)
        self.call_utils.wait_with_log(3)
-       self.call_utils.verify_search_result_contain_target_search(
+       self.call_utils.verify_search_results_contain_target_search(
            expected_contact_full_name
        )
 

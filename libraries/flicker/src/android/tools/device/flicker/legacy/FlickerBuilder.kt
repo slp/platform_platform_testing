@@ -27,6 +27,7 @@ import android.tools.device.traces.monitors.NoTraceMonitor
 import android.tools.device.traces.monitors.PerfettoTraceMonitor
 import android.tools.device.traces.monitors.ScreenRecorder
 import android.tools.device.traces.monitors.events.EventLogMonitor
+import android.tools.device.traces.monitors.view.ViewTraceMonitor
 import android.tools.device.traces.monitors.wm.ShellTransitionTraceMonitor
 import android.tools.device.traces.monitors.wm.WindowManagerTraceMonitor
 import android.tools.device.traces.monitors.wm.WmTransitionTraceMonitor
@@ -48,11 +49,17 @@ class FlickerBuilder(
     private val traceMonitors: MutableList<ITransitionMonitor> =
         mutableListOf<ITransitionMonitor>().also {
             it.add(WindowManagerTraceMonitor())
-            it.add(PerfettoTraceMonitor().enableLayersTrace().enableTransactionsTrace())
+            it.add(
+                PerfettoTraceMonitor.newBuilder()
+                    .enableLayersTrace()
+                    .enableTransactionsTrace()
+                    .build()
+            )
             it.add(WmTransitionTraceMonitor())
             it.add(ShellTransitionTraceMonitor())
             it.add(ScreenRecorder(instrumentation.targetContext))
             it.add(EventLogMonitor())
+            it.add(ViewTraceMonitor())
         }
 ) {
     private var usingExistingTraces = false

@@ -26,7 +26,7 @@ import android.tools.common.flicker.subject.layers.LayersTraceSubject
 import android.tools.common.flicker.subject.region.RegionSubject
 import android.tools.common.flicker.subject.wm.WindowManagerTraceSubject
 import android.tools.common.io.RunStatus
-import android.tools.device.apphelpers.BrowserAppHelper
+import android.tools.device.apphelpers.MessagingAppHelper
 import android.tools.device.flicker.junit.FlickerBuilderProvider
 import android.tools.device.flicker.junit.FlickerParametersRunnerFactory
 import android.tools.device.flicker.legacy.FlickerBuilder
@@ -45,7 +45,7 @@ import org.junit.runners.Parameterized
 @Parameterized.UseParametersRunnerFactory(FlickerParametersRunnerFactory::class)
 class FullLegacyTestRun(private val flicker: LegacyFlickerTest) {
     private val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
-    private val testApp = BrowserAppHelper(instrumentation)
+    private val testApp = MessagingAppHelper(instrumentation)
     private val tapl: LauncherInstrumentation = LauncherInstrumentation()
 
     init {

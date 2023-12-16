@@ -22,9 +22,7 @@ import android.graphics.Rect
 import kotlin.collections.List
 import platform.test.screenshot.proto.ScreenshotResultProto.DiffResult.ComparisonStatistics
 
-/**
- * The abstract class to implement to provide custom bitmap matchers.
- */
+/** The abstract class to implement to provide custom bitmap matchers. */
 abstract class BitmapMatcher {
     /**
      * Compares the given bitmaps and returns result of the operation.
@@ -53,8 +51,12 @@ abstract class BitmapMatcher {
             val regionsSanitised = regions.map { Rect(it).apply { intersect(0, 0, width, height) } }
             BooleanArray(width * height).also { filterArr ->
                 regionsSanitised.forEach { region ->
-                    for (x in region.left..region.right) {
-                        for (y in region.top..region.bottom) {
+                    val startX = region.left.coerceIn(0, width - 1)
+                    val endX = region.right.coerceIn(0, width - 1)
+                    val startY = region.top.coerceIn(0, height - 1)
+                    val endY = region.bottom.coerceIn(0, height - 1)
+                    for (x in startX..endX) {
+                        for (y in startY..endY) {
                             filterArr[y * width + x] = true
                         }
                     }
@@ -69,9 +71,9 @@ abstract class BitmapMatcher {
  *
  * @param matches True if bitmaps match.
  * @param comparisonStatistics Matching statistics provided by this matcher that performed the
- * comparison.
+ *   comparison.
  * @param diff Diff bitmap that highlights the differences between the images. Can be null if match
- * was found.
+ *   was found.
  */
 class MatchResult(
     val matches: Boolean,

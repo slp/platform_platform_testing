@@ -17,7 +17,6 @@
 package android.platform.test.flag.junit;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import android.platform.test.annotations.RequiresFlagsDisabled;
 import android.platform.test.annotations.RequiresFlagsEnabled;
@@ -34,6 +33,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Map;
 
 @RunWith(JUnit4.class)
 public class AnnotationsRetrieverTest {
@@ -57,6 +57,10 @@ public class AnnotationsRetrieverTest {
     @RequiresFlagsDisabled({"flag3", "flag4"})
     static class TestClassHasAllAnnotations {}
 
+    @RequiresFlagsEnabled({"flag1"})
+    @RequiresFlagsDisabled({"flag1"})
+    static class TestClassHasConflictingAnnotations {}
+
     private final RequiresFlagsEnabled mRequiresFlagsEnabled =
             createRequiresFlagsEnabled(new String[]{"flag5"});
 
@@ -64,29 +68,37 @@ public class AnnotationsRetrieverTest {
             createRequiresFlagsDisabled(new String[]{"flag6"});
 
     @Test
-    public void getFlagAnnotations_noAnnotation() {
+    public void noAnnotation() {
         AnnotationsRetriever.FlagAnnotations flagAnnotations =
                 getFlagAnnotations(TestClassHasNoAnnotation.class);
 
-        assertNull(flagAnnotations.mRequiresFlagsEnabled);
-        assertNull(flagAnnotations.mRequiresFlagsDisabled);
+        assertEquals(Map.of(), flagAnnotations.mRequiredFlagValues);
     }
 
     @Test
-    public void getFlagAnnotations_oneAnnotationFromMethod() {
+    public void oneAnnotationFromMethod() {
+        AnnotationsRetriever.FlagAnnotations flagAnnotations1 =
+                getFlagAnnotations(TestClassHasNoAnnotation.class, mRequiresFlagsEnabled);
+        AnnotationsRetriever.FlagAnnotations flagAnnotations2 =
+                getFlagAnnotations(TestClassHasNoAnnotation.class, mRequiresFlagsDisabled);
+
+        assertEquals(Map.of("flag5", true), flagAnnotations1.mRequiredFlagValues);
+        assertEquals(Map.of("flag6", false), flagAnnotations2.mRequiredFlagValues);
+    }
+
+    @Test
+    public void methodAnnotationsMergeWithClass() {
         AnnotationsRetriever.FlagAnnotations flagAnnotations1 =
                 getFlagAnnotations(TestClassHasRequiresFlagsEnabled.class, mRequiresFlagsEnabled);
         AnnotationsRetriever.FlagAnnotations flagAnnotations2 =
                 getFlagAnnotations(TestClassHasRequiresFlagsDisabled.class, mRequiresFlagsDisabled);
 
-        assertNull(flagAnnotations1.mRequiresFlagsDisabled);
         assertEquals(
-                flagAnnotations1.mRequiresFlagsEnabled,
-                createRequiresFlagsEnabled(new String[]{"flag5"}));
-        assertNull(flagAnnotations2.mRequiresFlagsEnabled);
+                Map.of("flag1", true, "flag2", true, "flag5", true),
+                flagAnnotations1.mRequiredFlagValues);
         assertEquals(
-                flagAnnotations2.mRequiresFlagsDisabled,
-                createRequiresFlagsDisabled(new String[]{"flag6"}));
+                Map.of("flag3", false, "flag4", false, "flag6", false),
+                flagAnnotations2.mRequiredFlagValues);
     }
 
     @Test
@@ -96,18 +108,23 @@ public class AnnotationsRetrieverTest {
         AnnotationsRetriever.FlagAnnotations flagAnnotations2 =
                 getFlagAnnotations(TestClassHasRequiresFlagsDisabled.class);
 
-        assertNull(flagAnnotations1.mRequiresFlagsDisabled);
-        assertEquals(
-                flagAnnotations1.mRequiresFlagsEnabled,
-                createRequiresFlagsEnabled(new String[]{"flag1", "flag2"}));
-        assertNull(flagAnnotations2.mRequiresFlagsEnabled);
-        assertEquals(
-                flagAnnotations2.mRequiresFlagsDisabled,
-                createRequiresFlagsDisabled(new String[]{"flag3", "flag4"}));
+        assertEquals(Map.of("flag1", true, "flag2", true), flagAnnotations1.mRequiredFlagValues);
+        assertEquals(Map.of("flag3", false, "flag4", false), flagAnnotations2.mRequiredFlagValues);
     }
 
     @Test
-    public void getFlagAnnotations_twoAnnotationsFromMethod() {
+    public void bothAnnotationsFromMethod() {
+        AnnotationsRetriever.FlagAnnotations flagAnnotations =
+                getFlagAnnotations(
+                        TestClassHasNoAnnotation.class,
+                        mRequiresFlagsEnabled,
+                        mRequiresFlagsDisabled);
+
+        assertEquals(Map.of("flag5", true, "flag6", false), flagAnnotations.mRequiredFlagValues);
+    }
+
+    @Test
+    public void bothAnnotationsFromMethodMergesWithClass() {
         AnnotationsRetriever.FlagAnnotations flagAnnotations =
                 getFlagAnnotations(
                         TestClassHasAllAnnotations.class,
@@ -115,51 +132,76 @@ public class AnnotationsRetrieverTest {
                         mRequiresFlagsDisabled);
 
         assertEquals(
-                flagAnnotations.mRequiresFlagsEnabled,
-                createRequiresFlagsEnabled(new String[]{"flag5"}));
-        assertEquals(
-                flagAnnotations.mRequiresFlagsDisabled,
-                createRequiresFlagsDisabled(new String[]{"flag6"}));
+                Map.of(
+                        "flag1", true, "flag2", true, "flag3", false, "flag4", false, "flag5", true,
+                        "flag6", false),
+                flagAnnotations.mRequiredFlagValues);
     }
 
     @Test
-    public void getFlagAnnotations_twoAnnotationsFromClass() {
+    public void bothAnnotationsFromClass() {
         AnnotationsRetriever.FlagAnnotations flagAnnotations =
                 getFlagAnnotations(TestClassHasAllAnnotations.class);
 
         assertEquals(
-                flagAnnotations.mRequiresFlagsEnabled,
-                createRequiresFlagsEnabled(new String[]{"flag1", "flag2"}));
-        assertEquals(
-                flagAnnotations.mRequiresFlagsDisabled,
-                createRequiresFlagsDisabled(new String[]{"flag3", "flag4"}));
+                Map.of("flag1", true, "flag2", true, "flag3", false, "flag4", false),
+                flagAnnotations.mRequiredFlagValues);
     }
 
     @Test
-    public void getFlagAnnotations_twoAnnotationsFromMethodAndClass() {
+    public void bothAnnotationsFromClassAndOneFromMethod() {
         AnnotationsRetriever.FlagAnnotations flagAnnotations =
                 getFlagAnnotations(TestClassHasAllAnnotations.class, mRequiresFlagsEnabled);
 
         assertEquals(
-                flagAnnotations.mRequiresFlagsEnabled,
-                createRequiresFlagsEnabled(new String[]{"flag5"}));
-        assertEquals(
-                flagAnnotations.mRequiresFlagsDisabled,
-                createRequiresFlagsDisabled(new String[]{"flag3", "flag4"}));
+                Map.of("flag1", true, "flag2", true, "flag3", false, "flag4", false, "flag5", true),
+                flagAnnotations.mRequiredFlagValues);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void conflictingClassAnnotationsThrows() {
+        getFlagAnnotations(TestClassHasConflictingAnnotations.class);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void conflictingMethodAnnotationsThrows() {
+        getFlagAnnotations(
+                TestClassHasNoAnnotation.class,
+                createRequiresFlagsEnabled(new String[] {"flag1"}),
+                createRequiresFlagsDisabled(new String[] {"flag1"}));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void methodValuesFailsOnOverrideClassValues() {
+        getFlagAnnotations(
+                TestClassHasAllAnnotations.class,
+                createRequiresFlagsEnabled(new String[] {"flag3"}),
+                createRequiresFlagsDisabled(new String[] {"flag1"}));
     }
 
     @Test
-    public void getFlagAnnotations_recursively() {
+    public void getFlagAnnotationsRecursively() {
         AnnotationsRetriever.FlagAnnotations flagAnnotations =
                 getFlagAnnotations(
-                        TestClassHasAllAnnotations.class, createCompositeFlagRequirements());
+                        TestClassHasNoAnnotation.class, createCompositeFlagRequirements());
+
+        assertEquals(Map.of("flag1", true, "flag2", false), flagAnnotations.mRequiredFlagValues);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void getFlagAnnotationsRecursivelyFailsOnOverride() {
+        getFlagAnnotations(TestClassHasAllAnnotations.class, createCompositeFlagRequirements());
+    }
+
+    @Test
+    public void getFlagAnnotationsRecursivelyMergesWithClass() {
+        AnnotationsRetriever.FlagAnnotations flagAnnotations =
+                getFlagAnnotations(
+                        TestClassHasRequiresFlagsDisabled.class, createCompositeFlagRequirements());
 
         assertEquals(
-                flagAnnotations.mRequiresFlagsEnabled,
-                createRequiresFlagsEnabled(new String[] {"flag1"}));
-        assertEquals(
-                flagAnnotations.mRequiresFlagsDisabled,
-                createRequiresFlagsDisabled(new String[] {"flag2"}));
+                Map.of("flag1", true, "flag2", false, "flag3", false, "flag4", false),
+                flagAnnotations.mRequiredFlagValues);
     }
 
     private AnnotationsRetriever.FlagAnnotations getFlagAnnotations(

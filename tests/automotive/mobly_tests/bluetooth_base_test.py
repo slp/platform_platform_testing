@@ -8,7 +8,6 @@ It also serves as a device-cleaner to help reset devices between tests.
 
 import logging
 
-
 from mobly import base_test
 from mobly.controllers import android_device
 
@@ -18,7 +17,6 @@ from utilities.main_utils import common_main
 
 
 class BluetoothBaseTest(base_test.BaseTestClass):
-
 
     def setup_class(self):
         # Registering android_device controller module, and declaring that the test
@@ -52,8 +50,11 @@ class BluetoothBaseTest(base_test.BaseTestClass):
         # Turn Bluetooth off on both devices.
         logging.info("Running basic test teardown.")
         self.bt_utils.unpair()
-        self.target.mbs.btDisable()
+        logging.info("Disable Bluetooth on Discoverer device")
         self.discoverer.mbs.btDisable()
+        logging.info("Disable Bluetooth on Target device")
+        self.target.mbs.btDisable()
+
 
 if __name__ == '__main__':
     common_main()

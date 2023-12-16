@@ -16,6 +16,7 @@
 from bluetooth_test import bluetooth_base_test
 from mobly import asserts
 from utilities.media_utils import MediaUtils
+from utilities.common_utils import CommonUtils
 from utilities.main_utils import common_main
 
 
@@ -24,8 +25,10 @@ class SelectSongFromPlaylist(bluetooth_base_test.BluetoothBaseTest):
     def setup_class(self):
         super().setup_class()
         self.media_utils = MediaUtils(self.target, self.discoverer)
+        self.common_utils = CommonUtils(self.target, self.discoverer)
 
     def setup_test(self):
+        self.common_utils.enable_wifi_on_phone_device()
         self.bt_utils.pair_primary_to_secondary()
 
     def test_media_select_song_from_playlist(self):

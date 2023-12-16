@@ -16,11 +16,6 @@
 
 package android.platform.test.flag.junit;
 
-import static org.junit.Assume.assumeTrue;
-
-import android.platform.test.annotations.RequiresFlagsDisabled;
-import android.platform.test.annotations.RequiresFlagsEnabled;
-
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -48,29 +43,9 @@ public final class CheckFlagsRule implements TestRule {
             public void evaluate() throws Throwable {
                 AnnotationsRetriever.FlagAnnotations flagAnnotations =
                         AnnotationsRetriever.getFlagAnnotations(description);
-                RequiresFlagsEnabled requiresFlagsEnabled = flagAnnotations.mRequiresFlagsEnabled;
-                RequiresFlagsDisabled requiresFlagsDisabled =
-                        flagAnnotations.mRequiresFlagsDisabled;
                 mFlagsValueProvider.setUp();
                 try {
-                    if (requiresFlagsEnabled != null) {
-                        for (String flag : requiresFlagsEnabled.value()) {
-                            assumeTrue(
-                                    String.format(
-                                            "Flag %s required to be enabled, but is disabled",
-                                            flag),
-                                    mFlagsValueProvider.getBoolean(flag));
-                        }
-                    }
-                    if (requiresFlagsDisabled != null) {
-                        for (String flag : requiresFlagsDisabled.value()) {
-                            assumeTrue(
-                                    String.format(
-                                            "Flag %s required to be disabled, but is enabled",
-                                            flag),
-                                    !mFlagsValueProvider.getBoolean(flag));
-                        }
-                    }
+                    flagAnnotations.assumeAllRequiredFlagsMatchProvider(mFlagsValueProvider);
                 } finally {
                     mFlagsValueProvider.tearDownBeforeTest();
                 }

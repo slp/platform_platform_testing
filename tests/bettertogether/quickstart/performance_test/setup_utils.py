@@ -20,9 +20,13 @@ from typing import Mapping
 
 from mobly.controllers import android_device
 
+from performance_test import gms_auto_updates_util
+
 WIFI_COUNTRYCODE_CONFIG_TIME_SEC = 3
 TOGGLE_AIRPLANE_MODE_WAIT_TIME_SEC = 2
 PH_FLAG_WRITE_WAIT_TIME_SEC = 3
+
+_DISABLE_ENABLE_GMS_UPDATE_WAIT_TIME_SEC = 2
 
 LOG_TAGS = [
     'Nearby',
@@ -53,6 +57,7 @@ def set_wifi_country_code(
     ad.log.info(f'Skipped setting wifi country code on device "{ad.serial}" '
                 'because we do not set wifi country code on unrooted phone.')
     return
+
   ad.log.info(f'Set Wi-Fi country code to {country_code}.')
   ad.adb.shell('cmd wifi set-wifi-enabled disabled')
   time.sleep(WIFI_COUNTRYCODE_CONFIG_TIME_SEC)
@@ -293,3 +298,25 @@ def disable_redaction(ad: android_device.AndroidDevice) -> None:
 def install_apk(ad: android_device.AndroidDevice, apk_path: str) -> None:
   """Installs the apk on the given device."""
   ad.adb.install(['-r', '-g', '-t', apk_path])
+
+
+def disable_gms_auto_updates(ad: android_device.AndroidDevice) -> None:
+  """Disable GMS auto updates on the given device."""
+  if not ad.is_adb_root:
+    ad.log.warning(
+        'You should disable the play store auto updates manually on a'
+        'unrooted device, otherwise the test may be broken unexpected')
+  ad.log.info('try to disable GMS Auto Updates.')
+  gms_auto_updates_util.GmsAutoUpdatesUtil(ad).disable_gms_auto_updates()
+  time.sleep(_DISABLE_ENABLE_GMS_UPDATE_WAIT_TIME_SEC)
+
+
+def enable_gms_auto_updates(ad: android_device.AndroidDevice) -> None:
+  """Enable GMS auto updates on the given device."""
+  if not ad.is_adb_root:
+    ad.log.warning(
+        'You may enable the play store auto updates manually on a'
+        'unrooted device after test.')
+  ad.log.info('try to enable GMS Auto Updates.')
+  gms_auto_updates_util.GmsAutoUpdatesUtil(ad).enable_gms_auto_updates()
+  time.sleep(_DISABLE_ENABLE_GMS_UPDATE_WAIT_TIME_SEC)

@@ -18,7 +18,7 @@ package android.tools.device.traces.parsers.wm
 
 import android.app.Instrumentation
 import android.tools.common.Cache
-import android.tools.device.apphelpers.BrowserAppHelper
+import android.tools.device.apphelpers.MessagingAppHelper
 import android.tools.device.traces.monitors.wm.ShellTransitionTraceMonitor
 import android.tools.utils.CleanFlickerEnvironmentRule
 import android.tools.utils.readAsset
@@ -53,7 +53,7 @@ class ShellTransitionTraceParserTest {
         val tapl = LauncherInstrumentation()
         val data =
             ShellTransitionTraceMonitor().withTracing {
-                BrowserAppHelper(instrumentation).open()
+                MessagingAppHelper(instrumentation).open()
                 tapl.goHome().switchToAllApps()
                 tapl.goHome()
             }

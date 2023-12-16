@@ -63,7 +63,7 @@ constructor(
     )
 
     override fun starting(description: Description?) {
-        Logger.withTracing("LaunchAppRule:finished") {
+        Logger.withTracing("LaunchAppRule:starting") {
             Logger.v(FLICKER_TAG, "Launching app $appHelper")
             appHelper.launchViaIntent()
             appHelper.exit(wmHelper)

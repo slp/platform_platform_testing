@@ -16,8 +16,15 @@
 
 package android.platform.test.flag.junit;
 
+import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
+
+import android.platform.test.annotations.DisableFlags;
+import android.platform.test.annotations.EnableFlags;
 import android.platform.test.annotations.RequiresFlagsDisabled;
 import android.platform.test.annotations.RequiresFlagsEnabled;
+
+import com.google.common.collect.Sets;
 
 import org.junit.Test;
 import org.junit.runner.Description;
@@ -29,12 +36,15 @@ import java.lang.annotation.Target;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
 /**
  * Retrieves feature flag related annotations from a given {@code Description}.
@@ -50,27 +60,99 @@ public class AnnotationsRetriever {
 
     /** Gets all feature flag related annotations. */
     public static FlagAnnotations getFlagAnnotations(Description description) {
-        return new FlagAnnotations(
-                getAnnotation(RequiresFlagsEnabled.class, description),
-                getAnnotation(RequiresFlagsDisabled.class, description));
-    }
+        final Map<String, Boolean> requiresFlagValues =
+                getMergedFlagValues(sRequiresFlagsEnabled, sRequiresFlagsDisabled, description);
+        final Map<String, Boolean> setsFlagValues =
+                getMergedFlagValues(sEnableFlags, sDisableFlags, description);
 
-    @Nullable
-    private static <T extends Annotation> T getAnnotation(
-            Class<T> annotationType, Description description) {
-        T annotation = getAnnotation(annotationType, description.getAnnotations());
-        if (annotation != null) {
-            return annotation;
+        // Assert that no flag is defined in both maps
+        Set<String> inconsistentFlags =
+                Sets.intersection(requiresFlagValues.keySet(), setsFlagValues.keySet());
+        if (!inconsistentFlags.isEmpty()) {
+            throw new AssertionError(
+                    "The following flags are both required and set: " + inconsistentFlags);
         }
-        Class<?> testClass = description.getTestClass();
-        return testClass == null
-                ? null
-                : getAnnotation(annotationType, List.of(testClass.getAnnotations()));
+
+        return new FlagAnnotations(requiresFlagValues, setsFlagValues);
     }
 
-    @Nullable
-    private static <T extends Annotation> T getAnnotation(
-            Class<T> annotationType, Collection<Annotation> annotations) {
+    private static Map<String, Boolean> getMergedFlagValues(
+            FlagsAnnotation<? extends Annotation> enabledAnnotation,
+            FlagsAnnotation<? extends Annotation> disabledAnnotation,
+            Description description) {
+        final Map<String, Boolean> methodFlagValues =
+                getFlagValues(
+                        description.getMethodName(),
+                        enabledAnnotation,
+                        disabledAnnotation,
+                        description.getAnnotations());
+        Class<?> testClass = description.getTestClass();
+        final Map<String, Boolean> classFlagValues =
+                testClass == null
+                        ? new HashMap<>()
+                        : getFlagValues(
+                                testClass.getName(),
+                                enabledAnnotation,
+                                disabledAnnotation,
+                                List.of(testClass.getAnnotations()));
+        Sets.SetView<String> doublyDefinedFlags =
+                Sets.intersection(classFlagValues.keySet(), methodFlagValues.keySet());
+        if (!doublyDefinedFlags.isEmpty()) {
+            List<String> mismatchedFlags =
+                    doublyDefinedFlags.stream()
+                            .filter(
+                                    flag ->
+                                            !Objects.equals(
+                                                    classFlagValues.get(flag),
+                                                    methodFlagValues.get(flag)))
+                            .toList();
+            if (!mismatchedFlags.isEmpty()) {
+                throw new AssertionError(
+                        "The following flags are required by "
+                                + description.getMethodName()
+                                + " and "
+                                + description.getClassName()
+                                + " to be both enabled and disabled: "
+                                + mismatchedFlags);
+            }
+        }
+        // Now override the class values with the method values to produce a merged map
+        classFlagValues.putAll(methodFlagValues);
+        return classFlagValues;
+    }
+
+    private static Map<String, Boolean> getFlagValues(
+            @Nonnull String annotationTarget,
+            @Nonnull FlagsAnnotation<? extends Annotation> enabledAnnotation,
+            @Nonnull FlagsAnnotation<? extends Annotation> disabledAnnotation,
+            @Nonnull Collection<Annotation> annotations) {
+        Set<String> enabledFlags = getFlagsForAnnotation(enabledAnnotation, annotations);
+        Set<String> disabledFlags = getFlagsForAnnotation(disabledAnnotation, annotations);
+        if (enabledFlags.isEmpty() && disabledFlags.isEmpty()) {
+            return new HashMap<>();
+        }
+        Set<String> inconsistentFlags = Sets.intersection(enabledFlags, disabledFlags);
+        if (!inconsistentFlags.isEmpty()) {
+            throw new AssertionError(
+                    "The following flags are required by "
+                            + annotationTarget
+                            + " to be both enabled and disabled: "
+                            + inconsistentFlags);
+        }
+        HashMap<String, Boolean> result = new HashMap<>();
+        for (String enabledFlag : enabledFlags) {
+            result.put(enabledFlag, true);
+        }
+        for (String disabledFlag : disabledFlags) {
+            result.put(disabledFlag, false);
+        }
+        return result;
+    }
+
+    @Nonnull
+    private static <T extends Annotation> Set<String> getFlagsForAnnotation(
+            FlagsAnnotation<T> flagsAnnotation, Collection<Annotation> annotations) {
+        Class<T> annotationType = flagsAnnotation.mAnnotationType;
         List<T> results = new ArrayList<>();
         Queue<Annotation> annotationQueue = new ArrayDeque<>();
         Set<Class<? extends Annotation>> visitedAnnotations = new HashSet<>();
@@ -93,22 +175,121 @@ public class AnnotationsRetriever {
                             "Annotation %s has been specified multiple time: %s",
                             annotationType, results));
         }
-        return results.isEmpty() ? null : results.get(0);
+        return results.isEmpty() ? Set.of() : flagsAnnotation.getFlagsSet(results.get(0));
     }
 
     /** Contains all feature flag related annotations. */
     public static class FlagAnnotations {
-        /** Annotation for the flags that requires to be enabled. */
-        @Nullable public final RequiresFlagsEnabled mRequiresFlagsEnabled;
 
-        /** Annotation for the flags that requires to be disabled. */
-        @Nullable public final RequiresFlagsDisabled mRequiresFlagsDisabled;
+        /** The flag names which have required values, mapped to the value they require */
+        public @Nonnull Map<String, Boolean> mRequiredFlagValues;
+
+        /** The flag names which have values to be set, mapped to the value they set */
+        public @Nonnull Map<String, Boolean> mSetFlagValues;
 
         FlagAnnotations(
-                RequiresFlagsEnabled requiresFlagsEnabled,
-                RequiresFlagsDisabled requiresFlagsDisabled) {
-            mRequiresFlagsEnabled = requiresFlagsEnabled;
-            mRequiresFlagsDisabled = requiresFlagsDisabled;
+                @Nonnull Map<String, Boolean> requiredFlagValues,
+                @Nonnull Map<String, Boolean> setFlagValues) {
+            mRequiredFlagValues = requiredFlagValues;
+            mSetFlagValues = setFlagValues;
+        }
+
+        /**
+         * Check that all @RequiresFlagsEnabled and @RequiresFlagsDisabled annotations match the
+         * values from the provider, and if this is not true, throw {@link
+         * org.junit.AssumptionViolatedException}
+         *
+         * @param valueProvider the value provider
+         */
+        public void assumeAllRequiredFlagsMatchProvider(IFlagsValueProvider valueProvider) {
+            for (Map.Entry<String, Boolean> required : mRequiredFlagValues.entrySet()) {
+                final String flag = required.getKey();
+                if (required.getValue()) {
+                    assumeTrue(
+                            String.format("Flag %s required to be enabled, but is disabled", flag),
+                            valueProvider.getBoolean(flag));
+                } else {
+                    assumeFalse(
+                            String.format("Flag %s required to be disabled, but is enabled", flag),
+                            valueProvider.getBoolean(flag));
+                }
+            }
+        }
+
+        /**
+         * Check that all @EnableFlags and @DisableFlags annotations match the values contained in
+         * the parameterization (if present), and if this is not true, throw {@link
+         * org.junit.AssumptionViolatedException}
+         *
+         * @param params the parameterization to evaluate against (optional)
+         */
+        public void assumeAllSetFlagsMatchParameterization(FlagsParameterization params) {
+            if (params == null) return;
+            for (Map.Entry<String, Boolean> toSet : mSetFlagValues.entrySet()) {
+                final String flag = toSet.getKey();
+                final Boolean paramValue = params.mOverrides.get(flag);
+                if (paramValue == null) continue;
+                if (toSet.getValue()) {
+                    assumeTrue(
+                            String.format(
+                                    "Flag %s is enabled by annotation but disabled by the current"
+                                            + " FlagsParameterization; skipping test",
+                                    flag),
+                            paramValue);
+                } else {
+                    assumeFalse(
+                            String.format(
+                                    "Flag %s is disabled by annotation but enabled by the current"
+                                            + " FlagsParameterization; skipping test",
+                                    flag),
+                            paramValue);
+                }
+            }
         }
     }
+
+    private abstract static class FlagsAnnotation<T extends Annotation> {
+        Class<T> mAnnotationType;
+
+        FlagsAnnotation(Class<T> type) {
+            mAnnotationType = type;
+        }
+
+        protected abstract String[] getFlags(T annotation);
+
+        @Nonnull
+        Set<String> getFlagsSet(T annotation) {
+            String[] flags = getFlags(annotation);
+            return flags == null ? Set.of() : Set.of(flags);
+        }
+    }
+
+    private static final FlagsAnnotation<RequiresFlagsEnabled> sRequiresFlagsEnabled =
+            new FlagsAnnotation<>(RequiresFlagsEnabled.class) {
+                @Override
+                protected String[] getFlags(RequiresFlagsEnabled annotation) {
+                    return annotation.value();
+                }
+            };
+    private static final FlagsAnnotation<RequiresFlagsDisabled> sRequiresFlagsDisabled =
+            new FlagsAnnotation<>(RequiresFlagsDisabled.class) {
+                @Override
+                protected String[] getFlags(RequiresFlagsDisabled annotation) {
+                    return annotation.value();
+                }
+            };
+    private static final FlagsAnnotation<EnableFlags> sEnableFlags =
+            new FlagsAnnotation<>(EnableFlags.class) {
+                @Override
+                protected String[] getFlags(EnableFlags annotation) {
+                    return annotation.value();
+                }
+            };
+    private static final FlagsAnnotation<DisableFlags> sDisableFlags =
+            new FlagsAnnotation<>(DisableFlags.class) {
+                @Override
+                protected String[] getFlags(DisableFlags annotation) {
+                    return annotation.value();
+                }
+            };
 }

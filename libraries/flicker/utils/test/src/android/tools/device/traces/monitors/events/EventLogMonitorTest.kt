@@ -432,8 +432,6 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
     private companion object {
         const val INPUT_FOCUS_TAG = 62001
 
-        @ClassRule
-        @JvmField
-        val ENV_CLEANUP = CleanFlickerEnvironmentRule()
+        @ClassRule @JvmField val ENV_CLEANUP = CleanFlickerEnvironmentRule()
     }
 }

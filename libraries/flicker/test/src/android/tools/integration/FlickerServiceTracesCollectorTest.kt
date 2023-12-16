@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-package android.tools.common.flicker
+package android.tools.integration
 
 import android.app.Instrumentation
 import android.tools.common.io.TraceType
 import android.tools.device.apphelpers.ClockAppHelper
 import android.tools.device.flicker.FlickerServiceTracesCollector
 import android.tools.device.flicker.isShellTransitionsEnabled
+import android.tools.device.flicker.rules.ArtifactSaverRule
 import android.tools.device.traces.parsers.WindowManagerStateHelper
 import android.tools.utils.CleanFlickerEnvironmentRule
 import android.tools.utils.TEST_SCENARIO
 import android.tools.utils.assertArchiveContainsFiles
+import android.tools.utils.getLauncherPackageName
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth
 import java.io.File
 import org.junit.Assume
 import org.junit.Before
-import org.junit.ClassRule
 import org.junit.FixMethodOrder
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runners.MethodSorters
 
@@ -43,6 +45,8 @@ import org.junit.runners.MethodSorters
 class FlickerServiceTracesCollectorTest {
     val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
     private val testApp = ClockAppHelper(instrumentation)
+    @get:Rule val cleanUp = CleanFlickerEnvironmentRule()
+    @get:Rule val artifactSaver = ArtifactSaverRule()
 
     @Before
     fun before() {
@@ -57,7 +61,6 @@ class FlickerServiceTracesCollectorTest {
         testApp.launchViaIntent(wmHelper)
         testApp.exit(wmHelper)
         val reader = collector.stop()
-
         Truth.assertThat(reader.readWmTrace()?.entries ?: emptyArray()).isNotEmpty()
         Truth.assertThat(reader.readLayersTrace()?.entries ?: emptyArray()).isNotEmpty()
         Truth.assertThat(reader.readTransitionsTrace()?.entries ?: emptyArray()).isNotEmpty()
@@ -110,9 +113,8 @@ class FlickerServiceTracesCollectorTest {
                 "wm_transition_trace.winscope",
                 "shell_transition_trace.winscope",
                 "eventlog.winscope",
-                TraceType.SF.fileName
+                TraceType.SF.fileName,
+                "${getLauncherPackageName()}_0.vc__view_capture_trace.winscope",
             )
-
-        @ClassRule @JvmField val ENV_CLEANUP = CleanFlickerEnvironmentRule()
     }
 }

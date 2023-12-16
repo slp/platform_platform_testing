@@ -32,12 +32,24 @@ python_library_host {
 }
 
 python_library_host {
+    name: "gms_auto_updates_util",
+    defaults: ["quick_start_perf_test_defaults",],
+    srcs: [
+        "gms_auto_updates_util.py",
+    ],
+    libs: [
+        "mobly",
+    ],
+}
+
+python_library_host {
     name: "setup_utils",
     defaults: ["quick_start_perf_test_defaults",],
     srcs: [
         "setup_utils.py",
     ],
     libs: [
+        "gms_auto_updates_util",
         "nc_constants",
         "mobly",
     ],

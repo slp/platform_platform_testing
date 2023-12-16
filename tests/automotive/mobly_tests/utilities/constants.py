@@ -22,21 +22,26 @@ BT_DEFAULT_TIMEOUT = 15
 WAIT_ONE_SEC = 1
 WAIT_TWO_SECONDS = 2
 WAIT_THIRTY_SECONDS = 30
-SYNC_WAIT_TIME = 30 # Sometimes syncing between devices can take a while
+SYNC_WAIT_TIME = 15 # Sometimes syncing between devices can take a while
 DEVICE_CONNECT_WAIT_TIME = 20 # Waiting for device pairing to complete.
 MOBILE_DEVICE_NAME = 'target'
 AUTOMOTIVE_DEVICE_NAME = 'discoverer'
 REBOOT = 'reboot'
 DIALER_THREE_DIGIT_NUMBER = "511"
+INFORMATION_THREE_DIGIT_NUMBER = "411"
 EXPECTED_CONTACT_FULL_NAME = "John Smith"
+EXPECTED_CONTACT_FIRST_NAME = "John"
+EXPECTED_CONTACT_LAST_NAME = "Smith"
 FIRST_DIGIT_OF_SEARCH_CONTACT_NUMBER = "6"
 EXPECTED_PHONE_NUMBER = "611"
 ROOT = "root"
 DATE_CMD = "date"
-
+DEFAULT_DIAL_PAD_ENTRY = "Dial a number"
 # The word or phrase present in a device summary that is connected.
 CONNECTED_SUMMARY_STATUS = "Connected"
 DISCONNECTED_SUMMARY_STATUS = "Disconnected"
+DECLINE_CALL_TEXT = "Decline"
+ACCEPT_CALL_TEXT = "Answer"
 
 BTSNOOP_LOG_PATH_ON_DEVICE = '/data/misc/bluetooth/logs/btsnoop_hci.log'
 BTSNOOP_LAST_LOG_PATH_ON_DEVICE = (
@@ -96,13 +101,13 @@ IMPOST_CONTACTS_SHELL_COMAND = (
 ONE_SEC = 1
 
 # KeyEvents
-KEYCODE_ENTER = 'keyevent KEYCODE_ENTER'
-KEYCODE_TAB = 'keyevent KEYCODE_TAB'
-KEYCODE_MEDIA_NEXT = 'keyevent KEYCODE_MEDIA_NEXT'
-KEYCODE_MEDIA_PREVIOUS = 'keyevent KEYCODE_MEDIA_PREVIOUS'
-KEYCODE_MEDIA_PAUSE = 'keyevent KEYCODE_MEDIA_PAUSE'
-KEYCODE_MEDIA_PLAY = 'keyevent KEYCODE_MEDIA_PLAY'
-KEYCODE_MEDIA_STOP = 'keyevent KEYCODE_MEDIA_STOP'
+KEYCODE_ENTER = 'input keyevent KEYCODE_ENTER'
+KEYCODE_TAB = 'input keyevent KEYCODE_TAB'
+KEYCODE_MEDIA_NEXT = 'input keyevent KEYCODE_MEDIA_NEXT'
+KEYCODE_MEDIA_PREVIOUS = 'input keyevent KEYCODE_MEDIA_PREVIOUS'
+KEYCODE_MEDIA_PAUSE = 'input keyevent KEYCODE_MEDIA_PAUSE'
+KEYCODE_MEDIA_PLAY = 'input keyevent KEYCODE_MEDIA_PLAY'
+KEYCODE_MEDIA_STOP = 'input keyevent KEYCODE_MEDIA_STOP'
 
 # YouTube Media
 YOUTUBE_MUSIC_PACKAGE = 'com.google.android.apps.youtube.music'
@@ -122,3 +127,11 @@ TIMEZONE_DICT = {
 }
 CLEAR_MESSAGING_APP = 'pm clear com.google.android.apps.messaging'
 DELETE_MESSAGING_DB = 'rm /data/data/com.android.providers.telephony/databases/mmssms.db'
+OPEN_NOTIFICATION = 'service call statusbar 1'
+
+# Dialer Page
+NO_PHONE_MESSAGE = "To complete your call, first connect your phone to your car via Bluetooth."
+DIALER_RECENTS_LABEL = "Recents"
+DIALER_CONTACTS_LABEL = "Contacts"
+DIALER_FAVORITES_LABEL = "Favorites"
+DIALER_DIALPAD_LABEL = "Dialpad"

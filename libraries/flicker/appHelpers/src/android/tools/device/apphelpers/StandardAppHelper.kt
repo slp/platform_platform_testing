@@ -148,10 +148,7 @@ open class StandardAppHelper(
     ) {
         launchAppViaIntent(action, stringExtras)
         val appSelector = getAppSelector(expectedPackageName)
-        uiDevice.wait(
-            Until.hasObject(appSelector),
-            StandardAppHelper.Companion.APP_LAUNCH_WAIT_TIME_MS
-        )
+        uiDevice.wait(Until.hasObject(appSelector), APP_LAUNCH_WAIT_TIME_MS)
     }
 
     /**
@@ -189,8 +186,10 @@ open class StandardAppHelper(
                 .add(ConditionsFactory.isWMStateComplete())
                 .withAppTransitionIdle()
     ) {
-        context.startActivity(intent)
-        doWaitShown(launchedAppComponentMatcherOverride, waitConditionsBuilder)
+        Logger.withTracing("${this::class.simpleName}#launchViaIntent") {
+            context.startActivity(intent)
+            doWaitShown(launchedAppComponentMatcherOverride, waitConditionsBuilder)
+        }
     }
 
     private fun doWaitShown(
@@ -212,6 +211,8 @@ open class StandardAppHelper(
             false
         }
     }
+
+    override fun toString(): String = componentMatcher.toString()
 
     companion object {
         private const val APP_LAUNCH_WAIT_TIME_MS = 10000L

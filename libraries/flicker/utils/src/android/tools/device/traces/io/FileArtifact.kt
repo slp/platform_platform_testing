@@ -77,8 +77,10 @@ internal constructor(private val scenario: Scenario, artifactFile: File, private
         val currFile = file
         val newFile = getNewFilePath(newStatus)
         if (currFile != newFile) {
-            IoUtils.moveFile(currFile, newFile)
-            file = newFile
+            Logger.withTracing("${this::class.simpleName}#updateStatus") {
+                IoUtils.moveFile(currFile, newFile)
+                file = newFile
+            }
         }
     }
 

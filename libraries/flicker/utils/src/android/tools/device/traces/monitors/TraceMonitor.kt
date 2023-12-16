@@ -16,7 +16,9 @@
 
 package android.tools.device.traces.monitors
 
+import android.tools.common.Logger
 import android.tools.common.ScenarioBuilder
+import android.tools.common.Tag
 import android.tools.common.io.TraceType
 import android.tools.device.traces.TRACE_CONFIG_REQUIRE_CHANGES
 import android.tools.device.traces.io.IoUtils
@@ -38,8 +40,10 @@ abstract class TraceMonitor : ITransitionMonitor {
     protected open fun doStopTraces(): Map<TraceType, File> = mapOf(traceType to doStop())
 
     final override fun start() {
-        validateStart()
-        doStart()
+        Logger.withTracing("${this::class.simpleName}#start") {
+            validateStart()
+            doStart()
+        }
     }
 
     open fun validateStart() {
@@ -51,10 +55,14 @@ abstract class TraceMonitor : ITransitionMonitor {
     }
 
     /** Stops monitor. */
-    final override fun stop(writer: ResultWriter) {
+    override fun stop(writer: ResultWriter) {
         val artifacts =
             try {
-                doStopTraces().map { (key, value) -> key to moveTraceFileToTmpDir(value) }.toMap()
+                Logger.withTracing("${this::class.simpleName}#stop") {
+                    doStopTraces()
+                        .map { (key, value) -> key to moveTraceFileToTmpDir(value) }
+                        .toMap()
+                }
             } catch (e: Throwable) {
                 throw RuntimeException(
                     "Could not stop ${traceType.name} trace and save it to ${traceType.fileName}",
@@ -79,11 +87,13 @@ abstract class TraceMonitor : ITransitionMonitor {
      * @throws UnsupportedOperationException If tracing is already activated
      */
     fun withTracing(writer: ResultWriter, predicate: () -> Unit) {
-        try {
-            this.start()
-            predicate()
-        } finally {
-            this.stop(writer)
+        Logger.withTracing("${this::class.simpleName}#withTracing") {
+            try {
+                this.start()
+                predicate()
+            } finally {
+                this.stop(writer)
+            }
         }
     }
 
@@ -93,12 +103,12 @@ abstract class TraceMonitor : ITransitionMonitor {
      * @param predicate Commands to execute
      * @throws UnsupportedOperationException If tracing is already activated
      */
-    fun withTracing(predicate: () -> Unit): ByteArray {
+    fun withTracing(tag: String = Tag.ALL, predicate: () -> Unit): ByteArray {
         val writer = createWriter()
         withTracing(writer, predicate)
         val result = writer.write()
         val reader = ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)
-        val bytes = reader.readBytes(traceType) ?: error("Missing trace $traceType")
+        val bytes = reader.readBytes(traceType, tag) ?: error("Missing trace $traceType")
         result.artifact.deleteIfExists()
         return bytes
     }

@@ -78,15 +78,6 @@ fun UiDevice.isRotated(): Boolean {
     return Rotation.getByValue(this.displayRotation).isRotated()
 }
 
-/** Reopens the first device window from the list of recent apps (overview) */
-fun UiDevice.reopenAppFromOverview(wmHelper: WindowManagerStateHelper) {
-    val x = this.displayWidth / 2
-    val y = this.displayHeight / 2
-    this.click(x, y)
-
-    wmHelper.StateSyncBuilder().withAppTransitionIdle().waitFor()
-}
-
 /**
  * Shows quickstep
  *

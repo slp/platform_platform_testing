@@ -41,13 +41,13 @@ from performance_test import nc_constants
 from performance_test import nearby_connection_wrapper
 from performance_test import setup_utils
 
-_TEST_SCRIPT_VERSTION = '1.5'
+_TEST_SCRIPT_VERSTION = '1.6'
 
 _DELAY_BETWEEN_EACH_TEST_CYCLE = datetime.timedelta(seconds=5)
 _TRANSFER_FILE_SIZE_1MB = 1024
 
 _PERFORMANCE_TEST_REPEAT_COUNT = 100
-_PERFORMANCE_TEST_MAX_CONSECUTIVE_ERROR = 10
+_PERFORMANCE_TEST_MAX_CONSECUTIVE_ERROR = 5
 
 
 class EsimTransferStressTest(nc_base_test.NCBaseTestClass):

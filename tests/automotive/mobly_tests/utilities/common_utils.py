@@ -43,3 +43,8 @@ class CommonUtils:
     def wait_with_log(self, wait_time):
         logging.info("Sleep for %s seconds", wait_time)
         time.sleep(wait_time)
+
+    # Enable WIFI on phone device
+    def enable_wifi_on_phone_device(self):
+        logging.info("Enable WIFI on phone device")
+        self.target.mbs.wifiEnable()

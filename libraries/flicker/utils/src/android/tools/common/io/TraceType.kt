@@ -28,4 +28,6 @@ enum class TraceType(val fileName: String, val isTrace: Boolean) {
     SF_DUMP("trace$PERFETTO_EXT", isTrace = false),
     WM_DUMP("trace$WINSCOPE_EXT", isTrace = false),
     PROTOLOG("wm_log$WINSCOPE_EXT", isTrace = true),
+    VIEW("view_capture_trace$WINSCOPE_EXT", isTrace = true),
+    PERFETTO("trace$PERFETTO_EXT", isTrace = true),
 }

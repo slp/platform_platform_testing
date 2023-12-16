@@ -22,16 +22,21 @@
 
 package android.tools.device.traces.monitors
 
-import android.tools.common.traces.DeviceTraceDump
+import android.tools.common.ScenarioBuilder
+import android.tools.common.Tag
+import android.tools.common.io.Reader
 import android.tools.common.traces.surfaceflinger.LayersTrace
 import android.tools.common.traces.surfaceflinger.TransactionsTrace
 import android.tools.common.traces.wm.WindowManagerTrace
+import android.tools.device.traces.SERVICE_TRACE_CONFIG
+import android.tools.device.traces.io.ResultReaderWithLru
+import android.tools.device.traces.io.ResultWriter
 import android.tools.device.traces.monitors.wm.WindowManagerTraceMonitor
-import android.tools.device.traces.parsers.DeviceDumpParser
 import android.tools.device.traces.parsers.perfetto.LayersTraceParser
 import android.tools.device.traces.parsers.perfetto.TraceProcessorSession
 import android.tools.device.traces.parsers.perfetto.TransactionsTraceParser
 import android.tools.device.traces.parsers.wm.WindowManagerTraceParser
+import java.io.File
 import perfetto.protos.PerfettoConfig.SurfaceFlingerLayersConfig
 
 /**
@@ -42,7 +47,8 @@ import perfetto.protos.PerfettoConfig.SurfaceFlingerLayersConfig
  * @throws UnsupportedOperationException If tracing is already activated
  */
 fun withWMTracing(predicate: () -> Unit): WindowManagerTrace {
-    return WindowManagerTraceParser().parse(WindowManagerTraceMonitor().withTracing(predicate))
+    return WindowManagerTraceParser()
+        .parse(WindowManagerTraceMonitor().withTracing(Tag.ALL, predicate))
 }
 
 /**
@@ -58,7 +64,11 @@ fun withSFTracing(
     flags: List<SurfaceFlingerLayersConfig.TraceFlag>? = null,
     predicate: () -> Unit
 ): LayersTrace {
-    val trace = PerfettoTraceMonitor().enableLayersTrace(flags).withTracing(predicate)
+    val trace =
+        PerfettoTraceMonitor.newBuilder()
+            .enableLayersTrace(flags)
+            .build()
+            .withTracing(Tag.ALL, predicate)
     return TraceProcessorSession.loadPerfettoTrace(trace) { session ->
         LayersTraceParser().parse(session)
     }
@@ -73,7 +83,11 @@ fun withSFTracing(
  */
 @JvmOverloads
 fun withTransactionsTracing(predicate: () -> Unit): TransactionsTrace {
-    val trace = PerfettoTraceMonitor().enableTransactionsTrace().withTracing(predicate)
+    val trace =
+        PerfettoTraceMonitor.newBuilder()
+            .enableTransactionsTrace()
+            .build()
+            .withTracing(Tag.ALL, predicate)
     return TraceProcessorSession.loadPerfettoTrace(trace) { session ->
         TransactionsTraceParser().parse(session)
     }
@@ -86,11 +100,27 @@ fun withTransactionsTracing(predicate: () -> Unit): TransactionsTrace {
  * @param predicate Commands to execute
  * @throws UnsupportedOperationException If tracing is already activated
  */
-fun withTracing(predicate: () -> Unit): DeviceTraceDump {
-    val traces = recordTraces(predicate)
-    val wmTraceData = traces.first
-    val layersTraceData = traces.second
-    return DeviceDumpParser.fromTrace(wmTraceData, layersTraceData, clearCache = true)
+fun withTracing(
+    traceMonitors: List<TraceMonitor> =
+        listOf(
+            WindowManagerTraceMonitor(),
+            PerfettoTraceMonitor.newBuilder().enableLayersTrace().enableTransactionsTrace().build(),
+        ),
+    predicate: () -> Unit
+): Reader {
+    val tmpFile = File.createTempFile("recordTraces", "")
+    val writer =
+        ResultWriter()
+            .forScenario(ScenarioBuilder().forClass(tmpFile.name).build())
+            .withOutputDir(tmpFile.parentFile)
+
+    try {
+        traceMonitors.forEach { it.start() }
+        predicate()
+    } finally {
+        traceMonitors.forEach { it.stop(writer) }
+    }
+    return ResultReaderWithLru(writer.write(), SERVICE_TRACE_CONFIG)
 }
 
 /**
@@ -104,8 +134,8 @@ fun withTracing(predicate: () -> Unit): DeviceTraceDump {
 fun recordTraces(predicate: () -> Unit): Pair<ByteArray, ByteArray> {
     var wmTraceData = ByteArray(0)
     val layersTraceData =
-        PerfettoTraceMonitor().enableLayersTrace().withTracing {
-            wmTraceData = WindowManagerTraceMonitor().withTracing(predicate)
+        PerfettoTraceMonitor.newBuilder().enableLayersTrace().build().withTracing {
+            wmTraceData = WindowManagerTraceMonitor().withTracing(Tag.ALL, predicate)
         }
 
     return Pair(wmTraceData, layersTraceData)

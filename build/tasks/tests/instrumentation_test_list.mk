@@ -94,7 +94,8 @@ instrumentation_tests := \
     CarDeveloperOptionsUnitTests \
     SpaPrivilegedLibTests \
     SettingsSpaUnitTests \
-    SpaLibTests
+    SpaLibTests \
+    PermissionServiceMockingTests
 
 ifneq ($(strip $(BOARD_PERFSETUP_SCRIPT)),)
 instrumentation_tests += perf-setup

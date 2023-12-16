@@ -73,7 +73,8 @@ class TransitionRunner(
      * different problems during testing (e.g. IME now shown on app launch)
      */
     private fun buildTestRuleChain(flicker: FlickerTestData): RuleChain {
-        return RuleChain.outerRule(ArtifactSaverRule())
+        val errorRule = ArtifactSaverRule()
+        return RuleChain.outerRule(errorRule)
             .around(UnlockScreenRule())
             .around(NavigationModeRule(scenario.navBarMode.value, false))
             .around(
@@ -97,7 +98,9 @@ class TransitionRunner(
                     instrumentation
                 )
             )
+            .around(errorRule)
             .around(SetupTeardownRule(flicker, resultWriter, scenario, instrumentation))
+            .around(errorRule)
             .around(TransitionExecutionRule(flicker, resultWriter, scenario, instrumentation))
     }
 }

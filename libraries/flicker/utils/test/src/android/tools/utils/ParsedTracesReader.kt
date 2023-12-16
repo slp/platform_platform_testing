@@ -29,7 +29,7 @@ import android.tools.common.traces.wm.WindowManagerTrace
 
 /** Reads parsed traces from in memory objects */
 class ParsedTracesReader(
-    override val artifact: InMemoryArtifact,
+    override val artifact: TestArtifact,
     private val wmTrace: WindowManagerTrace? = null,
     private val layersTrace: LayersTrace? = null,
     private val transitionsTrace: TransitionsTrace? = null,

@@ -7,22 +7,6 @@
           "exclude-annotation": "androidx.test.filters.FlakyTest"
         }
       ]
-    },
-    {
-      "name": "SystemUIGoogleBiometricsScreenshotTests",
-      "options": [
-        {
-          "exclude-annotation": "org.junit.Ignore"
-        },
-        {
-          "exclude-annotation": "androidx.test.filters.FlakyTest"
-        },
-        {
-          "exclude-annotation": "android.platform.test.annotations.Postsubmit"
-        }
-      ],
-      // The test can't run on AOSP Cuttlefish.
-      "keywords": ["internal"]
     }
   ],
   // v2/sysui/suite/test-mapping-sysui-screenshot-test
@@ -35,6 +19,23 @@
         },
         {
           "exclude-annotation": "androidx.test.filters.FlakyTest"
+        },
+        {
+          "exclude-annotation": "android.platform.test.annotations.Postsubmit"
+        }
+      ]
+    },
+    {
+      "name": "SystemUIGoogleKeyguardScreenshotTests",
+      "options": [
+        {
+          "exclude-annotation": "org.junit.Ignore"
+        },
+        {
+          "exclude-annotation": "androidx.test.filters.FlakyTest"
+        },
+        {
+          "exclude-annotation": "android.platform.test.annotations.FlakyTest"
         },
         {
           "exclude-annotation": "android.platform.test.annotations.Postsubmit"

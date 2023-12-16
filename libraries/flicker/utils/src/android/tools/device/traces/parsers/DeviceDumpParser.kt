@@ -18,7 +18,6 @@ package android.tools.device.traces.parsers
 
 import android.tools.common.Logger
 import android.tools.common.traces.DeviceStateDump
-import android.tools.common.traces.DeviceTraceDump
 import android.tools.common.traces.NullableDeviceStateDump
 import android.tools.common.traces.surfaceflinger.LayerTraceEntry
 import android.tools.common.traces.surfaceflinger.LayersTrace
@@ -27,7 +26,6 @@ import android.tools.common.traces.wm.WindowManagerTrace
 import android.tools.device.traces.parsers.perfetto.LayersTraceParser
 import android.tools.device.traces.parsers.perfetto.TraceProcessorSession
 import android.tools.device.traces.parsers.wm.WindowManagerDumpParser
-import android.tools.device.traces.parsers.wm.WindowManagerTraceParser
 
 /**
  * Represents a state dump containing the [WindowManagerTrace] and the [LayersTrace] both parsed and
@@ -93,45 +91,6 @@ class DeviceDumpParser {
                 DeviceStateDump(
                     nullableDump.wmState ?: error("WMState dump missing"),
                     nullableDump.layerState ?: error("Layer State dump missing")
-                )
-            }
-        }
-
-        /**
-         * Creates a device state dump containing the WindowManager and Layers trace obtained from a
-         * regular trace. The parsed traces may contain a multiple [WindowManagerState] or
-         * [LayerTraceEntry].
-         *
-         * @param wmTraceData [WindowManagerTrace] content
-         * @param layersTraceData [LayersTrace] content
-         * @param clearCache If the caching used while parsing the proto should be
-         *
-         * ```
-         *                               cleared or remain in memory
-         * ```
-         */
-        @JvmStatic
-        fun fromTrace(
-            wmTraceData: ByteArray,
-            layersTraceData: ByteArray,
-            clearCache: Boolean
-        ): DeviceTraceDump {
-            return Logger.withTracing("fromTrace") {
-                DeviceTraceDump(
-                    wmTrace =
-                        if (wmTraceData.isNotEmpty()) {
-                            WindowManagerTraceParser().parse(wmTraceData, clearCache = clearCache)
-                        } else {
-                            null
-                        },
-                    layersTrace =
-                        if (layersTraceData.isNotEmpty()) {
-                            TraceProcessorSession.loadPerfettoTrace(layersTraceData) { session ->
-                                LayersTraceParser().parse(session, clearCache = clearCache)
-                            }
-                        } else {
-                            null
-                        }
                 )
             }
         }

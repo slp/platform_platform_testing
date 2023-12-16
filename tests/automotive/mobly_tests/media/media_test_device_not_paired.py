@@ -12,7 +12,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import sys
 
 from bluetooth_test import bluetooth_base_test
 from mobly import asserts
@@ -23,15 +22,21 @@ class DeviceNotPairedTest(bluetooth_base_test.BluetoothBaseTest):
 
     def setup_test(self):
         """Enable and disable BT on Head unit"""
-        self.discoverer.mbs.btEnable()
-        self.discoverer.mbs.btDisable()
+        super().setup_test()
 
     def test_device_not_paired(self):
         """Tests lunch Bluetooth Audio app and verify <Bluetooth Disconnected> displayed."""
+        self.discoverer.mbs.btDisable()
         self.call_utils.open_bluetooth_media_app()
+        self.call_utils.wait_with_log(5)
+        if not self.call_utils.is_bluetooth_audio_disconnected_label_visible():
+            self.call_utils.wait_with_log(60)
         asserts.assert_true(self.call_utils.is_bluetooth_audio_disconnected_label_visible(),
                             '<Bluetooth Audio disconnected> label should be present')
 
+    def teardown_test(self):
+        super().teardown_test()
 
 if __name__ == '__main__':
     common_main()
+

@@ -17,6 +17,7 @@ rust_library {
         "//apex_available:platform",
         "//apex_available:anyapex",
     ],
+    vendor_available: true,
 }
 
 rust_defaults {

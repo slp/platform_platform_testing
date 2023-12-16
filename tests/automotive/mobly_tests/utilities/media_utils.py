@@ -106,9 +106,9 @@ class MediaUtils:
         regex_pattern = re.compile(constants.SONG_METADATA_PATTERN)
         # match regex
         actual_song_metadata = regex_pattern.findall(dumpsys_metadata)[0]
-        logging.info("Actual song metadata: %s", actual_song_metadata)
+        logging.info("Actual song metadata on phone device: %s", actual_song_metadata)
         parsed_song_metadata = actual_song_metadata.split('=')[1]
-        logging.info("Parsed song metadata: %s", parsed_song_metadata)
+        logging.info("Parsed song metadata on phone device: %s", parsed_song_metadata)
         return parsed_song_metadata
 
     # Get song title from phone device
@@ -131,6 +131,12 @@ class MediaUtils:
     def click_next_track_on_hu(self):
         logging.info("Click on NEXT track on HU")
         self.discoverer.mbs.clickNextTrack()
+        time.sleep(constants.WAIT_FOR_LOAD)
+
+    # Click on PREVIOUS track on HU
+    def click_previous_track_on_hu(self):
+        logging.info("Click on PREVIOUS track on HU")
+        self.discoverer.mbs.clickPreviousTrack()
         time.sleep(constants.WAIT_FOR_LOAD)
 
     # Open Media app on HU
@@ -218,3 +224,25 @@ class MediaUtils:
         logging.info("Actual current song max playing time on HU: <%s>",
                      actual_current_song_max_playing_time)
         return actual_current_song_max_playing_time
+
+    # Check is NOW PLAYING label displayed
+    def is_now_playing_label_displayed(self):
+        logging.info("Checking is <Now Playing> label displayed on HU")
+        actual_is_now_playing_label_display_status = self.discoverer.mbs.isNowPlayingLabelVisible()
+        logging.info("<Now Playing> label displayed: <%s>",
+                     actual_is_now_playing_label_display_status)
+        return actual_is_now_playing_label_display_status
+
+    # Check is PLAYLIST icon visible
+    def is_playlist_icon_visible(self):
+        logging.info("Checking is Playlist icon displayed on HU")
+        actual_is_playlist_icon_displayed = self.discoverer.mbs.isPlaylistIconVisible()
+        logging.info("Playlist icon displayed: <%s>",
+                     actual_is_playlist_icon_displayed)
+        return actual_is_playlist_icon_displayed
+
+    # Click on Playlist icon
+    def click_on_playlist_icon(self):
+        logging.info("Click on Playlist icon on HU")
+        self.discoverer.mbs.clickOnPlaylistIcon()
+

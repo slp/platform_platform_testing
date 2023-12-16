@@ -26,6 +26,7 @@ import android.tools.device.traces.io.ResultReaderWithLru
 import android.tools.device.traces.io.ResultWriter
 import android.tools.device.traces.monitors.PerfettoTraceMonitor
 import android.tools.device.traces.monitors.events.EventLogMonitor
+import android.tools.device.traces.monitors.view.ViewTraceMonitor
 import android.tools.device.traces.monitors.wm.ShellTransitionTraceMonitor
 import android.tools.device.traces.monitors.wm.WindowManagerTraceMonitor
 import android.tools.device.traces.monitors.wm.WmTransitionTraceMonitor
@@ -40,10 +41,11 @@ class FlickerServiceTracesCollector(
     private val traceMonitors =
         listOf(
             WindowManagerTraceMonitor(),
-            PerfettoTraceMonitor().enableLayersTrace().enableTransactionsTrace(),
+            PerfettoTraceMonitor.newBuilder().enableLayersTrace().enableTransactionsTrace().build(),
             WmTransitionTraceMonitor(),
             ShellTransitionTraceMonitor(),
-            EventLogMonitor()
+            EventLogMonitor(),
+            ViewTraceMonitor(),
         )
 
     override fun start(scenario: Scenario) {

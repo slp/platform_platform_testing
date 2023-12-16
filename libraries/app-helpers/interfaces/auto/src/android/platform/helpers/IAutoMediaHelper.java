@@ -218,6 +218,13 @@ public interface IAutoMediaHelper extends IAppHelper, Scrollable {
     boolean isBluetoothAudioDisconnectedLabelVisible();
 
     /**
+     * Setup expectations: Bluetooth Audio page opened.
+     *
+     * <p>This method returns whether connect to bluetooth label visible or not.
+     */
+    boolean isConnectToBluetoothLabelVisible();
+
+    /**
      * Setup expectations: on home screen.
      *
      * <p>This method is used to open Bluetooth Audio screen.
@@ -280,4 +287,25 @@ public interface IAutoMediaHelper extends IAppHelper, Scrollable {
      * @return get current song max playing time
      */
     String getCurrentSongMaxPlayingTime();
+
+    /**
+     * Setup expectations: Bluetooth Audio track maximized.
+     *
+     * <p>This method is return is "Now Playing" label visible.
+     */
+    boolean isNowPlayingLabelVisible();
+
+    /**
+     * Setup expectations: Bluetooth Audio track maximized.
+     *
+     * <p>This method is return is Playlist icon visible.
+     */
+    boolean isPlaylistIconVisible();
+
+    /**
+     * Setup expectations: Bluetooth Audio track maximized.
+     *
+     * <p>This method is used to click on playlist icon.
+     */
+    void clickOnPlaylistIcon();
 }

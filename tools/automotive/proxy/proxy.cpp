@@ -24,7 +24,8 @@
 #include <unistd.h>
 
 #include <libProxyConfig/libProxyConfig.h>
-#include "vm_sockets.h"
+
+#include <linux/vm_sockets.h>
 
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define BUFFER_SIZE 16384

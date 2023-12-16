@@ -18,8 +18,7 @@ from mobly import asserts
 from utilities.media_utils import MediaUtils
 from utilities.main_utils import common_main
 from mobly.controllers import android_device
-from mbs_utils import spectatio_utils
-from mbs_utils import bt_utils
+from utilities.common_utils import CommonUtils
 
 
 class IsSongPLayingAfterRebootTest(bluetooth_base_test.BluetoothBaseTest):
@@ -27,8 +26,10 @@ class IsSongPLayingAfterRebootTest(bluetooth_base_test.BluetoothBaseTest):
     def setup_class(self):
         super().setup_class()
         self.media_utils = MediaUtils(self.target, self.discoverer)
+        self.common_utils = CommonUtils(self.target, self.discoverer)
 
     def setup_test(self):
+        self.common_utils.enable_wifi_on_phone_device()
         self.bt_utils.pair_primary_to_secondary()
 
     def test_is_song_playing_after_reboot(self):

@@ -16,12 +16,12 @@
 
 package android.platform.uiautomator_helpers
 
+import android.os.SystemClock.uptimeMillis
 import android.animation.TimeInterpolator
 import android.app.Instrumentation
 import android.content.Context
 import android.graphics.PointF
 import android.os.Bundle
-import android.platform.uiautomator_helpers.DurationUtils.platformAdjust
 import android.platform.uiautomator_helpers.TracingUtils.trace
 import android.platform.uiautomator_helpers.WaitUtils.ensureThat
 import android.platform.uiautomator_helpers.WaitUtils.waitFor
@@ -39,9 +39,8 @@ import java.time.Duration
 private const val TAG = "DeviceHelpers"
 
 object DeviceHelpers {
-    // Increase the timeouts for slower Cuttlefish emulator performance.
-    private val SHORT_WAIT = Duration.ofMillis(1500).platformAdjust()
-    private val LONG_WAIT = Duration.ofSeconds(10).platformAdjust()
+    private val SHORT_WAIT = Duration.ofMillis(1500)
+    private val LONG_WAIT = Duration.ofSeconds(10)
     private val DOUBLE_TAP_INTERVAL = Duration.ofMillis(100)
 
     private val instrumentationRegistry = InstrumentationRegistry.getInstrumentation()
@@ -283,7 +282,7 @@ object DeviceHelpers {
     @JvmStatic
     fun shell(command: String): String {
         trace("Executing shell command: $command") {
-            Log.d(TAG, "Executing Shell Command: $command")
+            Log.d(TAG, "Executing Shell Command: $command at ${uptimeMillis()}ms")
             return try {
                 uiDevice.executeShellCommand(command)
             } catch (e: IOException) {

@@ -72,6 +72,7 @@ constructor(
             ?: failTestOnFlicker
 
     private var testFailed = false
+    private var testSkipped = false
 
     init {
         CrossPlatform.setLogger(AndroidLogger())
@@ -117,6 +118,7 @@ constructor(
         Logger.i(LOG_TAG, "Test starting $description")
         metricsCollector.testStarted(description)
         testFailed = false
+        testSkipped = false
     }
 
     private fun handleSucceeded(description: Description) {
@@ -132,6 +134,7 @@ constructor(
     private fun handleSkipped(e: AssumptionViolatedException, description: Description) {
         Logger.i(LOG_TAG, "Test skipped $description with", e)
         metricsCollector.testSkipped(description)
+        testSkipped = true
     }
 
     private fun shouldRun(description: Description?): Boolean {
@@ -157,10 +160,10 @@ constructor(
         for (executionError in metricsCollector.executionErrors) {
             Logger.e(LOG_TAG, "FaaS reported execution errors", executionError)
         }
-        if (testFailed || metricsCollector.executionErrors.isNotEmpty()) {
-            // If we had an execution error or the underlying test failed, then we have no
-            // guarantees about the correctness of the flicker assertions and detect scenarios,
-            // so we should not check those and instead return immediately.
+        if (testSkipped || testFailed || metricsCollector.executionErrors.isNotEmpty()) {
+            // If we had an execution error or the underlying test failed or was skipped, then we
+            // have no guarantees about the correctness of the flicker assertions and detect
+            // scenarios, so we should not check those and instead return immediately.
             return
         }
         val failedMetrics = metricsCollector.resultsForTest(description).filter { it.failed }

@@ -33,11 +33,11 @@ import android.tools.device.flicker.FlickerServiceResultsCollector.Companion.OK_
 import android.tools.device.flicker.FlickerServiceResultsCollector.Companion.WINSCOPE_FILE_PATH_KEY
 import android.tools.device.flicker.FlickerServiceResultsCollector.Companion.getKeyForAssertionResult
 import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.InMemoryArtifact
 import android.tools.utils.KotlinMockito
 import android.tools.utils.MockLayersTraceBuilder
 import android.tools.utils.MockWindowManagerTraceBuilder
 import android.tools.utils.ParsedTracesReader
+import android.tools.utils.TestArtifact
 import com.google.common.truth.Truth
 import org.junit.ClassRule
 import org.junit.FixMethodOrder
@@ -307,7 +307,7 @@ class FlickerServiceResultsCollectorTest {
         Mockito.`when`(mockTraceCollector.stop())
             .thenReturn(
                 ParsedTracesReader(
-                    artifact = InMemoryArtifact.EMPTY,
+                    artifact = TestArtifact.EMPTY,
                     wmTrace = MockWindowManagerTraceBuilder().build(),
                     layersTrace = MockLayersTraceBuilder().build(),
                     transitionsTrace = TransitionsTrace(emptyArray()),

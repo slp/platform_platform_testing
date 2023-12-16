@@ -22,13 +22,26 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that a specific test or class should be run on certain feature flag disabled.
+ * Indicates that a specific test or class should be run only if all of the given feature flags are
+ * disabled in the device's current state. Enforced by the {@code CheckFlagsRule}.
+ *
+ * <p>This annotation works together with {@link RequiresFlagsEnabled} to define the value that is
+ * required of the flag by the test for the test to run. It is an error for either a method or class
+ * to require that a particular flag be both enabled and disabled.
+ *
+ * <p>If the value of a particular flag is required (by either {@code RequiresFlagsEnabled} or
+ * {@code RequiresFlagsDisabled}) by both the class and test method, then the values must be
+ * consistent.
+ *
+ * <p>If the value of a one flag is required by an annotation on the class, and the value of a
+ * different flag is required by an annotation of the method, then both requirements apply.
  *
  * <p>With {@code CheckFlagsRule}, test(s) will be skipped with 'assumption failed' when any of the
  * required flag on the target Android platform is enabled.
  *
- * <p>If {@code RequiresFlagsDisabled} is applied at both the class and test method, the test method
- * annotation takes precedence, and the class level {@code RequiresFlagsDisabled} is ignored.
+ * <p>Both {@code SetFlagsRule} and {@code CheckFlagsRule} will fail the test if a particular flag
+ * is both set (with {@code EnableFlags} or {@code DisableFlags}) and required (with {@code
+ * RequiresFlagsEnabled} or {@code RequiresFlagsDisabled}).
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})

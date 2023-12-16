@@ -16,102 +16,244 @@
 
 package android.platform.test.flag.junit;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.fail;
 
+import android.platform.test.annotations.DisableFlags;
+import android.platform.test.annotations.EnableFlags;
 import android.platform.test.annotations.RequiresFlagsDisabled;
 import android.platform.test.annotations.RequiresFlagsEnabled;
 import android.platform.test.flag.util.FlagReadException;
 
-import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.junit.runners.MethodSorters;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-/**
- * Tests for {@code CheckFlagsRule}. Test MUST be ended with '_execute' if it is not going to be
- * skipped.
- */
+/** Tests for {@code CheckFlagsRule}. */
 @RunWith(JUnit4.class)
-@RequiresFlagsEnabled("flag1")
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class CheckFlagsRuleTest {
-    private static final List<String> EXPECTED_TESTS_EXECUTED =
-            Arrays.stream(CheckFlagsRuleTest.class.getDeclaredMethods())
-                    .map(Method::getName)
-                    .filter(methodName -> methodName.endsWith("_execute"))
-                    .sorted()
-                    .collect(Collectors.toList());
+public final class CheckFlagsRuleTest {
+    private final CheckFlagsRule mRule =
+            new CheckFlagsRule(
+                    new IFlagsValueProvider() {
+                        @Override
+                        public boolean getBoolean(String flag) throws FlagReadException {
+                            switch (flag) {
+                                case "flag0":
+                                    return false;
+                                case "flag1":
+                                case "flag2":
+                                    return true;
+                                default:
+                                    throw new FlagReadException(flag, "flag not defined");
+                            }
+                        }
+                    });
 
-    private static final List<String> ACTUAL_TESTS_EXECUTED = new ArrayList<>();
-
-    private final IFlagsValueProvider mFlagsValueProvider =
-            new IFlagsValueProvider() {
-                @Override
-                public boolean getBoolean(String flag) throws FlagReadException {
-                    switch (flag) {
-                        case "flag1":
-                            return true;
-                        case "flag2":
-                            return false;
-                        default:
-                            throw new FlagReadException("flag3", "expected boolean but a String");
-                    }
-                }
-            };
-
-    @Rule public final CheckFlagsRule mCheckFlagsRule = new CheckFlagsRule(mFlagsValueProvider);
-
-    @BeforeClass
-    public static void clearList() {
-        ACTUAL_TESTS_EXECUTED.clear();
+    @Test
+    public void emptyTestWithoutAnnotationsPasses() {
+        new AnnotationTestRuleHelper(mRule).prepareTest().assertPasses();
     }
 
     @Test
-    public void noAnnotation_execute() {
-        ACTUAL_TESTS_EXECUTED.add("noAnnotation_execute");
+    public void emptyFailingWithoutAnnotationsFails() {
+        new AnnotationTestRuleHelper(mRule)
+                .setTestCode(
+                        () -> {
+                            fail();
+                        })
+                .prepareTest()
+                .assertFails();
     }
 
     @Test
-    @RequiresFlagsEnabled("flag2")
-    public void methodAnnotationOverrideClassAnnotation_skip() {
-        // Should be skipped.
-        fail();
+    public void usingEnableFlagsOnClassForDifferentFlagPasses() {
+        @EnableFlags("flag0")
+        class SomeClass {}
+        new AnnotationTestRuleHelper(mRule)
+                .setTestClass(SomeClass.class)
+                .addRequiresFlagsEnabled("flag1")
+                .prepareTest()
+                .assertPasses();
     }
 
     @Test
-    @RequiresFlagsEnabled("flag1")
-    @RequiresFlagsDisabled("flag2")
-    public void requireBothEnabledAndDisabledFlags_execute() {
-        ACTUAL_TESTS_EXECUTED.add("requireBothEnabledAndDisabledFlags_execute");
+    public void usingDisableFlagsOnClassForDifferentFlagPasses() {
+        @DisableFlags("flag0")
+        class SomeClass {}
+        new AnnotationTestRuleHelper(mRule)
+                .setTestClass(SomeClass.class)
+                .addRequiresFlagsEnabled("flag1")
+                .prepareTest()
+                .assertPasses();
     }
 
     @Test
-    @RequiresFlagsDisabled("flag1")
-    public void requiredEnabledFlagDisabled_skip() {
-        // Should be skipped.
-        fail();
+    public void usingEnableFlagsOnMethodForDifferentFlagPasses() {
+        new AnnotationTestRuleHelper(mRule)
+                .addEnableFlags("flag0")
+                .addRequiresFlagsEnabled("flag1")
+                .prepareTest()
+                .assertPasses();
     }
 
     @Test
-    @RequiresFlagsEnabled({"flag1", "flag2"})
-    public void requiredDisabledFlagEnabled_skip() {
-        // Should be skipped.
-        fail();
+    public void usingDisableFlagsOnMethodForDifferentFlagPasses() {
+        new AnnotationTestRuleHelper(mRule)
+                .addDisableFlags("flag0")
+                .addRequiresFlagsEnabled("flag1")
+                .prepareTest()
+                .assertPasses();
     }
 
     @Test
-    public void zLastTest_checkExecutedTests() { // Starts the method name with 'z' so that
-        // it will be the last test to get executed.
-        assertArrayEquals(EXPECTED_TESTS_EXECUTED.toArray(), ACTUAL_TESTS_EXECUTED.toArray());
+    public void usingEnableFlagsOnClassForSameFlagFails() {
+        @EnableFlags("flag1")
+        class SomeClass {}
+        new AnnotationTestRuleHelper(mRule)
+                .setTestClass(SomeClass.class)
+                .addRequiresFlagsEnabled("flag1")
+                .prepareTest()
+                .assertFails();
+    }
+
+    @Test
+    public void usingDisableFlagsOnClassForSameFlagFails() {
+        @DisableFlags("flag1")
+        class SomeClass {}
+        new AnnotationTestRuleHelper(mRule)
+                .setTestClass(SomeClass.class)
+                .addRequiresFlagsEnabled("flag1")
+                .prepareTest()
+                .assertFails();
+    }
+
+    @Test
+    public void usingEnableFlagsOnMethodForSameFlagFails() {
+        new AnnotationTestRuleHelper(mRule)
+                .addEnableFlags("flag1")
+                .addRequiresFlagsEnabled("flag1")
+                .prepareTest()
+                .assertFails();
+    }
+
+    @Test
+    public void usingDisableFlagsOnMethodForSameFlagFails() {
+        new AnnotationTestRuleHelper(mRule)
+                .addDisableFlags("flag1")
+                .addRequiresFlagsEnabled("flag1")
+                .prepareTest()
+                .assertFails();
+    }
+
+    @Test
+    public void usingRequiresFlagsEnabledFlag1OnClassPasses() {
+        @RequiresFlagsEnabled("flag1")
+        class SomeClass {}
+        new AnnotationTestRuleHelper(mRule)
+                .setTestClass(SomeClass.class)
+                .prepareTest()
+                .assertPasses();
+    }
+
+    @Test
+    public void usingRequiresFlagsDisabledFlag1OnClassSkipped() {
+        @RequiresFlagsDisabled("flag1")
+        class SomeClass {}
+        new AnnotationTestRuleHelper(mRule)
+                .setTestClass(SomeClass.class)
+                .prepareTest()
+                .assertSkipped();
+    }
+
+    @Test
+    public void usingRequiresFlagsEnabledFlag1OnMethodPasses() {
+        new AnnotationTestRuleHelper(mRule)
+                .addRequiresFlagsEnabled("flag1")
+                .prepareTest()
+                .assertPasses();
+    }
+
+    @Test
+    public void usingRequiresFlagsDisabledFlag1OnMethodSkipped() {
+        new AnnotationTestRuleHelper(mRule)
+                .addRequiresFlagsDisabled("flag1")
+                .prepareTest()
+                .assertSkipped();
+    }
+
+    @Test
+    public void requiringNonexistentFlagEnabledFails() {
+        new AnnotationTestRuleHelper(mRule)
+                .addRequiresFlagsEnabled("nonexistent")
+                .prepareTest()
+                .assertFailsWithTypeAndMessage(FlagReadException.class, "nonexistent");
+    }
+
+    @Test
+    public void requiringNonexistentFlagDisabledFails() {
+        @RequiresFlagsDisabled("nonexistent")
+        class SomeClass {}
+        new AnnotationTestRuleHelper(mRule)
+                .setTestClass(SomeClass.class)
+                .prepareTest()
+                .assertFailsWithTypeAndMessage(FlagReadException.class, "nonexistent");
+    }
+
+    @Test
+    public void conflictingClassAnnotationsFails() {
+        @RequiresFlagsEnabled({"flag1", "flag0"})
+        @RequiresFlagsDisabled("flag1")
+        class SomeClass {}
+        new AnnotationTestRuleHelper(mRule)
+                .setTestClass(SomeClass.class)
+                .prepareTest()
+                .assertFails();
+    }
+
+    @Test
+    public void conflictingMethodAnnotationsFails() {
+        new AnnotationTestRuleHelper(mRule)
+                .addRequiresFlagsEnabled("flag1", "flag0")
+                .addRequiresFlagsDisabled("flag1")
+                .prepareTest()
+                .assertFails();
+    }
+
+    @Test
+    public void conflictingAnnotationsAcrossMethodAndClassFails() {
+        @RequiresFlagsDisabled("flag1")
+        class SomeClass {}
+        new AnnotationTestRuleHelper(mRule)
+                .setTestClass(SomeClass.class)
+                .addRequiresFlagsEnabled("flag1", "flag0")
+                .prepareTest()
+                .assertFails();
+    }
+
+    @Test
+    public void canDuplicateFlagAcrossMethodAndClassAnnotations() {
+        @RequiresFlagsEnabled("flag1")
+        class SomeClass {}
+        new AnnotationTestRuleHelper(mRule)
+                .setTestClass(SomeClass.class)
+                .addRequiresFlagsEnabled("flag1", "flag2")
+                .prepareTest()
+                .assertPasses();
+    }
+
+    @Test
+    public void requiringAllFlagsEnabledSkipped() {
+        new AnnotationTestRuleHelper(mRule)
+                .addRequiresFlagsEnabled("flag0", "flag1", "flag2")
+                .prepareTest()
+                .assertSkipped();
+    }
+
+    @Test
+    public void mixedRequirementsWithOneMissedSkipped() {
+        new AnnotationTestRuleHelper(mRule)
+                .addRequiresFlagsEnabled("flag1")
+                .addRequiresFlagsDisabled("flag0", "flag2")
+                .prepareTest()
+                .assertSkipped();
     }
 }

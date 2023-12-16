@@ -21,6 +21,7 @@ import android.platform.test.flag.util.FlagReadException;
 import android.platform.test.flag.util.FlagSetException;
 
 import com.google.common.base.CaseFormat;
+import com.google.common.collect.Sets;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -28,9 +29,13 @@ import org.junit.runners.model.Statement;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /** A {@link TestRule} that helps to set flag values in unit test. */
 public final class SetFlagsRule implements TestRule {
@@ -48,7 +53,12 @@ public final class SetFlagsRule implements TestRule {
     // Store value for the scope of each test method
     private final Map<Class<?>, Map<Flag, Boolean>> mFlagsClassToFlagDefaultMap = new HashMap<>();
 
+    // Any flags added to this list cannot be set imperatively (i.e. with enableFlags/disableFlags)
+    private final Set<String> mLockedFlagNames = new HashSet<>();
+
     private boolean mIsInitWithDefault = false;
+    private FlagsParameterization mFlagsParameterization;
+    private boolean mIsRuleEvaluating = false;
 
     /**
      * Enable default value for flags
@@ -91,6 +101,12 @@ public final class SetFlagsRule implements TestRule {
     }
 
     public SetFlagsRule(DefaultInitValueType defaultType) {
+        this(defaultType, null);
+    }
+
+    public SetFlagsRule(
+            DefaultInitValueType defaultType,
+            @Nullable FlagsParameterization flagsParameterization) {
         switch (defaultType) {
             case DEVICE_DEFAULT:
                 mIsInitWithDefault = true;
@@ -98,6 +114,27 @@ public final class SetFlagsRule implements TestRule {
             default:
                 break;
         }
+        mFlagsParameterization = flagsParameterization;
+        if (flagsParameterization != null) {
+            mLockedFlagNames.addAll(flagsParameterization.mOverrides.keySet());
+        }
+    }
+
+    /**
+     * Set the FlagsParameterization to be used during this test. This cannot be used to override a
+     * previous call, and cannot be called once the rule has been evaluated.
+     */
+    public void setFlagsParameterization(@Nonnull FlagsParameterization flagsParameterization) {
+        Objects.requireNonNull(flagsParameterization, "FlagsParameterization cannot be cleared");
+        if (mFlagsParameterization != null) {
+            throw new AssertionError("FlagsParameterization cannot be overridden");
+        }
+        if (mIsRuleEvaluating) {
+            throw new AssertionError("Cannot set FlagsParameterization once the rule is running");
+        }
+        ensureFlagsAreUnset();
+        mFlagsParameterization = flagsParameterization;
+        mLockedFlagNames.addAll(flagsParameterization.mOverrides.keySet());
     }
 
     /**
@@ -108,6 +145,9 @@ public final class SetFlagsRule implements TestRule {
      */
     public void enableFlags(String... fullFlagNames) {
         for (String fullFlagName : fullFlagNames) {
+            if (mLockedFlagNames.contains(fullFlagName)) {
+                throw new FlagSetException(fullFlagName, "Not allowed to change locked flags");
+            }
             setFlagValue(fullFlagName, true);
         }
     }
@@ -120,6 +160,9 @@ public final class SetFlagsRule implements TestRule {
      */
     public void disableFlags(String... fullFlagNames) {
         for (String fullFlagName : fullFlagNames) {
+            if (mLockedFlagNames.contains(fullFlagName)) {
+                throw new FlagSetException(fullFlagName, "Not allowed to change locked flags");
+            }
             setFlagValue(fullFlagName, false);
         }
     }
@@ -155,6 +198,12 @@ public final class SetFlagsRule implements TestRule {
         return featureFlagsClass.cast(fakeFlagsImplInstance);
     }
 
+    private void ensureFlagsAreUnset() {
+        if (!mFlagsClassToFakeFlagsImpl.isEmpty()) {
+            throw new AssertionError("Some flags were set before the rule was initialized");
+        }
+    }
+
     @Override
     public Statement apply(Statement base, Description description) {
         return new Statement() {
@@ -162,10 +211,29 @@ public final class SetFlagsRule implements TestRule {
             public void evaluate() throws Throwable {
                 Throwable throwable = null;
                 try {
+                    AnnotationsRetriever.FlagAnnotations flagAnnotations =
+                            AnnotationsRetriever.getFlagAnnotations(description);
+                    assertAnnotationsMatchParameterization(flagAnnotations, mFlagsParameterization);
+                    flagAnnotations.assumeAllSetFlagsMatchParameterization(mFlagsParameterization);
+                    if (mFlagsParameterization != null) {
+                        ensureFlagsAreUnset();
+                        for (Map.Entry<String, Boolean> pair :
+                                mFlagsParameterization.mOverrides.entrySet()) {
+                            setFlagValue(pair.getKey(), pair.getValue());
+                        }
+                    }
+                    for (Map.Entry<String, Boolean> pair :
+                            flagAnnotations.mSetFlagValues.entrySet()) {
+                        setFlagValue(pair.getKey(), pair.getValue());
+                    }
+                    mLockedFlagNames.addAll(flagAnnotations.mRequiredFlagValues.keySet());
+                    mLockedFlagNames.addAll(flagAnnotations.mSetFlagValues.keySet());
+                    mIsRuleEvaluating = true;
                     base.evaluate();
                 } catch (Throwable t) {
                     throwable = t;
                 } finally {
+                    mIsRuleEvaluating = false;
                     try {
                         resetFlags();
                     } catch (Throwable t) {
@@ -178,6 +246,24 @@ public final class SetFlagsRule implements TestRule {
                 if (throwable != null) throw throwable;
             }
         };
+    }
+
+    private static void assertAnnotationsMatchParameterization(
+            AnnotationsRetriever.FlagAnnotations flagAnnotations,
+            FlagsParameterization parameterization) {
+        if (parameterization == null) return;
+        Set<String> parameterizedFlags = parameterization.mOverrides.keySet();
+        Set<String> requiredFlags = flagAnnotations.mRequiredFlagValues.keySet();
+        // Assert that NO Annotation-Required flag is in the parameterization
+        Set<String> parameterizedAndRequiredFlags =
+                Sets.intersection(parameterizedFlags, requiredFlags);
+        if (!parameterizedAndRequiredFlags.isEmpty()) {
+            throw new AssertionError(
+                    "The following flags have required values (per @RequiresFlagsEnabled or"
+                            + " @RequiresFlagsDisabled) but they are part of the"
+                            + " FlagParameterization: "
+                            + parameterizedAndRequiredFlags);
+        }
     }
 
     private void setFlagValue(String fullFlagName, boolean value) {

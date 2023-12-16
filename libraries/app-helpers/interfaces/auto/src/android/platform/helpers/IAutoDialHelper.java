@@ -50,6 +50,19 @@ public interface IAutoDialHelper extends IAppHelper, Scrollable {
     void pressDeviceOnPrompt();
 
     /**
+     * Press the contact info element on screen containing the given name.
+     *
+     * @param expectedName - The contact name on the contact info element
+     */
+    void pressContactResult(String expectedName);
+
+    /** Assumes contact page is open. Press the mobile call button on a contact page. */
+    void pressMobileCallOnContact();
+
+    /** Assumes Dialer settings page is open. Press the active call toggle. */
+    void pressActiveCallToggle();
+
+    /**
      * Setup expectations: The app is open and there is an ongoing call.
      *
      * <p>This method is used to end call using softkey.
@@ -87,11 +100,19 @@ public interface IAutoDialHelper extends IAppHelper, Scrollable {
     String getDialedNumber();
 
     /**
+     * Setup expectations: A call is underway, and the call screen is in focus on the device.
+     *
+     * <p>This method is used to get the number that is currently being dialed, or has been dialed
+     * on a currently-displayed ongoing call
+     */
+    String getDialingNumber();
+
+    /**
      * Setup expectations: The app is open and in Dialpad
      *
      * <p>This method is used to get the number entered on dialpad
      */
-    String getDialInNumber();
+    String getNumberInDialPad();
 
     /**
      * Setup expectations: The app is open and there is an ongoing call.
@@ -161,6 +182,13 @@ public interface IAutoDialHelper extends IAppHelper, Scrollable {
      * <p>This method is used to make a call to the first history from Call History.
      */
     void callMostRecentHistory();
+
+    /**
+     * Setup expectations: The Phone Dialer Settings page is open.
+     *
+     * <p>This method returns the phone name recorded under the "Connected Phone" settings field.
+     */
+    String getConnectedPhoneName();
 
     /**
      * Setup expectations: The app is open and there is an ongoing call.
@@ -241,11 +269,18 @@ public interface IAutoDialHelper extends IAppHelper, Scrollable {
      * @param contact Contact's details page to be opened.
      */
     void openDetailsPage(String contact);
+
+    /** Setup expectations: The dialer main page is open. Opens the dial pad screen. */
+    void openDialPad();
+
     /**
-     * Setup expectations: The app is open.
+     * Setup expectations: The dialer app page is open.
      *
-     * <p>This method is used to check if phone is paired.
+     * <p>This method opens the dialer settings page (via the Settings icon button on the dialer
+     * page.
      */
+    void openDialerSettings();
+
     boolean isPhonePaired();
     /**
      * Setup expectations: The app is open.
@@ -270,6 +305,13 @@ public interface IAutoDialHelper extends IAppHelper, Scrollable {
     boolean isOngoingCallDisplayedOnHome();
 
     /**
+     * Setup expectations: None
+     *
+     * @return Whether the screen currently shows an ongoing call (in full-screen mode).
+     */
+    boolean isOngoingCallInFullScreen();
+
+    /**
      * Setup expectations: The home screen is open
      *
      * <p>This method is used for opening phone app from homescreen
@@ -282,6 +324,20 @@ public interface IAutoDialHelper extends IAppHelper, Scrollable {
      * <p>This method is used to get visible contacts list
      */
     List<String> getListOfAllVisibleContacts();
+
+    /**
+     * Setup expectations: The call history view is open.
+     *
+     * @return - The number of call histrory entries currently on screen.
+     */
+    int getNumberOfCallHistoryEntries();
+
+    /**
+     * Setup expectations: the Dialer Settings page is open.
+     *
+     * <p>Returns true if the Active Call feature is enabled, false otherwise.
+     */
+    boolean isActiveCallEnabled();
 
     /**
      * Setup expectations: bluetooth is off

@@ -48,6 +48,7 @@ fun formatRealTimestamp(timestampNs: Long): String {
 }
 
 fun executeShellCommand(cmd: String): ByteArray {
+    Logger.d(LOG_TAG, "Executing shell command $cmd")
     val uiAutomation: UiAutomation = InstrumentationRegistry.getInstrumentation().uiAutomation
     val fileDescriptor = uiAutomation.executeShellCommand(cmd)
     ParcelFileDescriptor.AutoCloseInputStream(fileDescriptor).use { inputStream ->
@@ -108,7 +109,7 @@ fun getCurrentState(
         }
     val layersTraceData =
         if (dumpTypes.contains(TraceType.SF_DUMP)) {
-            PerfettoTraceMonitor().enableLayersDump().withTracing {}
+            PerfettoTraceMonitor.newBuilder().enableLayersDump().build().withTracing {}
         } else {
             ByteArray(0)
         }

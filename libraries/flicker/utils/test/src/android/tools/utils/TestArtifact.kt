@@ -20,7 +20,7 @@ import android.tools.common.io.Artifact
 import android.tools.common.io.ResultArtifactDescriptor
 import android.tools.common.io.RunStatus
 
-class InMemoryArtifact(artifactIdentifier: String) : Artifact {
+class TestArtifact(artifactIdentifier: String) : Artifact {
 
     override val absolutePath = "IN_MEMORY/$artifactIdentifier"
     override val stableId = artifactIdentifier
@@ -43,7 +43,7 @@ class InMemoryArtifact(artifactIdentifier: String) : Artifact {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is InMemoryArtifact) return false
+        if (other !is TestArtifact) return false
 
         if (absolutePath != other.absolutePath) return false
 
@@ -55,6 +55,6 @@ class InMemoryArtifact(artifactIdentifier: String) : Artifact {
     }
 
     companion object {
-        val EMPTY = InMemoryArtifact("Empty")
+        val EMPTY = TestArtifact("Empty")
     }
 }

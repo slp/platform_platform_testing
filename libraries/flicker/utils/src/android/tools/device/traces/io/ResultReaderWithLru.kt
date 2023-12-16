@@ -46,15 +46,7 @@ open class ResultReaderWithLru(
     override fun readWmTrace(): WindowManagerTrace? {
         val descriptor = ResultArtifactDescriptor(TraceType.WM)
         val key = CacheKey(reader.artifact.stableId, descriptor, reader.transitionTimeRange)
-        val trace =
-            wmTraceCache[key]
-                ?: reader.readWmTrace().also {
-                    Logger.d(FLICKER_IO_TAG, "Cache miss $descriptor, $reader readWmTraceTrace")
-                }
-        return trace?.also {
-            wmTraceCache.put(key, trace)
-            Logger.d(FLICKER_IO_TAG, "Add to cache $descriptor, $reader")
-        }
+        return wmTraceCache.logAndReadTrace(key) { reader.readWmTrace() }
     }
 
     /** {@inheritDoc} */
@@ -62,15 +54,7 @@ open class ResultReaderWithLru(
     override fun readLayersTrace(): LayersTrace? {
         val descriptor = ResultArtifactDescriptor(TraceType.SF)
         val key = CacheKey(reader.artifact.stableId, descriptor, reader.transitionTimeRange)
-        val trace =
-            layersTraceCache[key]
-                ?: reader.readLayersTrace().also {
-                    Logger.d(FLICKER_IO_TAG, "Cache miss $descriptor, $reader readLayersTrace")
-                }
-        return trace?.also {
-            layersTraceCache.put(key, trace)
-            Logger.d(FLICKER_IO_TAG, "Add to cache $descriptor, $reader")
-        }
+        return layersTraceCache.logAndReadTrace(key) { reader.readLayersTrace() }
     }
 
     /** {@inheritDoc} */
@@ -78,15 +62,7 @@ open class ResultReaderWithLru(
     override fun readEventLogTrace(): EventLog? {
         val descriptor = ResultArtifactDescriptor(TraceType.EVENT_LOG)
         val key = CacheKey(reader.artifact.stableId, descriptor, reader.transitionTimeRange)
-        val trace =
-            eventLogCache[key]
-                ?: reader.readEventLogTrace().also {
-                    Logger.d(FLICKER_IO_TAG, "Cache miss $descriptor, $reader readEventLogTrace")
-                }
-        return trace?.also {
-            eventLogCache.put(key, trace)
-            Logger.d(FLICKER_IO_TAG, "Add to cache $descriptor")
-        }
+        return eventLogCache.logAndReadTrace(key) { reader.readEventLogTrace() }
     }
 
     /** {@inheritDoc} */
@@ -95,10 +71,32 @@ open class ResultReaderWithLru(
         return ResultReaderWithLru(slicedReader.result, slicedReader.traceConfig, slicedReader)
     }
 
+    private fun <TraceType> LruCache<CacheKey, TraceType>.logAndReadTrace(
+        key: CacheKey,
+        predicate: () -> TraceType?
+    ): TraceType? {
+        return Logger.withTracing("logAndReadTrace") {
+            var value = this[key]
+            if (value == null) {
+                value =
+                    Logger.withTracing("cache miss") {
+                        Logger.d(FLICKER_IO_TAG, "Cache miss $key, $reader")
+                        predicate()
+                    }
+            }
+
+            if (value != null) {
+                this.put(key, value)
+                Logger.d(FLICKER_IO_TAG, "Add to cache $key, $reader")
+            }
+            value
+        }
+    }
+
     companion object {
         data class CacheKey(
             private val artifact: String,
-            private val descriptor: ResultArtifactDescriptor,
+            internal val descriptor: ResultArtifactDescriptor,
             private val transitionTimeRange: TransitionTimeRange
         )
 
