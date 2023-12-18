@@ -44,6 +44,7 @@ IMPOST_CONTACTS_SHELL_COMAND = (
         + ' -a android.intent.action.VIEW com.google.android.contacts'
 )
 PATH_TO_CONTACTS_VCF_FILE = 'platform_testing/tests/automotive/mobly_tests/utils/contacts_test.vcf'
+DISABLE_ANDROID_AUTO_POP_UP = "pm disable --user 10 com.google.android.embedded.projection"
 
 # Should be kept in sync with BluetoothProfile.java
 BT_PROFILE_CONSTANTS = {
