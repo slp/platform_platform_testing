@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package android.tools.rules
+package android.tools.device.rules
 
+import android.tools.common.ScenarioBuilder
+import android.tools.device.traces.io.ResultWriter
 import android.tools.device.traces.monitors.PerfettoTraceMonitor
 import android.tools.device.traces.monitors.TraceMonitor
 import android.tools.device.traces.monitors.view.ViewTraceMonitor
 import android.tools.device.traces.monitors.wm.ShellTransitionTraceMonitor
 import android.tools.device.traces.monitors.wm.WindowManagerTraceMonitor
 import android.tools.device.traces.monitors.wm.WmTransitionTraceMonitor
-import android.tools.utils.newTestResultWriter
+import kotlin.io.path.createTempDirectory
+import kotlin.io.path.name
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -44,7 +47,17 @@ class StopAllTracesRule : TestRule {
 
     companion object {
         private fun TraceMonitor.stopIfEnabled() {
-            if (isEnabled) stop(newTestResultWriter())
+            if (!isEnabled) {
+                return
+            }
+            val resultWriter =
+                ResultWriter()
+                    .forScenario(
+                        ScenarioBuilder().forClass(kotlin.io.path.createTempFile().name).build()
+                    )
+                    .withOutputDir(createTempDirectory().toFile())
+                    .setRunComplete()
+            stop(resultWriter)
         }
     }
 }
