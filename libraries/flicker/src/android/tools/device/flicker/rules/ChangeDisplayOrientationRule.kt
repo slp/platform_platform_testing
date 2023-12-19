@@ -87,6 +87,8 @@ constructor(
             val device: UiDevice = UiDevice.getInstance(instrumentation)
 
             try {
+                device.unfreezeRotation()
+
                 when (rotation) {
                     Rotation.ROTATION_270 -> device.setOrientationRight()
                     Rotation.ROTATION_90 -> device.setOrientationLeft()
@@ -101,6 +103,7 @@ constructor(
                     Logger.v(FLICKER_TAG, "Rotation is not allowed in the state")
                     return
                 }
+                device.freezeRotation()
             } catch (e: RemoteException) {
                 throw RuntimeException(e)
             }
