@@ -29,8 +29,9 @@ import android.support.test.uiautomator.Until;
 import android.system.helpers.PackageHelper;
 import android.system.helpers.PermissionHelper;
 import android.test.InstrumentationTestCase;
-import android.test.suitebuilder.annotation.MediumTest;
-import android.test.suitebuilder.annotation.SmallTest;
+
+import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import java.util.Arrays;
 import java.util.List;
