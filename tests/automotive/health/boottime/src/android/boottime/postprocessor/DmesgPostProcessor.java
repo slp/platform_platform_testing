@@ -16,11 +16,14 @@
 
 package android.boottime.postprocessor;
 
+import android.boottime.BootTimeTest;
+
 import com.android.loganalysis.item.DmesgActionInfoItem;
 import com.android.loganalysis.item.DmesgItem;
 import com.android.loganalysis.item.DmesgServiceInfoItem;
 import com.android.loganalysis.item.DmesgStageInfoItem;
 import com.android.loganalysis.parser.DmesgParser;
+import com.android.tradefed.config.Option;
 import com.android.tradefed.config.OptionClass;
 import com.android.tradefed.log.LogUtil;
 import com.android.tradefed.log.LogUtil.CLog;
@@ -36,10 +39,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /** A Post Processor that processes text file containing dmesg logs into key-value pairs */
 @OptionClass(alias = "dmesg-post-processor")
@@ -51,6 +56,14 @@ public class DmesgPostProcessor extends BaseBootTimeTestLogPostProcessor {
     private static final String ACTION = "action_";
     private static final String INIT_STAGE = "init_stage_";
     private static final String BOOT_COMPLETE_ACTION = "sys.boot_completed=1";
+    private static final String BOOTLOADER_TIME = "bootloader_time";
+    private static final String BOOTLOADER_PREFIX = "bootloader-";
+    private static final String BOOTLOADER_PHASE_SW = "SW";
+    private static final String TOTAL_BOOT_TIME = "TOTAL_BOOT_TIME";
+    private List<String> mBootLoaderPropValues = new ArrayList<>();
+
+    @Option(name = "bootloader-info", description = "Collect the boot loader timing.")
+    private boolean mBootloaderInfo = false;
 
     /** {@inheritDoc} */
     @Override
@@ -59,6 +72,17 @@ public class DmesgPostProcessor extends BaseBootTimeTestLogPostProcessor {
             HashMap<String, Metric> testMetrics,
             Map<String, LogFile> testLogs) {
         LogUtil.CLog.v("Processing test logs for %s", testDescription.getTestName());
+        if (mBootloaderInfo) {
+            List<String> bootLoaderPropKeys =
+                    testMetrics.keySet().stream()
+                            .filter(key -> key.startsWith(BootTimeTest.getBootTimePropKey()))
+                            .sorted()
+                            .collect(Collectors.toList());
+            for (String key : bootLoaderPropKeys) {
+                String value = testMetrics.get(key).getMeasurements().getSingleString();
+                mBootLoaderPropValues.add(value);
+            }
+        }
         return processDmesgLogs(filterFiles(testLogs));
     }
 
@@ -66,7 +90,8 @@ public class DmesgPostProcessor extends BaseBootTimeTestLogPostProcessor {
     @Override
     public Map<String, Metric.Builder> processRunMetricsAndLogs(
             HashMap<String, Metric> rawMetrics, Map<String, LogFile> runLogs) {
-        return processDmesgLogs(filterFiles(runLogs));
+        // noop
+        return new HashMap<>();
     }
 
     /**
@@ -101,6 +126,11 @@ public class DmesgPostProcessor extends BaseBootTimeTestLogPostProcessor {
             } catch (IOException ioe) {
                 CLog.e("Failed to analyze the dmesg logs", ioe);
             }
+        }
+        if (mBootloaderInfo) {
+            ArrayListMultimap<String, Double> bootLoaderTimingInfos =
+                    analyzeBootLoaderTimingInfo(metrics.get(DMESG_BOOT_COMPLETE_TIME));
+            metrics.putAll(bootLoaderTimingInfos);
         }
         return buildTfMetrics(metrics.asMap());
     }
@@ -195,6 +225,55 @@ public class DmesgPostProcessor extends BaseBootTimeTestLogPostProcessor {
                                 START_TIME);
                 metrics.put(key, actionInfoItem.getStartTime().doubleValue());
             }
+        }
+        return metrics;
+    }
+
+    private ArrayListMultimap<String, Double> analyzeBootLoaderTimingInfo(
+            List<Double> dmesgBootCompleteTimes) {
+        int iteration = 0;
+        ArrayListMultimap<String, Double> metrics = ArrayListMultimap.create();
+        if (dmesgBootCompleteTimes.size() != mBootLoaderPropValues.size()) {
+            CLog.w(
+                    String.format(
+                            "Bootloader prop values list size does not match dmesg boot complete "
+                                    + "time list size. %d vs %d",
+                            mBootLoaderPropValues.size(), dmesgBootCompleteTimes.size()));
+        }
+        for (String bootLoaderVal : mBootLoaderPropValues) {
+            if (!bootLoaderVal.isEmpty() && bootLoaderVal.split(",").length >= 2) {
+                String[] bootLoaderPhases = bootLoaderVal.split(",");
+                double bootLoaderTotalTime = 0d;
+                for (String bootLoaderPhase : bootLoaderPhases) {
+                    String[] bootKeyVal = bootLoaderPhase.split(":");
+                    String key = String.format("%s%s", BOOTLOADER_PREFIX, bootKeyVal[0]);
+                    metrics.put(key, Double.parseDouble(bootKeyVal[1]));
+                    // SW is the time spent on the warning screen. So ignore it in
+                    // final boot time calculation.
+                    if (!BOOTLOADER_PHASE_SW.equalsIgnoreCase(bootKeyVal[0])) {
+                        bootLoaderTotalTime += Double.parseDouble(bootKeyVal[1]);
+                    }
+                }
+
+                // Report bootloader time as well in the dashboard.
+                CLog.i("Bootloader time is: %s", bootLoaderTotalTime);
+                metrics.put(BOOTLOADER_TIME, bootLoaderTotalTime);
+
+                // First "action_sys.boot_completed=1_START_TIME" is parsed already from dmesg logs.
+                // Calculate the sum of bootLoaderTotalTime and boot completed flag set time.
+                double bootCompleteTime =
+                        iteration >= dmesgBootCompleteTimes.size()
+                                ? 0L
+                                : dmesgBootCompleteTimes.get(iteration);
+                double totalBootTime = bootLoaderTotalTime + bootCompleteTime;
+                metrics.put(TOTAL_BOOT_TIME, totalBootTime);
+            } else {
+                CLog.w(
+                        "Boot time prop value is empty for iteration %d. Skipping metric"
+                                + " calculation",
+                        iteration);
+            }
+            iteration++;
         }
         return metrics;
     }
