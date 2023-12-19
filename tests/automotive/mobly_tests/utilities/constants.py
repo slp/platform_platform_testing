@@ -13,6 +13,7 @@
 #  limitations under the License.
 """Constants class contains final variables using by other classes."""
 
+LOCAL_MAC_ADDRESS_PERMISSION = 'android.permission.LOCAL_MAC_ADDRESS'
 APS_PACKAGE = 'android.platform.snippets'
 DIAL_A_NUMBER = 'Dial a number'
 DEFAULT_WAIT_TIME_FIVE_SECS = 5
