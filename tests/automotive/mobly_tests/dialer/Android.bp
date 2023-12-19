@@ -700,3 +700,32 @@ python_test_host {
         },
     },
 }
+
+python_test_host {
+    name: "BTDialerPhoneCard",
+    main: "dialer_test_launch_from_phone_card.py",
+    srcs: ["dialer_test_launch_from_phone_card.py"],
+
+    libs: [
+        "mobly",
+        "utilities",
+        "bluetooth_test",
+        "BluetoothSMSTestLibrary"
+    ],
+    test_suites: [
+        "catbox",
+    ],
+    test_options: {
+        unit_test: false,
+    },
+    data: [
+        // Package the snippet with the mobly test
+        ":AutomotiveSnippet",
+        ":PhoneSnippet",
+    ],
+    version: {
+        py3: {
+            embedded_launcher: true,
+        },
+    },
+}

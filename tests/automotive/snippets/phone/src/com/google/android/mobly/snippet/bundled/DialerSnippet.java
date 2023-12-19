@@ -257,6 +257,12 @@ public class DialerSnippet implements Snippet {
         mDialerHelper.get().pressActiveCallToggle();
     }
 
+    /** Press Active Call toggle */
+    @Rpc(description = "Press the dialer button on the phone card on the home screen.")
+    public void pressDialerButtonOnPhoneCard() {
+        mDialerHelper.get().pressDialerButtonOnPhoneCard();
+    }
+
     /** Rpc to press the Mobile call action button on a contact page */
     @Rpc(description = "Press the Mobile call button on a contact page")
     public void pressMobileCallOnContact() {
