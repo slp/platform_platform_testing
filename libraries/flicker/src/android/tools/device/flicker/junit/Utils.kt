@@ -42,7 +42,9 @@ object Utils {
         )
 
     internal fun doWaitForUiStabilize(wmHelper: WindowManagerStateHelper) {
-        wmHelper.StateSyncBuilder().add(UI_STABLE_CONDITIONS).waitFor()
+        Logger.withTracing("doWaitForUiStabilize") {
+            wmHelper.StateSyncBuilder().add(UI_STABLE_CONDITIONS).waitFor()
+        }
     }
 
     internal fun notifyRunnerProgress(
