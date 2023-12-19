@@ -72,6 +72,7 @@ class TransitionExecutionRule(
     }
 
     private fun doRunBeforeTransition() {
+        Utils.doWaitForUiStabilize(wmHelper)
         Logger.withTracing("doRunBeforeTransition") {
             Utils.notifyRunnerProgress(scenario, "Running doRunBeforeTransition")
             Logger.d(FLICKER_RUNNER_TAG, "doRunBeforeTransition")
@@ -89,10 +90,10 @@ class TransitionExecutionRule(
     }
 
     private fun doRunAfterTransition() {
+        Utils.doWaitForUiStabilize(wmHelper)
         Logger.withTracing("doRunAfterTransition") {
             Utils.notifyRunnerProgress(scenario, "Running doRunAfterTransition")
             Logger.d(FLICKER_RUNNER_TAG, "doRunAfterTransition")
-            Utils.doWaitForUiStabilize(wmHelper)
             val now = now()
             resultWriter.setTransitionEndTime(now)
             EventLog.writeEvent(
