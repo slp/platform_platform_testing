@@ -26,6 +26,7 @@ import com.android.tradefed.result.TestDescription;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -108,6 +109,7 @@ public class BaseBootTimeTestLogPostProcessor extends BasePostProcessor {
                 files.add(new File(entry.getValue().getPath()));
             }
         }
+        files.sort(Comparator.comparing(File::getName));
         return files;
     }
 }
