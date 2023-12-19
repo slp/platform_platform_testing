@@ -24,6 +24,7 @@ import android.platform.test.scenario.annotation.Scenario;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -92,6 +93,7 @@ public class SwitchToNewGuest {
         if (MultiUserConstants.INCLUDE_CREATION_TIME) {
             mGuestId = mMultiUserHelper.createUser(MultiUserConstants.GUEST_NAME, true);
         }
+        Assume.assumeTrue("Target user id must be greater than 10", mGuestId > 10);
         mMultiUserHelper.switchToUserId(mGuestId);
 
         // Drop elevated permissions
