@@ -29,6 +29,7 @@ import android.tools.device.flicker.rules.ArtifactSaverRule
 import android.tools.device.flicker.rules.ChangeDisplayOrientationRule
 import android.tools.device.flicker.rules.LaunchAppRule
 import android.tools.device.flicker.rules.RemoveAllTasksButHomeRule
+import android.tools.device.rules.StopAllTracesRule
 import android.tools.device.traces.io.IResultData
 import android.tools.device.traces.io.ResultWriter
 import org.junit.rules.RuleChain
@@ -75,6 +76,7 @@ class TransitionRunner(
     private fun buildTestRuleChain(flicker: FlickerTestData): RuleChain {
         val errorRule = ArtifactSaverRule()
         return RuleChain.outerRule(errorRule)
+            .around(StopAllTracesRule())
             .around(UnlockScreenRule())
             .around(NavigationModeRule(scenario.navBarMode.value, false))
             .around(
