@@ -67,7 +67,7 @@ constructor(
         utils.forceStopPackage(requiredNotesRoleHolderPackage)
 
         previousStylusEverUsed =
-            Settings.Global.getInt(contentResolver, Settings.Global.STYLUS_EVER_USED)
+            Settings.Global.getInt(contentResolver, Settings.Global.STYLUS_EVER_USED, /* def= */ 0)
         setStylusEverUsed(if (isStylusEverUsed) 1 else 0)
     }
 
