@@ -21,14 +21,10 @@ import com.android.loganalysis.item.DmesgItem;
 import com.android.loganalysis.item.DmesgServiceInfoItem;
 import com.android.loganalysis.item.DmesgStageInfoItem;
 import com.android.loganalysis.parser.DmesgParser;
-import com.android.tradefed.config.Option;
 import com.android.tradefed.config.OptionClass;
 import com.android.tradefed.log.LogUtil;
 import com.android.tradefed.log.LogUtil.CLog;
-import com.android.tradefed.metrics.proto.MetricMeasurement;
-import com.android.tradefed.metrics.proto.MetricMeasurement.Measurements;
 import com.android.tradefed.metrics.proto.MetricMeasurement.Metric;
-import com.android.tradefed.postprocessor.BasePostProcessor;
 import com.android.tradefed.result.LogFile;
 import com.android.tradefed.result.TestDescription;
 
@@ -40,19 +36,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /** A Post Processor that processes text file containing dmesg logs into key-value pairs */
 @OptionClass(alias = "dmesg-post-processor")
-public class DmesgPostProcessor extends BasePostProcessor {
+public class DmesgPostProcessor extends BaseBootTimeTestLogPostProcessor {
     private static final String INIT = "init_";
     private static final String START_TIME = "_START_TIME";
     private static final String DURATION = "_DURATION";
@@ -60,11 +51,6 @@ public class DmesgPostProcessor extends BasePostProcessor {
     private static final String ACTION = "action_";
     private static final String INIT_STAGE = "init_stage_";
     private static final String BOOT_COMPLETE_ACTION = "sys.boot_completed=1";
-    private static final String DMESG_BOOT_COMPLETE_TIME =
-            "dmesg_action_sys.boot_completed_first_timestamp";
-
-    @Option(name = "file-regex", description = "Regex for identifying a dmesg file name.")
-    private Set<String> mDmesgFileRegex = new HashSet<>();
 
     /** {@inheritDoc} */
     @Override
@@ -81,18 +67,6 @@ public class DmesgPostProcessor extends BasePostProcessor {
     public Map<String, Metric.Builder> processRunMetricsAndLogs(
             HashMap<String, Metric> rawMetrics, Map<String, LogFile> runLogs) {
         return processDmesgLogs(filterFiles(runLogs));
-    }
-
-    /** {@inheritDoc} */
-    /**
-     * Returns {@link MetricMeasurement.DataType.RAW} for metrics reported by the post processor.
-     * RAW is required in order for {@link
-     * com.android.tradefed.postprocessor.MetricFilePostProcessor} to aggregate the values
-     */
-    @Override
-    protected MetricMeasurement.DataType getMetricType() {
-        // Return raw metrics in order for MetricFilePostProcessor to aggregate
-        return MetricMeasurement.DataType.RAW;
     }
 
     /**
@@ -129,30 +103,6 @@ public class DmesgPostProcessor extends BasePostProcessor {
             }
         }
         return buildTfMetrics(metrics.asMap());
-    }
-
-    /**
-     * Build TradeFed metrics from raw Double values.
-     *
-     * @param metrics contains a map of {@link Collection} each single value represents a metric for
-     *     a particular boot iteration
-     * @return Map with metric keys and stringified double values joined by comma
-     */
-    private Map<String, Metric.Builder> buildTfMetrics(Map<String, Collection<Double>> metrics) {
-        Map<String, Metric.Builder> tfMetrics = new HashMap<>();
-
-        CLog.v("Collected %d metrics", metrics.size());
-        for (Map.Entry<String, Collection<Double>> entry : metrics.entrySet()) {
-            String stringValue =
-                    entry.getValue().stream()
-                            .map(value -> value.toString())
-                            .collect(Collectors.joining(","));
-            Measurements.Builder measurement =
-                    Measurements.newBuilder().setSingleString(stringValue);
-            Metric.Builder metricBuilder = Metric.newBuilder().setMeasurements(measurement);
-            tfMetrics.put(entry.getKey(), metricBuilder);
-        }
-        return tfMetrics;
     }
 
     /**
@@ -247,23 +197,5 @@ public class DmesgPostProcessor extends BasePostProcessor {
             }
         }
         return metrics;
-    }
-
-    private List<File> filterFiles(Map<String, LogFile> logs) {
-        List<File> dmesgFiles = new ArrayList<>();
-        for (Map.Entry<String, LogFile> entry : logs.entrySet()) {
-            CLog.v("Filtering log file %s", entry.getKey());
-            Optional<String> match =
-                    mDmesgFileRegex.stream()
-                            .filter(regex -> entry.getKey().matches(regex))
-                            .findAny();
-            if (match.isPresent()) {
-                CLog.d(
-                        "Found dmesg testLog file %s at %s",
-                        entry.getKey(), entry.getValue().getPath());
-                dmesgFiles.add(new File(entry.getValue().getPath()));
-            }
-        }
-        return dmesgFiles;
     }
 }
