@@ -35,3 +35,13 @@ rust_defaults {
         "nostart-stop-gc",
     ],
 }
+
+rust_test {
+    name: "librdroidtest_test",
+    srcs: ["tests/raw.rs"],
+    test_suites: [
+        "general-tests",
+    ],
+    host_supported: true,
+    defaults: ["rdroidtest.defaults"],
+}
