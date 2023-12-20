@@ -18,8 +18,7 @@ import time
 import re
 
 from utilities import constants
-from mobly import asserts
-from mobly.controllers import android_device
+from utilities.common_utils import CommonUtils
 
 
 class MediaUtils:
@@ -28,6 +27,7 @@ class MediaUtils:
     def __init__(self, target, discoverer):
         self.target = target
         self.discoverer = discoverer
+        self.common_utils = CommonUtils(self.target, self.discoverer)
 
     # Execute any shell command on phone device
     def execute_shell_on_device(self, shell_command):
@@ -245,4 +245,19 @@ class MediaUtils:
     def click_on_playlist_icon(self):
         logging.info("Click on Playlist icon on HU")
         self.discoverer.mbs.clickOnPlaylistIcon()
+
+    # Open Youtube Music app on HU
+    def open_youtube_music_app_on_hu(self):
+        logging.info("Open <%s> app on HU", constants.YOUTUBE_MUSIC_APP)
+        self.common_utils.click_on_ui_element_with_text(constants.YOUTUBE_MUSIC_APP)
+
+    # Open Bluetooth Audio app on HU
+    def open_bluetooth_audio_app_on_hu(self):
+        logging.info("Open <%s> app on HU", constants.BLUETOOTH_AUDIO_APP)
+        self.common_utils.click_on_ui_element_with_text(constants.BLUETOOTH_AUDIO_APP)
+
+    # Open Media Apps menu
+    def open_media_apps_menu(self):
+        logging.info("Open Media apps menu items on HU")
+        self.discoverer.mbs.openMediaAppMenuItems()
 
