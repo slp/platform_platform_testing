@@ -659,4 +659,7 @@ public class AutomotiveConfigConstants {
     public static final String MOBILE_PHONE_ICON = "MOBILE_PHONE_ICON";
     public static final String PHONE_DEVICE_PACKAGE = "PHONE_DEVICE_PACAKAGE";
     public static final String MOBILE_DIALPAD_INPUT = "MOBILE_DIALPAD_INPUT";
+
+    // Phone Card Identifiers
+    public static final String PHONE_CARD_DIALER_BUTTON = "PHONE_CARD_DIALER_BUTTON";
 }

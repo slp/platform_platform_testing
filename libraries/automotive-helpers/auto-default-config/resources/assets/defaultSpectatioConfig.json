@@ -2075,6 +2075,19 @@
         }
       ]
     },
+    "PHONE_CARD_DIALER_BUTTON": {
+      "TYPE": "MULTIPLE",
+      "SPECIFIERS": [
+        {
+          "TYPE": "RESOURCE_ID",
+          "VALUE": "button_right"
+        },
+        {
+          "TYPE": "CLASS",
+          "VALUE": "android.widget.ImageButton"
+        }
+      ]
+    },
     "PRIVACY_LOCATION": {
       "TYPE": "TEXT",
       "VALUE": "location"

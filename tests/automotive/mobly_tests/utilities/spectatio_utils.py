@@ -156,6 +156,10 @@ class CallUtils:
         logging.info('Attempting to press the media toggle on device: \'%s\'' % device_name)
         self.device.mbs.pressPhoneToggleOnDevice(device_name)
 
+    def press_dialer_button_on_phone_card(self):
+        logging.info('Attempting to press the dialer button on the phone card')
+        self.device.mbs.pressDialerButtonOnPhoneCard()
+
     def device_displays_connected(self):
         """Assumes the device bluetooth connection settings page is open"""
         logging.info('Checking whether device is connected.')
