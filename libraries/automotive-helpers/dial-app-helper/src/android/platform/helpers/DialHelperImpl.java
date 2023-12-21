@@ -113,6 +113,12 @@ public class DialHelperImpl extends AbstractStandardAppHelper implements IAutoDi
 
     /** {@inheritDoc} */
     @Override
+    public void pressDialerButtonOnPhoneCard() {
+        clickButton(AutomotiveConfigConstants.PHONE_CARD_DIALER_BUTTON);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void pressContactResult(String expectedName) {
         BySelector searchResultSelector =
                 getUiElementFromConfig(AutomotiveConfigConstants.CONTACT_SEARCH_RESULT);
@@ -854,6 +860,22 @@ public class DialHelperImpl extends AbstractStandardAppHelper implements IAutoDi
                 .validateUiObject(phoneLink, AutomotiveConfigConstants.CLICK_PHONE_BUTTON);
         getSpectatioUiUtil().clickAndWait(phoneLink);
         getSpectatioUiUtil().wait5Seconds();
+    }
+
+    /**
+     * A generic button-pusher. Attempts to push the button associated with the passed-in selector
+     * ID
+     *
+     * @param selectorID - The name of the selector to look for
+     */
+    private void clickButton(String selectorID) {
+        BySelector buttonSelector = getUiElementFromConfig(selectorID);
+
+        UiObject2 button = getSpectatioUiUtil().findUiObject(buttonSelector);
+
+        getSpectatioUiUtil().validateUiObject(button, selectorID);
+
+        getSpectatioUiUtil().clickAndWait(button);
     }
 
     /** {@inheritDoc} */

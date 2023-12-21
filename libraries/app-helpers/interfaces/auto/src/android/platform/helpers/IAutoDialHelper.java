@@ -63,6 +63,14 @@ public interface IAutoDialHelper extends IAppHelper, Scrollable {
     void pressActiveCallToggle();
 
     /**
+     * Assumes home screen is currently open, and the phone card is the bottommost card on the left
+     * side of the screen.
+     *
+     * <p>Press the dialer button on the phone card.
+     */
+    void pressDialerButtonOnPhoneCard();
+
+    /**
      * Setup expectations: The app is open and there is an ongoing call.
      *
      * <p>This method is used to end call using softkey.

@@ -1449,7 +1449,7 @@
     "MEDIA_APP_DROP_DOWN_MENU": {
       "TYPE": "RESOURCE_ID",
       "VALUE": "car_ui_toolbar_menu_item_icon",
-      "PACKAGE": "com.android.car.media"
+      "PACKAGE": "com.chassis.car.ui.plugin"
     },
     "MEDIA_APP_NO_LOGIN_MSG": {
       "TYPE": "RESOURCE_ID",
@@ -2072,6 +2072,19 @@
             "TYPE": "TEXT_CONTAINS",
             "VALUE": "Wi‑Fi"
           }
+        }
+      ]
+    },
+    "PHONE_CARD_DIALER_BUTTON": {
+      "TYPE": "MULTIPLE",
+      "SPECIFIERS": [
+        {
+          "TYPE": "RESOURCE_ID",
+          "VALUE": "button_right"
+        },
+        {
+          "TYPE": "CLASS",
+          "VALUE": "android.widget.ImageButton"
         }
       ]
     },
