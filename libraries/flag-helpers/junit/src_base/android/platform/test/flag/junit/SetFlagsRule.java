@@ -314,6 +314,7 @@ public final class SetFlagsRule implements TestRule {
         }
         try {
             for (Field field : flagClass.getFields()) {
+                if (field.getName().startsWith("_")) continue; // fixes robolectric; b/317279678
                 String fullFlagName = (String) field.get(null);
                 Flag flag = Flag.createFlag(fullFlagName);
                 boolean value = getFlagValue(realFlagsImpl, flag);
