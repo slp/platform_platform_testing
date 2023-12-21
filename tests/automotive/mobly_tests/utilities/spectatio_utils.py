@@ -138,6 +138,10 @@ class CallUtils:
         logging.info('Attempting to press the bluetooth toggle on device: \'%s\'' % device_name)
         self.device.mbs.pressBluetoothToggleOnDevice(device_name)
 
+    def press_media_toggle_on_device(self, device_name):
+        logging.info('Attempting to press the media toggle on device: \'%s\'' % device_name)
+        self.device.mbs.pressMediaToggleOnDevice(device_name)
+
     def press_contact_search_result(self, expected_first_name):
         logging.info('Attempting to press the contact result with name \'%s\'' % expected_first_name)
         self.device.mbs.pressContactResult(expected_first_name)
@@ -153,7 +157,7 @@ class CallUtils:
         self.device.mbs.pressHomeScreen()
 
     def press_phone_toggle_on_device(self, device_name):
-        logging.info('Attempting to press the media toggle on device: \'%s\'' % device_name)
+        logging.info('Attempting to press the phone toggle on device: \'%s\'' % device_name)
         self.device.mbs.pressPhoneToggleOnDevice(device_name)
 
     def press_dialer_button_on_phone_card(self):
@@ -436,8 +440,6 @@ class CallUtils:
         )
         return actual_recent_call_from_history
 
-
-
     def verify_last_dialed_number(self, expected_last_dialed_number):
         actual_last_dialed_number = self.get_recent_call_history()
         actual_last_dialed_number = ''.join(
@@ -462,8 +464,7 @@ class CallUtils:
         logging.info('Searching <%s> in contacts', search_contact_name)
         self.device.mbs.searchContactsByName(search_contact_name)
 
-
-    # Get first search result on contact search
+    # Get first search result
     def get_first_search_result(self):
         logging.info('Getting first search result')
         actual_first_search_result = self.device.mbs.getFirstSearchResult()
