@@ -34,11 +34,25 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Map;
 
 /** Unit tests for {@code SetFlagsRule} being used with annotations. */
 @RunWith(JUnit4.class)
 public final class SetFlagsRuleAnnotationsTest {
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD, ElementType.TYPE})
+    @EnableFlags(Flags.FLAG_FLAG_NAME4)
+    public @interface EnableFlag4 {}
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD, ElementType.TYPE})
+    @EnableFlags({Flags.FLAG_FLAG_NAME3, Flags.FLAG_FLAG_NAME4})
+    public @interface EnableFlags3And4 {}
 
     @Test
     public void emptyTestWithoutAnnotationsPasses() {
@@ -100,6 +114,38 @@ public final class SetFlagsRuleAnnotationsTest {
                 .setTestCode(
                         () -> {
                             assertTrue(Flags.flagName3());
+                        })
+                .prepareTest()
+                .assertPasses();
+    }
+
+    @Test
+    public void allowMultipleAnnotations() {
+        @EnableFlags(Flags.FLAG_FLAG_NAME3)
+        @EnableFlag4
+        class SomeClass {}
+        new AnnotationTestRuleHelper(new SetFlagsRule(NULL_DEFAULT))
+                .setTestClass(SomeClass.class)
+                .setTestCode(
+                        () -> {
+                            assertTrue(Flags.flagName3());
+                            assertTrue(Flags.flagName4());
+                        })
+                .prepareTest()
+                .assertPasses();
+    }
+
+    @Test
+    public void allowMultipleOverlapingAnnotations() {
+        @EnableFlags(Flags.FLAG_FLAG_NAME3)
+        @EnableFlags3And4
+        class SomeClass {}
+        new AnnotationTestRuleHelper(new SetFlagsRule(NULL_DEFAULT))
+                .setTestClass(SomeClass.class)
+                .setTestCode(
+                        () -> {
+                            assertTrue(Flags.flagName3());
+                            assertTrue(Flags.flagName4());
                         })
                 .prepareTest()
                 .assertPasses();
