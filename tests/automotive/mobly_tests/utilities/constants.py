@@ -126,6 +126,7 @@ YOUTUBE_MUSIC_APP = "YouTube Music"
 SMS_TEXT = "sms_test"
 REPLY_SMS= "Okay"
 SMS_REPLY_TEXT = "SMS Reply"
+SMS_TEXT_DRIVE_MODE="Tap to read aloud"
 TIMEZONE_DICT = {
     "PST": "Pacific Standard Time",
     "PDT": "Pacific Daylight Time",
