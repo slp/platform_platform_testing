@@ -614,6 +614,8 @@ public class AutomotiveConfigConstants {
     // BT
     public static final String PHONE_BUTTON = "PHONE_BUTTON";
     public static final String MEDIA_BUTTON = "MEDIA_BUTTON";
+    public static final String TOGGLE_DEVICE_MEDIA = "TOGGLE_DEVICE_MEDIA";
+    public static final String TOGGLE_DEVICE_PHONE = "TOGGLE_DEVICE_PHONE";
     public static final String DEVICE_NAME = "DEVICE_NAME";
 
     public static final String DEVICE_TITLE = "DEVICE_TITLE";
