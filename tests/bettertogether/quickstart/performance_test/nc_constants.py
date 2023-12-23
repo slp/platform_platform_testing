@@ -51,6 +51,7 @@ SUCCESS_RATE_PRECISION_DIGITS = 1
 
 UNSET_LATENCY = datetime.timedelta.max
 UNSET_THROUGHPUT_KBPS = -1.0
+MAX_NUM_BUG_REPORT = 5
 
 
 @enum.unique
