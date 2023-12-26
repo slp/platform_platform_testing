@@ -261,3 +261,7 @@ class MediaUtils:
         logging.info("Open Media apps menu items on HU")
         self.discoverer.mbs.openMediaAppMenuItems()
 
+    # Open Bluetooth player
+    def open_bluetooth_player(self):
+        logging.info("Open <%s> on HU", constants.BLUETOOTH_PLAYER)
+        self.common_utils.click_on_ui_element_with_text(constants.BLUETOOTH_PLAYER)
