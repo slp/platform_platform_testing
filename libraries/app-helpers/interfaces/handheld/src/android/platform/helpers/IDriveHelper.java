@@ -145,4 +145,11 @@ public interface IDriveHelper extends IAppHelper {
      * @param fileName File name to open
      */
     void openFile(String fileName);
+
+    /**
+     * Setup expectations: Google Drive is open and Click on file to open in Docs Editor
+     *
+     * <p>Waits until the document is fully opened in Docs Editor
+     */
+    void waitForDocumentToOpen();
 }
