@@ -121,6 +121,8 @@ SONG_METADATA_PATTERN = r"description=.[^\n]*"
 DEFAULT_YOUTUBE_MUSIC_PLAYLIST = 'am start -a android.intent.action.VIEW -d https://music.youtube.com/watch?v=sjuOaAf9C70'
 BLUETOOTH_AUDIO_APP = "Bluetooth Audio"
 YOUTUBE_MUSIC_APP = "YouTube Music"
+BLUETOOTH_PLAYER = "Bluetooth Player"
+YOUTUBE_MUSIC_DOWNLOADS = "Downloads"
 
 # SMS
 SMS_TEXT = "sms_test"
