@@ -42,7 +42,7 @@ DEFAULT_DIAL_PAD_ENTRY = "Dial a number"
 CONNECTED_SUMMARY_STATUS = "Connected"
 DISCONNECTED_SUMMARY_STATUS = "Disconnected"
 DECLINE_CALL_TEXT = "Decline"
-ACCEPT_CALL_TEXT = "Answer"
+ANSWER_CALL_TEXT = "Answer"
 ACCEPT_CALL_TEXT = "Accept"
 DISABLE_ANDROID_AUTO_POP_UP = "pm disable --user 10 com.google.android.embedded.projection"
 
