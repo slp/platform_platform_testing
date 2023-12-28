@@ -19,6 +19,7 @@ package com.android.uibench.microbenchmark;
 import android.app.ActivityManager;
 import android.app.HomeVisibilityListener;
 import android.app.Instrumentation;
+import android.app.UiAutomation;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -105,7 +106,13 @@ public class UiBenchJankHelper extends AbstractStandardAppHelper implements IUiB
     }
 
     void launchActivity(String activityName, String verifyText) {
-        launchActivity(activityName, null, verifyText);
+        final UiAutomation uiAutomation = mInstrumentation.getUiAutomation();
+        uiAutomation.adoptShellPermissionIdentity();
+        try {
+            launchActivity(activityName, null, verifyText);
+        } finally {
+            uiAutomation.dropShellPermissionIdentity();
+        }
     }
 
     void launchActivityAndAssert(String activityName, String verifyText) {
