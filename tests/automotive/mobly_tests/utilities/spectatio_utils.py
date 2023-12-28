@@ -660,5 +660,6 @@ class CallUtils:
         """Open notifications on Phone"""
         logging.debug('Open notifications on Phone')
         self.execute_shell_on_device(device_target, constants.OPEN_NOTIFICATION)
+
     def press_phone_home_icon_using_adb_command(self, device_target):
         self.execute_shell_on_device(device_target, 'input keyevent KEYCODE_HOME')
