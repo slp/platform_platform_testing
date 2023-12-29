@@ -69,3 +69,31 @@ python_test_host {
         },
     },
 }
+
+python_test_host {
+    name: "UxRestrictionReceiveAnswerDeclineCallTest",
+    main: "uxrestriction_test_receive_call_answer_decline.py",
+    srcs: ["uxrestriction_test_receive_call_answer_decline.py"],
+    libs: [
+        "mobly",
+        "utilities",
+        "BluetoothSMSTestLibrary"
+    ],
+    test_suites: [
+        "catbox",
+    ],
+    test_options: {
+        unit_test: false,
+    },
+    data: [
+        // Package the snippet with the mobly test
+        ":AutomotiveSnippet",
+        ":PhoneSnippet",
+    ],
+    version: {
+        py3: {
+            embedded_launcher: true,
+        },
+    },
+}
+
