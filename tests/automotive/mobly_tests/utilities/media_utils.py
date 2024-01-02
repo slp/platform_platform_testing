@@ -13,10 +13,8 @@
 #  limitations under the License.
 
 import logging
-import pprint
-import time
 import re
-
+import time
 from utilities import constants
 from utilities.common_utils import CommonUtils
 
@@ -265,3 +263,23 @@ class MediaUtils:
     def open_bluetooth_player(self):
         logging.info("Open <%s> on HU", constants.BLUETOOTH_PLAYER)
         self.common_utils.click_on_ui_element_with_text(constants.BLUETOOTH_PLAYER)
+
+    # Open Radio app
+    def open_radio_app(self):
+        logging.info("Open <%s> app on HU", constants.RADIO_APP)
+        self.common_utils.click_on_ui_element_with_text(constants.RADIO_APP)
+
+    # Tune FM Radio on HU
+    def tune_fm_radio_on_hu(self, fm_frequency):
+        if re.match(constants.FM_FREQUENCY_PATTERN, fm_frequency):
+            logging.info("Tune FM Radio on HU for frequency <%s>", fm_frequency)
+            logging.info("Select <%s> range for radio", constants.RADIO_FM_RANGE)
+            self.common_utils.click_on_ui_element_with_text(constants.RADIO_FM_RANGE)
+            for x in fm_frequency:
+                self.common_utils.click_on_ui_element_with_text(x)
+                time.sleep(constants.WAIT_ONE_SEC)
+            logging.info("Confirm selected %s frequency on HU", constants.RADIO_FM_RANGE)
+            self.common_utils.click_on_ui_element_with_text(constants.CONFIRM_RADIO_FREQUENCY)
+        else:
+            logging.error("Invalid FM Radio frequency. Expected pattern: <%s>",
+                          constants.FM_FREQUENCY_PATTERN)
