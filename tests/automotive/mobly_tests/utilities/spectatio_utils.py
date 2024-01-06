@@ -511,6 +511,18 @@ class CallUtils:
                 "SMS Preview Text- Actual and Expected doesn't match."
             )
 
+    def tap_to_read_aloud(self):
+        """Tap on Received Text message"""
+        logging.info('Click on the text >>> tap to read aloud ')
+        self.device.mbs.tapToReadAloud()
+
+    def is_assistant_sms_transcription_plate_displayed(self,expected):
+        """ Checks if assistant transcription plate has displayed """
+        visibility_status = self.device.mbs.isAssistantSMSTranscriptionPlateDisplayed()
+        if visibility_status == expected:
+            logging.info("Assistant SMS Transcription plate has opened upon tapping the SMS.")
+        return visibility_status
+
     def verify_sms_preview_timestamp(self, expected):
         """Verify sms preview timestamp"""
         logging.info('Verify SMS Preview TimeStamp')
