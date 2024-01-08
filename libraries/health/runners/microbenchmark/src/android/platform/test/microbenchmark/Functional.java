@@ -15,6 +15,7 @@
  */
 package android.platform.test.microbenchmark;
 
+import android.os.Trace;
 import android.platform.test.rule.ArtifactSaver;
 import android.platform.test.rule.SamplerRule;
 
@@ -86,6 +87,20 @@ public class Functional extends BlockJUnit4ClassRunner {
         };
     }
 
+    private Statement withTrace(String name, Statement statement) {
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                Trace.beginSection("Functional#" + name);
+                try {
+                    statement.evaluate();
+                } finally {
+                    Trace.endSection();
+                }
+            }
+        };
+    }
+
     @Override
     public void filter(Filter filter) throws NoTestsRemainException {
         // Apply the original filtering logic...
@@ -111,7 +126,7 @@ public class Functional extends BlockJUnit4ClassRunner {
         final Statement statement = befores.isEmpty() ? s : new RunBefores(s, befores, target);
         // Error artifact saver for exceptions thrown in test-befores and the test method, before
         // test-afters and the exit part of test rules are executed.
-        return artifactSaver(statement, Stream.of(method));
+        return withTrace("Befores", artifactSaver(statement, Stream.of(method)));
     }
 
     @Override
@@ -124,7 +139,7 @@ public class Functional extends BlockJUnit4ClassRunner {
         final Statement statement = super.withAfters(method, target, s);
         // Error artifact saver for exceptions thrown in "method-afters", i.e. outside the method
         // and method-befores, but before the finalizing the rules.
-        return artifactSaver(statement, Stream.of(method));
+        return withTrace("Afters", artifactSaver(statement, Stream.of(method)));
     }
 
     @Override
@@ -137,14 +152,18 @@ public class Functional extends BlockJUnit4ClassRunner {
     protected Statement withBeforeClasses(Statement s) {
         // Error artifact saver for exceptions thrown in class-befores, before class-afters and
         // the exit part of class rules are executed.
-        return artifactSaver(super.withBeforeClasses(s), getFilteredChildren().stream());
+        return withTrace(
+                "BeforeClass",
+                artifactSaver(super.withBeforeClasses(s), getFilteredChildren().stream()));
     }
 
     @Override
     protected Statement withAfterClasses(Statement s) {
         // Error artifact saver for exceptions thrown outside "class-befores", but inside class
         // rules, i.e. in class afters.
-        return artifactSaver(super.withAfterClasses(s), getFilteredChildren().stream());
+        return withTrace(
+                "AfterClass",
+                artifactSaver(super.withAfterClasses(s), getFilteredChildren().stream()));
     }
 
     @Override
@@ -158,7 +177,10 @@ public class Functional extends BlockJUnit4ClassRunner {
         } finally {
             SamplerRule.enable(false);
         }
-        final Statement statement = artifactSaver(parentStatement, getFilteredChildren().stream());
+        final Statement statement =
+                withTrace(
+                        "classBlock",
+                        artifactSaver(parentStatement, getFilteredChildren().stream()));
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
