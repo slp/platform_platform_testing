@@ -72,10 +72,15 @@ class FlickerServiceResultsCollectorTest {
         Truth.assertThat(collector.assertionResultsByTest[testDescription]).isNull()
         Truth.assertThat(runData.hasMetrics()).isFalse()
 
-        // Reports only FaaS status
+        // Reports only FaaS status & FaaS result file path
         Mockito.verify(testData).addStringMetric("FAAS_STATUS", OK_STATUS_CODE.toString())
+        Mockito.verify(testData)
+            .addStringMetric(
+                Mockito.eq(FlickerServiceResultsCollector.FAAS_RESULTS_FILE_PATH_KEY),
+                Mockito.anyString()
+            )
         // No other calls to addStringMetric
-        Mockito.verify(testData, Mockito.times(1))
+        Mockito.verify(testData, Mockito.times(2))
             .addStringMetric(Mockito.anyString(), Mockito.anyString())
     }
 

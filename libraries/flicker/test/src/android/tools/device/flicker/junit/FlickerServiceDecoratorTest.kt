@@ -19,7 +19,6 @@ import android.tools.common.flicker.extractors.ScenarioExtractor
 import android.tools.common.io.Reader
 import android.tools.utils.KotlinMockito
 import android.tools.utils.assertThrows
-import android.util.Log
 import com.google.common.truth.Truth
 import org.junit.Ignore
 import org.junit.Test
@@ -237,7 +236,6 @@ class FlickerServiceDecoratorTest {
         Truth.assertThat(methods.size).isAtLeast(2)
         val flickerTestMethods = methods.filterIsInstance<FlickerServiceCachedTestCase>()
         Truth.assertThat(flickerTestMethods).hasSize(2)
-        Log.d("PABLOG", "flickerTestMethods = [${flickerTestMethods.joinToString { it.name }}]")
         Truth.assertThat(flickerTestMethods.distinctBy { it.name }).hasSize(2)
     }
 }

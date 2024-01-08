@@ -21,6 +21,7 @@ import android.device.collectors.BaseMetricListener
 import android.device.collectors.DataRecord
 import android.tools.common.FLICKER_TAG
 import android.tools.common.Logger
+import android.tools.common.Scenario
 import android.tools.common.ScenarioBuilder
 import android.tools.common.flicker.AssertionInvocationGroup
 import android.tools.common.flicker.FlickerConfig
@@ -30,8 +31,10 @@ import android.tools.common.flicker.assertions.AssertionResult
 import android.tools.common.flicker.config.FlickerServiceConfig
 import android.tools.common.flicker.config.ScenarioId
 import android.tools.common.io.RunStatus
+import android.tools.device.traces.getDefaultFlickerOutputDir
 import androidx.test.platform.app.InstrumentationRegistry
 import com.android.internal.annotations.VisibleForTesting
+import java.io.File
 import org.junit.runner.Description
 import org.junit.runner.Result
 import org.junit.runner.notification.Failure
@@ -63,6 +66,9 @@ class FlickerServiceResultsCollector(
     @VisibleForTesting
     val detectedScenariosByTest = mutableMapOf<Description, Collection<ScenarioId>>()
 
+    private var testRunScenario: Scenario? = null
+    private var testScenario: Scenario? = null
+
     init {
         setInstrumentation(instrumentation)
     }
@@ -79,6 +85,7 @@ class FlickerServiceResultsCollector(
                         .forClass(description.testClass.canonicalName)
                         .withDescriptionOverride("")
                         .build()
+                testRunScenario = scenario
                 tracesCollector.start(scenario)
             }
         }
@@ -96,6 +103,7 @@ class FlickerServiceResultsCollector(
                         )
                         .withDescriptionOverride("")
                         .build()
+                testScenario = scenario
                 tracesCollector.start(scenario)
             }
             testSkipped = false
@@ -117,44 +125,53 @@ class FlickerServiceResultsCollector(
     }
 
     override fun onTestEnd(testData: DataRecord, description: Description) {
-        errorReportingBlock {
-            Logger.i(LOG_TAG, "onTestEnd :: collectMetricsPerTest = $collectMetricsPerTest")
-            if (collectMetricsPerTest && !testSkipped) {
-                stopTracingAndCollectFlickerMetrics(testData, description)
+        Logger.i(LOG_TAG, "onTestEnd :: collectMetricsPerTest = $collectMetricsPerTest")
+        if (collectMetricsPerTest && !testSkipped) {
+            val results = errorReportingBlock {
+                return@errorReportingBlock stopTracingAndCollectFlickerMetrics(
+                    testData,
+                    description
+                )
             }
-        }
 
-        if (collectMetricsPerTest) {
-            reportFlickerServiceStatus(testData)
+            reportFlickerServiceStatus(
+                testData,
+                results,
+                testScenario ?: error("Test scenario should not be null"),
+                testData
+            )
         }
     }
 
     override fun onTestRunEnd(runData: DataRecord, result: Result) {
-        errorReportingBlock {
-            Logger.i(LOG_TAG, "onTestRunEnd :: collectMetricsPerTest = $collectMetricsPerTest")
-            if (!collectMetricsPerTest) {
-                stopTracingAndCollectFlickerMetrics(runData)
-            }
-        }
-
+        Logger.i(LOG_TAG, "onTestRunEnd :: collectMetricsPerTest = $collectMetricsPerTest")
         if (!collectMetricsPerTest) {
-            reportFlickerServiceStatus(runData)
+            val results = errorReportingBlock {
+                return@errorReportingBlock stopTracingAndCollectFlickerMetrics(runData)
+            }
+
+            reportFlickerServiceStatus(
+                runData,
+                results,
+                testRunScenario ?: error("Test run scenario should not be null"),
+                runData
+            )
         }
     }
 
     private fun stopTracingAndCollectFlickerMetrics(
         dataRecord: DataRecord,
         description: Description? = null
-    ) {
-        errorReportingBlock {
+    ): Collection<AssertionResult>? {
+        return errorReportingBlock {
             Logger.i(LOG_TAG, "Stopping trace collection")
             val reader = tracesCollector.stop()
             Logger.i(LOG_TAG, "Stopped trace collection")
             if (reportOnlyForPassingTests && hasFailedTest) {
-                return@errorReportingBlock
+                return@errorReportingBlock null
             }
 
-            try {
+            return@errorReportingBlock try {
                 Logger.i(LOG_TAG, "Processing traces")
                 val scenarios = flickerService.detectScenarios(reader)
                 val results = scenarios.flatMap { it.generateAssertions() }.map { it.execute() }
@@ -182,6 +199,8 @@ class FlickerServiceResultsCollector(
 
                 val aggregatedResults = processFlickerResults(results)
                 collectMetrics(dataRecord, aggregatedResults)
+
+                results
             } finally {
                 Logger.v(LOG_TAG, "Adding metric $WINSCOPE_FILE_PATH_KEY = ${reader.artifactPath}")
                 dataRecord.addStringMetric(WINSCOPE_FILE_PATH_KEY, reader.artifactPath)
@@ -219,12 +238,13 @@ class FlickerServiceResultsCollector(
         }
     }
 
-    private fun errorReportingBlock(function: () -> Unit) {
-        try {
+    private fun <T> errorReportingBlock(function: () -> T): T? {
+        return try {
             function()
         } catch (e: Throwable) {
             Logger.e(FLICKER_TAG, "Error executing in FlickerServiceResultsCollector", e)
             _executionErrors.add(e)
+            null
         }
     }
 
@@ -240,9 +260,67 @@ class FlickerServiceResultsCollector(
         return scenariosForTest
     }
 
-    private fun reportFlickerServiceStatus(record: DataRecord) {
+    private fun reportFlickerServiceStatus(
+        record: DataRecord,
+        results: Collection<AssertionResult>?,
+        scenario: Scenario,
+        dataRecord: DataRecord
+    ) {
         val status = if (executionErrors.isEmpty()) OK_STATUS_CODE else EXECUTION_ERROR_STATUS_CODE
         record.addStringMetric("${FAAS_METRICS_PREFIX}_STATUS", status.toString())
+
+        val maxLineLength = 120
+        val statusFile = createFlickerServiceStatusFile(scenario)
+        val flickerResultString = buildString {
+            appendLine(
+                "FAAS_STATUS: ${if (executionErrors.isEmpty()) "OK" else "EXECUTION_ERROR"}\n"
+            )
+
+            appendLine("EXECUTION ERRORS:")
+            if (executionErrors.isEmpty()) {
+                appendLine("None".prependIndent())
+            } else {
+                appendLine(
+                    executionErrors
+                        .joinToString("\n${"-".repeat(maxLineLength / 2)}\n\n")
+                        .prependIndent()
+                )
+            }
+
+            appendLine()
+            appendLine("FLICKER RESULTS:")
+            val executionErrorsString =
+                buildString {
+                        results?.forEach {
+                            append("${it.name} (${it.stabilityGroup}) :: ")
+                            append((if (it.passed) "PASS" else "FAIL") + "\n")
+                            appendLine(
+                                it.assertionErrors
+                                    .joinToString("\n${"-".repeat(maxLineLength / 2)}\n\n") { error
+                                        ->
+                                        error.message
+                                    }
+                                    .prependIndent()
+                            )
+                        }
+                    }
+                    .prependIndent()
+            appendLine(executionErrorsString)
+        }
+
+        statusFile.writeText(flickerResultString.replace(Regex("(.{$maxLineLength})"), "$1\n"))
+
+        Logger.v(LOG_TAG, "Adding metric $FAAS_RESULTS_FILE_PATH_KEY = ${statusFile.absolutePath}")
+        dataRecord.addStringMetric(FAAS_RESULTS_FILE_PATH_KEY, statusFile.absolutePath)
+    }
+
+    private fun createFlickerServiceStatusFile(scenario: Scenario): File {
+        val fileName = "FAAS_RESULTS_$scenario"
+
+        val outputDir = getDefaultFlickerOutputDir()
+        // Ensure output directory exists
+        outputDir.mkdirs()
+        return outputDir.resolve(fileName)
     }
 
     companion object {
@@ -250,6 +328,7 @@ class FlickerServiceResultsCollector(
         const val FAAS_METRICS_PREFIX = "FAAS"
         private const val LOG_TAG = "$FLICKER_TAG-Collector"
         const val WINSCOPE_FILE_PATH_KEY = "winscope_file_path"
+        const val FAAS_RESULTS_FILE_PATH_KEY = "faas_results_file_path"
         const val FLICKER_ASSERTIONS_COUNT_KEY = "flicker_assertions_count"
         const val OK_STATUS_CODE = 0
         const val EXECUTION_ERROR_STATUS_CODE = 1
