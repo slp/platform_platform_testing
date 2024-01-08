@@ -596,8 +596,8 @@
       "PACKAGE": "com.android.car.carlauncher"
     },
     "SECURITY_SETTINGS_TITLE": {
-      "TYPE": "RESOURCE_ID",
-      "VALUE": "car_ui_toolbar_title"
+      "TYPE": "TEXT",
+      "VALUE": "Security"
     },
     "SECURITY_SETTINGS_LOCK_TYPE_PASSWORD": {
       "TYPE": "TEXT",
