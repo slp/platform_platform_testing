@@ -32,24 +32,26 @@ fn main() {
 (If you're testing a library or anything else which doesn't have a `main` function, you don't need
 to worry about this.)
 
-Each test case should be marked with the `rdroidtest::test!` macro, rather than the standard
+Each test case should be marked with the `rdroidtest` attribute, rather than the standard
 `#[test]` attribute:
 
 ```rust
-use rdroidtest::test;
+use rdroidtest::rdroidtest;
 
-test!(one_plus_one);
+#[rdroidtest]
 fn one_plus_one() {
     assert_eq!(1 + 1, 2);
 }
 ```
 
-To ignore a test, you can add an `ignore_if` clause with a boolean expression:
+To ignore a test, you can add an `ignore_if` attribute whose argument is an expression that
+evaluates to a boolean:
 
 ```rust
-use rdroidtest::test;
+use rdroidtest::{ignore_if, rdroidtest};
 
-test!(clap_hands, ignore_if: !feeling_happy());
+#[rdroidtest]
+#[ignore_if(!feeling_happy())]
 fn clap_hands() {
     assert!(HANDS.clap().is_ok());
 }
@@ -67,21 +69,21 @@ You can then run your tests as usual with `atest`.
 
 ## Parameterized Tests
 
-To run the same test multiple times with different parameter values, use the `rdroidtest::ptest!`
-macro:
+To run the same test multiple times with different parameter values, add an argument to the
+`rdroidtest` attribute:
 
 ```rust
-use rdroidtest::ptest;
+use rdroidtest::rdroidtest;
 
-ptest!(is_even, my_instances());
+#[rdroidtest(my_instances())]
 fn is_even(param: u32) {
     assert_eq!(param % 2, 0);
 }
 ```
 
-The second argument to the `ptest!` macro is an expression that is called at runtime to generate
-the set of parameters to invoke the test with.  This expression should emit a vector of
-`(String, T)` values:
+The initial argument to the `rdroidtest` attribute is an expression that generates the set of
+parameters to invoke the test with.  This expression should evaluate to a vector of `(String, T)`
+values for some type `T`:
 
 ```rust
 fn my_instances() -> Vec<(String, u32)> {
@@ -96,11 +98,13 @@ fn my_instances() -> Vec<(String, u32)> {
 The test method will be invoked with each of the parameter values in turn, passed in as the single
 argument of type `T`.
 
-Parameterized tests can also be ignored, using an `ignore_if` clause that accepts the parameter
-value (this time as type `&T`) and returns a boolean:
+Parameterized tests can also be ignored, using an `ignore_if` attribute.  For a parameterized test,
+the argument is an expression that emits a boolean when invoked with a single argument, of type
+`&T`:
 
 ```rust
-ptest!(is_even_too, my_instances(), ignore_if: |p| feeling_odd(p));
+#[rdroidtest(my_instances())]
+#[ignore_if(feeling_odd)]
 fn is_even_too(param: u32) {
     assert_eq!(param % 2, 0);
 }
@@ -109,3 +113,15 @@ fn feeling_odd(param: &u32) -> bool {
     *param % 2 == 1
 }
 ```
+
+## Summary Table
+
+|               |  Normal              | Conditionally Ignore                          |
+|---------------|----------------------|-----------------------------------------------|
+| Normal        | `#[rdroidtest]`      | `#[rdroidtest]` <br> `#[ignore_if(<I>)]`      |
+| Parameterized | `#[rdroidtest(<G>)]` | `#[rdroidtest(<G>)]` <br> `#[ignore_if(<C>)]` |
+
+Where:
+- `<I>` is an expression that evaluates to a `bool`.
+- `<G>` is an expression that evaluates to a `Vec<String, T>`.
+- `<C>` is an callable expression with signature `fn(&T) -> bool`.

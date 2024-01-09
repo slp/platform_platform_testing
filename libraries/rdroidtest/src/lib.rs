@@ -2,6 +2,9 @@
 
 pub mod runner;
 
+// Re-export the attribute macros.
+pub use rdroidtest_macro::{ignore_if, rdroidtest};
+
 #[doc(hidden)]
 pub use libtest_mimic as _libtest_mimic;
 #[doc(hidden)]
