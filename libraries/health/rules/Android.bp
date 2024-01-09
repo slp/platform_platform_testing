@@ -36,7 +36,6 @@ java_library {
         "flickerlib",
         "statsd-helper",
         "health-testing-utils",
-        "ub-uiautomator",
         "uiautomator-helpers",
         "uinput-device-test-helper",
         "user-helper",
@@ -65,7 +64,6 @@ java_library {
         "statsd-helper",
         "launcher-aosp-tapl",
         "health-testing-utils",
-        "ub-uiautomator",
     ],
     srcs: ["src/**/*.java"],
     exclude_srcs: [
