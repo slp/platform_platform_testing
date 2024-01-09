@@ -97,7 +97,7 @@ public final class SetFlagsRule implements TestRule {
     }
 
     public SetFlagsRule() {
-        this(DefaultInitValueType.DEVICE_DEFAULT);
+        this(DefaultInitValueType.NULL_DEFAULT);
     }
 
     public SetFlagsRule(DefaultInitValueType defaultType) {
