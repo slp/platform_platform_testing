@@ -39,7 +39,7 @@ Each test case should be marked with the `rdroidtest::test!` macro, rather than 
 use rdroidtest::test;
 
 test!(one_plus_one);
-fn one_plus_one {
+fn one_plus_one() {
     assert_eq!(1 + 1, 2);
 }
 ```
@@ -50,7 +50,7 @@ To ignore a test, you can add an `ignore_if` clause with a boolean expression:
 use rdroidtest::test;
 
 test!(clap_hands, ignore_if: !feeling_happy());
-fn clap_hands {
+fn clap_hands() {
     assert!(HANDS.clap().is_ok());
 }
 ```
@@ -59,8 +59,53 @@ Somewhere in your main module, you need to use the `test_main` macro to generate
 the test harness:
 
 ```rust
-#[cfg(test)]
 rdroidtest::test_main!();
 ```
 
 You can then run your tests as usual with `atest`.
+
+
+## Parameterized Tests
+
+To run the same test multiple times with different parameter values, use the `rdroidtest::ptest!`
+macro:
+
+```rust
+use rdroidtest::ptest;
+
+ptest!(is_even, my_instances());
+fn is_even(param: u32) {
+    assert_eq!(param % 2, 0);
+}
+```
+
+The second argument to the `ptest!` macro is an expression that is called at runtime to generate
+the set of parameters to invoke the test with.  This expression should emit a vector of
+`(String, T)` values:
+
+```rust
+fn my_instances() -> Vec<(String, u32)> {
+    vec![
+        ("one".to_string(), 1),
+        ("two".to_string(), 2),
+        ("three".to_string(), 3),
+    ]
+}
+```
+
+The test method will be invoked with each of the parameter values in turn, passed in as the single
+argument of type `T`.
+
+Parameterized tests can also be ignored, using an `ignore_if` clause that accepts the parameter
+value (this time as type `&T`) and returns a boolean:
+
+```rust
+ptest!(is_even_too, my_instances(), ignore_if: |p| feeling_odd(p));
+fn is_even_too(param: u32) {
+    assert_eq!(param % 2, 0);
+}
+
+fn feeling_odd(param: &u32) -> bool {
+    *param % 2 == 1
+}
+```
