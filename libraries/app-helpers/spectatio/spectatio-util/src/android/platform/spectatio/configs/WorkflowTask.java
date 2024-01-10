@@ -316,11 +316,15 @@ public class WorkflowTask {
                                 "Not Supported");
                 }
             } catch (MissingUiElementException ex) {
-                throwRuntimeException(
-                        "Scroll Button or Element for Scroll Action",
-                        scrollConfig.getScrollAction(),
-                        workflowName,
-                        String.format("Missing. Error: %s", ex.getMessage()));
+                try {
+                    spectatioUiUtil.clickAndWait(uiObject);
+                } catch (MissingUiElementException exc) {
+                    throwRuntimeException(
+                            "Scroll Button or Element for Scroll Action",
+                            scrollConfig.getScrollAction(),
+                            workflowName,
+                            String.format("Missing. Error: %s", ex.getMessage()));
+                }
             }
         }
         if (howToFind == FindType.SWIPE && !isValidUiObject(uiObject)) {
