@@ -87,8 +87,6 @@ constructor(
             val device: UiDevice = UiDevice.getInstance(instrumentation)
 
             try {
-                device.unfreezeRotation()
-
                 when (rotation) {
                     Rotation.ROTATION_270 -> device.setOrientationRight()
                     Rotation.ROTATION_90 -> device.setOrientationLeft()
