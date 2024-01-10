@@ -103,16 +103,6 @@ class QuickStartStressTest(nc_base_test.NCBaseTestClass):
 
     setup_utils.enable_bluetooth_multiplex(ad)
 
-    if (
-        self.test_parameters.upgrade_medium
-        == nc_constants.NearbyMedium.WIFIAWARE_ONLY.value
-    ):
-      setup_utils.enable_wifi_aware(ad)
-
-    if self.test_parameters.wifi_country_code:
-      setup_utils.set_wifi_country_code(
-          ad, self.test_parameters.wifi_country_code
-      )
 
   # @typing.override
   def _teardown_device(self, ad: android_device.AndroidDevice) -> None:
