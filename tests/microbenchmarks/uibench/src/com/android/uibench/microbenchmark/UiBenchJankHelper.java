@@ -25,15 +25,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.platform.helpers.AbstractStandardAppHelper;
-import android.support.test.uiautomator.By;
-import android.support.test.uiautomator.Direction;
-import android.support.test.uiautomator.UiObject2;
-import android.support.test.uiautomator.Until;
+import android.platform.helpers.AbstractStandardAppHelper2;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.widget.EditText;
 import android.widget.ListView;
+
+import androidx.test.uiautomator.By;
+import androidx.test.uiautomator.Direction;
+import androidx.test.uiautomator.UiObject2;
+import androidx.test.uiautomator.Until;
 
 import com.android.compatibility.common.util.ShellIdentityUtils;
 import com.android.compatibility.common.util.TestUtils;
@@ -42,7 +43,7 @@ import junit.framework.Assert;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class UiBenchJankHelper extends AbstractStandardAppHelper implements IUiBenchJankHelper {
+public class UiBenchJankHelper extends AbstractStandardAppHelper2 implements IUiBenchJankHelper {
     public static final int LONG_TIMEOUT = 5000;
     public static final int FULL_TEST_DURATION = 25000;
     public static final int FIND_OBJECT_TIMEOUT = 250;
