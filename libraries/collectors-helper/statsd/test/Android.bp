@@ -28,7 +28,6 @@ java_library {
         "statsd-helper",
         "app-helpers-handheld-interfaces",
         "junit",
-        "ub-uiautomator",
         "platformprotosnano",
         "platform-test-rules",
         "statsdprotonano",
