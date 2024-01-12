@@ -95,6 +95,7 @@ class EventLogParser : AbstractParser<Array<String>, EventLog>() {
         require(from.hasUnixTimestamp && to.hasUnixTimestamp) { "Missing required timestamp type" }
         return doParse(
             this.doDecodeByteArray(bytes)
+                .sortedBy { getTimestampFromRawEntry(it).unixNanos }
                 .dropWhile { getTimestampFromRawEntry(it).unixNanos < from.unixNanos }
                 .dropLastWhile { getTimestampFromRawEntry(it).unixNanos > to.unixNanos }
                 .toTypedArray()
