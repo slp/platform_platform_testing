@@ -31,6 +31,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.util.Locale;
+
 /**
  * This test will switch to an existing secondary non-guest user from default initial user.
  *
@@ -76,9 +78,17 @@ public class SwitchToExistingSecondaryUser {
         }
 
         Assume.assumeTrue(
-                "DEFAULT_INITIAL_USER must be user 10",
+                String.format(
+                        Locale.US,
+                        "DEFAULT_INITIAL_USER is user %d but must be user 10",
+                        MultiUserConstants.DEFAULT_INITIAL_USER),
                 MultiUserConstants.DEFAULT_INITIAL_USER == 10);
-        Assume.assumeTrue("Target user id must be greater than 10", mTargetUserId > 10);
+        Assume.assumeTrue(
+                String.format(
+                        Locale.US,
+                        "Target user id is %d but must be greater than 10",
+                        mTargetUserId),
+                mTargetUserId > 10);
 
         UserInfo currentForegroundUser = mMultiUserHelper.getCurrentForegroundUserInfo();
 
