@@ -43,6 +43,7 @@ public final class SetFlagsRule implements TestRule {
     private static final String FEATURE_FLAGS_CLASS_NAME = "FeatureFlags";
     private static final String FEATURE_FLAGS_FIELD_NAME = "FEATURE_FLAGS";
     private static final String FLAGS_CLASS_NAME = "Flags";
+    private static final String FLAG_CONSTANT_PREFIX = "FLAG_";
     private static final String SET_FLAG_METHOD_NAME = "setFlag";
     private static final String RESET_ALL_METHOD_NAME = "resetAll";
 
@@ -314,7 +315,10 @@ public final class SetFlagsRule implements TestRule {
         }
         try {
             for (Field field : flagClass.getFields()) {
-                if (field.getName().startsWith("_")) continue; // fixes robolectric; b/317279678
+                if (!field.getName().startsWith(FLAG_CONSTANT_PREFIX)
+                        || !field.getType().isAssignableFrom(String.class)) {
+                    continue; // Only take the flag constants
+                }
                 String fullFlagName = (String) field.get(null);
                 Flag flag = Flag.createFlag(fullFlagName);
                 boolean value = getFlagValue(realFlagsImpl, flag);

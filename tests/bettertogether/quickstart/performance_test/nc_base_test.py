@@ -111,6 +111,17 @@ class NCBaseTestClass(base_test.BaseTestClass):
     setup_utils.disable_redaction(ad)
     setup_utils.enable_auto_reconnect(ad)
 
+    if (
+        self.test_parameters.upgrade_medium
+        == nc_constants.NearbyMedium.WIFIAWARE_ONLY.value
+    ):
+      setup_utils.enable_wifi_aware(ad)
+
+    if self.test_parameters.wifi_country_code:
+      setup_utils.set_wifi_country_code(
+          ad, self.test_parameters.wifi_country_code
+      )
+
   def setup_test(self):
     self._reset_nearby_connection()
 
