@@ -276,19 +276,21 @@ class FlickerServiceResultsCollector(
                 "FAAS_STATUS: ${if (executionErrors.isEmpty()) "OK" else "EXECUTION_ERROR"}\n"
             )
 
-            appendLine("EXECUTION ERRORS:")
+            appendLine("EXECUTION ERRORS:\n")
             if (executionErrors.isEmpty()) {
                 appendLine("None".prependIndent())
             } else {
                 appendLine(
                     executionErrors
-                        .joinToString("\n${"-".repeat(maxLineLength / 2)}\n\n")
+                        .joinToString("\n\n${"-".repeat(maxLineLength / 2)}\n\n") {
+                            it.stackTraceToString()
+                        }
                         .prependIndent()
                 )
             }
 
             appendLine()
-            appendLine("FLICKER RESULTS:")
+            appendLine("FLICKER RESULTS:\n")
             val executionErrorsString =
                 buildString {
                         results?.forEach {
