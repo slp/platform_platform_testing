@@ -39,7 +39,6 @@ android_test {
         "platform-screenshot-diff-core",
         "platform-test-annotations",
         "truth",
-        "ub-uiautomator",
     ],
     asset_dirs: ["src/androidTest/assets"],
     test_suites: ["general-tests"],
