@@ -67,9 +67,6 @@ object BetterSwipe {
     /** Starts a swipe from [start] at the current time. */
     @JvmStatic fun from(start: Point) = Swipe(PointF(start.x.toFloat(), start.y.toFloat()))
 
-    /** Starts a swipe for each [starts] point at the current time. */
-    @JvmStatic fun from(vararg starts: PointF) = Swipes(*starts)
-
     class Swipe internal constructor(start: PointF) {
 
         private val downTime = SystemClock.uptimeMillis()
