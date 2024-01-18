@@ -33,6 +33,9 @@ import android.tools.withTracing
  */
 class DeviceDumpParser {
     companion object {
+        var lastWmTraceData = ByteArray(0)
+        var lastLayersTraceData = ByteArray(0)
+
         /**
          * Creates a device state dump containing the [WindowManagerTrace] and [LayersTrace]
          * obtained from a `dumpsys` command. The parsed traces will contain a single
@@ -53,29 +56,34 @@ class DeviceDumpParser {
             clearCacheAfterParsing: Boolean
         ): NullableDeviceStateDump {
             return withTracing("fromNullableDump") {
-                NullableDeviceStateDump(
-                    wmState =
-                        if (wmTraceData.isNotEmpty()) {
-                            WindowManagerDumpParser()
-                                .parse(wmTraceData, clearCache = clearCacheAfterParsing)
-                                .entries
-                                .first()
-                        } else {
-                            null
-                        },
-                    layerState =
-                        if (layersTraceData.isNotEmpty()) {
-                            TraceProcessorSession.loadPerfettoTrace(layersTraceData) { session ->
-                                LayersTraceParser()
-                                    .parse(session, clearCache = clearCacheAfterParsing)
+                    NullableDeviceStateDump(
+                        wmState =
+                            if (wmTraceData.isNotEmpty()) {
+                                WindowManagerDumpParser()
+                                    .parse(wmTraceData, clearCache = clearCacheAfterParsing)
                                     .entries
                                     .first()
+                            } else {
+                                null
+                            },
+                        layerState =
+                            if (layersTraceData.isNotEmpty()) {
+                                TraceProcessorSession.loadPerfettoTrace(layersTraceData) { session
+                                    ->
+                                    LayersTraceParser()
+                                        .parse(session, clearCache = clearCacheAfterParsing)
+                                        .entries
+                                        .first()
+                                }
+                            } else {
+                                null
                             }
-                        } else {
-                            null
-                        }
-                )
-            }
+                    )
+                }
+                .also {
+                    lastWmTraceData = wmTraceData
+                    lastLayersTraceData = layersTraceData
+                }
         }
 
         /** See [fromNullableDump] */
@@ -86,13 +94,17 @@ class DeviceDumpParser {
             clearCacheAfterParsing: Boolean
         ): DeviceStateDump {
             return withTracing("fromDump") {
-                val nullableDump =
-                    fromNullableDump(wmTraceData, layersTraceData, clearCacheAfterParsing)
-                DeviceStateDump(
-                    nullableDump.wmState ?: error("WMState dump missing"),
-                    nullableDump.layerState ?: error("Layer State dump missing")
-                )
-            }
+                    val nullableDump =
+                        fromNullableDump(wmTraceData, layersTraceData, clearCacheAfterParsing)
+                    DeviceStateDump(
+                        nullableDump.wmState ?: error("WMState dump missing"),
+                        nullableDump.layerState ?: error("Layer State dump missing")
+                    )
+                }
+                .also {
+                    lastWmTraceData = wmTraceData
+                    lastLayersTraceData = layersTraceData
+                }
         }
     }
 }
