@@ -2049,19 +2049,13 @@
       "VALUE": "qc_summary",
       "PACKAGE": "com.android.systemui"
     },
+    "CONNECTED_WIFI": {
+      "TYPE": "TEXT",
+      "VALUE": "Connected"
+    },
     "FORGET_WIFI": {
-      "TYPE": "MULTIPLE",
-      "SPECIFIERS": [
-        {
-          "TYPE": "CLASS",
-          "VALUE": "android.widget.ImageView"
-        },
-        {
-          "TYPE": "RESOURCE_ID",
-          "VALUE": "car_ui_secondary_action_concrete",
-          "PACKAGE": "com.android.car.settings"
-        }
-      ]
+      "TYPE": "TEXT",
+      "VALUE": "Forget"
     },
     "NETWORK_PALETTE_WIFI": {
       "TYPE": "MULTIPLE",
