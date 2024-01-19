@@ -21,7 +21,7 @@ package {
 java_library {
     name: "systemui-helper",
     libs: [
-        "ub-uiautomator",
+        "androidx.test.uiautomator_uiautomator",
         "app-helpers-handheld-interfaces",
         "androidx.test.runner",
         "androidx.test.rules",
