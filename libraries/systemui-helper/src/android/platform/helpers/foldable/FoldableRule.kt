@@ -72,7 +72,6 @@ class FoldableRule(private val ensureScreenOnBeforeActions: Boolean = false) : T
             val initialState = currentState
 
             controller.fold()
-            SystemClock.sleep(ANIMATION_TIMEOUT) // Let's wait for the unfold animation to finish.
 
             if (turnOffDisplayAfterFold) {
                 // As per requirement, the behaviour has been changed to keep the outer display ON
@@ -81,6 +80,7 @@ class FoldableRule(private val ensureScreenOnBeforeActions: Boolean = false) : T
                 // If needed in the future this class can be changed to make this behaviour
                 // configured, but for now tests assume the screen being off after folding.
                 uiDevice.sleep()
+                SystemClock.sleep(ANIMATION_TIMEOUT) // Wait for unfold + screen off animations
                 ensureThat("screen is off after folding") { !screenOn }
             }
             if (initialState == UNFOLDED || initialState == HALF_FOLDED) {
