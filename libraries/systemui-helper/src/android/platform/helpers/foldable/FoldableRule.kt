@@ -44,7 +44,7 @@ import org.junit.runner.Description
  *  @get:Rule val foldRule = foldable.foldBeforeTestRule
  * ```
  */
-class FoldableRule(private val ensureScreenOn: Boolean = false) : TestWatcher() {
+class FoldableRule(private val ensureScreenOnBeforeActions: Boolean = false) : TestWatcher() {
 
     private val controller = FoldableDeviceController()
     private var initialized = false
@@ -61,10 +61,11 @@ class FoldableRule(private val ensureScreenOn: Boolean = false) : TestWatcher() 
         }
     }
 
-    fun fold() {
+    @JvmOverloads
+    fun fold(turnOffDisplayAfterFold: Boolean = true) {
         trace("FoldableRule#fold") {
             check(!controller.isFolded) { "Trying to fold when already folded" }
-            if (ensureScreenOn) {
+            if (ensureScreenOnBeforeActions) {
                 ensureThat("screen is on before folding") { screenOn }
             }
             val initialScreenSurface = displaySurface
@@ -73,14 +74,15 @@ class FoldableRule(private val ensureScreenOn: Boolean = false) : TestWatcher() 
             controller.fold()
             SystemClock.sleep(ANIMATION_TIMEOUT) // Let's wait for the unfold animation to finish.
 
-            // As per requirement, the behaviour has been changed to keep the outer display ON when
-            // the device is folded with an active wakelock.
-            // We send the sleep command to make the fold deterministic.
-            // If needed in the future this class can be changed to make this behaviour configured,
-            // but for now tests assume the screen being off after folding.
-            uiDevice.sleep()
-
-            ensureThat("screen is off after folding") { !screenOn }
+            if (turnOffDisplayAfterFold) {
+                // As per requirement, the behaviour has been changed to keep the outer display ON
+                // when the device is folded with an active wakelock.
+                // We send the sleep command to make the fold deterministic.
+                // If needed in the future this class can be changed to make this behaviour
+                // configured, but for now tests assume the screen being off after folding.
+                uiDevice.sleep()
+                ensureThat("screen is off after folding") { !screenOn }
+            }
             if (initialState == UNFOLDED || initialState == HALF_FOLDED) {
                 ensureThat("screen surface decreases after folding") {
                     displaySurface < initialScreenSurface
@@ -96,7 +98,7 @@ class FoldableRule(private val ensureScreenOn: Boolean = false) : TestWatcher() 
     fun halfFold() {
         trace("FoldableRule#halfFold") {
             check(!controller.isHalfFolded) { "Trying to half-fold when already half-folded" }
-            if (ensureScreenOn) {
+            if (ensureScreenOnBeforeActions) {
                 ensureThat("screen is on before half-folding") { screenOn }
             }
             val initialScreenSurface = displaySurface
@@ -120,7 +122,7 @@ class FoldableRule(private val ensureScreenOn: Boolean = false) : TestWatcher() 
     fun unfold() {
         trace("FoldableRule#unfold") {
             check(!controller.isUnfolded) { "Trying to unfold when already unfolded" }
-            if (ensureScreenOn) {
+            if (ensureScreenOnBeforeActions) {
                 ensureThat("screen is on before unfolding") { screenOn }
             }
             val initialScreenSurface = displaySurface
