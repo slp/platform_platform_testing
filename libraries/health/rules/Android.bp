@@ -39,6 +39,7 @@ java_library {
         "uiautomator-helpers",
         "uinput-device-test-helper",
         "user-helper",
+        "kotlin-reflect",
     ],
     srcs: [
         "src/**/*.java",
