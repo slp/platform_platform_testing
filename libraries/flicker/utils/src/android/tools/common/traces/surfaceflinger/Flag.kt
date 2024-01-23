@@ -16,10 +16,7 @@
 
 package android.tools.common.traces.surfaceflinger
 
-import kotlin.js.JsExport
-
 /** Layer state flags as defined in LayerState.h */
-@JsExport
 enum class Flag(val value: Int) {
     HIDDEN(0x01),
     OPAQUE(0x02),

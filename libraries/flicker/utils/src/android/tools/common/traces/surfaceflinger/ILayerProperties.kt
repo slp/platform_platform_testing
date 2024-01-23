@@ -21,8 +21,6 @@ import android.tools.common.datatypes.Color
 import android.tools.common.datatypes.Rect
 import android.tools.common.datatypes.RectF
 import android.tools.common.datatypes.Region
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /**
  * Common properties of a layer that are not related to their position in the hierarchy
@@ -30,35 +28,31 @@ import kotlin.js.JsName
  * These properties are frequently stable throughout the trace and can be more efficiently cached
  * than the full layers
  */
-@JsExport
 interface ILayerProperties {
     val visibleRegion: Region?
-    @JsName("activeBuffer") val activeBuffer: ActiveBuffer
-    @JsName("flags") val flags: Int
-    @JsName("bounds") val bounds: RectF
-    @JsName("color") val color: Color
-    @JsName("isOpaque") val isOpaque: Boolean
-    @JsName("shadowRadius") val shadowRadius: Float
-    @JsName("cornerRadius") val cornerRadius: Float
-    @JsName("screenBounds") val screenBounds: RectF
-    @JsName("transform") val transform: Transform
-    @JsName("effectiveScalingMode") val effectiveScalingMode: Int
-    @JsName("bufferTransform") val bufferTransform: Transform
-    @JsName("hwcCompositionType") val hwcCompositionType: HwcCompositionType
-    @JsName("backgroundBlurRadius") val backgroundBlurRadius: Int
-    @JsName("crop") val crop: Rect
-    @JsName("isRelativeOf") val isRelativeOf: Boolean
-    @JsName("zOrderRelativeOfId") val zOrderRelativeOfId: Int
-    @JsName("stackId") val stackId: Int
-    @JsName("excludesCompositionState") val excludesCompositionState: Boolean
+    val activeBuffer: ActiveBuffer
+    val flags: Int
+    val bounds: RectF
+    val color: Color
+    val isOpaque: Boolean
+    val shadowRadius: Float
+    val cornerRadius: Float
+    val screenBounds: RectF
+    val transform: Transform
+    val effectiveScalingMode: Int
+    val bufferTransform: Transform
+    val hwcCompositionType: HwcCompositionType
+    val backgroundBlurRadius: Int
+    val crop: Rect
+    val isRelativeOf: Boolean
+    val zOrderRelativeOfId: Int
+    val stackId: Int
+    val excludesCompositionState: Boolean
 
-    @JsName("isScaling")
     val isScaling: Boolean
         get() = transform.isScaling
-    @JsName("isTranslating")
     val isTranslating: Boolean
         get() = transform.isTranslating
-    @JsName("isRotating")
     val isRotating: Boolean
         get() = transform.isRotating
 
@@ -69,7 +63,6 @@ interface ILayerProperties {
      *
      * @return
      */
-    @JsName("isActiveBufferEmpty")
     val isActiveBufferEmpty: Boolean
         get() = activeBuffer.isEmpty
 
@@ -78,7 +71,6 @@ interface ILayerProperties {
      *
      * @return
      */
-    @JsName("verboseFlags")
     val verboseFlags: String
         get() {
             val tokens = Flag.values().filter { (it.value and flags) != 0 }.map { it.name }
@@ -95,7 +87,6 @@ interface ILayerProperties {
      *
      * @return
      */
-    @JsName("fillsColor")
     val fillsColor: Boolean
         get() = color.isNotEmpty
 
@@ -104,7 +95,6 @@ interface ILayerProperties {
      *
      * @return
      */
-    @JsName("drawsShadows")
     val drawsShadows: Boolean
         get() = shadowRadius > 0
 
@@ -113,7 +103,6 @@ interface ILayerProperties {
      *
      * @return
      */
-    @JsName("hasBlur")
     val hasBlur: Boolean
         get() = backgroundBlurRadius > 0
 
@@ -122,7 +111,6 @@ interface ILayerProperties {
      *
      * @return
      */
-    @JsName("hasRoundedCorners")
     val hasRoundedCorners: Boolean
         get() = cornerRadius > 0
 
@@ -133,7 +121,6 @@ interface ILayerProperties {
      *
      * @return
      */
-    @JsName("hasEffects")
     val hasEffects: Boolean
         get() {
             return fillsColor || drawsShadows
