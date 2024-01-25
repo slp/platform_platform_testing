@@ -356,16 +356,16 @@ class QuickStartStressTest(nc_base_test.NCBaseTestClass):
             f'{bt_transfer_stats.success_count}'
             f' / {wifi_transfer_stats.success_count}'),
         '2 BT transfer failures': {
-            'discovery': first_discovery_stats.failure_count,
-            'connection': first_connection_stats.failure_count,
-            'transfer': self.performance_test_iterations - (
+            '1 discovery': first_discovery_stats.failure_count,
+            '2 connection': first_connection_stats.failure_count,
+            '3 transfer': self.performance_test_iterations - (
                 bt_transfer_stats.success_count),
         },
         '3 Wi-Fi transfer failures': {
-            'discovery': second_discovery_stats.failure_count,
-            'connection': second_connection_stats.failure_count,
-            'upgrade': medium_upgrade_stats.failure_count,
-            'transfer': self.performance_test_iterations - (
+            '1 discovery': second_discovery_stats.failure_count,
+            '2 connection': second_connection_stats.failure_count,
+            '3 upgrade': medium_upgrade_stats.failure_count,
+            '4 transfer': self.performance_test_iterations - (
                 wifi_transfer_stats.success_count),
         },
         '4 Medium upgrade count': (
