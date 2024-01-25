@@ -1324,8 +1324,7 @@
     },
     "ACCOUNT_SETTINGS_REMOVE_BUTTON": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "car_ui_secondary_action",
-      "PACKAGE": "com.android.car.settings"
+      "VALUE": "car_ui_secondary_action"
     },
     "ACCOUNT_SETTINGS_REMOVE_ACCOUNT_BUTTON": {
       "TYPE": "TEXT",
