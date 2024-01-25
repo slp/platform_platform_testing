@@ -33,7 +33,7 @@ import android.tools.device.traces.parsers.WindowManagerStateHelper
 import android.tools.device.traces.parsers.perfetto.LayersTraceParser
 import android.tools.device.traces.parsers.perfetto.TraceProcessorSession
 import android.tools.device.traces.parsers.perfetto.TransactionsTraceParser
-import android.tools.device.traces.parsers.wm.TransitionTraceParser
+import android.tools.device.traces.parsers.wm.LegacyTransitionTraceParser
 import android.tools.device.traces.parsers.wm.WindowManagerTraceParser
 import android.tools.rules.DataStoreCleanupRule
 import android.tools.utils.CleanFlickerEnvironmentRule
@@ -66,7 +66,7 @@ internal fun getTraceReaderFromScenario(scenario: String): Reader {
         wmTrace = WindowManagerTraceParser().parse(scenarioTraces.wmTrace.readBytes()),
         layersTrace = layersTrace,
         transitionsTrace =
-            TransitionTraceParser()
+            LegacyTransitionTraceParser()
                 .parse(
                     scenarioTraces.wmTransitions.readBytes(),
                     scenarioTraces.shellTransitions.readBytes()

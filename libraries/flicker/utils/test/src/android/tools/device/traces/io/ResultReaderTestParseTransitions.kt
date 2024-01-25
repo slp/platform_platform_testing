@@ -25,8 +25,8 @@ import android.tools.utils.readAssetAsFile
 class ResultReaderTestParseTransitions : BaseResultReaderTestParseTrace() {
     override val assetFiles =
         mapOf(
-            TraceType.WM_TRANSITION to TestTraces.TransitionTrace.WM_FILE,
-            TraceType.SHELL_TRANSITION to TestTraces.TransitionTrace.SHELL_FILE
+            TraceType.LEGACY_WM_TRANSITION to TestTraces.TransitionTrace.WM_FILE,
+            TraceType.LEGACY_SHELL_TRANSITION to TestTraces.TransitionTrace.SHELL_FILE
         )
     override val traceName = "Transitions trace"
     override val startTimeTrace = TestTraces.TransitionTrace.START_TIME
@@ -42,8 +42,8 @@ class ResultReaderTestParseTransitions : BaseResultReaderTestParseTrace() {
         return super.setupWriter(writer).also {
             val wmTransitionTrace = readAssetAsFile("wm_transition_trace.winscope")
             val shellTransitionTrace = readAssetAsFile("shell_transition_trace.winscope")
-            it.addTraceResult(TraceType.WM_TRANSITION, wmTransitionTrace)
-            it.addTraceResult(TraceType.SHELL_TRANSITION, shellTransitionTrace)
+            it.addTraceResult(TraceType.LEGACY_WM_TRANSITION, wmTransitionTrace)
+            it.addTraceResult(TraceType.LEGACY_SHELL_TRANSITION, shellTransitionTrace)
         }
     }
 }

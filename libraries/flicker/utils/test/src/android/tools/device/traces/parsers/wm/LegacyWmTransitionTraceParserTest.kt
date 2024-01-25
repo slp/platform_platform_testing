@@ -19,7 +19,7 @@ package android.tools.device.traces.parsers.wm
 import android.app.Instrumentation
 import android.tools.common.Cache
 import android.tools.device.apphelpers.BrowserAppHelper
-import android.tools.device.traces.monitors.wm.WmTransitionTraceMonitor
+import android.tools.device.traces.monitors.wm.LegacyWmTransitionTraceMonitor
 import android.tools.utils.CleanFlickerEnvironmentRule
 import android.tools.utils.readAsset
 import androidx.test.platform.app.InstrumentationRegistry
@@ -30,7 +30,7 @@ import org.junit.ClassRule
 import org.junit.Test
 
 /** Tests for [WindowManagerTraceParser] */
-class WmTransitionTraceParserTest {
+class LegacyWmTransitionTraceParserTest {
     @Before
     fun before() {
         Cache.clear()
@@ -52,7 +52,7 @@ class WmTransitionTraceParserTest {
         val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
         val tapl = LauncherInstrumentation()
         val data =
-            WmTransitionTraceMonitor().withTracing {
+            LegacyWmTransitionTraceMonitor().withTracing {
                 BrowserAppHelper(instrumentation).open()
                 tapl.goHome().switchToAllApps()
                 tapl.goHome()

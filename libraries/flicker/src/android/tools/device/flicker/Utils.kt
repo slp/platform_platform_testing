@@ -26,30 +26,46 @@ import android.tools.device.traces.monitors.ScreenRecorder
 import android.tools.device.traces.monitors.TraceMonitor
 import android.tools.device.traces.monitors.events.EventLogMonitor
 import android.tools.device.traces.monitors.view.ViewTraceMonitor
-import android.tools.device.traces.monitors.wm.ShellTransitionTraceMonitor
+import android.tools.device.traces.monitors.wm.LegacyShellTransitionTraceMonitor
+import android.tools.device.traces.monitors.wm.LegacyWmTransitionTraceMonitor
 import android.tools.device.traces.monitors.wm.WindowManagerTraceMonitor
-import android.tools.device.traces.monitors.wm.WmTransitionTraceMonitor
 import androidx.test.platform.app.InstrumentationRegistry
 import java.io.File
 import kotlin.io.path.createTempDirectory
 
 object Utils {
-    fun captureTrace(
-        scenario: Scenario,
-        outputDir: File = createTempDirectory().toFile(),
-        monitors: List<TraceMonitor> =
-            listOf(
-                WmTransitionTraceMonitor(),
-                ShellTransitionTraceMonitor(),
+    val ALL_MONITORS: List<TraceMonitor> =
+        mutableListOf<TraceMonitor>(
                 WindowManagerTraceMonitor(),
-                PerfettoTraceMonitor.newBuilder()
-                    .enableLayersTrace()
-                    .enableTransactionsTrace()
-                    .build(),
                 EventLogMonitor(),
                 ViewTraceMonitor(),
                 ScreenRecorder(InstrumentationRegistry.getInstrumentation().targetContext)
-            ),
+            )
+            .apply {
+                if (android.tracing.Flags.perfettoTransitionTracing()) {
+                    this.add(
+                        PerfettoTraceMonitor.newBuilder()
+                            .enableLayersTrace()
+                            .enableTransactionsTrace()
+                            .enableTransitionsTrace()
+                            .build(),
+                    )
+                } else {
+                    this.add(LegacyWmTransitionTraceMonitor())
+                    this.add(LegacyShellTransitionTraceMonitor())
+                    this.add(
+                        PerfettoTraceMonitor.newBuilder()
+                            .enableLayersTrace()
+                            .enableTransactionsTrace()
+                            .build(),
+                    )
+                }
+            }
+
+    fun captureTrace(
+        scenario: Scenario,
+        outputDir: File = createTempDirectory().toFile(),
+        monitors: List<TraceMonitor> = ALL_MONITORS,
         actions: (writer: ResultWriter) -> Unit
     ): Reader {
         val writer = ResultWriter().forScenario(scenario).withOutputDir(outputDir).setRunComplete()

@@ -18,6 +18,8 @@ package android.tools.device.traces.parsers.wm
 
 import android.tools.common.Cache
 import android.tools.device.traces.monitors.wm.WindowManagerTraceMonitor
+import android.tools.device.traces.parsers.perfetto.TraceProcessorSession
+import android.tools.device.traces.parsers.perfetto.TransitionsTraceParser
 import android.tools.utils.CleanFlickerEnvironmentRule
 import android.tools.utils.readAsset
 import androidx.test.platform.app.InstrumentationRegistry
@@ -27,7 +29,6 @@ import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Test
 
-/** Tests for [WindowManagerTraceParser] */
 class TransitionTraceParserTest {
     @Before
     fun before() {
@@ -35,16 +36,32 @@ class TransitionTraceParserTest {
     }
 
     @Test
+    fun canParseAllEntriesFromLegacyStoredTrace() {
+        val trace =
+            LegacyTransitionTraceParser()
+                .parse(
+                    wmSideTraceData = readAsset("wm_transition_trace.winscope"),
+                    shellSideTraceData = readAsset("shell_transition_trace.winscope")
+                )
+        val firstEntry = trace.entries[0]
+        Truth.assertThat(firstEntry.timestamp.elapsedNanos).isEqualTo(760760231809L)
+        Truth.assertThat(firstEntry.id).isEqualTo(9)
+
+        val lastEntry = trace.entries[trace.entries.size - 1]
+        Truth.assertThat(lastEntry.timestamp.elapsedNanos).isEqualTo(2770105426934L)
+    }
+
+    @Test
     fun canParseAllEntriesFromStoredTrace() {
         val trace =
-            WindowManagerTraceParser(legacyTrace = true)
-                .parse(readAsset("wm_trace_openchrome.pb"), clearCache = false)
-        val firstEntry = trace.entries[0]
-        Truth.assertThat(firstEntry.timestamp.elapsedNanos).isEqualTo(9213763541297L)
-        Truth.assertThat(firstEntry.windowStates.size).isEqualTo(10)
-        Truth.assertThat(firstEntry.visibleWindows.size).isEqualTo(5)
-        Truth.assertThat(trace.entries[trace.entries.size - 1].timestamp.elapsedNanos)
-            .isEqualTo(9216093628925L)
+            TraceProcessorSession.loadPerfettoTrace(readAsset("transitions.perfetto-trace")) {
+                session ->
+                TransitionsTraceParser().parse(session)
+            }
+        Truth.assertWithMessage("Trace").that(trace.entries).asList().isNotEmpty()
+        Truth.assertWithMessage("Trace contains entry")
+            .that(trace.entries.map { it.id })
+            .contains(35)
     }
 
     @Test

@@ -19,7 +19,7 @@ package android.tools.device.traces.parsers.wm
 import android.app.Instrumentation
 import android.tools.common.Cache
 import android.tools.device.apphelpers.MessagingAppHelper
-import android.tools.device.traces.monitors.wm.ShellTransitionTraceMonitor
+import android.tools.device.traces.monitors.wm.LegacyShellTransitionTraceMonitor
 import android.tools.utils.CleanFlickerEnvironmentRule
 import android.tools.utils.readAsset
 import androidx.test.platform.app.InstrumentationRegistry
@@ -30,7 +30,7 @@ import org.junit.ClassRule
 import org.junit.Test
 
 /** Tests for [WindowManagerTraceParser] */
-class ShellTransitionTraceParserTest {
+class LegacyShellTransitionTraceParserTest {
     @Before
     fun before() {
         Cache.clear()
@@ -52,7 +52,7 @@ class ShellTransitionTraceParserTest {
         val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
         val tapl = LauncherInstrumentation()
         val data =
-            ShellTransitionTraceMonitor().withTracing {
+            LegacyShellTransitionTraceMonitor().withTracing {
                 MessagingAppHelper(instrumentation).open()
                 tapl.goHome().switchToAllApps()
                 tapl.goHome()

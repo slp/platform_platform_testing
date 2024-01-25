@@ -200,8 +200,8 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
 
         private const val SF_LAYERS_DATA_SOURCE = "android.surfaceflinger.layers"
         private const val SF_TRANSACTIONS_DATA_SOURCE = "android.surfaceflinger.transactions"
-        private const val TRANSITIONS_DATA_SOURCE = "android.tracing.shell_transitions"
-        private const val PROTOLOG_DATA_SOURCE = "android.tracing.protolog"
+        private const val TRANSITIONS_DATA_SOURCE = "com.android.wm.shell.transition"
+        private const val PROTOLOG_DATA_SOURCE = "android.protolog"
 
         private val allPerfettoPids = mutableListOf<Int>()
         private val allPerfettoPidsLock = ReentrantLock()

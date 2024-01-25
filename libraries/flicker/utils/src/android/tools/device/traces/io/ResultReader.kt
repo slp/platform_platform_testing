@@ -36,7 +36,8 @@ import android.tools.device.traces.TraceConfigs
 import android.tools.device.traces.parsers.perfetto.LayersTraceParser
 import android.tools.device.traces.parsers.perfetto.TraceProcessorSession
 import android.tools.device.traces.parsers.perfetto.TransactionsTraceParser
-import android.tools.device.traces.parsers.wm.TransitionTraceParser
+import android.tools.device.traces.parsers.perfetto.TransitionsTraceParser
+import android.tools.device.traces.parsers.wm.LegacyTransitionTraceParser
 import android.tools.device.traces.parsers.wm.WindowManagerDumpParser
 import android.tools.device.traces.parsers.wm.WindowManagerTraceParser
 import androidx.annotation.VisibleForTesting
@@ -197,27 +198,51 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
     @Throws(IOException::class)
     override fun readTransitionsTrace(): TransitionsTrace? {
         return Logger.withTracing("readTransitionsTrace") {
-            val wmSideTraceData =
-                artifact.readBytes(ResultArtifactDescriptor(TraceType.WM_TRANSITION))
-            val shellSideTraceData =
-                artifact.readBytes(ResultArtifactDescriptor(TraceType.SHELL_TRANSITION))
+            var trace = readPerfettoTransitionsTrace()
 
-            if (wmSideTraceData == null || shellSideTraceData == null) {
-                null
-            } else {
-                val trace =
-                    TransitionTraceParser()
-                        .parse(
-                            wmSideTraceData,
-                            shellSideTraceData,
-                            from = transitionTimeRange.start,
-                            to = transitionTimeRange.end
-                        )
-                if (!traceConfig.transitionsTrace.allowNoChange) {
-                    require(trace.entries.isNotEmpty()) { "Transitions trace cannot be empty" }
-                }
-                trace
+            if (trace == null || trace.entries.isEmpty()) {
+                trace = readLegacyTransitionTrace()
             }
+
+            if (trace == null) {
+                return@withTracing null
+            }
+
+            if (!traceConfig.transitionsTrace.allowNoChange) {
+                require(trace.entries.isNotEmpty()) { "Transitions trace cannot be empty" }
+            }
+
+            trace
+        }
+    }
+
+    private fun readPerfettoTransitionsTrace(): TransitionsTrace? {
+        val traceData = artifact.readBytes(ResultArtifactDescriptor(TraceType.PERFETTO))
+
+        return traceData?.let {
+            TraceProcessorSession.loadPerfettoTrace(traceData) { session ->
+                TransitionsTraceParser()
+                    .parse(session, from = transitionTimeRange.start, to = transitionTimeRange.end)
+            }
+        }
+    }
+
+    private fun readLegacyTransitionTrace(): TransitionsTrace? {
+        val wmSideTraceData =
+            artifact.readBytes(ResultArtifactDescriptor(TraceType.LEGACY_WM_TRANSITION))
+        val shellSideTraceData =
+            artifact.readBytes(ResultArtifactDescriptor(TraceType.LEGACY_SHELL_TRANSITION))
+
+        return if (wmSideTraceData == null || shellSideTraceData == null) {
+            null
+        } else {
+            LegacyTransitionTraceParser()
+                .parse(
+                    wmSideTraceData,
+                    shellSideTraceData,
+                    from = transitionTimeRange.start,
+                    to = transitionTimeRange.end
+                )
         }
     }
 

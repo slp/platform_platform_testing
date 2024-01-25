@@ -21,9 +21,9 @@ import android.tools.device.traces.io.ResultWriter
 import android.tools.device.traces.monitors.PerfettoTraceMonitor
 import android.tools.device.traces.monitors.TraceMonitor
 import android.tools.device.traces.monitors.view.ViewTraceMonitor
-import android.tools.device.traces.monitors.wm.ShellTransitionTraceMonitor
+import android.tools.device.traces.monitors.wm.LegacyShellTransitionTraceMonitor
+import android.tools.device.traces.monitors.wm.LegacyWmTransitionTraceMonitor
 import android.tools.device.traces.monitors.wm.WindowManagerTraceMonitor
-import android.tools.device.traces.monitors.wm.WmTransitionTraceMonitor
 import kotlin.io.path.createTempDirectory
 import kotlin.io.path.name
 import org.junit.rules.TestRule
@@ -35,9 +35,9 @@ class StopAllTracesRule : TestRule {
         return object : Statement() {
             override fun evaluate() {
                 PerfettoTraceMonitor.stopAllSessions()
-                ShellTransitionTraceMonitor().stopIfEnabled()
+                LegacyShellTransitionTraceMonitor().stopIfEnabled()
+                LegacyWmTransitionTraceMonitor().stopIfEnabled()
                 WindowManagerTraceMonitor().stopIfEnabled()
-                WmTransitionTraceMonitor().stopIfEnabled()
                 ViewTraceMonitor().stopIfEnabled()
 
                 base?.evaluate()

@@ -21,15 +21,11 @@ import android.tools.common.Logger
 import android.tools.common.Scenario
 import android.tools.common.flicker.TracesCollector
 import android.tools.common.io.Reader
+import android.tools.common.io.TraceType
+import android.tools.device.flicker.Utils.ALL_MONITORS
 import android.tools.device.traces.SERVICE_TRACE_CONFIG
 import android.tools.device.traces.io.ResultReaderWithLru
 import android.tools.device.traces.io.ResultWriter
-import android.tools.device.traces.monitors.PerfettoTraceMonitor
-import android.tools.device.traces.monitors.events.EventLogMonitor
-import android.tools.device.traces.monitors.view.ViewTraceMonitor
-import android.tools.device.traces.monitors.wm.ShellTransitionTraceMonitor
-import android.tools.device.traces.monitors.wm.WindowManagerTraceMonitor
-import android.tools.device.traces.monitors.wm.WmTransitionTraceMonitor
 import java.io.File
 import kotlin.io.path.createTempDirectory
 
@@ -38,15 +34,7 @@ class FlickerServiceTracesCollector(
 ) : TracesCollector {
     private var scenario: Scenario? = null
 
-    private val traceMonitors =
-        listOf(
-            WindowManagerTraceMonitor(),
-            PerfettoTraceMonitor.newBuilder().enableLayersTrace().enableTransactionsTrace().build(),
-            WmTransitionTraceMonitor(),
-            ShellTransitionTraceMonitor(),
-            EventLogMonitor(),
-            ViewTraceMonitor(),
-        )
+    private val traceMonitors = ALL_MONITORS.filter { it.traceType != TraceType.SCREEN_RECORDING }
 
     override fun start(scenario: Scenario) {
         reportErrorsBlock("Failed to start traces") {
