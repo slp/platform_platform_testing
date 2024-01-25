@@ -208,9 +208,9 @@ class EsimTransferStressTest(nc_base_test.NCBaseTestClass):
         '0 test iterations': self.performance_test_iterations,
         '1 Completed BT transfer': f'{bt_transfer_stats.success_count}',
         '2 BT transfer failures': {
-            'discovery': discovery_stats.failure_count,
-            'connection': connection_stats.failure_count,
-            'transfer': self.performance_test_iterations - (
+            '1 discovery': discovery_stats.failure_count,
+            '2 connection': connection_stats.failure_count,
+            '3 transfer': self.performance_test_iterations - (
                 bt_transfer_stats.success_count),
         },
         '3 50% and 95% of BT transfer speed (KBps)': (

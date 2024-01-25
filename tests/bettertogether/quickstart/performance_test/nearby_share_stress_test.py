@@ -223,10 +223,10 @@ class NearbyShareStressTest(nc_base_test.NCBaseTestClass):
         '0 test iterations': self.performance_test_iterations,
         '1 Completed WiFi transfer': f'{wifi_transfer_stats.success_count}',
         '2 failure counts': {
-            'discovery': discovery_stats.failure_count,
-            'connection': connection_stats.failure_count,
-            'upgrade': medium_upgrade_stats.failure_count,
-            'transfer': self.performance_test_iterations - (
+            '1 discovery': discovery_stats.failure_count,
+            '2 connection': connection_stats.failure_count,
+            '3 upgrade': medium_upgrade_stats.failure_count,
+            '4 transfer': self.performance_test_iterations - (
                 wifi_transfer_stats.success_count),
         },
         '3 50% and 95% of WiFi transfer speed (KBps)': (
