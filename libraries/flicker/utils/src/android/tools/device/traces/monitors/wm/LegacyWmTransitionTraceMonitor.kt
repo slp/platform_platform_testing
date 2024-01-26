@@ -23,10 +23,10 @@ import android.view.WindowManagerGlobal
 import java.io.File
 
 /** Captures [TransitionsTrace] from SurfaceFlinger. */
-open class WmTransitionTraceMonitor : TraceMonitor() {
+open class LegacyWmTransitionTraceMonitor : TraceMonitor() {
     private val windowManager =
         WindowManagerGlobal.getWindowManagerService() ?: error("Unable to acquire WindowManager")
-    override val traceType = TraceType.WM_TRANSITION
+    override val traceType = TraceType.LEGACY_WM_TRANSITION
     override val isEnabled
         get() = windowManager.isTransitionTraceEnabled
 

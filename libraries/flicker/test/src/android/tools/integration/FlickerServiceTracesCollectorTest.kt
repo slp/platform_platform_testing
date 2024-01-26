@@ -107,14 +107,24 @@ class FlickerServiceTracesCollectorTest {
 
     companion object {
         val expectedTraces =
-            listOf(
-                "wm_trace.winscope",
-                "wm_log.winscope",
-                "wm_transition_trace.winscope",
-                "shell_transition_trace.winscope",
-                "eventlog.winscope",
-                TraceType.SF.fileName,
-                "${getLauncherPackageName()}_0.vc__view_capture_trace.winscope",
-            )
+            if (android.tracing.Flags.perfettoTransitionTracing()) {
+                listOf(
+                    TraceType.WM.fileName,
+                    TraceType.PROTOLOG.fileName,
+                    TraceType.EVENT_LOG.fileName,
+                    TraceType.PERFETTO.fileName,
+                    "${getLauncherPackageName()}_0.vc__view_capture_trace.winscope",
+                )
+            } else {
+                listOf(
+                    TraceType.WM.fileName,
+                    TraceType.PROTOLOG.fileName,
+                    TraceType.LEGACY_WM_TRANSITION.fileName,
+                    TraceType.LEGACY_SHELL_TRANSITION.fileName,
+                    TraceType.EVENT_LOG.fileName,
+                    TraceType.PERFETTO.fileName,
+                    "${getLauncherPackageName()}_0.vc__view_capture_trace.winscope",
+                )
+            }
     }
 }

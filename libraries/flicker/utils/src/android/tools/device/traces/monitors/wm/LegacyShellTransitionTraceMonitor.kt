@@ -25,8 +25,8 @@ import android.tools.device.traces.monitors.TraceMonitor
 import java.io.File
 
 /** Captures [TransitionsTrace] from SurfaceFlinger. */
-open class ShellTransitionTraceMonitor : TraceMonitor() {
-    override val traceType = TraceType.SHELL_TRANSITION
+open class LegacyShellTransitionTraceMonitor : TraceMonitor() {
+    override val traceType = TraceType.LEGACY_SHELL_TRANSITION
     final override var isEnabled = false
         private set
 

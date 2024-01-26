@@ -18,19 +18,11 @@ package android.tools.device.flicker.legacy
 
 import android.app.Instrumentation
 import android.tools.common.io.TraceType
-import android.tools.common.traces.wm.TransitionsTrace
-import android.tools.common.traces.wm.WindowManagerState
-import android.tools.common.traces.wm.WindowManagerTrace
+import android.tools.device.flicker.Utils.ALL_MONITORS
 import android.tools.device.traces.getDefaultFlickerOutputDir
 import android.tools.device.traces.monitors.ITransitionMonitor
 import android.tools.device.traces.monitors.NoTraceMonitor
-import android.tools.device.traces.monitors.PerfettoTraceMonitor
 import android.tools.device.traces.monitors.ScreenRecorder
-import android.tools.device.traces.monitors.events.EventLogMonitor
-import android.tools.device.traces.monitors.view.ViewTraceMonitor
-import android.tools.device.traces.monitors.wm.ShellTransitionTraceMonitor
-import android.tools.device.traces.monitors.wm.WindowManagerTraceMonitor
-import android.tools.device.traces.monitors.wm.WmTransitionTraceMonitor
 import android.tools.device.traces.parsers.WindowManagerStateHelper
 import androidx.test.uiautomator.UiDevice
 import java.io.File
@@ -46,48 +38,9 @@ class FlickerBuilder(
     private val transitionCommands: MutableList<FlickerTestData.() -> Any> = mutableListOf(),
     private val teardownCommands: MutableList<FlickerTestData.() -> Any> = mutableListOf(),
     val device: UiDevice = UiDevice.getInstance(instrumentation),
-    private val traceMonitors: MutableList<ITransitionMonitor> =
-        mutableListOf<ITransitionMonitor>().also {
-            it.add(WindowManagerTraceMonitor())
-            it.add(
-                PerfettoTraceMonitor.newBuilder()
-                    .enableLayersTrace()
-                    .enableTransactionsTrace()
-                    .build()
-            )
-            it.add(WmTransitionTraceMonitor())
-            it.add(ShellTransitionTraceMonitor())
-            it.add(ScreenRecorder(instrumentation.targetContext))
-            it.add(EventLogMonitor())
-            it.add(ViewTraceMonitor())
-        }
+    private val traceMonitors: MutableList<ITransitionMonitor> = ALL_MONITORS.toMutableList()
 ) {
     private var usingExistingTraces = false
-
-    /**
-     * Configure a [WindowManagerTraceMonitor] to obtain [WindowManagerTrace]
-     *
-     * By default, the tracing is always active. To disable tracing return null
-     *
-     * If this tracing is disabled, the assertions for [WindowManagerTrace] and [WindowManagerState]
-     * will not be executed
-     */
-    fun withWindowManagerTracing(traceMonitor: () -> WindowManagerTraceMonitor?): FlickerBuilder =
-        apply {
-            traceMonitors.removeIf { it is WindowManagerTraceMonitor }
-            addMonitor(traceMonitor())
-        }
-
-    /**
-     * Configure a [WmTransitionTraceMonitor] to obtain [TransitionsTrace].
-     *
-     * By default, shell transition tracing is disabled.
-     */
-    fun withTransitionTracing(traceMonitor: () -> WmTransitionTraceMonitor?): FlickerBuilder =
-        apply {
-            traceMonitors.removeIf { it is WmTransitionTraceMonitor }
-            addMonitor(traceMonitor())
-        }
 
     /**
      * Configure a [ScreenRecorder].
@@ -138,11 +91,13 @@ class FlickerBuilder(
         addMonitor(NoTraceMonitor { it.addTraceResult(TraceType.SF, traceFiles.perfetto) })
         addMonitor(NoTraceMonitor { it.addTraceResult(TraceType.TRANSACTION, traceFiles.perfetto) })
         addMonitor(
-            NoTraceMonitor { it.addTraceResult(TraceType.WM_TRANSITION, traceFiles.wmTransitions) }
+            NoTraceMonitor {
+                it.addTraceResult(TraceType.LEGACY_WM_TRANSITION, traceFiles.wmTransitions)
+            }
         )
         addMonitor(
             NoTraceMonitor {
-                it.addTraceResult(TraceType.SHELL_TRANSITION, traceFiles.shellTransitions)
+                it.addTraceResult(TraceType.LEGACY_SHELL_TRANSITION, traceFiles.shellTransitions)
             }
         )
         addMonitor(NoTraceMonitor { it.addTraceResult(TraceType.EVENT_LOG, traceFiles.eventLog) })

@@ -158,16 +158,19 @@ class ResultWriterTest {
     fun writeTransitionTrace() {
         val writer =
             newTestResultWriter()
-                .addTraceResult(TraceType.WM_TRANSITION, TestTraces.TransitionTrace.WM_FILE)
-                .addTraceResult(TraceType.SHELL_TRANSITION, TestTraces.TransitionTrace.SHELL_FILE)
+                .addTraceResult(TraceType.LEGACY_WM_TRANSITION, TestTraces.TransitionTrace.WM_FILE)
+                .addTraceResult(
+                    TraceType.LEGACY_SHELL_TRANSITION,
+                    TestTraces.TransitionTrace.SHELL_FILE
+                )
         val result = writer.write()
         val reader = ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)
         Truth.assertWithMessage("File count").that(reader.countFiles()).isEqualTo(2)
         Truth.assertWithMessage("Has file with type")
-            .that(reader.hasTraceFile(TraceType.WM_TRANSITION))
+            .that(reader.hasTraceFile(TraceType.LEGACY_WM_TRANSITION))
             .isTrue()
         Truth.assertWithMessage("Has file with type")
-            .that(reader.hasTraceFile(TraceType.SHELL_TRANSITION))
+            .that(reader.hasTraceFile(TraceType.LEGACY_SHELL_TRANSITION))
             .isTrue()
     }
 
@@ -178,8 +181,11 @@ class ResultWriterTest {
                 .addTraceResult(TraceType.WM, TestTraces.WMTrace.FILE)
                 .addTraceResult(TraceType.SF, TestTraces.LayerTrace.FILE)
                 .addTraceResult(TraceType.TRANSACTION, TestTraces.TransactionTrace.FILE)
-                .addTraceResult(TraceType.WM_TRANSITION, TestTraces.TransitionTrace.WM_FILE)
-                .addTraceResult(TraceType.SHELL_TRANSITION, TestTraces.TransitionTrace.SHELL_FILE)
+                .addTraceResult(TraceType.LEGACY_WM_TRANSITION, TestTraces.TransitionTrace.WM_FILE)
+                .addTraceResult(
+                    TraceType.LEGACY_SHELL_TRANSITION,
+                    TestTraces.TransitionTrace.SHELL_FILE
+                )
         val result = writer.write()
         val reader = ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)
         Truth.assertWithMessage("File count").that(reader.countFiles()).isEqualTo(4)
@@ -190,10 +196,10 @@ class ResultWriterTest {
             .that(reader.hasTraceFile(TraceType.SF))
             .isTrue()
         Truth.assertWithMessage("Has file with type")
-            .that(reader.hasTraceFile(TraceType.WM_TRANSITION))
+            .that(reader.hasTraceFile(TraceType.LEGACY_WM_TRANSITION))
             .isTrue()
         Truth.assertWithMessage("Has file with type")
-            .that(reader.hasTraceFile(TraceType.SHELL_TRANSITION))
+            .that(reader.hasTraceFile(TraceType.LEGACY_SHELL_TRANSITION))
             .isTrue()
         Truth.assertWithMessage("Has file with type")
             .that(reader.hasTraceFile(TraceType.TRANSACTION))

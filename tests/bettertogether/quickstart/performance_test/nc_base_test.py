@@ -109,7 +109,6 @@ class NCBaseTestClass(base_test.BaseTestClass):
     setup_utils.enable_logs(ad)
 
     setup_utils.disable_redaction(ad)
-    setup_utils.enable_auto_reconnect(ad)
 
     if (
         self.test_parameters.upgrade_medium
