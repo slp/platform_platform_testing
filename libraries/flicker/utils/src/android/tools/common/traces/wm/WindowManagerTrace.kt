@@ -19,8 +19,6 @@ package android.tools.common.traces.wm
 import android.tools.common.ITrace
 import android.tools.common.Rotation
 import android.tools.common.Timestamp
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /**
  * Contains a collection of parsed WindowManager trace entries and assertions to apply over a single
@@ -31,11 +29,9 @@ import kotlin.js.JsName
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-@JsExport
 data class WindowManagerTrace(override val entries: Array<WindowManagerState>) :
     ITrace<WindowManagerState> {
 
-    @JsName("isTablet")
     val isTablet: Boolean
         get() = entries.any { it.isTablet }
 

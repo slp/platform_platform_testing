@@ -17,8 +17,6 @@
 package android.tools.common.traces.wm
 
 import android.tools.common.withCache
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /**
  * Represents the configuration of a WM container
@@ -26,19 +24,17 @@ import kotlin.js.JsName
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-@JsExport
 class Configuration
 private constructor(
-    @JsName("windowConfiguration") val windowConfiguration: WindowConfiguration? = null,
-    @JsName("densityDpi") val densityDpi: Int = 0,
-    @JsName("orientation") val orientation: Int = 0,
-    @JsName("screenHeightDp") val screenHeightDp: Int = 0,
-    @JsName("screenWidthDp") val screenWidthDp: Int = 0,
-    @JsName("smallestScreenWidthDp") val smallestScreenWidthDp: Int = 0,
-    @JsName("screenLayout") val screenLayout: Int = 0,
-    @JsName("uiMode") val uiMode: Int = 0
+    val windowConfiguration: WindowConfiguration? = null,
+    val densityDpi: Int = 0,
+    val orientation: Int = 0,
+    val screenHeightDp: Int = 0,
+    val screenWidthDp: Int = 0,
+    val smallestScreenWidthDp: Int = 0,
+    val screenLayout: Int = 0,
+    val uiMode: Int = 0
 ) {
-    @JsName("isEmpty")
     val isEmpty: Boolean
         get() =
             (windowConfiguration == null) &&
@@ -79,11 +75,9 @@ private constructor(
     }
 
     companion object {
-        @JsName("EMPTY")
         val EMPTY: Configuration
             get() = withCache { Configuration() }
 
-        @JsName("from")
         fun from(
             windowConfiguration: WindowConfiguration?,
             densityDpi: Int,

@@ -16,15 +16,12 @@
 
 package android.tools.common.traces.wm
 
-import kotlin.js.JsExport
-
 /**
  * Represents the root window container in the window manager hierarchy
  *
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-@JsExport
 class RootWindowContainer(private val windowContainer: IWindowContainer) :
     IWindowContainer by windowContainer {
     override fun toString(): String {

@@ -17,8 +17,6 @@
 package android.tools.common.traces.wm
 
 import android.tools.common.withCache
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /**
  * Represents the keyguard controller in the window manager hierarchy
@@ -26,7 +24,6 @@ import kotlin.js.JsName
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-@JsExport
 class KeyguardControllerState
 private constructor(
     val isAodShowing: Boolean,
@@ -58,7 +55,6 @@ private constructor(
     }
 
     companion object {
-        @JsName("from")
         fun from(
             isAodShowing: Boolean,
             isKeyguardShowing: Boolean,
