@@ -25,7 +25,7 @@ import android.tools.common.Timestamps
 import android.tools.common.io.Reader
 import android.tools.common.io.ResultArtifactDescriptor
 import android.tools.common.io.RunStatus
-import android.tools.common.traces.wm.ConfigurationContainer
+import android.tools.common.traces.wm.ConfigurationContainerImpl
 import android.tools.common.traces.wm.RootWindowContainer
 import android.tools.common.traces.wm.WindowContainerImpl
 import android.tools.device.rules.StopAllTracesRule
@@ -215,7 +215,7 @@ fun newEmptyRootContainer(orientation: Int = 0, layerId: Int = 0) =
             layerId = layerId,
             _isVisible = true,
             _children = emptyArray(),
-            configurationContainer = ConfigurationContainer.EMPTY,
+            configurationContainer = ConfigurationContainerImpl.EMPTY,
             computedZ = 0
         )
     )

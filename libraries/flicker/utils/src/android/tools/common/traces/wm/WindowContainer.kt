@@ -18,7 +18,7 @@ package android.tools.common.traces.wm
 
 import android.tools.common.datatypes.Rect
 
-interface WindowContainer : IConfigurationContainer {
+interface WindowContainer : ConfigurationContainer {
     val title: String
 
     val id: Int
