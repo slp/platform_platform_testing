@@ -42,11 +42,11 @@ class LayerTraceEntryBuilderTest {
     fun createsEntryWithCorrectClockTime() {
         val builder =
             LayerTraceEntryBuilder()
-                .setElapsedTimestamp("100")
+                .setElapsedTimestamp(100)
                 .setLayers(emptyArray())
                 .setDisplays(emptyArray())
-                .setVSyncId("123")
-                .setRealToElapsedTimeOffsetNs("500")
+                .setVSyncId(123)
+                .setRealToElapsedTimeOffsetNs(500)
         val entry = builder.build()
         Truth.assertThat(entry.elapsedTimestamp).isEqualTo(100)
         Truth.assertThat(entry.clockTimestamp).isEqualTo(600)
@@ -60,10 +60,10 @@ class LayerTraceEntryBuilderTest {
     fun supportsMissingRealToElapsedTimeOffsetNs() {
         val builder =
             LayerTraceEntryBuilder()
-                .setElapsedTimestamp("100")
+                .setElapsedTimestamp(100)
                 .setLayers(emptyArray())
                 .setDisplays(emptyArray())
-                .setVSyncId("123")
+                .setVSyncId(123)
         val entry = builder.build()
         Truth.assertThat(entry.elapsedTimestamp).isEqualTo(100)
         Truth.assertThat(entry.clockTimestamp).isEqualTo(null)
@@ -110,7 +110,7 @@ class LayerTraceEntryBuilderTest {
         val displays =
             listOf(
                 Display.from(
-                    id = "display#1",
+                    id = 1,
                     name = "display",
                     layerStackId = offDisplayStackId,
                     size = Size.EMPTY,
@@ -124,10 +124,10 @@ class LayerTraceEntryBuilderTest {
 
         val builder =
             LayerTraceEntryBuilder()
-                .setElapsedTimestamp("100")
+                .setElapsedTimestamp(100)
                 .setLayers(layers.toTypedArray())
                 .setDisplays(displays.toTypedArray())
-                .setVSyncId("123")
+                .setVSyncId(123)
         val entry = builder.build()
 
         Truth.assertThat(entry.displays.all { it.isOff })

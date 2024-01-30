@@ -60,7 +60,7 @@ class LayersTraceParser(
 
         return session.query(getSqlQuerySnapshots()) { snapshotsRows ->
             val traceEntries = ArrayList<LayerTraceEntry>()
-            val snapshotGroups = snapshotsRows.groupBy { it.get("snapshot_id") }
+            val snapshotGroups = snapshotsRows.groupBy { it["snapshot_id"] }
 
             for (snapshotId in 0L..(snapshotGroups.size - 1)) {
                 Logger.withTracing("query + build entry") {
@@ -99,7 +99,7 @@ class LayersTraceParser(
 
         val idAndLayers =
             layersRows
-                .groupBy { it.get("layer_id").toString() }
+                .groupBy { it["layer_id"].toString() }
                 .map { (layerId, layerRows) -> Pair(layerId, newLayer(Args.build(layerRows))) }
                 .toMutableList()
         idAndLayers.sortBy { it.first.toLong() }
@@ -107,13 +107,11 @@ class LayersTraceParser(
         val layers = idAndLayers.map { it.second }.toTypedArray()
 
         return LayerTraceEntryBuilder()
-            .setElapsedTimestamp(
-                snapshotArgs.getChild("elapsed_realtime_nanos")?.getLong()?.toString() ?: "0"
-            )
-            .setRealToElapsedTimeOffsetNs(realToMonotonicTimeOffsetNs.toString())
+            .setElapsedTimestamp(snapshotArgs.getChild("elapsed_realtime_nanos")?.getLong() ?: 0L)
+            .setRealToElapsedTimeOffsetNs(realToMonotonicTimeOffsetNs)
             .setLayers(layers)
             .setDisplays(displays)
-            .setVSyncId(snapshotArgs.getChild("vsync_id")?.getLong()?.toString() ?: "0")
+            .setVSyncId(snapshotArgs.getChild("vsync_id")?.getLong() ?: 0L)
             .setHwcBlob(snapshotArgs.getChild("hwc_blob")?.getString() ?: "")
             .setWhere(snapshotArgs.getChild("where")?.getString() ?: "")
             .setOrphanLayerCallback(orphanLayerCallback)
@@ -189,7 +187,7 @@ class LayersTraceParser(
 
         private fun newDisplay(display: Args): android.tools.common.traces.surfaceflinger.Display {
             return android.tools.common.traces.surfaceflinger.Display.from(
-                display.getChild("id")?.getLong()?.toString() ?: "",
+                display.getChild("id")?.getLong() ?: 0L,
                 display.getChild("name")?.getString() ?: "",
                 display.getChild("layer_stack")?.getInt() ?: 0,
                 newSize(display.getChild("size")),

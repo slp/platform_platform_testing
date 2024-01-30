@@ -18,9 +18,7 @@ package android.tools.common.flicker
 
 import android.tools.common.flicker.config.FlickerConfig
 import android.tools.common.flicker.config.FlickerConfigImpl
-import kotlin.js.JsName
 
-@JsName("FlickerServiceFactory")
 fun FlickerService(flickerConfig: FlickerConfig): FlickerService = FlickerServiceImpl(flickerConfig)
 
-@JsName("ServiceRegistryFactory") fun FlickerConfig(): FlickerConfig = FlickerConfigImpl()
+fun FlickerConfig(): FlickerConfig = FlickerConfigImpl()

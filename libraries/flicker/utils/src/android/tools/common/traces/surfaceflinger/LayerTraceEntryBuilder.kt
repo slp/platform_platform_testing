@@ -36,9 +36,7 @@ class LayerTraceEntryBuilder {
         error("Duplicate layer id found: ${it.id}")
     }
 
-    fun setVSyncId(vSyncId: String): LayerTraceEntryBuilder =
-        // Necessary for compatibility with JS number type
-        apply { this.vSyncId = vSyncId.toLong() }
+    fun setVSyncId(vSyncId: Long): LayerTraceEntryBuilder = apply { this.vSyncId = vSyncId }
 
     fun setHwcBlob(hwcBlob: String): LayerTraceEntryBuilder = apply { this.hwcBlob = hwcBlob }
 
@@ -48,15 +46,15 @@ class LayerTraceEntryBuilder {
         this.displays = displays
     }
 
-    fun setElapsedTimestamp(timestamp: String): LayerTraceEntryBuilder =
-        // Necessary for compatibility with JS number type
-        apply { this.elapsedTimestamp = timestamp.toLong() }
+    fun setElapsedTimestamp(timestamp: Long): LayerTraceEntryBuilder = apply {
+        this.elapsedTimestamp = timestamp
+    }
 
-    fun setRealToElapsedTimeOffsetNs(realToElapsedTimeOffsetNs: String?): LayerTraceEntryBuilder =
+    fun setRealToElapsedTimeOffsetNs(realToElapsedTimeOffsetNs: Long?): LayerTraceEntryBuilder =
         apply {
             this.realTimestamp =
-                if (realToElapsedTimeOffsetNs != null && realToElapsedTimeOffsetNs.toLong() != 0L) {
-                    realToElapsedTimeOffsetNs.toLong() + elapsedTimestamp
+                if (realToElapsedTimeOffsetNs != null && realToElapsedTimeOffsetNs != 0L) {
+                    realToElapsedTimeOffsetNs + elapsedTimestamp
                 } else {
                     null
                 }
