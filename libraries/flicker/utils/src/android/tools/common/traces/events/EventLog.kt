@@ -29,14 +29,11 @@ import kotlin.js.JsName
  * Java/Android functionality
  */
 @JsExport
-class EventLog(override val entries: Array<Event>) : Trace<Event> {
-    val focusEvents: Array<FocusEvent> =
-        entries
-            .filterIsInstance<FocusEvent>()
-            .filter { it.type !== FocusEvent.Type.REQUESTED }
-            .toTypedArray()
+class EventLog(override val entries: Collection<Event>) : Trace<Event> {
+    val focusEvents: Collection<FocusEvent> =
+        entries.filterIsInstance<FocusEvent>().filter { it.type !== FocusEvent.Type.REQUESTED }
 
-    val cujEvents: Array<CujEvent> = entries.filterIsInstance<CujEvent>().toTypedArray()
+    val cujEvents: Collection<CujEvent> = entries.filterIsInstance<CujEvent>()
 
     @JsName("cujTrace") val cujTrace: CujTrace = CujTrace.from(cujEvents)
 
@@ -49,7 +46,6 @@ class EventLog(override val entries: Array<Event>) : Trace<Event> {
             entries
                 .dropWhile { it.timestamp < startTimestamp }
                 .dropLastWhile { it.timestamp > endTimestamp }
-                .toTypedArray()
         )
     }
 }

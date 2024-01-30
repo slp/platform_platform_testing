@@ -79,7 +79,7 @@ class Transition(
 
     @JsName("type") val type: TransitionType = wmData.type ?: TransitionType.UNDEFINED
 
-    @JsName("changes") val changes: Array<TransitionChange> = wmData.changes ?: emptyArray()
+    @JsName("changes") val changes: Collection<TransitionChange> = wmData.changes ?: emptyList()
 
     @JsName("mergeTarget") val mergeTarget = shellData.mergeTarget
 
@@ -150,10 +150,9 @@ class Transition(
                         finishTransactionId = finishTransition.wmData.finishTransactionId,
                         type = wmData.type,
                         changes =
-                            (wmData.changes ?: emptyArray())
-                                .toMutableSet()
-                                .apply { addAll(transition.wmData.changes ?: emptyArray()) }
-                                .toTypedArray()
+                            (wmData.changes?.toMutableList() ?: mutableListOf())
+                                .apply { addAll(transition.wmData.changes ?: emptyList()) }
+                                .toSet()
                     ),
                 shellData = shellData
             )

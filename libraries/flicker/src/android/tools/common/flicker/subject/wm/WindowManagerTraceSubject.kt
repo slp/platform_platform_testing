@@ -353,7 +353,7 @@ class WindowManagerTraceSubject(
         val regionTrace =
             RegionTrace(
                 componentMatcher,
-                subjects.map { it.visibleRegion(componentMatcher).regionEntry }.toTypedArray()
+                subjects.map { it.visibleRegion(componentMatcher).regionEntry }
             )
 
         return RegionTraceSubject(regionTrace, reader)

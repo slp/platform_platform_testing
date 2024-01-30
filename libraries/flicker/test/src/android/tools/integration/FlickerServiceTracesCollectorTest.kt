@@ -61,9 +61,9 @@ class FlickerServiceTracesCollectorTest {
         testApp.launchViaIntent(wmHelper)
         testApp.exit(wmHelper)
         val reader = collector.stop()
-        Truth.assertThat(reader.readWmTrace()?.entries ?: emptyArray()).isNotEmpty()
-        Truth.assertThat(reader.readLayersTrace()?.entries ?: emptyArray()).isNotEmpty()
-        Truth.assertThat(reader.readTransitionsTrace()?.entries ?: emptyArray()).isNotEmpty()
+        Truth.assertThat(reader.readWmTrace()?.entries).isNotEmpty()
+        Truth.assertThat(reader.readLayersTrace()?.entries).isNotEmpty()
+        Truth.assertThat(reader.readTransitionsTrace()?.entries).isNotEmpty()
     }
 
     @Test

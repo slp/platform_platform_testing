@@ -25,10 +25,10 @@ import org.junit.Test
 /** Tests for [CujTrace]. Run with `atest FlickerLibTest:CujTraceTest` */
 class CujTraceTest {
     @Test
-    fun canCreateFromArrayOfCujEvents() {
+    fun canCreateFromListOfCujEvents() {
         val trace =
             CujTrace.from(
-                arrayOf(
+                listOf(
                     createCujEvent(
                         1,
                         CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL,
@@ -42,18 +42,18 @@ class CujTraceTest {
                 )
             )
 
-        Truth.assertThat(trace.entries).hasLength(1)
-        Truth.assertThat(trace.entries[0].cuj).isEqualTo(CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL)
-        Truth.assertThat(trace.entries[0].startTimestamp.unixNanos).isEqualTo(1)
-        Truth.assertThat(trace.entries[0].endTimestamp.unixNanos).isEqualTo(2)
-        Truth.assertThat(trace.entries[0].canceled).isFalse()
+        Truth.assertThat(trace.entries).hasSize(1)
+        Truth.assertThat(trace.entries.first().cuj).isEqualTo(CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL)
+        Truth.assertThat(trace.entries.first().startTimestamp.unixNanos).isEqualTo(1)
+        Truth.assertThat(trace.entries.first().endTimestamp.unixNanos).isEqualTo(2)
+        Truth.assertThat(trace.entries.first().canceled).isFalse()
     }
 
     @Test
-    fun canCreateCanceledCujsFromArrayOfCujEvents() {
+    fun canCreateCanceledCujsFromListOfCujEvents() {
         val trace =
             CujTrace.from(
-                arrayOf(
+                listOf(
                     createCujEvent(
                         1,
                         CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL,
@@ -67,18 +67,18 @@ class CujTraceTest {
                 )
             )
 
-        Truth.assertThat(trace.entries).hasLength(1)
-        Truth.assertThat(trace.entries[0].cuj).isEqualTo(CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL)
-        Truth.assertThat(trace.entries[0].startTimestamp.unixNanos).isEqualTo(1)
-        Truth.assertThat(trace.entries[0].endTimestamp.unixNanos).isEqualTo(2)
-        Truth.assertThat(trace.entries[0].canceled).isTrue()
+        Truth.assertThat(trace.entries).hasSize(1)
+        Truth.assertThat(trace.entries.first().cuj).isEqualTo(CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL)
+        Truth.assertThat(trace.entries.first().startTimestamp.unixNanos).isEqualTo(1)
+        Truth.assertThat(trace.entries.first().endTimestamp.unixNanos).isEqualTo(2)
+        Truth.assertThat(trace.entries.first().canceled).isTrue()
     }
 
     @Test
     fun canHandleIncompleteCujs() {
         val trace =
             CujTrace.from(
-                arrayOf(
+                listOf(
                     createCujEvent(
                         1,
                         CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL,
@@ -97,14 +97,14 @@ class CujTraceTest {
                 )
             )
 
-        Truth.assertThat(trace.entries).hasLength(0)
+        Truth.assertThat(trace.entries).isEmpty()
     }
 
     @Test
     fun canHandleOutOfOrderEntries() {
         val trace =
             CujTrace.from(
-                arrayOf(
+                listOf(
                     createCujEvent(
                         2,
                         CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL,
@@ -118,18 +118,18 @@ class CujTraceTest {
                 )
             )
 
-        Truth.assertThat(trace.entries).hasLength(1)
-        Truth.assertThat(trace.entries[0].cuj).isEqualTo(CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL)
-        Truth.assertThat(trace.entries[0].startTimestamp.unixNanos).isEqualTo(1)
-        Truth.assertThat(trace.entries[0].endTimestamp.unixNanos).isEqualTo(2)
-        Truth.assertThat(trace.entries[0].canceled).isFalse()
+        Truth.assertThat(trace.entries).hasSize(1)
+        Truth.assertThat(trace.entries.first().cuj).isEqualTo(CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL)
+        Truth.assertThat(trace.entries.first().startTimestamp.unixNanos).isEqualTo(1)
+        Truth.assertThat(trace.entries.first().endTimestamp.unixNanos).isEqualTo(2)
+        Truth.assertThat(trace.entries.first().canceled).isFalse()
     }
 
     @Test
     fun canHandleMissingStartAndEnds() {
         val trace =
             CujTrace.from(
-                arrayOf(
+                listOf(
                     createCujEvent(
                         1,
                         CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL,
@@ -143,7 +143,7 @@ class CujTraceTest {
                 )
             )
 
-        Truth.assertThat(trace.entries).hasLength(0)
+        Truth.assertThat(trace.entries).isEmpty()
     }
 
     private fun createCujEvent(

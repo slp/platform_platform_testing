@@ -28,7 +28,7 @@ class LayerTraceEntryBuilder {
     private var ignoreVirtualDisplay = false
     private var ignoreLayersStackMatchNoDisplay = false
     private var timestamp: Timestamp? = null
-    private var displays: Array<Display> = emptyArray()
+    private var displays: Collection<Display> = emptyList()
     private var vSyncId: Long = 0L
     private var hwcBlob: String = ""
     private var where: String = ""
@@ -42,7 +42,7 @@ class LayerTraceEntryBuilder {
 
     fun setWhere(where: String): LayerTraceEntryBuilder = apply { this.where = where }
 
-    fun setDisplays(displays: Array<Display>): LayerTraceEntryBuilder = apply {
+    fun setDisplays(displays: Collection<Display>): LayerTraceEntryBuilder = apply {
         this.displays = displays
     }
 
@@ -60,7 +60,7 @@ class LayerTraceEntryBuilder {
                 }
         }
 
-    fun setLayers(layers: Array<Layer>): LayerTraceEntryBuilder = apply {
+    fun setLayers(layers: Collection<Layer>): LayerTraceEntryBuilder = apply {
         val result = mutableMapOf<Int, Layer>()
         layers.forEach { layer ->
             val id = layer.id
@@ -134,7 +134,7 @@ class LayerTraceEntryBuilder {
         }
     }
 
-    private fun computeRootLayers(): List<Layer> {
+    private fun computeRootLayers(): Collection<Layer> {
         updateParents()
         updateRelZParents()
 
@@ -160,17 +160,17 @@ class LayerTraceEntryBuilder {
         return rootLayers
     }
 
-    private fun filterOutLayersInVirtualDisplays(roots: List<Layer>): List<Layer> {
+    private fun filterOutLayersInVirtualDisplays(roots: Collection<Layer>): Collection<Layer> {
         val physicalDisplays = displays.filterNot { it.isVirtual }.map { it.layerStackId }
 
         return roots.filter { physicalDisplays.contains(it.stackId) }
     }
 
-    private fun filterOutVirtualDisplays(displays: List<Display>): List<Display> {
+    private fun filterOutVirtualDisplays(displays: Collection<Display>): Collection<Display> {
         return displays.filterNot { it.isVirtual }
     }
 
-    private fun filterOutLayersInOffDisplays(roots: List<Layer>): List<Layer> {
+    private fun filterOutLayersInOffDisplays(roots: Collection<Layer>): Collection<Layer> {
         val offDisplays = displays.filter { it.isOff }.map { it.layerStackId }
 
         // Negated filtering because legacy traces do not contain any displays, so we don't want to
@@ -178,7 +178,7 @@ class LayerTraceEntryBuilder {
         return roots.filterNot { offDisplays.contains(it.stackId) }
     }
 
-    private fun filterOutLayersStackMatchNoDisplay(roots: List<Layer>): List<Layer> {
+    private fun filterOutLayersStackMatchNoDisplay(roots: Collection<Layer>): Collection<Layer> {
         val displayStacks = displays.map { it.layerStackId }
         return roots.filter { displayStacks.contains(it.stackId) }
     }
@@ -208,7 +208,7 @@ class LayerTraceEntryBuilder {
     fun build(): LayerTraceEntry {
         val allRoots = computeRootLayers()
         var filteredRoots = allRoots
-        var filteredDisplays = displays.toList()
+        var filteredDisplays = displays
 
         if (ignoreLayersStackMatchNoDisplay) {
             filteredRoots = filterOutLayersStackMatchNoDisplay(filteredRoots)
@@ -229,9 +229,9 @@ class LayerTraceEntryBuilder {
             realTimestamp,
             hwcBlob,
             where,
-            filteredDisplays.toTypedArray(),
+            filteredDisplays,
             vSyncId,
-            filteredRoots.toTypedArray(),
+            filteredRoots,
         )
     }
 }

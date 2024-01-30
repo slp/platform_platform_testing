@@ -27,7 +27,7 @@ import android.tools.common.Trace
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-class ViewTrace(val windowTitle: String, override val entries: Array<ViewFrame>) :
+data class ViewTrace(val windowTitle: String, override val entries: Collection<ViewFrame>) :
     Trace<ViewFrame> {
     override fun slice(startTimestamp: Timestamp, endTimestamp: Timestamp): ViewTrace =
         ViewTrace(
@@ -35,7 +35,6 @@ class ViewTrace(val windowTitle: String, override val entries: Array<ViewFrame>)
             entries
                 .dropWhile { it.timestamp < startTimestamp }
                 .dropLastWhile { it.timestamp > endTimestamp }
-                .toTypedArray()
         )
 
     override fun toString(): String {
@@ -47,12 +46,12 @@ class ViewTrace(val windowTitle: String, override val entries: Array<ViewFrame>)
         if (other !is ViewTrace) return false
 
         if (windowTitle != other.windowTitle) return false
-        if (!entries.contentEquals(other.entries)) return false
+        if (entries != other.entries) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        return entries.contentHashCode()
+        return entries.hashCode()
     }
 }

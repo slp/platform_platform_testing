@@ -59,7 +59,7 @@ class TraceParserTest {
                     Timestamps.from(elapsedNanos = to),
                     addInitialEntry = true
                 )
-        Truth.assertThat(splitLayersTraceWithInitialEntry.entries).asList().hasSize(1)
+        Truth.assertThat(splitLayersTraceWithInitialEntry.entries).hasSize(1)
         Truth.assertThat(splitLayersTraceWithInitialEntry.entries.first().timestamp)
             .isEqualTo(mockTraceForSliceTests.entries.last().timestamp)
     }

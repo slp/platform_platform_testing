@@ -51,7 +51,7 @@ class MockWindowStateBuilder() {
             inputMethodWindowAppToken = "",
             isHomeRecentsComponent = false,
             isDisplayFrozen = false,
-            _pendingActivities = emptyArray(),
+            _pendingActivities = emptyList(),
             root = newEmptyRootContainer(orientation = 1, layerId = 1),
             keyguardControllerState =
                 KeyguardControllerState.from(

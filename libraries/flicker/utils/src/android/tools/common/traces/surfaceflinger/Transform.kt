@@ -86,10 +86,10 @@ private constructor(@JsName("type") val type: Int?, @JsName("matrix") val matrix
         }
     }
 
-    private val typeFlags: Array<String>
+    private val typeFlags: Collection<String>
         get() {
             if (type == null) {
-                return arrayOf("IDENTITY")
+                return listOf("IDENTITY")
             }
 
             val result = mutableListOf<String>()
@@ -127,7 +127,7 @@ private constructor(@JsName("type") val type: Int?, @JsName("matrix") val matrix
                 throw RuntimeException("Unknown transform type $type")
             }
 
-            return result.toTypedArray()
+            return result
         }
 
     @JsName("prettyPrint")

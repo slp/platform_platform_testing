@@ -29,7 +29,7 @@ import android.tools.common.Trace
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-data class WindowManagerTrace(override val entries: Array<WindowManagerState>) :
+data class WindowManagerTrace(override val entries: Collection<WindowManagerState>) :
     Trace<WindowManagerState> {
 
     val isTablet: Boolean
@@ -44,13 +44,13 @@ data class WindowManagerTrace(override val entries: Array<WindowManagerState>) :
         if (this === other) return true
         if (other !is WindowManagerTrace) return false
 
-        if (!entries.contentEquals(other.entries)) return false
+        if (entries != other.entries) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        return entries.contentHashCode()
+        return entries.hashCode()
     }
 
     /** Get the initial rotation */
@@ -58,7 +58,7 @@ data class WindowManagerTrace(override val entries: Array<WindowManagerState>) :
         if (entries.isEmpty()) {
             throw RuntimeException("WindowManager Trace has no entries")
         }
-        val firstWmState = entries[0]
+        val firstWmState = entries.first()
         return firstWmState.policy?.rotation
             ?: run { throw RuntimeException("Wm state has no policy") }
     }
@@ -78,7 +78,6 @@ data class WindowManagerTrace(override val entries: Array<WindowManagerState>) :
             entries
                 .dropWhile { it.timestamp < startTimestamp }
                 .dropLastWhile { it.timestamp > endTimestamp }
-                .toTypedArray()
         )
     }
 

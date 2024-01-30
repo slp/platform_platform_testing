@@ -56,14 +56,14 @@ private constructor(
     private val _occludedBy = mutableListOf<Layer>()
     private val _partiallyOccludedBy = mutableListOf<Layer>()
     private val _coveredBy = mutableListOf<Layer>()
-    val children: Array<Layer>
-        get() = _children.toTypedArray()
-    val occludedBy: Array<Layer>
-        get() = _occludedBy.toTypedArray()
-    val partiallyOccludedBy: Array<Layer>
-        get() = _partiallyOccludedBy.toTypedArray()
-    val coveredBy: Array<Layer>
-        get() = _coveredBy.toTypedArray()
+    val children: Collection<Layer>
+        get() = _children
+    val occludedBy: Collection<Layer>
+        get() = _occludedBy
+    val partiallyOccludedBy: Collection<Layer>
+        get() = _partiallyOccludedBy
+    val coveredBy: Collection<Layer>
+        get() = _coveredBy
     var isMissing: Boolean = false
         internal set
 
@@ -123,10 +123,10 @@ private constructor(
      *
      * @return
      */
-    val visibilityReason: Array<String>
+    val visibilityReason: Collection<String>
         get() {
             if (isVisible) {
-                return emptyArray()
+                return emptyList()
             }
             val reasons = mutableListOf<String>()
             if (isHiddenByPolicy) reasons.add("Flag is hidden")
@@ -150,10 +150,10 @@ private constructor(
                 reasons.add("Visible region calculated by Composition Engine is empty")
             }
             if (reasons.isEmpty()) reasons.add("Unknown")
-            return reasons.toTypedArray()
+            return reasons
         }
 
-    val zOrderPath: Array<Int>
+    val zOrderPath: Collection<Int>
         get() {
             val zOrderRelativeOf = zOrderRelativeOf
             val zOrderPath =
@@ -163,7 +163,7 @@ private constructor(
                     else -> mutableListOf()
                 }
             zOrderPath.add(z)
-            return zOrderPath.toTypedArray()
+            return zOrderPath
         }
 
     val isTask: Boolean
@@ -194,15 +194,15 @@ private constructor(
         _children.add(childLayer)
     }
 
-    fun addOccludedBy(layers: Array<Layer>) {
+    fun addOccludedBy(layers: Collection<Layer>) {
         _occludedBy.addAll(layers)
     }
 
-    fun addPartiallyOccludedBy(layers: Array<Layer>) {
+    fun addPartiallyOccludedBy(layers: Collection<Layer>) {
         _partiallyOccludedBy.addAll(layers)
     }
 
-    fun addCoveredBy(layers: Array<Layer>) {
+    fun addCoveredBy(layers: Collection<Layer>) {
         _coveredBy.addAll(layers)
     }
 

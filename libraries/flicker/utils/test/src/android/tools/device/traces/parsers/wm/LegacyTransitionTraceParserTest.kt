@@ -43,11 +43,11 @@ class LegacyTransitionTraceParserTest {
                     wmSideTraceData = readAsset("wm_transition_trace.winscope"),
                     shellSideTraceData = readAsset("shell_transition_trace.winscope")
                 )
-        val firstEntry = trace.entries[0]
+        val firstEntry = trace.entries.first()
         Truth.assertThat(firstEntry.timestamp.elapsedNanos).isEqualTo(760760231809L)
         Truth.assertThat(firstEntry.id).isEqualTo(9)
 
-        val lastEntry = trace.entries[trace.entries.size - 1]
+        val lastEntry = trace.entries.last()
         Truth.assertThat(lastEntry.timestamp.elapsedNanos).isEqualTo(2770105426934L)
     }
 
@@ -58,7 +58,7 @@ class LegacyTransitionTraceParserTest {
                 session ->
                 TransitionsTraceParser().parse(session)
             }
-        Truth.assertWithMessage("Trace").that(trace.entries).asList().isNotEmpty()
+        Truth.assertWithMessage("Trace").that(trace.entries).isNotEmpty()
         Truth.assertWithMessage("Trace contains entry")
             .that(trace.entries.map { it.id })
             .contains(35)
@@ -73,7 +73,7 @@ class LegacyTransitionTraceParserTest {
                 device.pressRecentApps()
             }
         val trace = WindowManagerTraceParser().parse(data, clearCache = false)
-        Truth.assertThat(trace.entries).asList().isNotEmpty()
+        Truth.assertThat(trace.entries).isNotEmpty()
     }
 
     companion object {

@@ -62,13 +62,13 @@ class FocusEvent(
             processId: Int,
             uid: String,
             threadId: Int,
-            data: Array<String>
+            data: Collection<String>
         ) =
             FocusEvent(
                 timestamp,
-                getWindowFromData(data[0]),
-                getFocusFromData(data[0]),
-                data[1].removePrefix("reason="),
+                getWindowFromData(data.first()),
+                getFocusFromData(data.first()),
+                data.drop(1).first().removePrefix("reason="),
                 processId,
                 uid,
                 threadId

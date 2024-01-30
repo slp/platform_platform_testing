@@ -21,7 +21,7 @@ import kotlin.js.JsName
 
 @JsExport
 interface Trace<Entry : TraceEntry> {
-    @JsName("entries") val entries: Array<Entry>
+    @JsName("entries") val entries: Collection<Entry>
 
     @JsName("slice") fun slice(startTimestamp: Timestamp, endTimestamp: Timestamp): Trace<Entry>
 
@@ -47,7 +47,7 @@ interface Trace<Entry : TraceEntry> {
      */
     @JsName("getEntryAt")
     fun getEntryAt(timestamp: Timestamp): Entry {
-        return entries.dropLastWhile { it.timestamp > timestamp }.lastOrNull()
+        return entries.toList().dropLastWhile { it.timestamp > timestamp }.lastOrNull()
             ?: error("No entry at or before timestamp $timestamp")
     }
 }

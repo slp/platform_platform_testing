@@ -35,9 +35,9 @@ object Utils {
      */
     internal inline fun <reified T : WindowContainer> WindowContainer.collectDescendants(
         predicate: (T) -> Boolean = { true }
-    ): Array<T> {
+    ): Collection<T> {
         val traverseList = traverseTopDown()
 
-        return traverseList.filterIsInstance<T>().filter { predicate(it) }.toTypedArray()
+        return traverseList.filterIsInstance<T>().filter { predicate(it) }
     }
 }

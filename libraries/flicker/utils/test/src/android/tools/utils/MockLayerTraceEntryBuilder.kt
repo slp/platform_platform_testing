@@ -73,9 +73,9 @@ class MockLayerTraceEntryBuilder() {
             clockTimestamp = null,
             hwcBlob = "",
             where = "",
-            displays = displays.toTypedArray(),
+            displays = displays,
             vSyncId = 100,
-            _rootLayers = layers.toTypedArray()
+            _rootLayers = layers
         )
     }
 

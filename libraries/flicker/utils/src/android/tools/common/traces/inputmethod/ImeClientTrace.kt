@@ -27,7 +27,8 @@ import android.tools.common.Trace
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-data class ImeClientTrace(override val entries: Array<ImeClientEntry>) : Trace<ImeClientEntry> {
+data class ImeClientTrace(override val entries: Collection<ImeClientEntry>) :
+    Trace<ImeClientEntry> {
     override fun toString(): String {
         return "ImeClientTrace(Start: ${entries.firstOrNull()}, " + "End: ${entries.lastOrNull()})"
     }
@@ -35,12 +36,12 @@ data class ImeClientTrace(override val entries: Array<ImeClientEntry>) : Trace<I
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is ImeClientTrace) return false
-        if (!entries.contentEquals(other.entries)) return false
+        if (entries != other.entries) return false
         return true
     }
 
     override fun hashCode(): Int {
-        return entries.contentHashCode()
+        return entries.hashCode()
     }
 
     /**
@@ -55,7 +56,6 @@ data class ImeClientTrace(override val entries: Array<ImeClientEntry>) : Trace<I
             this.entries
                 .dropWhile { it.timestamp < startTimestamp }
                 .dropLastWhile { it.timestamp > endTimestamp }
-                .toTypedArray()
         )
     }
 }

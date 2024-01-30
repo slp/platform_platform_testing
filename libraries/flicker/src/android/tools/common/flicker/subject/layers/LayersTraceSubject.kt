@@ -220,12 +220,9 @@ class LayersTraceSubject(val trace: LayersTrace, override val reader: Reader? = 
         val regionTrace =
             RegionTrace(
                 componentMatcher,
-                subjects
-                    .map {
-                        it.visibleRegion(componentMatcher, useCompositionEngineRegionOnly)
-                            .regionEntry
-                    }
-                    .toTypedArray()
+                subjects.map {
+                    it.visibleRegion(componentMatcher, useCompositionEngineRegionOnly).regionEntry
+                }
             )
         return RegionTraceSubject(regionTrace, reader)
     }

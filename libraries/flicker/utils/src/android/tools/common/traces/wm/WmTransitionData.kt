@@ -29,7 +29,7 @@ data class WmTransitionData(
     val startTransactionId: Long? = null,
     val finishTransactionId: Long? = null,
     val type: TransitionType? = null,
-    val changes: Array<TransitionChange>? = null,
+    val changes: Collection<TransitionChange>? = null,
 ) {
     init {
         // We should never have empty timestamps, those should be passed as null

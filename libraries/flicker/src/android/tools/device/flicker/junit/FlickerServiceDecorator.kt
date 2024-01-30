@@ -208,7 +208,7 @@ class FlickerServiceDecorator(
                 )
             )
         } else if (
-            flickerConfigProviderProviderFunctions[0].returnType.name !=
+            flickerConfigProviderProviderFunctions.first().returnType.name !=
                 FlickerConfig::class.qualifiedName
         ) {
             errors.add(
@@ -216,7 +216,7 @@ class FlickerServiceDecorator(
                     "Expected method annotated with " +
                         "@${FlickerConfig::class.simpleName} to return " +
                         "${FlickerConfig::class.qualifiedName} but was " +
-                        "${flickerConfigProviderProviderFunctions[0].returnType.name} instead."
+                        "${flickerConfigProviderProviderFunctions.first().returnType.name} instead."
                 )
             )
         } else {
@@ -257,7 +257,8 @@ class FlickerServiceDecorator(
             testClass
                 .getAnnotatedMethods(
                     android.tools.common.flicker.annotation.FlickerConfigProvider::class.java
-                )[0]
+                )
+                .first()
         // TODO: Pass the correct target
         return flickerConfigProviderProviderFunction.invokeExplosively(testClass) as FlickerConfig
     }

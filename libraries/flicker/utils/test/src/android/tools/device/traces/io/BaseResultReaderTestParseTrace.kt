@@ -68,7 +68,7 @@ abstract class BaseResultReaderTestParseTrace {
         val reader = ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)
         val trace = doParse(reader) ?: error("$traceName not built")
 
-        Truth.assertWithMessage(traceName).that(trace.entries).asList().isNotEmpty()
+        Truth.assertWithMessage(traceName).that(trace.entries).isNotEmpty()
         Truth.assertWithMessage("$traceName start")
             .that(getTime(trace.entries.first().timestamp))
             .isEqualTo(getTime(startTimeTrace))
@@ -97,10 +97,7 @@ abstract class BaseResultReaderTestParseTrace {
         val reader = ResultReader(result, TestTraces.TEST_TRACE_CONFIG)
         val trace = doParse(reader) ?: error("$traceName not built")
 
-        Truth.assertWithMessage(traceName)
-            .that(trace.entries)
-            .asList()
-            .hasSize(expectedSlicedTraceSize)
+        Truth.assertWithMessage(traceName).that(trace.entries).hasSize(expectedSlicedTraceSize)
         Truth.assertWithMessage("$traceName start")
             .that(getTime(trace.entries.first().timestamp))
             .isEqualTo(getTime(startTimeTrace))

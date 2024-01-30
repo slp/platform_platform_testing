@@ -57,16 +57,9 @@ class RegionSubject(
         reader: Reader? = null
     ) : this(rect?.toRect(), timestamp, reader)
 
-    /** Custom constructor for existing rects */
-    constructor(
-        rect: Array<RectF>,
-        timestamp: Timestamp,
-        reader: Reader? = null
-    ) : this(mergeRegions(rect.map { Region.from(it.toRect()) }.toTypedArray()), timestamp, reader)
-
     /** Custom constructor for existing regions */
     constructor(
-        regions: Array<Region>,
+        regions: Collection<Region>,
         timestamp: Timestamp,
         reader: Reader? = null
     ) : this(mergeRegions(regions), timestamp, reader)
@@ -399,20 +392,20 @@ class RegionSubject(
 
     /** {@inheritDoc} */
     override fun hasSameBottomPosition(displayRect: Rect): RegionSubject = apply {
-        assertEquals("bottom", Region(arrayOf(displayRect))) { it.bottom }
+        assertEquals("bottom", Region.from(displayRect)) { it.bottom }
     }
 
     /** {@inheritDoc} */
     override fun hasSameTopPosition(displayRect: Rect): RegionSubject = apply {
-        assertEquals("top", Region(arrayOf(displayRect))) { it.top }
+        assertEquals("top", Region.from(displayRect)) { it.top }
     }
 
     override fun hasSameLeftPosition(displayRect: Rect): RegionSubject = apply {
-        assertEquals("left", Region(arrayOf(displayRect))) { it.left }
+        assertEquals("left", Region.from(displayRect)) { it.left }
     }
 
     override fun hasSameRightPosition(displayRect: Rect): RegionSubject = apply {
-        assertEquals("right", Region(arrayOf(displayRect))) { it.right }
+        assertEquals("right", Region.from(displayRect)) { it.right }
     }
 
     fun isSameAspectRatio(other: RegionSubject, threshold: Double = 0.1): RegionSubject =
@@ -468,7 +461,7 @@ class RegionSubject(
     }
 
     companion object {
-        private fun mergeRegions(regions: Array<Region>): Region {
+        private fun mergeRegions(regions: Collection<Region>): Region {
             val result = Region.EMPTY
             regions.forEach { region ->
                 region.rects.forEach { rect -> result.op(rect, Region.Op.UNION) }

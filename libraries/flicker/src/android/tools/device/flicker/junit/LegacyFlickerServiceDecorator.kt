@@ -56,7 +56,7 @@ class LegacyFlickerServiceDecorator(
             return FlickerConfig().use(FlickerServiceConfig.DEFAULT)
         }
 
-        val flickerConfigProviderProviderFunction = annotatedMethods[0]
+        val flickerConfigProviderProviderFunction = annotatedMethods.first()
         return flickerConfigProviderProviderFunction.invokeExplosively(testClass) as FlickerConfig
     }
 
@@ -151,8 +151,8 @@ class LegacyFlickerServiceDecorator(
                 )
                 continue
             }
-            val methodName = filterComponents[1]
-            val className = filterComponents[0]
+            val methodName = filterComponents.drop(1).first()
+            val className = filterComponents.first()
             result[className] = methodName.startsWith(FAAS_METRICS_PREFIX)
         }
 

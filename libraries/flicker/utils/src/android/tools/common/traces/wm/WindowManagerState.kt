@@ -42,7 +42,7 @@ class WindowManagerState(
     val inputMethodWindowAppToken: String,
     val isHomeRecentsComponent: Boolean,
     val isDisplayFrozen: Boolean,
-    private val _pendingActivities: Array<String>,
+    private val _pendingActivities: Collection<String>,
     val root: RootWindowContainer,
     val keyguardControllerState: KeyguardControllerState
 ) : TraceEntry {
@@ -56,68 +56,62 @@ class WindowManagerState(
     val isTablet: Boolean
         get() = displays.any { it.isTablet }
 
-    val windowContainers: Array<WindowContainer>
+    val windowContainers: Collection<WindowContainer>
         get() = root.collectDescendants()
 
-    val children: Array<WindowContainer>
-        get() = root.children.reversedArray()
+    val children: Collection<WindowContainer>
+        get() = root.children.reversed()
 
     /** Displays in z-order with the top most at the front of the list, starting with primary. */
-    val displays: Array<DisplayContent>
-        get() = windowContainers.filterIsInstance<DisplayContent>().toTypedArray()
+    val displays: Collection<DisplayContent>
+        get() = windowContainers.filterIsInstance<DisplayContent>()
 
     /**
      * Root tasks in z-order with the top most at the front of the list, starting with primary
      * display.
      */
-    val rootTasks: Array<Task>
-        get() = displays.flatMap { it.rootTasks.toList() }.toTypedArray()
+    val rootTasks: Collection<Task>
+        get() = displays.flatMap { it.rootTasks }
 
     /** TaskFragments in z-order with the top most at the front of the list. */
-    val taskFragments: Array<TaskFragment>
-        get() = windowContainers.filterIsInstance<TaskFragment>().toTypedArray()
+    val taskFragments: Collection<TaskFragment>
+        get() = windowContainers.filterIsInstance<TaskFragment>()
 
     /** Windows in z-order with the top most at the front of the list. */
-    val windowStates: Array<WindowState>
-        get() = windowContainers.filterIsInstance<WindowState>().toTypedArray()
+    val windowStates: Collection<WindowState>
+        get() = windowContainers.filterIsInstance<WindowState>()
 
     @Deprecated("Please use windowStates instead", replaceWith = ReplaceWith("windowStates"))
-    val windows: Array<WindowState>
+    val windows: Collection<WindowState>
         get() = windowStates
 
-    val appWindows: Array<WindowState>
-        get() = windowStates.filter { it.isAppWindow }.toTypedArray()
-    val nonAppWindows: Array<WindowState>
-        get() = windowStates.filterNot { it.isAppWindow }.toTypedArray()
-    val aboveAppWindows: Array<WindowState>
-        get() = windowStates.takeWhile { !appWindows.contains(it) }.toTypedArray()
-    val belowAppWindows: Array<WindowState>
-        get() =
-            windowStates.dropWhile { !appWindows.contains(it) }.drop(appWindows.size).toTypedArray()
+    val appWindows: Collection<WindowState>
+        get() = windowStates.filter { it.isAppWindow }
+    val nonAppWindows: Collection<WindowState>
+        get() = windowStates.filterNot { it.isAppWindow }
+    val aboveAppWindows: Collection<WindowState>
+        get() = windowStates.takeWhile { !appWindows.contains(it) }
+    val belowAppWindows: Collection<WindowState>
+        get() = windowStates.dropWhile { !appWindows.contains(it) }.drop(appWindows.size)
 
-    val visibleWindows: Array<WindowState>
+    val visibleWindows: Collection<WindowState>
         get() =
-            windowStates
-                .filter {
-                    val activities = getActivitiesForWindowState(it)
-                    val windowIsVisible = it.isVisible
-                    val activityIsVisible = activities.any { activity -> activity.isVisible }
+            windowStates.filter {
+                val activities = getActivitiesForWindowState(it)
+                val windowIsVisible = it.isVisible
+                val activityIsVisible = activities.any { activity -> activity.isVisible }
 
-                    // for invisible checks it suffices if activity or window is invisible
-                    windowIsVisible && (activityIsVisible || activities.isEmpty())
-                }
-                .toTypedArray()
-    val visibleAppWindows: Array<WindowState>
-        get() = visibleWindows.filter { it.isAppWindow }.toTypedArray()
+                // for invisible checks it suffices if activity or window is invisible
+                windowIsVisible && (activityIsVisible || activities.isEmpty())
+            }
+    val visibleAppWindows: Collection<WindowState>
+        get() = visibleWindows.filter { it.isAppWindow }
     val topVisibleAppWindow: WindowState?
         get() = visibleAppWindows.firstOrNull()
-    val pinnedWindows: Array<WindowState>
-        get() =
-            visibleWindows
-                .filter { it.windowingMode == PlatformConsts.WINDOWING_MODE_PINNED }
-                .toTypedArray()
-    val pendingActivities: Array<Activity>
-        get() = _pendingActivities.mapNotNull { getActivityByName(it) }.toTypedArray()
+    val pinnedWindows: Collection<WindowState>
+        get() = visibleWindows.filter { it.windowingMode == PlatformConsts.WINDOWING_MODE_PINNED }
+    val pendingActivities: Collection<Activity>
+        get() = _pendingActivities.mapNotNull { getActivityByName(it) }
 
     val focusedWindow: WindowState?
         get() = visibleWindows.firstOrNull { it.name == _focusedWindow }
@@ -150,12 +144,8 @@ class WindowManagerState(
                 else -> null
             }
         }
-    val resumedActivities: Array<Activity>
-        get() =
-            rootTasks
-                .flatMap { it.resumedActivities.toList() }
-                .mapNotNull { getActivityByName(it) }
-                .toTypedArray()
+    val resumedActivities: Collection<Activity>
+        get() = rootTasks.flatMap { it.resumedActivities }.mapNotNull { getActivityByName(it) }
     val resumedActivitiesCount: Int
         get() = resumedActivities.size
     val stackCount: Int
@@ -233,15 +223,14 @@ class WindowManagerState(
     fun getActivitiesForWindowState(
         windowState: WindowState,
         displayId: Int = PlatformConsts.DEFAULT_DISPLAY
-    ): Array<Activity> {
+    ): Collection<Activity> {
         return displays
             .firstOrNull { it.displayId == displayId }
             ?.rootTasks
             ?.mapNotNull { stack ->
                 stack.getActivity { activity -> activity.hasWindowState(windowState) }
             }
-            ?.toTypedArray()
-            ?: emptyArray()
+            ?: emptyList()
     }
 
     /**
@@ -254,15 +243,14 @@ class WindowManagerState(
     fun getActivitiesForWindow(
         componentMatcher: IComponentMatcher,
         displayId: Int = PlatformConsts.DEFAULT_DISPLAY
-    ): Array<Activity> {
+    ): Collection<Activity> {
         return displays
             .firstOrNull { it.displayId == displayId }
             ?.rootTasks
             ?.mapNotNull { stack ->
                 stack.getActivity { activity -> activity.hasWindow(componentMatcher) }
             }
-            ?.toTypedArray()
-            ?: emptyArray()
+            ?: emptyList()
     }
 
     /**
@@ -310,10 +298,10 @@ class WindowManagerState(
      * @param componentMatcher Components to search
      * @return the visible [WindowState]s matching [componentMatcher]
      */
-    fun getMatchingVisibleWindowState(componentMatcher: IComponentMatcher): Array<WindowState> {
-        return windowStates
-            .filter { it.isSurfaceShown && componentMatcher.windowMatchesAnyOf(it) }
-            .toTypedArray()
+    fun getMatchingVisibleWindowState(
+        componentMatcher: IComponentMatcher
+    ): Collection<WindowState> {
+        return windowStates.filter { it.isSurfaceShown && componentMatcher.windowMatchesAnyOf(it) }
     }
 
     /** @return the [WindowState] for the nav bar in the display with id [displayId] */
@@ -337,7 +325,7 @@ class WindowManagerState(
      * @param componentMatcher Components to search
      */
     fun containsWindow(componentMatcher: IComponentMatcher): Boolean =
-        componentMatcher.windowMatchesAnyOf(windowStates.asList())
+        componentMatcher.windowMatchesAnyOf(windowStates)
 
     /**
      * Check if at least one [WindowState] matching [componentMatcher] is visible
@@ -356,7 +344,7 @@ class WindowManagerState(
      * @param componentMatcher Components to search
      */
     fun isInPipMode(componentMatcher: IComponentMatcher): Boolean =
-        componentMatcher.windowMatchesAnyOf(pinnedWindows.asList())
+        componentMatcher.windowMatchesAnyOf(pinnedWindows)
 
     fun getZOrder(w: WindowState): Int = windowStates.size - windowStates.indexOf(w)
 
@@ -376,7 +364,7 @@ class WindowManagerState(
      * @param componentMatcher Components to search
      */
     fun contains(componentMatcher: IComponentMatcher): Boolean =
-        componentMatcher.windowMatchesAnyOf(windowStates.toList())
+        componentMatcher.windowMatchesAnyOf(windowStates)
 
     /**
      * Checks if a [WindowState] matching [componentMatcher] is visible
@@ -384,7 +372,7 @@ class WindowManagerState(
      * @param componentMatcher Components to search
      */
     fun isVisible(componentMatcher: IComponentMatcher): Boolean =
-        componentMatcher.windowMatchesAnyOf(visibleWindows.toList())
+        componentMatcher.windowMatchesAnyOf(visibleWindows)
 
     /**
      * Checks if a [WindowState] matching [componentMatcher] exists and is a non-app window
@@ -392,7 +380,7 @@ class WindowManagerState(
      * @param componentMatcher Components to search
      */
     fun isNonAppWindow(componentMatcher: IComponentMatcher): Boolean =
-        componentMatcher.windowMatchesAnyOf(nonAppWindows.toList())
+        componentMatcher.windowMatchesAnyOf(nonAppWindows)
 
     /**
      * Checks if a [WindowState] matching [componentMatcher] exists and is an app window
@@ -401,7 +389,7 @@ class WindowManagerState(
      */
     fun isAppWindow(componentMatcher: IComponentMatcher): Boolean {
         val activity = getActivitiesForWindow(componentMatcher).firstOrNull()
-        return activity != null && componentMatcher.windowMatchesAnyOf(appWindows.toList())
+        return activity != null && componentMatcher.windowMatchesAnyOf(appWindows)
     }
 
     /**
@@ -410,7 +398,7 @@ class WindowManagerState(
      * @param componentMatcher Components to search
      */
     fun isAboveAppWindow(componentMatcher: IComponentMatcher): Boolean =
-        componentMatcher.windowMatchesAnyOf(aboveAppWindows.toList())
+        componentMatcher.windowMatchesAnyOf(aboveAppWindows)
 
     /**
      * Checks if a [WindowState] matching [componentMatcher] exists and is below all app window
@@ -418,7 +406,7 @@ class WindowManagerState(
      * @param componentMatcher Components to search
      */
     fun isBelowAppWindow(componentMatcher: IComponentMatcher): Boolean =
-        componentMatcher.windowMatchesAnyOf(belowAppWindows.toList())
+        componentMatcher.windowMatchesAnyOf(belowAppWindows)
 
     fun getIsIncompleteReason(): String {
         return buildString {
@@ -470,7 +458,7 @@ class WindowManagerState(
         return incomplete
     }
 
-    fun asTrace(): WindowManagerTrace = WindowManagerTrace(arrayOf(this))
+    fun asTrace(): WindowManagerTrace = WindowManagerTrace(listOf(this))
 
     override fun toString(): String {
         return timestamp.toString()
@@ -494,7 +482,7 @@ class WindowManagerState(
         result = 31 * result + inputMethodWindowAppToken.hashCode()
         result = 31 * result + isHomeRecentsComponent.hashCode()
         result = 31 * result + isDisplayFrozen.hashCode()
-        result = 31 * result + pendingActivities.contentHashCode()
+        result = 31 * result + pendingActivities.hashCode()
         result = 31 * result + root.hashCode()
         result = 31 * result + keyguardControllerState.hashCode()
         result = 31 * result + timestamp.hashCode()

@@ -43,7 +43,7 @@ abstract class AssertionTemplate(name: String? = null) {
         try {
             doEvaluate(scenarioInstance, flicker)
         } catch (e: Throwable) {
-            // Any failure that occurred outside of the Flicker assertion blocks
+            // Any failure that occurred outside the Flicker assertion blocks
             mainBlockAssertions.add(
                 object : AssertionData {
                     override fun checkAssertion(run: SubjectsParser) {

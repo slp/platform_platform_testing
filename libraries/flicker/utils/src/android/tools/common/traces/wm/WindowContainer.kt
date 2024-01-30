@@ -29,7 +29,7 @@ interface WindowContainer : ConfigurationContainer {
 
     val layerId: Int
 
-    val children: Array<WindowContainer>
+    val children: Collection<WindowContainer>
 
     val computedZ: Int
 

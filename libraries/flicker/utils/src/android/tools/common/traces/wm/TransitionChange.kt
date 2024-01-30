@@ -50,14 +50,14 @@ class TransitionChange(
             val layerName =
                 layersTrace
                     ?.entries
-                    ?.flatMap { it.flattenedLayers.asList() }
+                    ?.flatMap { it.flattenedLayers }
                     ?.firstOrNull { it.id == change.layerId }
                     ?.name
 
             val windowName =
                 wmTrace
                     ?.entries
-                    ?.flatMap { it.windowStates.asList() }
+                    ?.flatMap { it.windowStates }
                     ?.firstOrNull { it.id == change.windowId }
                     ?.name
 

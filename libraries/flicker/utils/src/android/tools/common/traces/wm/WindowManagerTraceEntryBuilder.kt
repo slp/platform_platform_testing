@@ -58,7 +58,7 @@ class WindowManagerTraceEntryBuilder {
         isDisplayFrozen = value
     }
 
-    fun setPendingActivities(value: Array<String>): WindowManagerTraceEntryBuilder = apply {
+    fun setPendingActivities(value: Collection<String>): WindowManagerTraceEntryBuilder = apply {
         pendingActivities.addAll(value)
     }
 
@@ -102,7 +102,7 @@ class WindowManagerTraceEntryBuilder {
             inputMethodWindowAppToken,
             isHomeRecentsComponent,
             isDisplayFrozen,
-            pendingActivities.toTypedArray(),
+            pendingActivities,
             root,
             keyguardControllerState
         )

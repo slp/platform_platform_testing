@@ -28,13 +28,13 @@ class MockTraceParser(private val data: WindowManagerTrace) :
     >() {
     override val traceName: String = "In memory trace"
 
-    override fun createTrace(entries: List<WindowManagerState>): WindowManagerTrace =
-        WindowManagerTrace(entries.toTypedArray())
+    override fun createTrace(entries: Collection<WindowManagerState>): WindowManagerTrace =
+        WindowManagerTrace(entries)
 
     override fun doDecodeByteArray(bytes: ByteArray): WindowManagerTrace = data
     override fun doParseEntry(entry: WindowManagerState): WindowManagerState = entry
-    override fun getEntries(input: WindowManagerTrace): List<WindowManagerState> =
-        input.entries.toList()
+    override fun getEntries(input: WindowManagerTrace): Collection<WindowManagerState> =
+        input.entries
     override fun getTimestamp(entry: WindowManagerState): Timestamp =
         Timestamps.from(elapsedNanos = entry.elapsedTimestamp)
     override fun onBeforeParse(input: WindowManagerTrace) {}

@@ -96,7 +96,7 @@ class WindowManagerTraceTest {
      */
     @Test
     fun canAccessAllProperties() {
-        arrayOf("wm_trace_activity_transition.pb", "wm_trace_openchrome2.pb").forEach { traceName ->
+        listOf("wm_trace_activity_transition.pb", "wm_trace_openchrome2.pb").forEach { traceName ->
             val reader = getWmTraceReaderFromAsset(traceName, legacyTrace = true)
             val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
             assertWithMessage("Unable to parse dump").that(trace.entries.size).isGreaterThan(1)
@@ -137,7 +137,7 @@ class WindowManagerTraceTest {
             )
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
 
-        assertThat(trace.entries).asList().isNotEmpty()
+        assertThat(trace.entries).isNotEmpty()
         assertThat(trace.entries.first().timestamp.elapsedNanos).isEqualTo(174686204723645)
         assertThat(trace.entries.last().timestamp.elapsedNanos).isEqualTo(174686640998584)
     }
@@ -152,7 +152,7 @@ class WindowManagerTraceTest {
                 legacyTrace = true
             )
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
-        assertThat(trace.entries).asList().isEmpty()
+        assertThat(trace.entries).isEmpty()
     }
 
     companion object {

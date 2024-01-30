@@ -29,10 +29,10 @@ import kotlin.js.JsExport
 operator fun <T> List<T>.component6(): T = get(5)
 
 @JsExport
-class EventLogParser : AbstractParser<Array<String>, EventLog>() {
+class EventLogParser : AbstractParser<Collection<String>, EventLog>() {
     override val traceName: String = "Event Log"
 
-    override fun doDecodeByteArray(bytes: ByteArray): Array<String> {
+    override fun doDecodeByteArray(bytes: ByteArray): Collection<String> {
         val logsString = bytes.decodeToString()
         return logsString
             .split("\n")
@@ -40,10 +40,9 @@ class EventLogParser : AbstractParser<Array<String>, EventLog>() {
                 it.contains(MAGIC_NUMBER) || it.contains("beginning of events") || it.isBlank()
             }
             .dropLastWhile { it.isBlank() }
-            .toTypedArray()
     }
 
-    override fun doParse(input: Array<String>): EventLog {
+    override fun doParse(input: Collection<String>): EventLog {
         val events =
             input.map { log ->
                 val (metaData, eventData) = log.split(":", limit = 2).map { it.trim() }
@@ -54,7 +53,7 @@ class EventLogParser : AbstractParser<Array<String>, EventLog>() {
                 parseEvent(timestamp, pid.toInt(), uid, tid.toInt(), tag, eventData)
             }
 
-        return EventLog(events.toTypedArray())
+        return EventLog(events)
     }
 
     private fun parseEvent(
@@ -67,7 +66,7 @@ class EventLogParser : AbstractParser<Array<String>, EventLog>() {
     ): Event {
         return when (tag) {
             INPUT_FOCUS_TAG -> {
-                FocusEvent.from(timestamp, pid, uid, tid, parseDataArray(eventData))
+                FocusEvent.from(timestamp, pid, uid, tid, parseData(eventData))
             }
             JANK_CUJ_BEGIN_TAG -> {
                 CujEvent.fromData(pid, uid, tid, tag, eventData)
@@ -84,10 +83,10 @@ class EventLogParser : AbstractParser<Array<String>, EventLog>() {
         }
     }
 
-    private fun parseDataArray(data: String): Array<String> {
+    private fun parseData(data: String): Collection<String> {
         require(data.first() == '[')
         require(data.last() == ']')
-        return data.drop(1).dropLast(1).split(",").toTypedArray()
+        return data.drop(1).dropLast(1).split(",")
     }
 
     fun parseSlice(bytes: ByteArray, from: Timestamp, to: Timestamp): EventLog {
@@ -98,7 +97,6 @@ class EventLogParser : AbstractParser<Array<String>, EventLog>() {
                 .sortedBy { getTimestampFromRawEntry(it).unixNanos }
                 .dropWhile { getTimestampFromRawEntry(it).unixNanos < from.unixNanos }
                 .dropLastWhile { getTimestampFromRawEntry(it).unixNanos > to.unixNanos }
-                .toTypedArray()
         )
     }
 

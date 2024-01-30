@@ -44,9 +44,7 @@ enum class RunStatus(val prefix: String, val isFailure: Boolean) {
                 return UNDEFINED
             }
 
-            val prefix = fileName.split("__")[0]
-
-            return when (prefix) {
+            return when (fileName.split("__").first()) {
                 RUN_EXECUTED.prefix -> RUN_EXECUTED
                 ASSERTION_SUCCESS.prefix -> ASSERTION_SUCCESS
                 RUN_FAILED.prefix -> RUN_FAILED

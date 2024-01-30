@@ -121,7 +121,7 @@ class WindowManagerStateSubject(
         }
 
         val visibleWindows = selectedWindows.filter { it.isVisible }
-        val visibleRegions = visibleWindows.map { it.windowState.frameRegion }.toTypedArray()
+        val visibleRegions = visibleWindows.map { it.windowState.frameRegion }
         return RegionSubject(visibleRegions, timestamp, reader)
     }
 

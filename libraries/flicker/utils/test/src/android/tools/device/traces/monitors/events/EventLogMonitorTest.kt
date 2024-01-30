@@ -100,16 +100,18 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
         assertEquals(2, eventLog.focusEvents.size)
         assertEquals(
             "4749f88 com.android.phone/com.android.phone.settings.fdn.FdnSetting (server)",
-            eventLog.focusEvents[0].window
+            eventLog.focusEvents.first().window
         )
-        assertEquals(FocusEvent.Type.LOST, eventLog.focusEvents[0].type)
+        assertEquals(FocusEvent.Type.LOST, eventLog.focusEvents.first().type)
         assertEquals(
             "7c01447 com.android.phone/com.android.phone.settings.fdn.FdnSetting (server)",
-            eventLog.focusEvents[1].window
+            eventLog.focusEvents.drop(1).first().window
         )
-        assertEquals(FocusEvent.Type.GAINED, eventLog.focusEvents[1].type)
-        assertTrue(eventLog.focusEvents[0].timestamp <= eventLog.focusEvents[1].timestamp)
-        assertEquals(eventLog.focusEvents[0].reason, "test")
+        assertEquals(FocusEvent.Type.GAINED, eventLog.focusEvents.drop(1).first().type)
+        assertTrue(
+            eventLog.focusEvents.first().timestamp <= eventLog.focusEvents.drop(1).first().timestamp
+        )
+        assertEquals(eventLog.focusEvents.first().reason, "test")
     }
 
     @Test
@@ -154,15 +156,17 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
         assertEquals(2, eventLog.focusEvents.size)
         assertEquals(
             "479f88 com.android.phone/com.android.phone.settings.fdn.FdnSetting (server)",
-            eventLog.focusEvents[0].window
+            eventLog.focusEvents.first().window
         )
-        assertEquals(FocusEvent.Type.LOST, eventLog.focusEvents[0].type)
+        assertEquals(FocusEvent.Type.LOST, eventLog.focusEvents.first().type)
         assertEquals(
             "7c01447 com.android.phone/com.android.phone.settings.fdn.FdnSetting (server)",
-            eventLog.focusEvents[1].window
+            eventLog.focusEvents.drop(1).first().window
         )
-        assertEquals(FocusEvent.Type.GAINED, eventLog.focusEvents[1].type)
-        assertTrue(eventLog.focusEvents[0].timestamp <= eventLog.focusEvents[1].timestamp)
+        assertEquals(FocusEvent.Type.GAINED, eventLog.focusEvents.drop(1).first().type)
+        assertTrue(
+            eventLog.focusEvents.first().timestamp <= eventLog.focusEvents.drop(1).first().timestamp
+        )
     }
 
     @Test
@@ -198,16 +202,18 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
         assertEquals(2, eventLog.focusEvents.size)
         assertEquals(
             "4749f88 com.android.phone/com.android.phone.settings.fdn.FdnSetting (server)",
-            eventLog.focusEvents[0].window
+            eventLog.focusEvents.first().window
         )
-        assertEquals(FocusEvent.Type.LOST, eventLog.focusEvents[0].type)
+        assertEquals(FocusEvent.Type.LOST, eventLog.focusEvents.first().type)
         assertEquals(
             "7c01447 com.android.phone/com.android.phone.settings.fdn.FdnSetting (server)",
-            eventLog.focusEvents[1].window
+            eventLog.focusEvents.drop(1).first().window
         )
-        assertEquals(FocusEvent.Type.GAINED, eventLog.focusEvents[1].type)
-        assertTrue(eventLog.focusEvents[0].timestamp <= eventLog.focusEvents[1].timestamp)
-        assertEquals(eventLog.focusEvents[0].reason, "test")
+        assertEquals(FocusEvent.Type.GAINED, eventLog.focusEvents.drop(1).first().type)
+        assertTrue(
+            eventLog.focusEvents.first().timestamp <= eventLog.focusEvents.drop(1).first().timestamp
+        )
+        assertEquals(eventLog.focusEvents.first().reason, "test")
     }
 
     @Test
@@ -269,7 +275,7 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
         val reader = ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)
         val eventLog = reader.readEventLogTrace() ?: error("EventLog should have been created")
 
-        Truth.assertThat(eventLog.focusEvents).hasLength(1)
+        Truth.assertThat(eventLog.focusEvents).hasSize(1)
         Truth.assertThat(eventLog.focusEvents.first().type).isEqualTo(FocusEvent.Type.GAINED)
     }
 
@@ -310,7 +316,7 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
         val reader = ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)
         val eventLog = reader.readEventLogTrace() ?: error("EventLog should have been created")
 
-        Truth.assertThat(eventLog.focusEvents).hasLength(1)
+        Truth.assertThat(eventLog.focusEvents).hasSize(1)
         Truth.assertThat(eventLog.focusEvents.first().hasFocus()).isTrue()
     }
 
@@ -378,14 +384,19 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
 
         assertEquals(3, eventLog.cujEvents.size)
 
-        Truth.assertThat(eventLog.cujEvents[0].type).isEqualTo(CujEvent.Companion.Type.START)
-        Truth.assertThat(eventLog.cujEvents[0].cuj).isEqualTo(CujType.CUJ_LAUNCHER_QUICK_SWITCH)
+        Truth.assertThat(eventLog.cujEvents.first().type).isEqualTo(CujEvent.Companion.Type.START)
+        Truth.assertThat(eventLog.cujEvents.first().cuj)
+            .isEqualTo(CujType.CUJ_LAUNCHER_QUICK_SWITCH)
 
-        Truth.assertThat(eventLog.cujEvents[1].type).isEqualTo(CujEvent.Companion.Type.END)
-        Truth.assertThat(eventLog.cujEvents[1].cuj).isEqualTo(CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL)
+        Truth.assertThat(eventLog.cujEvents.drop(1).first().type)
+            .isEqualTo(CujEvent.Companion.Type.END)
+        Truth.assertThat(eventLog.cujEvents.drop(1).first().cuj)
+            .isEqualTo(CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL)
 
-        Truth.assertThat(eventLog.cujEvents[2].type).isEqualTo(CujEvent.Companion.Type.CANCEL)
-        Truth.assertThat(eventLog.cujEvents[2].cuj).isEqualTo(CujType.CUJ_LOCKSCREEN_LAUNCH_CAMERA)
+        Truth.assertThat(eventLog.cujEvents.drop(2).first().type)
+            .isEqualTo(CujEvent.Companion.Type.CANCEL)
+        Truth.assertThat(eventLog.cujEvents.drop(2).first().cuj)
+            .isEqualTo(CujType.CUJ_LOCKSCREEN_LAUNCH_CAMERA)
     }
 
     @Test
@@ -424,9 +435,9 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
         requireNotNull(eventLog) { "EventLog should have been created" }
 
         assertEquals(3, eventLog.cujEvents.size)
-        Truth.assertThat(eventLog.cujEvents[0].cuj).isEqualTo(CujType.UNKNOWN)
-        Truth.assertThat(eventLog.cujEvents[1].cuj).isEqualTo(CujType.UNKNOWN)
-        Truth.assertThat(eventLog.cujEvents[2].cuj).isEqualTo(CujType.UNKNOWN)
+        Truth.assertThat(eventLog.cujEvents.first().cuj).isEqualTo(CujType.UNKNOWN)
+        Truth.assertThat(eventLog.cujEvents.drop(1).first().cuj).isEqualTo(CujType.UNKNOWN)
+        Truth.assertThat(eventLog.cujEvents.drop(2).first().cuj).isEqualTo(CujType.UNKNOWN)
     }
 
     private companion object {

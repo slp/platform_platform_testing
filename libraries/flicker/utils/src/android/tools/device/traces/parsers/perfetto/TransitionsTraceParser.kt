@@ -31,8 +31,8 @@ class TransitionsTraceParser :
 
     override val traceName = "Transitions Trace"
 
-    override fun createTrace(entries: List<Transition>): TransitionsTrace {
-        return TransitionsTrace(entries.toTypedArray())
+    override fun createTrace(entries: Collection<Transition>): TransitionsTrace {
+        return TransitionsTrace(entries)
     }
 
     override fun doDecodeByteArray(bytes: ByteArray): TraceProcessorSession {
@@ -119,7 +119,6 @@ class TransitionsTraceParser :
                                             ?: error("Missing window id")
                                     )
                                 }
-                                ?.toTypedArray()
                                 ?.ifEmpty { null },
                     ),
                 shellData =

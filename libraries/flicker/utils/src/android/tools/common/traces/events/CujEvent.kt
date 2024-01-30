@@ -76,7 +76,7 @@ class CujEvent(
 
         private fun getCujMarkerFromData(data: String, cujType: Type): CujType {
             val dataEntries = getDataEntries(data, cujType)
-            val eventId = dataEntries[0].toInt()
+            val eventId = dataEntries.first().toInt()
             return CujType.from(eventId)
         }
 

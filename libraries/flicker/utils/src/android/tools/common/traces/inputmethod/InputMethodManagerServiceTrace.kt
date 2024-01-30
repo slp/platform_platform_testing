@@ -29,7 +29,7 @@ import android.tools.common.Trace
  * Java/Android functionality
  */
 data class InputMethodManagerServiceTrace(
-    override val entries: Array<InputMethodManagerServiceEntry>
+    override val entries: Collection<InputMethodManagerServiceEntry>
 ) : Trace<InputMethodManagerServiceEntry> {
     override fun toString(): String {
         return "InputMethodManagerServiceTrace(Start: ${entries.firstOrNull()}, " +
@@ -40,13 +40,13 @@ data class InputMethodManagerServiceTrace(
         if (this === other) return true
         if (other !is InputMethodManagerServiceTrace) return false
 
-        if (!entries.contentEquals(other.entries)) return false
+        if (entries != other.entries) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        return entries.contentHashCode()
+        return entries.hashCode()
     }
 
     /**
@@ -64,7 +64,6 @@ data class InputMethodManagerServiceTrace(
             this.entries
                 .dropWhile { it.timestamp < startTimestamp }
                 .dropLastWhile { it.timestamp > endTimestamp }
-                .toTypedArray()
         )
     }
 }
