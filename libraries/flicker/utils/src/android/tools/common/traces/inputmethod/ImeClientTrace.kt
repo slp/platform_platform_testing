@@ -33,17 +33,6 @@ data class ImeClientTrace(override val entries: Collection<ImeClientEntry>) :
         return "ImeClientTrace(Start: ${entries.firstOrNull()}, " + "End: ${entries.lastOrNull()})"
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is ImeClientTrace) return false
-        if (entries != other.entries) return false
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return entries.hashCode()
-    }
-
     /**
      * Split the trace by the start and end timestamp.
      *

@@ -36,19 +36,6 @@ data class InputMethodManagerServiceTrace(
             "End: ${entries.lastOrNull()})"
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is InputMethodManagerServiceTrace) return false
-
-        if (entries != other.entries) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return entries.hashCode()
-    }
-
     /**
      * Split the trace by the start and end timestamp.
      *

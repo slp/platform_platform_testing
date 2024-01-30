@@ -40,18 +40,4 @@ data class ViewTrace(val windowTitle: String, override val entries: Collection<V
     override fun toString(): String {
         return "ViewTrace(Start: ${entries.firstOrNull()}, " + "End: ${entries.lastOrNull()})"
     }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is ViewTrace) return false
-
-        if (windowTitle != other.windowTitle) return false
-        if (entries != other.entries) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return entries.hashCode()
-    }
 }

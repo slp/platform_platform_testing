@@ -40,19 +40,6 @@ data class WindowManagerTrace(override val entries: Collection<WindowManagerStat
             "End: ${entries.lastOrNull()})"
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is WindowManagerTrace) return false
-
-        if (entries != other.entries) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return entries.hashCode()
-    }
-
     /** Get the initial rotation */
     fun getInitialRotation(): Rotation {
         if (entries.isEmpty()) {

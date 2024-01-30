@@ -35,19 +35,6 @@ data class InputMethodServiceTrace(override val entries: Collection<InputMethodS
             "End: ${entries.lastOrNull()})"
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is InputMethodServiceTrace) return false
-
-        if (entries != other.entries) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return entries.hashCode()
-    }
-
     /**
      * Split the trace by the start and end timestamp.
      *

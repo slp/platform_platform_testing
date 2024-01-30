@@ -32,21 +32,6 @@ data class RegionTrace(
     val components: IComponentMatcher?,
     override val entries: Collection<RegionEntry>
 ) : Trace<RegionEntry> {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is RegionTrace) return false
-
-        if (components != other.components) return false
-        if (entries != other.entries) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = components.hashCode()
-        result = 31 * result + entries.hashCode()
-        return result
-    }
 
     override fun slice(startTimestamp: Timestamp, endTimestamp: Timestamp): Trace<RegionEntry> {
         return RegionTrace(

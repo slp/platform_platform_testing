@@ -32,19 +32,6 @@ data class LayersTrace(override val entries: Collection<LayerTraceEntry>) : Trac
         return "LayersTrace(Start: ${entries.firstOrNull()}, " + "End: ${entries.lastOrNull()})"
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is LayersTrace) return false
-
-        if (entries != other.entries) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return entries.hashCode()
-    }
-
     fun vSyncSlice(from: Int, to: Int): LayersTrace {
         return LayersTrace(
             this.entries.dropWhile { it.vSyncId < from }.dropLastWhile { it.vSyncId > to }

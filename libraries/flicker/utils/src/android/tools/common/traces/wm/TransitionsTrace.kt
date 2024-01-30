@@ -24,19 +24,6 @@ import kotlin.text.StringBuilder
 
 @JsExport
 data class TransitionsTrace(override val entries: Collection<Transition>) : Trace<Transition> {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is TransitionsTrace) return false
-
-        if (entries != other.entries) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return entries.hashCode()
-    }
-
     @JsName("prettyPrint")
     fun prettyPrint(): String {
         val sb = StringBuilder("TransitionTrace(")

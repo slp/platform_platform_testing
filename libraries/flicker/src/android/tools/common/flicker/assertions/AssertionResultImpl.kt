@@ -25,26 +25,4 @@ internal data class AssertionResultImpl(
     override val assertionData: Collection<AssertionData>,
     override val assertionErrors: Collection<FlickerAssertionError>,
     override val stabilityGroup: AssertionInvocationGroup
-) : AssertionResult {
-    // Overriding equals because of use of Array
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is AssertionResultImpl) return false
-
-        if (name != other.name) return false
-        if (assertionData != other.assertionData) return false
-        if (assertionErrors != other.assertionErrors) return false
-        if (stabilityGroup != other.stabilityGroup) return false
-
-        return true
-    }
-
-    // Overriding hashCode because of use of Array
-    override fun hashCode(): Int {
-        var result = name.hashCode()
-        result = 31 * result + assertionData.hashCode()
-        result = 31 * result + assertionErrors.hashCode()
-        result = 31 * result + stabilityGroup.hashCode()
-        return result
-    }
-}
+) : AssertionResult
