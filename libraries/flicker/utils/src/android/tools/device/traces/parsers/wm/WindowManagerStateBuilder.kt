@@ -30,13 +30,13 @@ import android.tools.common.traces.wm.ConfigurationContainer
 import android.tools.common.traces.wm.DisplayArea
 import android.tools.common.traces.wm.DisplayContent
 import android.tools.common.traces.wm.DisplayCutout
-import android.tools.common.traces.wm.IWindowContainer
 import android.tools.common.traces.wm.KeyguardControllerState
 import android.tools.common.traces.wm.RootWindowContainer
 import android.tools.common.traces.wm.Task
 import android.tools.common.traces.wm.TaskFragment
 import android.tools.common.traces.wm.WindowConfiguration
 import android.tools.common.traces.wm.WindowContainer
+import android.tools.common.traces.wm.WindowContainerImpl
 import android.tools.common.traces.wm.WindowLayoutParams
 import android.tools.common.traces.wm.WindowManagerPolicy
 import android.tools.common.traces.wm.WindowManagerState
@@ -156,7 +156,7 @@ class WindowManagerStateBuilder {
     private fun createWindowContainerChild(
         proto: WindowContainerChildProto,
         isActivityInTree: Boolean
-    ): IWindowContainer? {
+    ): WindowContainer? {
         return createDisplayContent(proto.displayContent, isActivityInTree)
             ?: createDisplayArea(proto.displayArea, isActivityInTree)
                 ?: createTask(proto.task, isActivityInTree)
@@ -492,14 +492,14 @@ class WindowManagerStateBuilder {
 
     private fun createWindowContainer(
         proto: WindowContainerProto?,
-        children: List<IWindowContainer>,
+        children: List<WindowContainer>,
         nameOverride: String? = null,
         visibleOverride: Boolean? = null
-    ): IWindowContainer? {
+    ): WindowContainer? {
         return if (proto == null) {
             null
         } else {
-            WindowContainer(
+            WindowContainerImpl(
                 title = nameOverride ?: proto.identifier?.title ?: "",
                 token = proto.identifier?.hashCode?.toString(16) ?: "",
                 orientation = proto.orientation,

@@ -19,10 +19,7 @@ package android.tools.common.flicker.subject.wm
 import android.tools.common.Cache
 import android.tools.common.datatypes.Region
 import android.tools.common.traces.component.ComponentNameMatcher
-import android.tools.common.traces.wm.ConfigurationContainer
 import android.tools.common.traces.wm.KeyguardControllerState
-import android.tools.common.traces.wm.RootWindowContainer
-import android.tools.common.traces.wm.WindowContainer
 import android.tools.common.traces.wm.WindowManagerState
 import android.tools.utils.CleanFlickerEnvironmentRule
 import android.tools.utils.TestComponents
@@ -31,6 +28,7 @@ import android.tools.utils.assertThatErrorContainsDebugInfo
 import android.tools.utils.assertThrows
 import android.tools.utils.getWmDumpReaderFromAsset
 import android.tools.utils.getWmTraceReaderFromAsset
+import android.tools.utils.newEmptyRootContainer
 import com.google.common.truth.Truth
 import org.junit.Before
 import org.junit.ClassRule
@@ -330,19 +328,7 @@ class WindowManagerStateSubjectTest {
 
     @Test
     fun canHandleNoSubjects() {
-        val emptyRootContainer =
-            RootWindowContainer(
-                WindowContainer(
-                    title = "root",
-                    token = "",
-                    orientation = 0,
-                    layerId = 0,
-                    _isVisible = true,
-                    _children = emptyArray(),
-                    configurationContainer = ConfigurationContainer.EMPTY,
-                    computedZ = 0
-                )
-            )
+        val emptyRootContainer = newEmptyRootContainer()
         val noWindowsState =
             WindowManagerState(
                 elapsedTimestamp = 0,

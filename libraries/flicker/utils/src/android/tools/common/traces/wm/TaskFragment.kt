@@ -27,8 +27,8 @@ class TaskFragment(
     val displayId: Int,
     val minWidth: Int,
     val minHeight: Int,
-    private val windowContainer: IWindowContainer
-) : IWindowContainer by windowContainer {
+    private val windowContainer: WindowContainer
+) : WindowContainer by windowContainer {
     val tasks: Array<Task>
         get() = this.children.reversed().filterIsInstance<Task>().toTypedArray()
 

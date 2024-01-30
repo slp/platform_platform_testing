@@ -1,6 +1,6 @@
 package android.tools.common.traces.wm
 
-class WindowDescriptor(window: IWindowContainer) {
+class WindowDescriptor(window: WindowContainer) {
     val id = window.id
     val name = window.name
     val isAppWindow: Boolean =

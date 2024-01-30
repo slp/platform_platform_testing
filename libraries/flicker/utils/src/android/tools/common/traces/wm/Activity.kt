@@ -30,8 +30,8 @@ class Activity(
     val frontOfTask: Boolean,
     val procId: Int,
     val isTranslucent: Boolean,
-    private val windowContainer: IWindowContainer
-) : IWindowContainer by windowContainer {
+    private val windowContainer: WindowContainer
+) : WindowContainer by windowContainer {
     /**
      * Checks if the activity contains a [WindowState] matching [componentMatcher]
      *
