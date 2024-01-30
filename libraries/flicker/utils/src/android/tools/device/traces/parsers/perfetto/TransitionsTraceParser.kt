@@ -103,10 +103,8 @@ class TransitionsTraceParser :
                                 .getChild("starting_window_remove_time_ns")
                                 ?.getLong()
                                 ?.toTimestamp(),
-                        startTransactionId =
-                            args.getChild("start_transaction_id")?.getInt()?.toString(),
-                        finishTransactionId =
-                            args.getChild("finish_transaction_id")?.getInt()?.toString(),
+                        startTransactionId = args.getChild("start_transaction_id")?.getLong(),
+                        finishTransactionId = args.getChild("finish_transaction_id")?.getLong(),
                         type = args.getChild("type")?.getInt()?.toTransitionType(),
                         changes =
                             args

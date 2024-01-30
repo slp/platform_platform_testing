@@ -82,8 +82,8 @@ class TransitionTest {
                         sendTime = Timestamps.from(20),
                         abortTime = Timestamps.from(30),
                         finishTime = Timestamps.from(40),
-                        startTransactionId = "1",
-                        finishTransactionId = "2",
+                        startTransactionId = 1,
+                        finishTransactionId = 2,
                         type = TransitionType.CLOSE,
                         changes = arrayOf(),
                     ),
@@ -107,8 +107,8 @@ class TransitionTest {
                         sendTime = Timestamps.from(200),
                         abortTime = Timestamps.from(300),
                         finishTime = Timestamps.from(400),
-                        startTransactionId = "10",
-                        finishTransactionId = "20",
+                        startTransactionId = 10,
+                        finishTransactionId = 20,
                         type = TransitionType.OPEN,
                         changes = arrayOf(),
                     ),
@@ -149,7 +149,7 @@ class TransitionTest {
                 wmData =
                     WmTransitionData(
                         sendTime = Timestamps.from(1),
-                        startTransactionId = transactionId.toString()
+                        startTransactionId = transactionId
                     )
             )
 
@@ -188,7 +188,7 @@ class TransitionTest {
                 wmData =
                     WmTransitionData(
                         sendTime = Timestamps.from(1),
-                        startTransactionId = transactionId.toString()
+                        startTransactionId = transactionId
                     )
             )
 
@@ -227,7 +227,7 @@ class TransitionTest {
                 wmData =
                     WmTransitionData(
                         sendTime = Timestamps.from(1),
-                        startTransactionId = transactionId.toString()
+                        startTransactionId = transactionId
                     )
             )
 
@@ -266,7 +266,7 @@ class TransitionTest {
                 wmData =
                     WmTransitionData(
                         sendTime = Timestamps.from(1),
-                        finishTransactionId = transactionId.toString()
+                        finishTransactionId = transactionId
                     )
             )
 
@@ -305,7 +305,7 @@ class TransitionTest {
                 wmData =
                     WmTransitionData(
                         sendTime = Timestamps.from(1),
-                        finishTransactionId = transactionId.toString()
+                        finishTransactionId = transactionId
                     )
             )
 
@@ -344,7 +344,7 @@ class TransitionTest {
                 wmData =
                     WmTransitionData(
                         sendTime = Timestamps.from(1),
-                        finishTransactionId = transactionId.toString()
+                        finishTransactionId = transactionId
                     )
             )
 
