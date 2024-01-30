@@ -42,20 +42,20 @@ class TransactionsTraceParser :
 
     override fun shouldParseEntry(entry: TransactionsTraceEntry) = true
 
-    override fun getEntries(session: TraceProcessorSession): List<TransactionsTraceEntry> {
+    override fun getEntries(input: TraceProcessorSession): List<TransactionsTraceEntry> {
         val traceEntries = ArrayList<TransactionsTraceEntry>()
 
         val realToMonotonicTimeOffsetNs =
-            queryRealToMonotonicTimeOffsetNs(session, "surfaceflinger_transactions")
-        val entriesCount = queryTraceEntriesCount(session)
+            queryRealToMonotonicTimeOffsetNs(input, "surfaceflinger_transactions")
+        val entriesCount = queryTraceEntriesCount(input)
 
-        for (startEntryId in 0L..(entriesCount - 1) step BATCH_SIZE) {
+        for (startEntryId in 0L until entriesCount step BATCH_SIZE) {
             val endEntryId = min(startEntryId + BATCH_SIZE, entriesCount)
 
-            val batchRows = session.query(getSqlQueryTransactions(startEntryId, endEntryId)) { it }
+            val batchRows = input.query(getSqlQueryTransactions(startEntryId, endEntryId)) { it }
             val entryGroups = batchRows.groupBy { it.get("trace_entry_id") }
 
-            for (entryId in startEntryId..(endEntryId - 1)) {
+            for (entryId in startEntryId until endEntryId) {
                 val rows = entryGroups[entryId]!!
                 val entry = buildTraceEntry(rows, realToMonotonicTimeOffsetNs)
                 traceEntries.add(entry)

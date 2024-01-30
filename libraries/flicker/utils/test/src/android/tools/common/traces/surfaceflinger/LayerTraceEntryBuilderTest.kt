@@ -134,8 +134,6 @@ class LayerTraceEntryBuilderTest {
         Truth.assertThat(entry.flattenedLayers).isEmpty()
     }
 
-    @Test fun keepsOffDisplays() {}
-
     companion object {
         @ClassRule @JvmField val ENV_CLEANUP = CleanFlickerEnvironmentRule()
     }

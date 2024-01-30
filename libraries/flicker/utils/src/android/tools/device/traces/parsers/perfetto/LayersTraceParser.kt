@@ -54,19 +54,19 @@ class LayersTraceParser(
 
     override fun shouldParseEntry(entry: LayerTraceEntry) = true
 
-    override fun getEntries(session: TraceProcessorSession): List<LayerTraceEntry> {
+    override fun getEntries(input: TraceProcessorSession): List<LayerTraceEntry> {
         val realToMonotonicTimeOffsetNs =
-            queryRealToMonotonicTimeOffsetNs(session, "surfaceflinger_layers_snapshot")
+            queryRealToMonotonicTimeOffsetNs(input, "surfaceflinger_layers_snapshot")
 
-        return session.query(getSqlQuerySnapshots()) { snapshotsRows ->
-            val traceEntries = ArrayList<LayerTraceEntry>()
+        return input.query(getSqlQuerySnapshots()) { snapshotsRows ->
+            val traceEntries = mutableListOf<LayerTraceEntry>()
             val snapshotGroups = snapshotsRows.groupBy { it["snapshot_id"] }
 
-            for (snapshotId in 0L..(snapshotGroups.size - 1)) {
+            for (snapshotId in 0L until snapshotGroups.size) {
                 Logger.withTracing("query + build entry") {
                     val layerRows =
                         Logger.withTracing("query layer rows") {
-                            session.query(getSqlQueryLayers(snapshotId)) { it }
+                            input.query(getSqlQueryLayers(snapshotId)) { it }
                         }
                     Logger.withTracing("build entry") {
                         val snapshotRows = snapshotGroups[snapshotId]!!
@@ -87,7 +87,7 @@ class LayersTraceParser(
 
     override fun doParseEntry(entry: LayerTraceEntry) = entry
 
-    fun buildTraceEntry(
+    private fun buildTraceEntry(
         snapshotRows: List<Row>,
         layersRows: List<Row>,
         realToMonotonicTimeOffsetNs: Long
@@ -286,7 +286,7 @@ class LayersTraceParser(
                 rect?.getChild("bottom")?.getInt() ?: 0
             )
 
-        fun newTransform(transform: Args?, position: Args?) =
+        private fun newTransform(transform: Args?, position: Args?) =
             Transform.from(transform?.getChild("type")?.getInt(), getMatrix(transform, position))
 
         private fun getMatrix(transform: Args?, position: Args?): Matrix33 {
