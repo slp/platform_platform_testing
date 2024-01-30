@@ -198,6 +198,9 @@ class QuickStartStressTest(nc_base_test.NCBaseTestClass):
       )
       self._test_result.advertiser_wifi_wlan_expected = True
       self._test_result.advertiser_wifi_wlan_latency = advertiser_wlan_latency
+      time.sleep(
+          self.test_parameters.target_post_wifi_connection_idle_time_sec
+      )
 
     # 5. set up 2nd connection
     nearby_snippet_2 = nearby_connection_wrapper.NearbyConnectionWrapper(
