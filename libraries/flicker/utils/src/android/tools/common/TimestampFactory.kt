@@ -16,10 +16,6 @@
 
 package android.tools.common
 
-import kotlin.js.JsExport
-import kotlin.js.JsName
-
-@JsExport
 class TimestampFactory(private val realTimestampFormatter: (Long) -> String = { it.toString() }) {
     private val empty by lazy { Timestamp(0L, 0L, 0L, realTimestampFormatter) }
     private val min by lazy { Timestamp(1, 1, 1, realTimestampFormatter) }
@@ -31,7 +27,6 @@ class TimestampFactory(private val realTimestampFormatter: (Long) -> String = { 
     fun max(): Timestamp = max
     fun empty(): Timestamp = empty
 
-    @JsName("fromLong")
     fun from(
         elapsedNanos: Long? = null,
         systemUptimeNanos: Long? = null,
@@ -45,7 +40,6 @@ class TimestampFactory(private val realTimestampFormatter: (Long) -> String = { 
         )
     }
 
-    @JsName("fromString")
     fun from(
         elapsedNanos: String? = null,
         systemUptimeNanos: String? = null,
@@ -58,7 +52,6 @@ class TimestampFactory(private val realTimestampFormatter: (Long) -> String = { 
         )
     }
 
-    @JsName("fromWithOffsetLong")
     fun from(elapsedNanos: Long, elapsedOffsetNanos: Long): Timestamp {
         return Timestamp(
             elapsedNanos = elapsedNanos,
@@ -67,7 +60,6 @@ class TimestampFactory(private val realTimestampFormatter: (Long) -> String = { 
         )
     }
 
-    @JsName("fromWithOffsetString")
     fun from(elapsedNanos: String, elapsedOffsetNanos: String): Timestamp {
         val elapsedNanosLong = elapsedNanos.toLong()
         return from(

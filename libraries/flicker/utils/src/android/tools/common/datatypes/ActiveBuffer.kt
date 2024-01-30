@@ -17,24 +17,19 @@
 package android.tools.common.datatypes
 
 import android.tools.common.withCache
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /**
  * Wrapper for ActiveBufferProto (frameworks/native/services/surfaceflinger/layerproto/layers.proto)
  *
  * This class is used by flicker and Winscope
  */
-@JsExport
 class ActiveBuffer private constructor(width: Int, height: Int, val stride: Int, val format: Int) :
     Size(width, height) {
     override fun doPrintValue() = "w:$width, h:$height, stride:$stride, format:$format"
 
     companion object {
-        @JsName("EMPTY")
         val EMPTY: ActiveBuffer
             get() = withCache { ActiveBuffer(width = 0, height = 0, stride = 0, format = 0) }
-        @JsName("fromBuffer")
         fun from(width: Int, height: Int, stride: Int, format: Int): ActiveBuffer = withCache {
             ActiveBuffer(width, height, stride, format)
         }

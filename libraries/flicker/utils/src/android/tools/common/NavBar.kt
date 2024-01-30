@@ -16,9 +16,6 @@
 
 package android.tools.common
 
-import kotlin.js.JsExport
-
-@JsExport
 enum class NavBar(val description: String, val value: String) {
     MODE_3BUTTON("3_BUTTON_NAV", PlatformConsts.MODE_3BUTTON),
     MODE_GESTURAL("GESTURAL_NAV", PlatformConsts.MODE_GESTURAL);

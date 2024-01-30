@@ -16,10 +16,6 @@
 
 package android.tools.common.traces.wm
 
-import kotlin.js.JsExport
-import kotlin.js.JsName
-
-@JsExport
 enum class TransitionType(val value: Int) {
     UNDEFINED(-1),
     NONE(0),
@@ -52,6 +48,6 @@ enum class TransitionType(val value: Int) {
     EXIT_DESKTOP_MODE(FIRST_CUSTOM.value + 12);
 
     companion object {
-        @JsName("fromInt") fun fromInt(value: Int) = values().first { it.value == value }
+        fun fromInt(value: Int) = values().first { it.value == value }
     }
 }

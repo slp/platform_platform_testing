@@ -17,9 +17,7 @@
 package android.tools.common.traces.wm
 
 import android.tools.common.Timestamp
-import kotlin.js.JsExport
 
-@JsExport
 data class WmTransitionData(
     val createTime: Timestamp? = null,
     val sendTime: Timestamp? = null,

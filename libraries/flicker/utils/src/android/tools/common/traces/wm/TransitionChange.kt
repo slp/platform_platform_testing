@@ -17,14 +17,11 @@
 package android.tools.common.traces.wm
 
 import android.tools.common.traces.surfaceflinger.LayersTrace
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
-@JsExport
 class TransitionChange(
-    @JsName("transitMode") val transitMode: TransitionType,
-    @JsName("layerId") val layerId: Int,
-    @JsName("windowId") val windowId: Int,
+    val transitMode: TransitionType,
+    val layerId: Int,
+    val windowId: Int,
 ) {
 
     override fun toString(): String = Formatter(null, null).format(this)

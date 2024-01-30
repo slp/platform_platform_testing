@@ -18,28 +18,8 @@ package android.tools.common.traces.wm
 
 import android.tools.common.Timestamp
 import android.tools.common.Trace
-import kotlin.js.JsExport
-import kotlin.js.JsName
-import kotlin.text.StringBuilder
 
-@JsExport
 data class TransitionsTrace(override val entries: Collection<Transition>) : Trace<Transition> {
-    @JsName("prettyPrint")
-    fun prettyPrint(): String {
-        val sb = StringBuilder("TransitionTrace(")
-
-        for (transition in entries) {
-            sb.append("\n\t- ").append(transition)
-        }
-        if (entries.isEmpty()) {
-            sb.append("EMPTY)")
-        } else {
-            sb.append("\n)")
-        }
-        return sb.toString()
-    }
-
-    @JsName("asCompressed")
     fun asCompressed(): TransitionsTrace {
         val transitionById = mutableMapOf<Int, Transition>()
 

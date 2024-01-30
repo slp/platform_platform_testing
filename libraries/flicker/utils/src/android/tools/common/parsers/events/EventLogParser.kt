@@ -24,11 +24,9 @@ import android.tools.common.traces.events.Event
 import android.tools.common.traces.events.EventLog
 import android.tools.common.traces.events.EventLog.Companion.MAGIC_NUMBER
 import android.tools.common.traces.events.FocusEvent
-import kotlin.js.JsExport
 
 operator fun <T> List<T>.component6(): T = get(5)
 
-@JsExport
 class EventLogParser : AbstractParser<Collection<String>, EventLog>() {
     override val traceName: String = "Event Log"
 
