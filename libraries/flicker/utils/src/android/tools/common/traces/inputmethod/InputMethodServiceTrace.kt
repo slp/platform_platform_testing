@@ -16,8 +16,8 @@
 
 package android.tools.common.traces.inputmethod
 
-import android.tools.common.ITrace
 import android.tools.common.Timestamp
+import android.tools.common.Trace
 
 /**
  * Contains a collection of parsed Ime InputMethodService trace entries and assertions to apply over
@@ -29,7 +29,7 @@ import android.tools.common.Timestamp
  * Java/Android functionality
  */
 data class InputMethodServiceTrace(override val entries: Array<InputMethodServiceEntry>) :
-    ITrace<InputMethodServiceEntry> {
+    Trace<InputMethodServiceEntry> {
     override fun toString(): String {
         return "InputMethodServiceTrace(Start: ${entries.firstOrNull()}, " +
             "End: ${entries.lastOrNull()})"

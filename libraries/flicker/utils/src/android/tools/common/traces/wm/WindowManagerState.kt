@@ -16,10 +16,10 @@
 
 package android.tools.common.traces.wm
 
-import android.tools.common.ITraceEntry
 import android.tools.common.PlatformConsts
 import android.tools.common.Rotation
 import android.tools.common.Timestamps
+import android.tools.common.TraceEntry
 import android.tools.common.traces.component.IComponentMatcher
 import android.tools.common.traces.wm.Utils.collectDescendants
 
@@ -45,7 +45,7 @@ class WindowManagerState(
     private val _pendingActivities: Array<String>,
     val root: RootWindowContainer,
     val keyguardControllerState: KeyguardControllerState
-) : ITraceEntry {
+) : TraceEntry {
     override val timestamp =
         Timestamps.from(elapsedNanos = elapsedTimestamp, unixNanos = clockTimestamp)
 

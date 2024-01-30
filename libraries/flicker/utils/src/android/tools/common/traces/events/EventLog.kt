@@ -16,8 +16,8 @@
 
 package android.tools.common.traces.events
 
-import android.tools.common.ITrace
 import android.tools.common.Timestamp
+import android.tools.common.Trace
 import kotlin.js.JsExport
 import kotlin.js.JsName
 
@@ -29,7 +29,7 @@ import kotlin.js.JsName
  * Java/Android functionality
  */
 @JsExport
-class EventLog(override val entries: Array<Event>) : ITrace<Event> {
+class EventLog(override val entries: Array<Event>) : Trace<Event> {
     val focusEvents: Array<FocusEvent> =
         entries
             .filterIsInstance<FocusEvent>()

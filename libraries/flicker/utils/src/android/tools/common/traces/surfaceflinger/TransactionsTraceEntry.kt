@@ -16,11 +16,11 @@
 
 package android.tools.common.traces.surfaceflinger
 
-import android.tools.common.ITraceEntry
 import android.tools.common.Timestamp
+import android.tools.common.TraceEntry
 
 class TransactionsTraceEntry(
     override val timestamp: Timestamp,
     val vSyncId: Long,
     val transactions: Array<Transaction>
-) : ITraceEntry
+) : TraceEntry

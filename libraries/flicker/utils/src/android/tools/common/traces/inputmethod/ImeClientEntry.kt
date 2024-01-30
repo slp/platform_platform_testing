@@ -15,8 +15,8 @@
  */
 package android.tools.common.traces.inputmethod
 
-import android.tools.common.ITraceEntry
 import android.tools.common.Timestamps
+import android.tools.common.TraceEntry
 
 /**
  * Represents a single Ime Client trace entry.
@@ -37,7 +37,7 @@ open class ImeClientEntry(
     // val inputConnection: InputConnection,
     // val inputConnectionCall: InputConnectionCall,
     val elapsedTimestamp: Long
-) : ITraceEntry {
+) : TraceEntry {
     override val timestamp = Timestamps.from(systemUptimeNanos = elapsedTimestamp)
     val stableId: String
         get() = this::class.simpleName ?: error("Unable to determine class")

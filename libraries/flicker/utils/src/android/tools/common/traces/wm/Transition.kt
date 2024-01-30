@@ -16,9 +16,9 @@
 
 package android.tools.common.traces.wm
 
-import android.tools.common.ITraceEntry
 import android.tools.common.Timestamp
 import android.tools.common.Timestamps
+import android.tools.common.TraceEntry
 import android.tools.common.traces.surfaceflinger.LayersTrace
 import android.tools.common.traces.surfaceflinger.Transaction
 import android.tools.common.traces.surfaceflinger.TransactionsTrace
@@ -30,7 +30,7 @@ class Transition(
     @JsName("id") val id: Int,
     val wmData: WmTransitionData = WmTransitionData(),
     val shellData: ShellTransitionData = ShellTransitionData(),
-) : ITraceEntry {
+) : TraceEntry {
     init {
         require(
             wmData.createTime != null ||

@@ -16,8 +16,8 @@
 
 package android.tools.common.traces.view
 
-import android.tools.common.ITrace
 import android.tools.common.Timestamp
+import android.tools.common.Trace
 
 /**
  * Contains a collection of parsed View trace entries and for a window entry.
@@ -28,7 +28,7 @@ import android.tools.common.Timestamp
  * Java/Android functionality
  */
 class ViewTrace(val windowTitle: String, override val entries: Array<ViewFrame>) :
-    ITrace<ViewFrame> {
+    Trace<ViewFrame> {
     override fun slice(startTimestamp: Timestamp, endTimestamp: Timestamp): ViewTrace =
         ViewTrace(
             windowTitle,

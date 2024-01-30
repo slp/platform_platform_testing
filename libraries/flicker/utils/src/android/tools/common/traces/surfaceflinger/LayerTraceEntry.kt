@@ -16,8 +16,8 @@
 
 package android.tools.common.traces.surfaceflinger
 
-import android.tools.common.ITraceEntry
 import android.tools.common.Timestamps
+import android.tools.common.TraceEntry
 import android.tools.common.datatypes.Rect
 import android.tools.common.datatypes.RectF
 import android.tools.common.traces.component.ComponentNameMatcher
@@ -37,7 +37,7 @@ class LayerTraceEntry(
     val displays: Array<Display>,
     val vSyncId: Long,
     _rootLayers: Array<Layer>
-) : ITraceEntry {
+) : TraceEntry {
     override val timestamp =
         Timestamps.from(systemUptimeNanos = elapsedTimestamp, unixNanos = clockTimestamp)
 

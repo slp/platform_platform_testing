@@ -16,8 +16,8 @@
 
 package android.tools.common.traces.view
 
-import android.tools.common.ITraceEntry
 import android.tools.common.Timestamp
+import android.tools.common.TraceEntry
 
 /**
  * Represents a single view frame entry for a window.
@@ -25,4 +25,4 @@ import android.tools.common.Timestamp
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-class ViewFrame(override val timestamp: Timestamp, val root: ViewNode) : ITraceEntry
+class ViewFrame(override val timestamp: Timestamp, val root: ViewNode) : TraceEntry

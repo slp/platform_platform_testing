@@ -15,8 +15,8 @@
  */
 package android.tools.common.traces.inputmethod
 
-import android.tools.common.ITrace
 import android.tools.common.Timestamp
+import android.tools.common.Trace
 
 /**
  * Contains a collection of parsed Ime Client trace entries and assertions to apply over a single
@@ -27,7 +27,7 @@ import android.tools.common.Timestamp
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-data class ImeClientTrace(override val entries: Array<ImeClientEntry>) : ITrace<ImeClientEntry> {
+data class ImeClientTrace(override val entries: Array<ImeClientEntry>) : Trace<ImeClientEntry> {
     override fun toString(): String {
         return "ImeClientTrace(Start: ${entries.firstOrNull()}, " + "End: ${entries.lastOrNull()})"
     }

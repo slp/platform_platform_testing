@@ -20,10 +20,10 @@ import kotlin.js.JsExport
 import kotlin.js.JsName
 
 @JsExport
-interface ITrace<Entry : ITraceEntry> {
+interface Trace<Entry : TraceEntry> {
     @JsName("entries") val entries: Array<Entry>
 
-    @JsName("slice") fun slice(startTimestamp: Timestamp, endTimestamp: Timestamp): ITrace<Entry>
+    @JsName("slice") fun slice(startTimestamp: Timestamp, endTimestamp: Timestamp): Trace<Entry>
 
     /**
      * @return an entry that matches exactly [timestamp]
