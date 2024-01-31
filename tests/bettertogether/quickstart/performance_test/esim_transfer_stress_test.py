@@ -41,7 +41,7 @@ from performance_test import nc_constants
 from performance_test import nearby_connection_wrapper
 from performance_test import setup_utils
 
-_TEST_SCRIPT_VERSTION = '1.6'
+_TEST_SCRIPT_VERSION = '1.6'
 
 _DELAY_BETWEEN_EACH_TEST_CYCLE = datetime.timedelta(seconds=5)
 _TRANSFER_FILE_SIZE_1MB = 1024
@@ -68,6 +68,7 @@ class EsimTransferStressTest(nc_base_test.NCBaseTestClass):
     super().__init__(configs)
     self._test_result = nc_constants.SingleTestResult()
     self._esim_transfer_test_metrics = self.EsimTransferTestMetrics()
+    self._test_script_version = _TEST_SCRIPT_VERSION
 
   # @typing.override
   def setup_class(self):
@@ -228,7 +229,7 @@ class EsimTransferStressTest(nc_base_test.NCBaseTestClass):
     self.record_data({
         'Test Class': self.TAG,
         'sponge_properties': {
-            'test_script_verion': _TEST_SCRIPT_VERSTION,
+            'test_script_version': self._test_script_version,
             '00_test_report_alias_name': (
                 self.test_parameters.test_report_alias_name),
             '01_test_result': result_message,
