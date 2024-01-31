@@ -27,6 +27,7 @@ import android.tools.common.datatypes.Size
 import android.tools.common.traces.wm.Activity
 import android.tools.common.traces.wm.Configuration
 import android.tools.common.traces.wm.ConfigurationContainer
+import android.tools.common.traces.wm.ConfigurationContainerImpl
 import android.tools.common.traces.wm.DisplayArea
 import android.tools.common.traces.wm.DisplayContent
 import android.tools.common.traces.wm.DisplayCutout
@@ -451,7 +452,7 @@ class WindowManagerStateBuilder {
     private fun createConfigurationContainer(
         proto: ConfigurationContainerProto?
     ): ConfigurationContainer {
-        return ConfigurationContainer.from(
+        return ConfigurationContainerImpl.from(
             overrideConfiguration = createConfiguration(proto?.overrideConfiguration),
             fullConfiguration = createConfiguration(proto?.fullConfiguration),
             mergedOverrideConfiguration = createConfiguration(proto?.mergedOverrideConfiguration)

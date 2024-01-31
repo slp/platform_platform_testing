@@ -32,10 +32,10 @@ class WindowContainerImpl(
     override val orientation: Int,
     override val layerId: Int,
     _isVisible: Boolean,
-    private val configurationContainer: IConfigurationContainer,
+    private val configurationContainer: ConfigurationContainer,
     _children: Array<WindowContainer>,
     override val computedZ: Int
-) : IConfigurationContainer by configurationContainer, WindowContainer {
+) : ConfigurationContainer by configurationContainer, WindowContainer {
     override val id: Int = if (token.isEmpty()) -1 else token.toInt(16)
 
     override val children: Array<WindowContainer> = _children
