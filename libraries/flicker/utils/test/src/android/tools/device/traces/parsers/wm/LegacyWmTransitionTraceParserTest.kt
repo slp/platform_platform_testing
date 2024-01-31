@@ -22,9 +22,11 @@ import android.tools.device.apphelpers.BrowserAppHelper
 import android.tools.device.traces.monitors.wm.LegacyWmTransitionTraceMonitor
 import android.tools.utils.CleanFlickerEnvironmentRule
 import android.tools.utils.readAsset
+import android.tracing.Flags
 import androidx.test.platform.app.InstrumentationRegistry
 import com.android.launcher3.tapl.LauncherInstrumentation
 import com.google.common.truth.Truth
+import org.junit.Assume.assumeFalse
 import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Test
@@ -33,6 +35,7 @@ import org.junit.Test
 class LegacyWmTransitionTraceParserTest {
     @Before
     fun before() {
+        assumeFalse(Flags.perfettoTransitionTracing())
         Cache.clear()
     }
 
