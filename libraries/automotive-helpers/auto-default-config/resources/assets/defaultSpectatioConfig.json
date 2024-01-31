@@ -721,9 +721,17 @@
       "VALUE": "View all"
     },
     "APP_INFO_SETTINGS_SCROLL_ELEMENT": {
-      "TYPE": "RESOURCE_ID",
-      "VALUE": "fragment_container",
-      "PACKAGE": "com.android.car.settings"
+      "TYPE": "MULTIPLE",
+      "SPECIFIERS": [
+        {
+          "TYPE": "RESOURCE_ID",
+          "VALUE": "car_ui_internal_recycler_view"
+        },
+        {
+          "TYPE": "DESCRIPTION",
+          "VALUE": "com.android.car.ui.utils.ROTARY_CONTAINER"
+        }
+      ]
     },
     "APP_INFO_SETTINGS_SCROLL_FORWARD_BUTTON": {
       "TYPE": "DESCRIPTION",
@@ -769,7 +777,7 @@
     },
     "APP_INFO_SETTINGS_PERMISSIONS_MENU": {
       "TYPE": "TEXT",
-      "VALUE": "Permissions?"
+      "VALUE": "Permissions"
     },
     "APP_INFO_SETTINGS_ALLOW_BUTTON": {
       "TYPE": "TEXT",
