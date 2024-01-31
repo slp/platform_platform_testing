@@ -44,9 +44,9 @@ class WindowState(
     val surfaceInsets: Rect,
     val givenContentInsets: Rect,
     val crop: Rect,
-    private val windowContainer: IWindowContainer,
+    private val windowContainer: WindowContainer,
     val isAppWindow: Boolean
-) : IWindowContainer by windowContainer {
+) : WindowContainer by windowContainer {
     override val isVisible: Boolean = windowContainer.isVisible && attributes.alpha > 0
 
     override val isFullscreen: Boolean

@@ -56,10 +56,10 @@ class WindowManagerState(
     val isTablet: Boolean
         get() = displays.any { it.isTablet }
 
-    val windowContainers: Array<IWindowContainer>
+    val windowContainers: Array<WindowContainer>
         get() = root.collectDescendants()
 
-    val children: Array<IWindowContainer>
+    val children: Array<WindowContainer>
         get() = root.children.reversedArray()
 
     /** Displays in z-order with the top most at the front of the list, starting with primary. */

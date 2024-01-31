@@ -48,8 +48,8 @@ class DisplayContent(
     val rotation: Rotation,
     val lastOrientation: Int,
     val cutout: DisplayCutout?,
-    private val windowContainer: IWindowContainer
-) : IWindowContainer by windowContainer {
+    private val windowContainer: WindowContainer
+) : WindowContainer by windowContainer {
     override val name: String = displayId.toString()
     override val isVisible: Boolean = false
 

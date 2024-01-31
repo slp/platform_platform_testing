@@ -25,8 +25,8 @@ import android.tools.common.traces.wm.Utils.collectDescendants
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-class DisplayArea(val isTaskDisplayArea: Boolean, private val windowContainer: IWindowContainer) :
-    IWindowContainer by windowContainer {
+class DisplayArea(val isTaskDisplayArea: Boolean, private val windowContainer: WindowContainer) :
+    WindowContainer by windowContainer {
     val activities: Array<Activity>
         get() =
             if (isTaskDisplayArea) {
