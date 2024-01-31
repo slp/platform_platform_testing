@@ -35,7 +35,7 @@ import kotlin.io.path.createTempDirectory
 
 object Utils {
     val ALL_MONITORS: List<TraceMonitor> =
-        mutableListOf<TraceMonitor>(
+        mutableListOf(
                 WindowManagerTraceMonitor(),
                 EventLogMonitor(),
                 ViewTraceMonitor(),
