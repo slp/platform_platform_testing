@@ -53,7 +53,11 @@ class TransitionsTraceParser :
         }
 
         input.query(getSqlQueryTransitions()) { transitionsRows ->
-            val transitionRowsGrouped = transitionsRows.groupBy { it["transition_id"] }
+            val transitionRowsGrouped =
+                transitionsRows.groupBy {
+                    it["transition_entry_id"]
+                        ?: error("transition_entry_id column should not be null")
+                }
 
             transitionRowsGrouped.values.forEach { transitionRows ->
                 transitions.add(buildTransition(transitionRows, handlerMapping))
