@@ -17,7 +17,6 @@
 package android.tools.common.traces.wm
 
 import android.tools.common.datatypes.Rect
-import kotlin.js.JsExport
 
 /**
  * Represents WindowContainer classes such as DisplayContent.WindowContainers and
@@ -27,7 +26,6 @@ import kotlin.js.JsExport
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-@JsExport
 open class WindowContainer(
     override val title: String,
     final override val token: String,

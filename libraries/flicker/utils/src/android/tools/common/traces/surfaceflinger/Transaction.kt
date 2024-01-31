@@ -16,17 +16,13 @@
 
 package android.tools.common.traces.surfaceflinger
 
-import kotlin.js.JsExport
-import kotlin.js.JsName
-
-@JsExport
 data class Transaction(
-    @JsName("pid") val pid: Int,
-    @JsName("uid") val uid: Int,
-    @JsName("requestedVSyncId") val requestedVSyncId: Long,
-    @JsName("postTime") val postTime: Long,
-    @JsName("id") val id: Long,
-    @JsName("mergedTransactionIds") val mergedTransactionIds: Array<Long>,
+    val pid: Int,
+    val uid: Int,
+    val requestedVSyncId: Long,
+    val postTime: Long,
+    val id: Long,
+    val mergedTransactionIds: Array<Long>,
 ) {
     var appliedInEntry: TransactionsTraceEntry? = null
 
@@ -40,7 +36,6 @@ data class Transaction(
     }
 
     companion object {
-        @JsName("emptyTransaction")
         fun emptyTransaction(): Transaction {
             return Transaction(0, 0, 0, 0, 0, emptyArray())
         }

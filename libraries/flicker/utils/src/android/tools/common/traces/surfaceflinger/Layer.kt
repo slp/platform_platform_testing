@@ -22,8 +22,6 @@ import android.tools.common.datatypes.Rect
 import android.tools.common.datatypes.RectF
 import android.tools.common.datatypes.Region
 import android.tools.common.traces.component.ComponentName
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /**
  * Represents a single layer with links to its parent and child layers.
@@ -31,7 +29,6 @@ import kotlin.js.JsName
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-@JsExport
 class Layer
 private constructor(
     val name: String,
@@ -314,7 +311,6 @@ private constructor(
     }
 
     companion object {
-        @JsName("from")
         fun from(
             name: String,
             id: Int,

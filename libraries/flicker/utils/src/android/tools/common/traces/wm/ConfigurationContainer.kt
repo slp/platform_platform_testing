@@ -17,11 +17,8 @@
 package android.tools.common.traces.wm
 
 import android.tools.common.withCache
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /** {@inheritDoc} */
-@JsExport
 class ConfigurationContainer
 private constructor(
     override val overrideConfiguration: Configuration?,
@@ -60,11 +57,9 @@ private constructor(
     }
 
     companion object {
-        @JsName("EMPTY")
         val EMPTY: ConfigurationContainer
             get() = withCache { ConfigurationContainer(null, null, null) }
 
-        @JsName("from")
         fun from(
             overrideConfiguration: Configuration?,
             fullConfiguration: Configuration?,

@@ -17,34 +17,31 @@
 package android.tools.common.traces.wm
 
 import android.tools.common.datatypes.Rect
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
-@JsExport
 interface IWindowContainer : IConfigurationContainer {
-    @JsName("title") val title: String
+    val title: String
 
-    @JsName("id") val id: Int
+    val id: Int
 
-    @JsName("token") val token: String
+    val token: String
 
-    @JsName("orientation") val orientation: Int
+    val orientation: Int
 
-    @JsName("layerId") val layerId: Int
+    val layerId: Int
 
-    @JsName("children") val children: Array<IWindowContainer>
+    val children: Array<IWindowContainer>
 
-    @JsName("computedZ") val computedZ: Int
+    val computedZ: Int
 
-    @JsName("isVisible") val isVisible: Boolean
+    val isVisible: Boolean
 
-    @JsName("name") val name: String
+    val name: String
 
-    @JsName("stableId") val stableId: String
+    val stableId: String
 
     val isFullscreen: Boolean
 
-    @JsName("bounds") val bounds: Rect
+    val bounds: Rect
 
-    @JsName("parent") var parent: IWindowContainer?
+    var parent: IWindowContainer?
 }

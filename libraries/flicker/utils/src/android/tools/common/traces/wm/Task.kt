@@ -18,7 +18,6 @@ package android.tools.common.traces.wm
 
 import android.tools.common.datatypes.Rect
 import android.tools.common.traces.component.IComponentMatcher
-import kotlin.js.JsExport
 
 /**
  * Represents a task in the window manager hierarchy
@@ -26,7 +25,6 @@ import kotlin.js.JsExport
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-@JsExport
 class Task(
     override val activityType: Int,
     override val isFullscreen: Boolean,

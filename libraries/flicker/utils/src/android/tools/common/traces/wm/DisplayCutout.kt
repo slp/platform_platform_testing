@@ -19,11 +19,8 @@ package android.tools.common.traces.wm
 import android.tools.common.datatypes.Insets
 import android.tools.common.datatypes.Rect
 import android.tools.common.withCache
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /** Representation of a display cutout from a WM trace */
-@JsExport
 class DisplayCutout
 private constructor(
     val insets: Insets,
@@ -69,7 +66,6 @@ private constructor(
     }
 
     companion object {
-        @JsName("from")
         fun from(
             insets: Insets,
             boundLeft: Rect,

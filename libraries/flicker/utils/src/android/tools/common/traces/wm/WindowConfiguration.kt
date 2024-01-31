@@ -18,8 +18,6 @@ package android.tools.common.traces.wm
 
 import android.tools.common.datatypes.Rect
 import android.tools.common.withCache
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /**
  * Represents the configuration of a WM window
@@ -27,7 +25,6 @@ import kotlin.js.JsName
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-@JsExport
 open class WindowConfiguration(
     val appBounds: Rect = Rect.EMPTY,
     val bounds: Rect = Rect.EMPTY,
@@ -35,7 +32,6 @@ open class WindowConfiguration(
     val windowingMode: Int = 0,
     val activityType: Int = 0
 ) {
-    @JsName("isEmpty")
     val isEmpty: Boolean
         get() =
             appBounds.isEmpty &&
@@ -67,11 +63,9 @@ open class WindowConfiguration(
     }
 
     companion object {
-        @JsName("EMPTY")
         val EMPTY: WindowConfiguration
             get() = withCache { WindowConfiguration() }
 
-        @JsName("from")
         fun from(
             appBounds: Rect?,
             bounds: Rect?,

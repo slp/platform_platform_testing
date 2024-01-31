@@ -22,11 +22,8 @@ import android.tools.common.datatypes.Rect
 import android.tools.common.datatypes.RectF
 import android.tools.common.datatypes.Region
 import android.tools.common.withCache
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /** {@inheritDoc} */
-@JsExport
 class LayerProperties
 private constructor(
     override val visibleRegion: Region = Region.EMPTY,
@@ -119,11 +116,9 @@ private constructor(
     }
 
     companion object {
-        @JsName("EMPTY")
         val EMPTY: LayerProperties
             get() = withCache { LayerProperties() }
 
-        @JsName("from")
         fun from(
             visibleRegion: Region,
             activeBuffer: ActiveBuffer,

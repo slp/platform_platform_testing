@@ -16,9 +16,6 @@
 
 package android.tools.common.traces.surfaceflinger
 
-import kotlin.js.JsExport
-
-@JsExport
 enum class HwcCompositionType(val value: Int) {
     HWC_TYPE_UNSPECIFIED(0),
     HWC_TYPE_CLIENT(1),

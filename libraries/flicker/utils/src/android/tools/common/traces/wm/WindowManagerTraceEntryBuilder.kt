@@ -16,10 +16,6 @@
 
 package android.tools.common.traces.wm
 
-import kotlin.js.JsExport
-import kotlin.js.JsName
-
-@JsExport
 class WindowManagerTraceEntryBuilder {
     private var policy: WindowManagerPolicy? = null
     private var focusedApp = ""
@@ -37,63 +33,50 @@ class WindowManagerTraceEntryBuilder {
     private var elapsedTimestamp: Long = 0L
     private var realTimestamp: Long? = null
 
-    @JsName("setPolicy")
     fun setPolicy(value: WindowManagerPolicy?): WindowManagerTraceEntryBuilder = apply {
         policy = value
     }
 
-    @JsName("setFocusedApp")
     fun setFocusedApp(value: String): WindowManagerTraceEntryBuilder = apply { focusedApp = value }
 
-    @JsName("setFocusedDisplayId")
     fun setFocusedDisplayId(value: Int): WindowManagerTraceEntryBuilder = apply {
         focusedDisplayId = value
     }
 
-    @JsName("setFocusedWindow")
     fun setFocusedWindow(value: String): WindowManagerTraceEntryBuilder = apply {
         focusedWindow = value
     }
 
-    @JsName("setInputMethodWindowAppToken")
     fun setInputMethodWindowAppToken(value: String): WindowManagerTraceEntryBuilder = apply {
         inputMethodWindowAppToken = value
     }
 
-    @JsName("setIsHomeRecentsComponent")
     fun setIsHomeRecentsComponent(value: Boolean): WindowManagerTraceEntryBuilder = apply {
         isHomeRecentsComponent = value
     }
 
-    @JsName("setIsDisplayFrozen")
     fun setIsDisplayFrozen(value: Boolean): WindowManagerTraceEntryBuilder = apply {
         isDisplayFrozen = value
     }
 
-    @JsName("setPendingActivities")
     fun setPendingActivities(value: Array<String>): WindowManagerTraceEntryBuilder = apply {
         pendingActivities.addAll(value)
     }
 
-    @JsName("setRoot")
     fun setRoot(value: RootWindowContainer?): WindowManagerTraceEntryBuilder = apply {
         root = value
     }
 
-    @JsName("setKeyguardControllerState")
     fun setKeyguardControllerState(
         value: KeyguardControllerState?
     ): WindowManagerTraceEntryBuilder = apply { keyguardControllerState = value }
 
-    @JsName("setWhere")
     fun setWhere(value: String): WindowManagerTraceEntryBuilder = apply { where = value }
 
-    @JsName("setElapsedTimestamp")
     fun setElapsedTimestamp(value: String): WindowManagerTraceEntryBuilder =
         // Necessary for compatibility with JS number type
         apply { elapsedTimestamp = value.toLong() }
 
-    @JsName("setRealToElapsedTimeOffsetNs")
     fun setRealToElapsedTimeOffsetNs(value: String?): WindowManagerTraceEntryBuilder = apply {
         realTimestamp =
             if (value != null && value.toLong() != 0L) {
@@ -104,7 +87,6 @@ class WindowManagerTraceEntryBuilder {
     }
 
     /** Constructs the window manager trace entry. */
-    @JsName("build")
     fun build(): WindowManagerState {
         val root = root ?: error("Root not set")
         val keyguardControllerState =
