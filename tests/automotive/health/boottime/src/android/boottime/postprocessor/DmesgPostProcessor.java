@@ -125,7 +125,8 @@ public class DmesgPostProcessor extends BasePostProcessor {
                                     analyzeDmesgActionInfo(dmesgItem.getActionInfoItems())));
                 }
             } catch (IOException ioe) {
-                CLog.e("Failed to analyze the dmesg logs", ioe);
+                CLog.e("Failed to analyze the dmesg logs");
+                CLog.e(ioe);
             }
         }
         return buildTfMetrics(metrics.asMap());
