@@ -38,7 +38,7 @@ class WindowManagerTraceEntryBuilderTest {
     fun createsEntryWithCorrectClockTime() {
         val entry =
             WindowManagerTraceEntryBuilder()
-                .setElapsedTimestamp("100")
+                .setElapsedTimestamp(100)
                 .setRoot(emptyRootContainer)
                 .setKeyguardControllerState(
                     KeyguardControllerState.from(
@@ -47,7 +47,7 @@ class WindowManagerTraceEntryBuilderTest {
                         keyguardOccludedStates = mapOf()
                     )
                 )
-                .setRealToElapsedTimeOffsetNs("500")
+                .setRealToElapsedTimeOffsetNs(500)
                 .build()
         Truth.assertThat(entry.elapsedTimestamp).isEqualTo(100)
         Truth.assertThat(entry.clockTimestamp).isEqualTo(600)
@@ -62,7 +62,7 @@ class WindowManagerTraceEntryBuilderTest {
     fun supportsMissingRealToElapsedTimeOffsetNs() {
         val entry =
             WindowManagerTraceEntryBuilder()
-                .setElapsedTimestamp("100")
+                .setElapsedTimestamp(100)
                 .setRoot(emptyRootContainer)
                 .setKeyguardControllerState(
                     KeyguardControllerState.from(

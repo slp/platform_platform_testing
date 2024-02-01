@@ -29,7 +29,6 @@ class WindowManagerTraceEntryBuilder {
     private var keyguardControllerState: KeyguardControllerState? = null
     private var where = ""
 
-    // Necessary for compatibility with JS number type
     private var elapsedTimestamp: Long = 0L
     private var realTimestamp: Long? = null
 
@@ -73,14 +72,14 @@ class WindowManagerTraceEntryBuilder {
 
     fun setWhere(value: String): WindowManagerTraceEntryBuilder = apply { where = value }
 
-    fun setElapsedTimestamp(value: String): WindowManagerTraceEntryBuilder =
+    fun setElapsedTimestamp(value: Long): WindowManagerTraceEntryBuilder =
         // Necessary for compatibility with JS number type
-        apply { elapsedTimestamp = value.toLong() }
+        apply { elapsedTimestamp = value }
 
-    fun setRealToElapsedTimeOffsetNs(value: String?): WindowManagerTraceEntryBuilder = apply {
+    fun setRealToElapsedTimeOffsetNs(value: Long?): WindowManagerTraceEntryBuilder = apply {
         realTimestamp =
-            if (value != null && value.toLong() != 0L) {
-                value.toLong() + elapsedTimestamp
+            if (value != null && value != 0L) {
+                value + elapsedTimestamp
             } else {
                 null
             }
