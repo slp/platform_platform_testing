@@ -22,26 +22,23 @@ import android.tools.common.datatypes.Rect
 import android.tools.common.datatypes.Size
 import android.tools.common.traces.wm.DisplayContent
 import android.tools.common.withCache
-import kotlin.js.JsExport
-import kotlin.js.JsName
 import kotlin.math.min
 
 /** Wrapper for DisplayProto (frameworks/native/services/surfaceflinger/layerproto/display.proto) */
-@JsExport
 class Display
 private constructor(
-    @JsName("id") val id: String,
-    @JsName("name") val name: String,
-    @JsName("layerStackId") val layerStackId: Int,
-    @JsName("size") val size: Size,
-    @JsName("layerStackSpace") val layerStackSpace: Rect,
-    @JsName("transform") val transform: Transform,
-    @JsName("isVirtual") val isVirtual: Boolean,
-    @JsName("dpiX") val dpiX: Double,
-    @JsName("dpiY") val dpiY: Double,
+    val id: String,
+    val name: String,
+    val layerStackId: Int,
+    val size: Size,
+    val layerStackSpace: Rect,
+    val transform: Transform,
+    val isVirtual: Boolean,
+    val dpiX: Double,
+    val dpiY: Double,
 ) {
-    @JsName("isOff") val isOff = layerStackId == BLANK_LAYER_STACK
-    @JsName("isOn") val isOn = !isOff
+    val isOff = layerStackId == BLANK_LAYER_STACK
+    val isOn = !isOff
 
     // Alias for layerStackSpace, since bounds is what is used for layers
     val bounds = layerStackSpace
@@ -62,7 +59,6 @@ private constructor(
         }
     }
 
-    @JsName("isLargeScreen")
     val isLargeScreen: Boolean
         get() {
             val dpi = dpiX.toInt()
@@ -100,7 +96,6 @@ private constructor(
     companion object {
         const val BLANK_LAYER_STACK = -1
 
-        @JsName("EMPTY")
         val EMPTY: Display
             get() = withCache {
                 Display(
@@ -116,7 +111,6 @@ private constructor(
                 )
             }
 
-        @JsName("from")
         fun from(
             id: String,
             name: String,

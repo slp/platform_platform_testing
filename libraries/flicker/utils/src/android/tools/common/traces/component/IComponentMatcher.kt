@@ -18,7 +18,7 @@ package android.tools.common.traces.component
 
 import android.tools.common.traces.surfaceflinger.Layer
 import android.tools.common.traces.wm.Activity
-import android.tools.common.traces.wm.IWindowContainer
+import android.tools.common.traces.wm.WindowContainer
 
 interface IComponentMatcher {
     fun or(other: IComponentMatcher): IComponentMatcher {
@@ -29,20 +29,20 @@ interface IComponentMatcher {
      * @param window to search
      * @return if any of the components matches [window]
      */
-    fun windowMatchesAnyOf(window: IWindowContainer): Boolean = windowMatchesAnyOf(arrayOf(window))
+    fun windowMatchesAnyOf(window: WindowContainer): Boolean = windowMatchesAnyOf(arrayOf(window))
 
     /**
      * @param windows to search
      * @return if any of the components matches any of [windows]
      */
-    fun windowMatchesAnyOf(windows: Collection<IWindowContainer>): Boolean =
+    fun windowMatchesAnyOf(windows: Collection<WindowContainer>): Boolean =
         windowMatchesAnyOf(windows.toTypedArray())
 
     /**
      * @param windows to search
      * @return if any of the [windows] fit the matching conditions of the matcher
      */
-    fun windowMatchesAnyOf(windows: Array<IWindowContainer>): Boolean
+    fun windowMatchesAnyOf(windows: Array<WindowContainer>): Boolean
 
     /**
      * @param activity to search
@@ -125,6 +125,6 @@ interface IComponentMatcher {
     fun filterLayers(layers: Collection<Layer>): Collection<Layer> =
         layers.filter { layerMatchesAnyOf(it) }
 
-    fun filterWindows(windows: Collection<IWindowContainer>): Collection<IWindowContainer> =
+    fun filterWindows(windows: Collection<WindowContainer>): Collection<WindowContainer> =
         windows.filter { windowMatchesAnyOf(it) }
 }

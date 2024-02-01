@@ -25,6 +25,9 @@ import android.tools.common.Timestamps
 import android.tools.common.io.Reader
 import android.tools.common.io.ResultArtifactDescriptor
 import android.tools.common.io.RunStatus
+import android.tools.common.traces.wm.ConfigurationContainerImpl
+import android.tools.common.traces.wm.RootWindowContainer
+import android.tools.common.traces.wm.WindowContainerImpl
 import android.tools.device.rules.StopAllTracesRule
 import android.tools.device.traces.io.ArtifactBuilder
 import android.tools.device.traces.io.ResultWriter
@@ -202,3 +205,17 @@ fun createDefaultArtifactBuilder(
 
 fun getLauncherPackageName() =
     UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()).launcherPackageName
+
+fun newEmptyRootContainer(orientation: Int = 0, layerId: Int = 0) =
+    RootWindowContainer(
+        WindowContainerImpl(
+            title = "root",
+            token = "",
+            orientation = orientation,
+            layerId = layerId,
+            _isVisible = true,
+            _children = emptyArray(),
+            configurationContainer = ConfigurationContainerImpl.EMPTY,
+            computedZ = 0
+        )
+    )

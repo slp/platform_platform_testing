@@ -41,7 +41,6 @@ import android.tools.common.traces.component.IComponentMatcher
 import android.tools.common.traces.surfaceflinger.LayerTraceEntry
 import android.tools.common.traces.surfaceflinger.LayersTrace
 import android.tools.common.traces.wm.Activity
-import android.tools.common.traces.wm.IConfigurationContainer
 import android.tools.common.traces.wm.WindowManagerState
 import android.tools.common.traces.wm.WindowManagerTrace
 import android.tools.common.traces.wm.WindowState
@@ -515,15 +514,6 @@ constructor(
                 }
             }
             return !allActivityWindowsVisible || !tasksInCorrectStacks
-        }
-
-        private fun IConfigurationContainer.isWindowingModeCompatible(
-            requestedWindowingMode: Int
-        ): Boolean {
-            return when (requestedWindowingMode) {
-                WindowConfiguration.WINDOWING_MODE_UNDEFINED -> true
-                else -> windowingMode == requestedWindowingMode
-            }
         }
     }
 }

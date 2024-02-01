@@ -16,17 +16,14 @@
 
 package android.tools.common.traces.wm
 
-import kotlin.js.JsExport
-
 /**
  * Represents a window token in the window manager hierarchy
  *
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-@JsExport
-class WindowToken(private val windowContainer: IWindowContainer) :
-    IWindowContainer by windowContainer {
+class WindowToken(private val windowContainer: WindowContainer) :
+    WindowContainer by windowContainer {
     override val isVisible: Boolean
         get() = false
     override fun toString(): String {

@@ -18,8 +18,6 @@ package android.tools.common.traces.wm
 
 import android.tools.common.Rotation
 import android.tools.common.withCache
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /**
  * Represents the requested policy of a WM container
@@ -27,7 +25,6 @@ import kotlin.js.JsName
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-@JsExport
 class WindowManagerPolicy
 private constructor(
     val focusedAppToken: String = "",
@@ -119,7 +116,6 @@ private constructor(
     }
 
     companion object {
-        @JsName("EMPTY")
         val EMPTY: WindowManagerPolicy
             get() = withCache { WindowManagerPolicy() }
 
@@ -135,7 +131,6 @@ private constructor(
         private const val SCREEN_ORIENTATION_USER_PORTRAIT = 12
         private const val SCREEN_ORIENTATION_LOCKED = 14
 
-        @JsName("from")
         fun from(
             focusedAppToken: String = "",
             forceStatusBar: Boolean = false,

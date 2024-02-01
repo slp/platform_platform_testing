@@ -470,8 +470,7 @@
     },
     "HOME_MAP_CARD": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "scene_card",
-      "PACKAGE": "com.android.car.carlauncher"
+      "VALUE": "scene_card"
     },
     "STATUS_BAR_BRIGHTNESS_BUTTON": {
       "TYPE": "RESOURCE_ID",

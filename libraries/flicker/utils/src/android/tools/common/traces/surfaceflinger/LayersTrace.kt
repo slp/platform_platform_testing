@@ -18,8 +18,6 @@ package android.tools.common.traces.surfaceflinger
 
 import android.tools.common.ITrace
 import android.tools.common.Timestamp
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /**
  * Contains a collection of parsed Layers trace entries and assertions to apply over a single entry.
@@ -29,7 +27,6 @@ import kotlin.js.JsName
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-@JsExport
 data class LayersTrace(override val entries: Array<LayerTraceEntry>) : ITrace<LayerTraceEntry> {
     override fun toString(): String {
         return "LayersTrace(Start: ${entries.firstOrNull()}, " + "End: ${entries.lastOrNull()})"
@@ -48,7 +45,6 @@ data class LayersTrace(override val entries: Array<LayerTraceEntry>) : ITrace<La
         return entries.contentHashCode()
     }
 
-    @JsName("vSyncSlice")
     fun vSyncSlice(from: Int, to: Int): LayersTrace {
         return LayersTrace(
             this.entries

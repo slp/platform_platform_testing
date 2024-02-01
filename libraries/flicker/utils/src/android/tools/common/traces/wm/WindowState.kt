@@ -20,8 +20,6 @@ import android.tools.common.PlatformConsts
 import android.tools.common.datatypes.Rect
 import android.tools.common.datatypes.Region
 import android.tools.common.datatypes.Size
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /**
  * Represents a window in the window manager hierarchy
@@ -29,27 +27,26 @@ import kotlin.js.JsName
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-@JsExport
 class WindowState(
     val attributes: WindowLayoutParams,
-    @JsName("displayId") val displayId: Int,
-    @JsName("stackId") val stackId: Int,
-    @JsName("layer") val layer: Int,
+    val displayId: Int,
+    val stackId: Int,
+    val layer: Int,
     val isSurfaceShown: Boolean,
     val windowType: Int,
     val requestedSize: Size,
     val surfacePosition: Rect?,
-    @JsName("frame") val frame: Rect,
+    val frame: Rect,
     val containingFrame: Rect,
     val parentFrame: Rect,
     val contentFrame: Rect,
     val contentInsets: Rect,
     val surfaceInsets: Rect,
     val givenContentInsets: Rect,
-    @JsName("crop") val crop: Rect,
-    private val windowContainer: IWindowContainer,
+    val crop: Rect,
+    private val windowContainer: WindowContainer,
     val isAppWindow: Boolean
-) : IWindowContainer by windowContainer {
+) : WindowContainer by windowContainer {
     override val isVisible: Boolean = windowContainer.isVisible && attributes.alpha > 0
 
     override val isFullscreen: Boolean
@@ -59,7 +56,7 @@ class WindowState(
     val isDebuggerWindow: Boolean = windowType == PlatformConsts.WINDOW_TYPE_DEBUGGER
     val isValidNavBarType: Boolean = attributes.isValidNavBarType
 
-    @JsName("frameRegion") val frameRegion: Region = Region.from(frame)
+    val frameRegion: Region = Region.from(frame)
 
     private fun getWindowTypeSuffix(windowType: Int): String =
         when (windowType) {

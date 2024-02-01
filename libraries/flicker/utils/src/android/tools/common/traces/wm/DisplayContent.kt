@@ -21,8 +21,6 @@ import android.tools.common.Rotation
 import android.tools.common.datatypes.Rect
 import android.tools.common.traces.component.IComponentMatcher
 import android.tools.common.traces.wm.Utils.collectDescendants
-import kotlin.js.JsExport
-import kotlin.js.JsName
 import kotlin.math.min
 
 /**
@@ -31,18 +29,17 @@ import kotlin.math.min
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-@JsExport
 class DisplayContent(
-    @JsName("displayId") val displayId: Int,
+    val displayId: Int,
     val focusedRootTaskId: Int,
     val resumedActivity: String,
     val singleTaskInstance: Boolean,
     val defaultPinnedStackBounds: Rect,
     val pinnedStackMovementBounds: Rect,
-    @JsName("displayRect") val displayRect: Rect,
+    val displayRect: Rect,
     val appRect: Rect,
     val dpi: Int,
-    @JsName("flags") val flags: Int,
+    val flags: Int,
     val stableBounds: Rect,
     val surfaceSize: Int,
     val focusedApp: String,
@@ -51,8 +48,8 @@ class DisplayContent(
     val rotation: Rotation,
     val lastOrientation: Int,
     val cutout: DisplayCutout?,
-    private val windowContainer: IWindowContainer
-) : IWindowContainer by windowContainer {
+    private val windowContainer: WindowContainer
+) : WindowContainer by windowContainer {
     override val name: String = displayId.toString()
     override val isVisible: Boolean = false
 
@@ -172,12 +169,11 @@ class DisplayContent(
 
     companion object {
         /** From [android.util.DisplayMetrics] */
-        @JsName("DENSITY_DEFAULT") const val DENSITY_DEFAULT = 160f
+        const val DENSITY_DEFAULT = 160f
 
         /** From [com.android.systemui.shared.recents.utilities.Utilities] */
-        @JsName("TABLET_MIN_DPS") const val TABLET_MIN_DPS = 600f
+        const val TABLET_MIN_DPS = 600f
 
-        @JsName("dpiFromPx")
         fun dpiFromPx(size: Float, densityDpi: Int): Float {
             val densityRatio: Float = densityDpi.toFloat() / DENSITY_DEFAULT
             return size / densityRatio

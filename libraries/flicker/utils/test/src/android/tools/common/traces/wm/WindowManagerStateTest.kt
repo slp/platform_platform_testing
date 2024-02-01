@@ -18,6 +18,7 @@ package android.tools.common.traces.wm
 
 import android.tools.common.Timestamps
 import android.tools.utils.CleanFlickerEnvironmentRule
+import android.tools.utils.newEmptyRootContainer
 import com.google.common.truth.Truth
 import org.junit.ClassRule
 import org.junit.FixMethodOrder
@@ -31,19 +32,7 @@ import org.junit.runners.MethodSorters
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class WindowManagerStateTest {
 
-    private val emptyRootContainer =
-        RootWindowContainer(
-            WindowContainer(
-                title = "root",
-                token = "",
-                orientation = 0,
-                layerId = 0,
-                _isVisible = true,
-                _children = emptyArray(),
-                configurationContainer = ConfigurationContainer.EMPTY,
-                computedZ = 0
-            )
-        )
+    private val emptyRootContainer = newEmptyRootContainer()
 
     @Test
     fun usesRealTimestampWhenAvailableAndFallsbackOnElapsedTimestamp() {

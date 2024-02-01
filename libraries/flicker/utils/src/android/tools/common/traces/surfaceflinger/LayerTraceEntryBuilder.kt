@@ -17,11 +17,8 @@
 package android.tools.common.traces.surfaceflinger
 
 import android.tools.common.Timestamp
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /** Builder for LayerTraceEntries */
-@JsExport
 class LayerTraceEntryBuilder {
     private var elapsedTimestamp: Long = 0L
     private var realTimestamp: Long? = null
@@ -39,28 +36,22 @@ class LayerTraceEntryBuilder {
         error("Duplicate layer id found: ${it.id}")
     }
 
-    @JsName("setVSyncId")
     fun setVSyncId(vSyncId: String): LayerTraceEntryBuilder =
         // Necessary for compatibility with JS number type
         apply { this.vSyncId = vSyncId.toLong() }
 
-    @JsName("setHwcBlob")
     fun setHwcBlob(hwcBlob: String): LayerTraceEntryBuilder = apply { this.hwcBlob = hwcBlob }
 
-    @JsName("setWhere")
     fun setWhere(where: String): LayerTraceEntryBuilder = apply { this.where = where }
 
-    @JsName("setDisplays")
     fun setDisplays(displays: Array<Display>): LayerTraceEntryBuilder = apply {
         this.displays = displays
     }
 
-    @JsName("setElapsedTimestamp")
     fun setElapsedTimestamp(timestamp: String): LayerTraceEntryBuilder =
         // Necessary for compatibility with JS number type
         apply { this.elapsedTimestamp = timestamp.toLong() }
 
-    @JsName("setRealToElapsedTimeOffsetNs")
     fun setRealToElapsedTimeOffsetNs(realToElapsedTimeOffsetNs: String?): LayerTraceEntryBuilder =
         apply {
             this.realTimestamp =
@@ -71,7 +62,6 @@ class LayerTraceEntryBuilder {
                 }
         }
 
-    @JsName("setLayers")
     fun setLayers(layers: Array<Layer>): LayerTraceEntryBuilder = apply {
         val result = mutableMapOf<Int, Layer>()
         layers.forEach { layer ->
@@ -85,12 +75,10 @@ class LayerTraceEntryBuilder {
         this.layers = result
     }
 
-    @JsName("setOrphanLayerCallback")
     fun setOrphanLayerCallback(value: ((Layer) -> Boolean)?): LayerTraceEntryBuilder = apply {
         this.orphanLayerCallback = value
     }
 
-    @JsName("setDuplicateLayerCallback")
     fun setDuplicateLayerCallback(value: ((Layer) -> Boolean)): LayerTraceEntryBuilder = apply {
         this.duplicateLayerCallback = value
     }
@@ -203,7 +191,6 @@ class LayerTraceEntryBuilder {
      *
      * @param ignore If the layers from virtual displays should be ignored or not
      */
-    @JsName("ignoreVirtualDisplay")
     fun ignoreVirtualDisplay(ignore: Boolean): LayerTraceEntryBuilder = apply {
         this.ignoreVirtualDisplay = ignore
     }
@@ -215,13 +202,11 @@ class LayerTraceEntryBuilder {
      *
      * @param ignore If the layers not matching any stack id should be removed or not
      */
-    @JsName("ignoreLayersStackMatchNoDisplay")
     fun ignoreLayersStackMatchNoDisplay(ignore: Boolean): LayerTraceEntryBuilder = apply {
         this.ignoreLayersStackMatchNoDisplay = ignore
     }
 
     /** Constructs the layer hierarchy from a flattened list of layers. */
-    @JsName("build")
     fun build(): LayerTraceEntry {
         val allRoots = computeRootLayers()
         var filteredRoots = allRoots

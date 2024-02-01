@@ -16,65 +16,24 @@
 
 package android.tools.common.traces.wm
 
-import android.tools.common.withCache
-import kotlin.js.JsExport
-import kotlin.js.JsName
+/**
+ * Represents the configuration of an element in the window manager hierarchy
+ *
+ * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
+ * Java/Android functionality
+ */
+interface ConfigurationContainer {
+    val overrideConfiguration: Configuration?
 
-/** {@inheritDoc} */
-@JsExport
-class ConfigurationContainer
-private constructor(
-    override val overrideConfiguration: Configuration?,
-    override val fullConfiguration: Configuration?,
-    override val mergedOverrideConfiguration: Configuration?
-) : IConfigurationContainer {
-    override val windowingMode: Int
-        get() = fullConfiguration?.windowConfiguration?.windowingMode ?: 0
+    val fullConfiguration: Configuration?
 
-    override val activityType: Int
-        get() = fullConfiguration?.windowConfiguration?.activityType ?: 0
+    val mergedOverrideConfiguration: Configuration?
 
-    override val isEmpty: Boolean
-        get() =
-            (overrideConfiguration?.isEmpty
-                ?: true) &&
-                (fullConfiguration?.isEmpty ?: true) &&
-                (mergedOverrideConfiguration?.isEmpty ?: true)
+    val windowingMode: Int
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is ConfigurationContainer) return false
+    val activityType: Int
 
-        if (overrideConfiguration != other.overrideConfiguration) return false
-        if (fullConfiguration != other.fullConfiguration) return false
-        if (mergedOverrideConfiguration != other.mergedOverrideConfiguration) return false
+    val isEmpty: Boolean
 
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = overrideConfiguration?.hashCode() ?: 0
-        result = 31 * result + (fullConfiguration?.hashCode() ?: 0)
-        result = 31 * result + (mergedOverrideConfiguration?.hashCode() ?: 0)
-        return result
-    }
-
-    companion object {
-        @JsName("EMPTY")
-        val EMPTY: ConfigurationContainer
-            get() = withCache { ConfigurationContainer(null, null, null) }
-
-        @JsName("from")
-        fun from(
-            overrideConfiguration: Configuration?,
-            fullConfiguration: Configuration?,
-            mergedOverrideConfiguration: Configuration?
-        ): ConfigurationContainer = withCache {
-            ConfigurationContainer(
-                overrideConfiguration,
-                fullConfiguration,
-                mergedOverrideConfiguration
-            )
-        }
-    }
+    fun isWindowingModeCompatible(requestedWindowingMode: Int): Boolean
 }

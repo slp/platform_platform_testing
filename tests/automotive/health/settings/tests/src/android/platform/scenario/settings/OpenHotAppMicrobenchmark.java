@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package android.tools.common.traces.surfaceflinger
+package android.platform.test.scenario.settings;
 
-enum class HwcCompositionType(val value: Int) {
-    HWC_TYPE_UNSPECIFIED(0),
-    HWC_TYPE_CLIENT(1),
-    HWC_TYPE_DEVICE(2),
-    HWC_TYPE_SOLID_COLOR(3),
-    HWC_TYPE_CURSOR(4),
-    HWC_TYPE_SIDEBAND(5),
-    HWC_TYPE_UNRECOGNIZED(-1)
+import android.platform.test.microbenchmark.Microbenchmark;
+import android.platform.test.scenario.HotAppStartupRunRule;
+
+import org.junit.Rule;
+import org.junit.runner.RunWith;
+
+@RunWith(Microbenchmark.class)
+public class OpenHotAppMicrobenchmark extends OpenApp {
+
+    @Rule
+    public HotAppStartupRunRule mAppStartupRunRule = new HotAppStartupRunRule<>(sHelper.get());
 }

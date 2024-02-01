@@ -17,101 +17,31 @@
 package android.tools.common.traces.wm
 
 import android.tools.common.datatypes.Rect
-import kotlin.js.JsExport
 
-/**
- * Represents WindowContainer classes such as DisplayContent.WindowContainers and
- * DisplayContent.NonAppWindowContainers. This can be expanded into a specific class if we need
- * track and assert some state in the future.
- *
- * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
- * Java/Android functionality
- */
-@JsExport
-open class WindowContainer(
-    override val title: String,
-    final override val token: String,
-    override val orientation: Int,
-    override val layerId: Int,
-    _isVisible: Boolean,
-    private val configurationContainer: IConfigurationContainer,
-    _children: Array<IWindowContainer>,
-    override val computedZ: Int
-) : IConfigurationContainer by configurationContainer, IWindowContainer {
-    override val id: Int = if (token.isEmpty()) -1 else token.toInt(16)
+interface WindowContainer : ConfigurationContainer {
+    val title: String
 
-    override val children: Array<IWindowContainer> = _children
+    val id: Int
 
-    override var parent: IWindowContainer? = null
+    val token: String
 
-    init {
-        _children.forEach { it.parent = this }
-    }
+    val orientation: Int
 
-    override val isVisible: Boolean = _isVisible
-    override val name: String
-        get() = title
-    override val stableId: String
-        get() = "${this::class.simpleName} $token $title"
-    override val isFullscreen: Boolean = false
-    override val bounds: Rect = Rect.EMPTY
+    val layerId: Int
 
-    override fun toString(): String {
-        if (
-            this.title.isEmpty() ||
-                listOf("WindowContainer", "Task").any { it.contains(this.title) }
-        ) {
-            return ""
-        }
+    val children: Array<WindowContainer>
 
-        return "$${removeRedundancyInName(this.title)}@${this.token}"
-    }
+    val computedZ: Int
 
-    private fun removeRedundancyInName(name: String): String {
-        if (!name.contains('/')) {
-            return name
-        }
+    val isVisible: Boolean
 
-        val split = name.split('/')
-        val pkg = split[0]
-        var clazz = split.slice(1..split.lastIndex).joinToString("/")
+    val name: String
 
-        if (clazz.startsWith("$pkg.")) {
-            clazz = clazz.slice(pkg.length + 1..clazz.lastIndex)
+    val stableId: String
 
-            return "$pkg/$clazz"
-        }
+    val isFullscreen: Boolean
 
-        return name
-    }
+    val bounds: Rect
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is WindowContainer) return false
-
-        if (title != other.title) return false
-        if (token != other.token) return false
-        if (orientation != other.orientation) return false
-        if (isVisible != other.isVisible) return false
-        if (name != other.name) return false
-        if (isFullscreen != other.isFullscreen) return false
-        if (bounds != other.bounds) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = title.hashCode()
-        result = 31 * result + token.hashCode()
-        result = 31 * result + orientation
-        result = 31 * result + children.contentHashCode()
-        result = 31 * result + isVisible.hashCode()
-        result = 31 * result + name.hashCode()
-        result = 31 * result + isFullscreen.hashCode()
-        result = 31 * result + bounds.hashCode()
-        return result
-    }
-
-    override val isEmpty: Boolean
-        get() = configurationContainer.isEmpty && title.isEmpty() && token.isEmpty()
+    var parent: WindowContainer?
 }

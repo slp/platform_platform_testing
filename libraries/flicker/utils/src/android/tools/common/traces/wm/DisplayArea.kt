@@ -18,7 +18,6 @@ package android.tools.common.traces.wm
 
 import android.tools.common.traces.component.IComponentMatcher
 import android.tools.common.traces.wm.Utils.collectDescendants
-import kotlin.js.JsExport
 
 /**
  * Represents a display area in the window manager hierarchy
@@ -26,9 +25,8 @@ import kotlin.js.JsExport
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-@JsExport
-class DisplayArea(val isTaskDisplayArea: Boolean, private val windowContainer: IWindowContainer) :
-    IWindowContainer by windowContainer {
+class DisplayArea(val isTaskDisplayArea: Boolean, private val windowContainer: WindowContainer) :
+    WindowContainer by windowContainer {
     val activities: Array<Activity>
         get() =
             if (isTaskDisplayArea) {

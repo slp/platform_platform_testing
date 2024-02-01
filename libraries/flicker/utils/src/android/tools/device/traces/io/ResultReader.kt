@@ -198,11 +198,12 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
     @Throws(IOException::class)
     override fun readTransitionsTrace(): TransitionsTrace? {
         return Logger.withTracing("readTransitionsTrace") {
-            var trace = readPerfettoTransitionsTrace()
-
-            if (trace == null || trace.entries.isEmpty()) {
-                trace = readLegacyTransitionTrace()
-            }
+            val trace =
+                if (android.tracing.Flags.perfettoTransitionTracing()) {
+                    readPerfettoTransitionsTrace()
+                } else {
+                    readLegacyTransitionTrace()
+                }
 
             if (trace == null) {
                 return@withTracing null

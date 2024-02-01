@@ -18,7 +18,6 @@ package android.tools.common.traces.wm
 
 import android.tools.common.traces.component.IComponentMatcher
 import android.tools.common.traces.wm.Utils.collectDescendants
-import kotlin.js.JsExport
 
 /**
  * Represents an activity in the window manager hierarchy
@@ -26,14 +25,13 @@ import kotlin.js.JsExport
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-@JsExport
 class Activity(
     val state: String,
     val frontOfTask: Boolean,
     val procId: Int,
     val isTranslucent: Boolean,
-    private val windowContainer: IWindowContainer
-) : IWindowContainer by windowContainer {
+    private val windowContainer: WindowContainer
+) : WindowContainer by windowContainer {
     /**
      * Checks if the activity contains a [WindowState] matching [componentMatcher]
      *

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 The Android Open Source Project
+ * Copyright (C) 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package android.platform.test.scenario.dial;
 
-package android.tools.common.traces.surfaceflinger
+import android.platform.test.microbenchmark.Microbenchmark;
+import android.platform.test.scenario.ColdAppStartupRunRule;
 
-enum class HwcCompositionType(val value: Int) {
-    HWC_TYPE_UNSPECIFIED(0),
-    HWC_TYPE_CLIENT(1),
-    HWC_TYPE_DEVICE(2),
-    HWC_TYPE_SOLID_COLOR(3),
-    HWC_TYPE_CURSOR(4),
-    HWC_TYPE_SIDEBAND(5),
-    HWC_TYPE_UNRECOGNIZED(-1)
+import org.junit.Rule;
+import org.junit.runner.RunWith;
+
+@RunWith(Microbenchmark.class)
+public class OpenColdAppMicrobenchmark extends OpenApp {
+
+    @Rule
+    public ColdAppStartupRunRule mAppStartupRunRule = new ColdAppStartupRunRule<>(sHelper.get());
 }

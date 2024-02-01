@@ -18,11 +18,11 @@ package android.tools.common.traces.component
 
 import android.tools.common.traces.surfaceflinger.Layer
 import android.tools.common.traces.wm.Activity
-import android.tools.common.traces.wm.IWindowContainer
+import android.tools.common.traces.wm.WindowContainer
 
 class ComponentSplashScreenMatcher(val componentNameMatcher: IComponentNameMatcher) :
     IComponentMatcher {
-    override fun windowMatchesAnyOf(windows: Array<IWindowContainer>): Boolean {
+    override fun windowMatchesAnyOf(windows: Array<WindowContainer>): Boolean {
         error("Unimplemented - There are no splashscreen windows")
     }
 

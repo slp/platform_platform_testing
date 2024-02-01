@@ -22,8 +22,6 @@ import android.tools.common.Rotation
 import android.tools.common.Timestamps
 import android.tools.common.traces.component.IComponentMatcher
 import android.tools.common.traces.wm.Utils.collectDescendants
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /**
  * Represents a single WindowManager trace entry.
@@ -33,11 +31,10 @@ import kotlin.js.JsName
  *
  * The timestamp constructor must be a string due to lack of Kotlin/KotlinJS Long compatibility
  */
-@JsExport
 class WindowManagerState(
-    @JsName("elapsedTimestamp") val elapsedTimestamp: Long,
-    @JsName("clockTimestamp") val clockTimestamp: Long?,
-    @JsName("where") val where: String,
+    val elapsedTimestamp: Long,
+    val clockTimestamp: Long?,
+    val where: String,
     val policy: WindowManagerPolicy?,
     val focusedApp: String,
     val focusedDisplayId: Int,
@@ -52,24 +49,20 @@ class WindowManagerState(
     override val timestamp =
         Timestamps.from(elapsedNanos = elapsedTimestamp, unixNanos = clockTimestamp)
 
-    @JsName("isVisible") val isVisible: Boolean = true
+    val isVisible: Boolean = true
 
-    @JsName("stableId")
     val stableId: String
         get() = this::class.simpleName ?: error("Unable to determine class")
     val isTablet: Boolean
         get() = displays.any { it.isTablet }
 
-    @JsName("windowContainers")
-    val windowContainers: Array<IWindowContainer>
+    val windowContainers: Array<WindowContainer>
         get() = root.collectDescendants()
 
-    @JsName("children")
-    val children: Array<IWindowContainer>
+    val children: Array<WindowContainer>
         get() = root.children.reversedArray()
 
     /** Displays in z-order with the top most at the front of the list, starting with primary. */
-    @JsName("displays")
     val displays: Array<DisplayContent>
         get() = windowContainers.filterIsInstance<DisplayContent>().toTypedArray()
 
@@ -85,7 +78,6 @@ class WindowManagerState(
         get() = windowContainers.filterIsInstance<TaskFragment>().toTypedArray()
 
     /** Windows in z-order with the top most at the front of the list. */
-    @JsName("windowStates")
     val windowStates: Array<WindowState>
         get() = windowContainers.filterIsInstance<WindowState>().toTypedArray()
 
@@ -103,7 +95,6 @@ class WindowManagerState(
         get() =
             windowStates.dropWhile { !appWindows.contains(it) }.drop(appWindows.size).toTypedArray()
 
-    @JsName("visibleWindows")
     val visibleWindows: Array<WindowState>
         get() =
             windowStates
@@ -128,7 +119,6 @@ class WindowManagerState(
     val pendingActivities: Array<Activity>
         get() = _pendingActivities.mapNotNull { getActivityByName(it) }.toTypedArray()
 
-    @JsName("focusedWindow")
     val focusedWindow: WindowState?
         get() = visibleWindows.firstOrNull { it.name == _focusedWindow }
 
@@ -148,7 +138,6 @@ class WindowManagerState(
     val focusedStackId: Int
         get() = focusedDisplay?.focusedRootTaskId ?: -1
 
-    @JsName("focusedActivity")
     val focusedActivity: Activity?
         get() {
             val focusedDisplay = focusedDisplay
@@ -394,7 +383,6 @@ class WindowManagerState(
      *
      * @param componentMatcher Components to search
      */
-    @JsName("isVisibleComponentMatcher")
     fun isVisible(componentMatcher: IComponentMatcher): Boolean =
         componentMatcher.windowMatchesAnyOf(visibleWindows.toList())
 
@@ -432,7 +420,6 @@ class WindowManagerState(
     fun isBelowAppWindow(componentMatcher: IComponentMatcher): Boolean =
         componentMatcher.windowMatchesAnyOf(belowAppWindows.toList())
 
-    @JsName("getIsIncompleteReason")
     fun getIsIncompleteReason(): String {
         return buildString {
             if (rootTasks.isEmpty()) {
@@ -462,9 +449,8 @@ class WindowManagerState(
         }
     }
 
-    @JsName("isComplete") fun isComplete(): Boolean = !isIncomplete()
+    fun isComplete(): Boolean = !isIncomplete()
 
-    @JsName("isIncomplete")
     fun isIncomplete(): Boolean {
         var incomplete = stackCount == 0
         // TODO: Update when keyguard will be shown on multiple displays

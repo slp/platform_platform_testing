@@ -16,10 +16,6 @@
 
 package android.tools.common.traces.wm
 
-import kotlin.js.JsExport
-import kotlin.js.JsName
-
-@JsExport
 enum class WindowingMode(val value: Int) {
     /** Windowing mode is currently not defined. */
     WINDOWING_MODE_UNDEFINED(0),
@@ -37,7 +33,6 @@ enum class WindowingMode(val value: Int) {
     WINDOWING_MODE_MULTI_WINDOW(6);
 
     companion object {
-        @JsName("fromInt")
         fun fromInt(value: Int) =
             values().firstOrNull { it.value == value }
                 ?: error("No valid windowing mode for id $value")

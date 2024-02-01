@@ -16,36 +16,28 @@
 
 package android.tools.common.traces.wm
 
-import kotlin.js.JsExport
-import kotlin.js.JsName
-
 /**
  * Represents a task fragment in the window manager hierarchy
  *
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-@JsExport
 class TaskFragment(
     override val activityType: Int,
-    @JsName("displayId") val displayId: Int,
-    @JsName("minWidth") val minWidth: Int,
-    @JsName("minHeight") val minHeight: Int,
-    private val windowContainer: IWindowContainer
-) : IWindowContainer by windowContainer {
-    @JsName("tasks")
+    val displayId: Int,
+    val minWidth: Int,
+    val minHeight: Int,
+    private val windowContainer: WindowContainer
+) : WindowContainer by windowContainer {
     val tasks: Array<Task>
         get() = this.children.reversed().filterIsInstance<Task>().toTypedArray()
 
-    @JsName("taskFragments")
     val taskFragments: Array<TaskFragment>
         get() = this.children.reversed().filterIsInstance<TaskFragment>().toTypedArray()
 
-    @JsName("activities")
     val activities: Array<Activity>
         get() = this.children.reversed().filterIsInstance<Activity>().toTypedArray()
 
-    @JsName("getActivity")
     fun getActivity(predicate: (Activity) -> Boolean): Activity? {
         var activity: Activity? = activities.firstOrNull { predicate(it) }
         if (activity != null) {
