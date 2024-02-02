@@ -16,8 +16,8 @@
 
 package android.tools.common.traces.surfaceflinger
 
-import android.tools.common.ITrace
 import android.tools.common.Timestamp
+import android.tools.common.Trace
 
 /**
  * Contains a collection of parsed Layers trace entries and assertions to apply over a single entry.
@@ -27,7 +27,7 @@ import android.tools.common.Timestamp
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-data class LayersTrace(override val entries: Array<LayerTraceEntry>) : ITrace<LayerTraceEntry> {
+data class LayersTrace(override val entries: Array<LayerTraceEntry>) : Trace<LayerTraceEntry> {
     override fun toString(): String {
         return "LayersTrace(Start: ${entries.firstOrNull()}, " + "End: ${entries.lastOrNull()})"
     }

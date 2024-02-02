@@ -16,8 +16,8 @@
 
 package android.tools.common.traces.events
 
-import android.tools.common.ITraceEntry
 import android.tools.common.Timestamp
+import android.tools.common.TraceEntry
 import kotlin.js.JsExport
 
 /**
@@ -37,4 +37,4 @@ open class Event(
     val uid: String,
     val threadId: Int,
     val tag: String
-) : ITraceEntry
+) : TraceEntry

@@ -16,8 +16,8 @@
 
 package android.tools.common.traces.region
 
-import android.tools.common.ITrace
 import android.tools.common.Timestamp
+import android.tools.common.Trace
 import android.tools.common.traces.component.IComponentMatcher
 
 /**
@@ -31,7 +31,7 @@ import android.tools.common.traces.component.IComponentMatcher
 data class RegionTrace(
     val components: IComponentMatcher?,
     override val entries: Array<RegionEntry>
-) : ITrace<RegionEntry> {
+) : Trace<RegionEntry> {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is RegionTrace) return false
@@ -48,7 +48,7 @@ data class RegionTrace(
         return result
     }
 
-    override fun slice(startTimestamp: Timestamp, endTimestamp: Timestamp): ITrace<RegionEntry> {
+    override fun slice(startTimestamp: Timestamp, endTimestamp: Timestamp): Trace<RegionEntry> {
         return RegionTrace(
             components,
             entries

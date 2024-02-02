@@ -27,7 +27,7 @@ import kotlin.math.min
 /** Wrapper for DisplayProto (frameworks/native/services/surfaceflinger/layerproto/display.proto) */
 class Display
 private constructor(
-    val id: String,
+    val id: Long,
     val name: String,
     val layerStackId: Int,
     val size: Size,
@@ -99,7 +99,7 @@ private constructor(
         val EMPTY: Display
             get() = withCache {
                 Display(
-                    id = "0",
+                    id = 0,
                     name = "EMPTY",
                     layerStackId = BLANK_LAYER_STACK,
                     size = Size.EMPTY,
@@ -112,7 +112,7 @@ private constructor(
             }
 
         fun from(
-            id: String,
+            id: Long,
             name: String,
             layerStackId: Int,
             size: Size,

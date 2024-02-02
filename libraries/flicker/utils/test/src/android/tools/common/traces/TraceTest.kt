@@ -16,16 +16,16 @@
 
 package android.tools.common.traces
 
-import android.tools.common.ITrace
-import android.tools.common.ITraceEntry
 import android.tools.common.Timestamp
 import android.tools.common.Timestamps
+import android.tools.common.Trace
+import android.tools.common.TraceEntry
 import android.tools.utils.assertThrows
 import com.google.common.truth.Truth
 import org.junit.Test
 
 /** To run this test: `atest FlickerLibTest:ITraceTest` */
-class ITraceTest {
+class TraceTest {
     @Test
     fun getEntryExactlyAtTest() {
         val entry1 = SimpleTraceEntry(Timestamps.from(1, 1, 1))
@@ -64,13 +64,10 @@ class ITraceTest {
             .contains("No entry at or before timestamp")
     }
 
-    class SimpleTraceEntry(override val timestamp: Timestamp) : ITraceEntry
+    class SimpleTraceEntry(override val timestamp: Timestamp) : TraceEntry
 
-    class SimpleTrace(override val entries: Array<ITraceEntry>) : ITrace<ITraceEntry> {
-        override fun slice(
-            startTimestamp: Timestamp,
-            endTimestamp: Timestamp
-        ): ITrace<ITraceEntry> {
+    class SimpleTrace(override val entries: Array<TraceEntry>) : Trace<TraceEntry> {
+        override fun slice(startTimestamp: Timestamp, endTimestamp: Timestamp): Trace<TraceEntry> {
             error("Not yet implemented")
         }
     }

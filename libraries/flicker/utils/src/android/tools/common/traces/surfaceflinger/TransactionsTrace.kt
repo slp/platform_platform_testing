@@ -16,11 +16,11 @@
 
 package android.tools.common.traces.surfaceflinger
 
-import android.tools.common.ITrace
 import android.tools.common.Timestamp
+import android.tools.common.Trace
 
 class TransactionsTrace(override val entries: Array<TransactionsTraceEntry>) :
-    ITrace<TransactionsTraceEntry> {
+    Trace<TransactionsTraceEntry> {
 
     init {
         val alwaysIncreasing =

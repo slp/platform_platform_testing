@@ -16,9 +16,9 @@
 
 package android.tools.device.traces.io
 
-import android.tools.common.ITrace
 import android.tools.common.Timestamp
 import android.tools.common.Timestamps
+import android.tools.common.Trace
 import android.tools.common.io.RunStatus
 import android.tools.common.io.TraceType
 import android.tools.device.traces.TRACE_CONFIG_REQUIRE_CHANGES
@@ -47,7 +47,7 @@ abstract class BaseResultReaderTestParseTrace {
     protected open val invalidSizeMessage: String
         get() = "$traceName contained 0 entries, expected at least 2"
 
-    protected abstract fun doParse(reader: ResultReader): ITrace<*>?
+    protected abstract fun doParse(reader: ResultReader): Trace<*>?
     protected abstract fun getTime(traceTime: Timestamp): Long
 
     protected open fun setupWriter(writer: ResultWriter): ResultWriter {

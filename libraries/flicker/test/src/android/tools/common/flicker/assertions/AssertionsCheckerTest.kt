@@ -16,9 +16,9 @@
 
 package android.tools.common.flicker.assertions
 
-import android.tools.common.ITraceEntry
 import android.tools.common.Timestamp
 import android.tools.common.Timestamps
+import android.tools.common.TraceEntry
 import android.tools.common.flicker.subject.FlickerSubject
 import android.tools.utils.CleanFlickerEnvironmentRule
 import android.tools.utils.assertFail
@@ -152,7 +152,7 @@ class AssertionsCheckerTest {
         }
     }
 
-    data class SimpleEntry(override val timestamp: Timestamp, val mData: Int) : ITraceEntry
+    data class SimpleEntry(override val timestamp: Timestamp, val mData: Int) : TraceEntry
 
     companion object {
         /**

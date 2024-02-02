@@ -16,9 +16,9 @@
 
 package android.tools.common.traces.wm
 
-import android.tools.common.ITrace
 import android.tools.common.Rotation
 import android.tools.common.Timestamp
+import android.tools.common.Trace
 
 /**
  * Contains a collection of parsed WindowManager trace entries and assertions to apply over a single
@@ -30,7 +30,7 @@ import android.tools.common.Timestamp
  * Java/Android functionality
  */
 data class WindowManagerTrace(override val entries: Array<WindowManagerState>) :
-    ITrace<WindowManagerState> {
+    Trace<WindowManagerState> {
 
     val isTablet: Boolean
         get() = entries.any { it.isTablet }

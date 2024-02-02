@@ -16,8 +16,8 @@
 
 package android.tools.common.traces.region
 
-import android.tools.common.ITraceEntry
 import android.tools.common.Timestamp
+import android.tools.common.TraceEntry
 import android.tools.common.datatypes.Region
 
 /**
@@ -28,4 +28,4 @@ import android.tools.common.datatypes.Region
  *
  * The timestamp constructor must be a string due to lack of Kotlin/KotlinJS Long compatibility
  */
-class RegionEntry(val region: Region, override val timestamp: Timestamp) : ITraceEntry
+class RegionEntry(val region: Region, override val timestamp: Timestamp) : TraceEntry

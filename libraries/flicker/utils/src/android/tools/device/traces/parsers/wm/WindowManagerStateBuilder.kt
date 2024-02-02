@@ -86,7 +86,7 @@ class WindowManagerStateBuilder {
 
         computedZCounter = 0
         return WindowManagerTraceEntryBuilder()
-            .setElapsedTimestamp(timestamp.toString())
+            .setElapsedTimestamp(timestamp)
             .setPolicy(createWindowManagerPolicy(proto.policy))
             .setFocusedApp(proto.focusedApp)
             .setFocusedDisplayId(proto.focusedDisplayId)
@@ -108,7 +108,7 @@ class WindowManagerStateBuilder {
                 createKeyguardControllerState(proto.rootWindowContainer.keyguardController)
             )
             .setWhere(where)
-            .setRealToElapsedTimeOffsetNs(realToElapsedTimeOffsetNanos.toString())
+            .setRealToElapsedTimeOffsetNs(realToElapsedTimeOffsetNanos)
             .build()
     }
 
