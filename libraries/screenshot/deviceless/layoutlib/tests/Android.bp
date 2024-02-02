@@ -13,6 +13,7 @@
 // limitations under the License.
 
 package {
+    default_team: "trendy_team_testing",
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 
@@ -42,4 +43,3 @@ java_test_host {
 
     required: ["layoutlib"],
 }
-

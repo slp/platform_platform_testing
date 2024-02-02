@@ -15,6 +15,7 @@
 //
 
 package {
+    default_team: "trendy_team_renderscript_nnapi",
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 
@@ -41,7 +42,7 @@ java_genrule {
         "&& if ! ($(location aprotoc) --encode=longevity.profile.Configuration " +
         "$(location :profile-proto-def) < $$file > " +
         "$$out_dir/$$assets_dir/$${fname//.textpb/.pb}) ; then " +
-        "echo \"\033[0;31mFailed to parse profile $$file. See above for errors.\033[0m\" " +
+        "echo \"\x1b[0;31mFailed to parse profile $$file. See above for errors.\x1b[0m\" " +
         "&& exit 1 ; fi ; done && jar cf $(out) -C $$(dirname $(out)) $$assets_dir",
 }
 

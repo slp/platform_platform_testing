@@ -13,17 +13,18 @@
 // limitations under the License.
 
 package {
+    default_team: "trendy_team_fwk_uwb",
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 
 python_defaults {
-  name: "quick_start_perf_test_defaults",
-  pkg_path: "performance_test",
+    name: "quick_start_perf_test_defaults",
+    pkg_path: "performance_test",
 }
 
 python_library_host {
     name: "nc_constants",
-    defaults: ["quick_start_perf_test_defaults",],
+    defaults: ["quick_start_perf_test_defaults"],
     srcs: [
         "nc_constants.py",
     ],
@@ -33,7 +34,7 @@ python_library_host {
 
 python_library_host {
     name: "gms_auto_updates_util",
-    defaults: ["quick_start_perf_test_defaults",],
+    defaults: ["quick_start_perf_test_defaults"],
     srcs: [
         "gms_auto_updates_util.py",
     ],
@@ -44,7 +45,7 @@ python_library_host {
 
 python_library_host {
     name: "setup_utils",
-    defaults: ["quick_start_perf_test_defaults",],
+    defaults: ["quick_start_perf_test_defaults"],
     srcs: [
         "setup_utils.py",
     ],
@@ -57,7 +58,7 @@ python_library_host {
 
 python_library_host {
     name: "nc_base_test",
-    defaults: ["quick_start_perf_test_defaults",],
+    defaults: ["quick_start_perf_test_defaults"],
     srcs: [
         "nc_base_test.py",
     ],
@@ -70,7 +71,7 @@ python_library_host {
 
 python_library_host {
     name: "nearby_connection_wrapper",
-    defaults: ["quick_start_perf_test_defaults",],
+    defaults: ["quick_start_perf_test_defaults"],
     srcs: [
         "nearby_connection_wrapper.py",
     ],
@@ -84,24 +85,26 @@ python_library_host {
 python_test_host {
     name: "quick_start_stress_test",
     main: "quick_start_stress_test.py",
-    srcs: ["quick_start_stress_test.py",],
+    srcs: ["quick_start_stress_test.py"],
     libs: [
         "nc_constants",
         "setup_utils",
         "nearby_connection_wrapper",
         "nc_base_test",
-        "mobly",],
+        "mobly",
+    ],
     test_suites: [],
     test_options: {
         unit_test: false, // as Mobly tests require device(s)
         // This tag is used to enable the ATest Mobly runner
-      	tags: ["mobly"],
+        tags: ["mobly"],
     },
     data: [
         "local_dev_testbed.yml",
         // package the snippes for atest
         ":nearby_snippet",
-        ":nearby_snippet_2",],
+        ":nearby_snippet_2",
+    ],
     version: {
         py3: {
             embedded_launcher: false,
@@ -112,13 +115,14 @@ python_test_host {
 python_test_host {
     name: "esim_transfer_stress_test",
     main: "esim_transfer_stress_test.py",
-    srcs: ["esim_transfer_stress_test.py",],
+    srcs: ["esim_transfer_stress_test.py"],
     libs: [
         "nc_constants",
         "setup_utils",
         "nearby_connection_wrapper",
         "nc_base_test",
-        "mobly",],
+        "mobly",
+    ],
     test_suites: [],
     test_options: {
         unit_test: false, // as Mobly tests require device(s)
@@ -128,7 +132,8 @@ python_test_host {
     data: [
         "local_esim_testbed.yml",
         // package the snippes for atest
-        ":nearby_snippet",],
+        ":nearby_snippet",
+    ],
     version: {
         py3: {
             embedded_launcher: false,
@@ -139,13 +144,14 @@ python_test_host {
 python_test_host {
     name: "nearby_share_stress_test",
     main: "nearby_share_stress_test.py",
-    srcs: ["nearby_share_stress_test.py",],
+    srcs: ["nearby_share_stress_test.py"],
     libs: [
         "nc_constants",
         "setup_utils",
         "nearby_connection_wrapper",
         "nc_base_test",
-        "mobly",],
+        "mobly",
+    ],
     test_suites: [],
     test_options: {
         unit_test: false, // as Mobly tests require device(s)
@@ -155,7 +161,8 @@ python_test_host {
     data: [
         "local_nearby_share_testbed.yml",
         // package the snippes for atest
-        ":nearby_snippet",],
+        ":nearby_snippet",
+    ],
     version: {
         py3: {
             embedded_launcher: false,

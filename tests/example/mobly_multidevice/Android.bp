@@ -13,13 +13,14 @@
 // limitations under the License.
 
 package {
+    default_team: "trendy_team_partner_eng",
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 
 python_test_host {
     name: "mobly-multidevice-test",
     main: "multidevice_test.py",
-    srcs: ["multidevice_test.py",],
+    srcs: ["multidevice_test.py"],
     test_suites: ["general-tests"],
     test_options: {
         unit_test: false,

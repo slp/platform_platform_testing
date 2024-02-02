@@ -13,6 +13,7 @@
 // limitations under the License.
 
 package {
+    default_team: "trendy_team_renderscript_nnapi",
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 
@@ -30,16 +31,20 @@ android_test {
 
     libs: ["android.test.base.stubs"],
 
-    data: [":perfetto_artifacts",
-           ":UiBench",],
+    data: [
+        ":perfetto_artifacts",
+        ":UiBench",
+    ],
 
     sdk_version: "test_current",
 
     test_config: "configs/uibench-all.xml",
 
     test_options: {
-        extra_test_configs: ["configs/uibench-dialoglist.xml",
-                             "configs/uibench-invalidate.xml",],
+        extra_test_configs: [
+            "configs/uibench-dialoglist.xml",
+            "configs/uibench-invalidate.xml",
+        ],
     },
 
     test_suites: ["device-tests"],
