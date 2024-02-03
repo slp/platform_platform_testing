@@ -42,24 +42,21 @@ object Utils {
                 ScreenRecorder(InstrumentationRegistry.getInstrumentation().targetContext)
             )
             .apply {
+                val perfettoMonitorBuilder = PerfettoTraceMonitor.newBuilder()
+                perfettoMonitorBuilder.enableLayersTrace().enableTransactionsTrace()
+
                 if (android.tracing.Flags.perfettoTransitionTracing()) {
-                    this.add(
-                        PerfettoTraceMonitor.newBuilder()
-                            .enableLayersTrace()
-                            .enableTransactionsTrace()
-                            .enableTransitionsTrace()
-                            .build(),
-                    )
+                    perfettoMonitorBuilder.enableTransitionsTrace()
                 } else {
                     this.add(LegacyWmTransitionTraceMonitor())
                     this.add(LegacyShellTransitionTraceMonitor())
-                    this.add(
-                        PerfettoTraceMonitor.newBuilder()
-                            .enableLayersTrace()
-                            .enableTransactionsTrace()
-                            .build(),
-                    )
                 }
+
+                if (android.tracing.Flags.perfettoProtolog()) {
+                    perfettoMonitorBuilder.enableProtoLog()
+                }
+
+                this.add(perfettoMonitorBuilder.build())
             }
 
     fun captureTrace(
