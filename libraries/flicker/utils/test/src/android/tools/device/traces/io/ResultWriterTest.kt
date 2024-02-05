@@ -158,10 +158,13 @@ class ResultWriterTest {
     fun writeTransitionTrace() {
         val writer =
             newTestResultWriter()
-                .addTraceResult(TraceType.LEGACY_WM_TRANSITION, TestTraces.TransitionTrace.WM_FILE)
+                .addTraceResult(
+                    TraceType.LEGACY_WM_TRANSITION,
+                    TestTraces.LegacyTransitionTrace.WM_FILE
+                )
                 .addTraceResult(
                     TraceType.LEGACY_SHELL_TRANSITION,
-                    TestTraces.TransitionTrace.SHELL_FILE
+                    TestTraces.LegacyTransitionTrace.SHELL_FILE
                 )
         val result = writer.write()
         val reader = ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)
@@ -181,10 +184,13 @@ class ResultWriterTest {
                 .addTraceResult(TraceType.WM, TestTraces.WMTrace.FILE)
                 .addTraceResult(TraceType.SF, TestTraces.LayerTrace.FILE)
                 .addTraceResult(TraceType.TRANSACTION, TestTraces.TransactionTrace.FILE)
-                .addTraceResult(TraceType.LEGACY_WM_TRANSITION, TestTraces.TransitionTrace.WM_FILE)
+                .addTraceResult(
+                    TraceType.LEGACY_WM_TRANSITION,
+                    TestTraces.LegacyTransitionTrace.WM_FILE
+                )
                 .addTraceResult(
                     TraceType.LEGACY_SHELL_TRANSITION,
-                    TestTraces.TransitionTrace.SHELL_FILE
+                    TestTraces.LegacyTransitionTrace.SHELL_FILE
                 )
         val result = writer.write()
         val reader = ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)
