@@ -58,7 +58,6 @@ IMPOST_CONTACTS_SHELL_COMAND = (
         + PHONE_CONTACTS_DESTINATION_PATH
         + ' -a android.intent.action.VIEW com.google.android.contacts'
 )
-PATH_TO_CONTACTS_VCF_FILE = 'platform_testing/tests/automotive/mobly_tests/utils/contacts_test.vcf'
 
 # Should be kept in sync with BluetoothProfile.java
 BT_PROFILE_CONSTANTS = {
