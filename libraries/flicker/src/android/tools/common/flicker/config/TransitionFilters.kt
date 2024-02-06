@@ -58,13 +58,13 @@ object TransitionFilters {
         val layersTrace = reader.readLayersTrace() ?: error("Missing layers trace")
         val wmTrace = reader.readWmTrace()
 
-        val mergedTransitions = ts.filter { it.mergedInto != null }
+        val mergedTransitions = ts.filter { it.mergeTarget != null }
         val nonMergedTransitions =
             mutableMapOf<Int, Transition>().apply {
-                ts.filter { it.mergedInto == null }.forEach { this@apply[it.id] = it }
+                ts.filter { it.mergeTarget == null }.forEach { this@apply[it.id] = it }
             }
         mergedTransitions.forEach {
-            val mergedInto = it.mergedInto ?: error("Missing merged into id!")
+            val mergedInto = it.mergeTarget ?: error("Missing merged into id!")
             val mergedTransition = nonMergedTransitions[mergedInto]?.merge(it)
             if (mergedTransition != null) {
                 nonMergedTransitions[mergedInto] = mergedTransition

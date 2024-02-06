@@ -129,10 +129,10 @@ class TransitionsTraceParser :
                         dispatchTime = args.getChild("dispatch_time_ns")?.getLong()?.toTimestamp(),
                         mergeRequestTime =
                             args.getChild("merge_request_time_ns")?.getLong()?.toTimestamp(),
-                        mergeTime = args.getChild("merged_time_ns")?.getLong()?.toTimestamp(),
+                        mergeTime = args.getChild("merge_time_ns")?.getLong()?.toTimestamp(),
                         abortTime = args.getChild("shell_abort_time_ns")?.getLong()?.toTimestamp(),
                         handler = args.getChild("handler")?.getInt()?.let { handlerMapping[it] },
-                        mergeTarget = args.getChild("mergeTarget")?.getInt(),
+                        mergeTarget = args.getChild("merge_target")?.getInt(),
                     )
             )
         }

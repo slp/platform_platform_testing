@@ -137,7 +137,7 @@ class TransitionTest {
         Truth.assertThat(mergedTransition.mergeTime?.elapsedNanos).isEqualTo(230)
         Truth.assertThat(mergedTransition.shellAbortTime?.elapsedNanos).isEqualTo(240)
         Truth.assertThat(mergedTransition.handler).isEqualTo("Handler2")
-        Truth.assertThat(mergedTransition.mergedInto).isEqualTo(10)
+        Truth.assertThat(mergedTransition.mergeTarget).isEqualTo(10)
     }
 
     @Test
