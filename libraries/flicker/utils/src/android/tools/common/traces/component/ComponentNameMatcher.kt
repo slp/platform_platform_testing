@@ -112,6 +112,8 @@ class ComponentNameMatcher(var component: ComponentName) : IComponentNameMatcher
 
         val PIP_CONTENT_OVERLAY = ComponentNameMatcher("", "PipContentOverlay")
 
+        val PIP_MENU_OVERLAY = ComponentNameMatcher("", "PipMenuView")
+
         val EDGE_BACK_GESTURE_HANDLER = ComponentNameMatcher("", "EdgeBackGestureHandler")
 
         val COLOR_FADE = ComponentNameMatcher("", "ColorFade")
