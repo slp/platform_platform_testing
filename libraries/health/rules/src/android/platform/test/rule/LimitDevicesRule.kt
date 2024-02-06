@@ -42,6 +42,12 @@ annotation class DeniedDevices(vararg val denied: DeviceProduct)
 annotation class ScreenshotTestDevices(vararg val allowed: DeviceProduct = [CF_PHONE, CF_TABLET])
 
 /**
+ * Ignore LimitDevicesRule constraints when [ignoreLimit] is true. Main use case is to allow local
+ * builds to bypass [LimitDevicesRule] and be able to run on any devices.
+ */
+@Retention(RUNTIME) @Target(FUNCTION, CLASS) annotation class IgnoreLimit(val ignoreLimit: Boolean)
+
+/**
  * Limits a test to run specified devices.
  *
  * Devices are specified by [AllowedDevices], [DeniedDevices] and [ScreenshotTestDevices]
@@ -56,6 +62,10 @@ annotation class ScreenshotTestDevices(vararg val allowed: DeviceProduct = [CF_P
 class LimitDevicesRule(private val thisDevice: String = Build.PRODUCT) : TestRule {
 
     override fun apply(base: Statement, description: Description): Statement {
+        if (description.ignoreLimit()) {
+            return base
+        }
+
         val limitDevicesAnnotations = description.limitDevicesAnnotation()
         if (limitDevicesAnnotations.count() > 1) {
             return makeAssumptionViolatedStatement(
@@ -104,6 +114,10 @@ class LimitDevicesRule(private val thisDevice: String = Build.PRODUCT) : TestRul
                 testClass?.getClassAnnotation(ScreenshotTestDevices::class.java)
             )
             .toSet()
+
+    private fun Description.ignoreLimit(): Boolean =
+        getAnnotation(IgnoreLimit::class.java)?.ignoreLimit == true ||
+            testClass?.getClassAnnotation(IgnoreLimit::class.java)?.ignoreLimit == true
 
     private fun <T : Annotation> Class<*>.getClassAnnotation(java: Class<T>) =
         getLowestAncestorClassAnnotation(this, java)
