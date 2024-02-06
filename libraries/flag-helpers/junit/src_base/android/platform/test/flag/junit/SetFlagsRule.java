@@ -18,7 +18,6 @@ package android.platform.test.flag.junit;
 
 import static org.junit.Assume.assumeFalse;
 
-import android.platform.test.flag.util.Flag;
 import android.platform.test.flag.util.FlagReadException;
 import android.platform.test.flag.util.FlagSetException;
 
@@ -60,6 +59,13 @@ public final class SetFlagsRule implements TestRule {
 
     // Any flags added to this list cannot be set imperatively (i.e. with enableFlags/disableFlags)
     private final Set<String> mLockedFlagNames = new HashSet<>();
+
+    // TODO(322377082): remove repackage prefix list
+    private static final String[] REPACKAGE_PREFIX_LIST =
+            new String[] {
+                "", "com.android.internal.hidden_from_bootclasspath.",
+            };
+    private final Map<String, Set<String>> mPackageToRepackage = new HashMap<>();
 
     private boolean mIsInitWithDefault = false;
     private FlagsParameterization mFlagsParameterization;
@@ -282,7 +288,46 @@ public final class SetFlagsRule implements TestRule {
             throw new FlagSetException(
                     fullFlagName, "Flag name is not the expected format {packgeName}.{flagName}.");
         }
+        // Get all packages containing Flags referencing the same fullFlagName.
+        Set<String> packageSet = getPackagesContainsFlag(fullFlagName);
+
+        for (String packageName : packageSet) {
+            setFlagValue(Flag.createFlag(fullFlagName, packageName), value);
+        }
+    }
+
+    private Set<String> getPackagesContainsFlag(String fullFlagName) {
         Flag flag = Flag.createFlag(fullFlagName);
+        String packageName = flag.packageName();
+        Set<String> packageSet = mPackageToRepackage.getOrDefault(packageName, new HashSet<>());
+
+        if (!packageSet.isEmpty()) {
+            return packageSet;
+        }
+
+        for (String prefix : REPACKAGE_PREFIX_LIST) {
+            String repackagedName = String.format("%s%s", prefix, packageName);
+            String flagClassName = String.format("%s.%s", repackagedName, FLAGS_CLASS_NAME);
+            try {
+                Class.forName(flagClassName, false, this.getClass().getClassLoader());
+                packageSet.add(repackagedName);
+            } catch (ClassNotFoundException e) {
+                // Skip if the class is not found
+                // An error will be thrown if no package containing flags referencing
+                // the passed in flag
+            }
+        }
+        mPackageToRepackage.put(packageName, packageSet);
+        if (packageSet.isEmpty()) {
+            throw new FlagSetException(
+                    fullFlagName,
+                    "Cannot find package containing Flags class referencing to this flag.");
+        }
+        return packageSet;
+    }
+
+    private void setFlagValue(Flag flag, boolean value) {
+
         Object fakeFlagsImplInstance = null;
 
         Class<?> flagsClass = getFlagClassFromFlag(flag);
@@ -313,7 +358,7 @@ public final class SetFlagsRule implements TestRule {
                         "Flag %s is read_only, and the code is optimized. "
                                 + " The flag value should not be modified on this build"
                                 + " Skip this test.",
-                        fullFlagName),
+                        flag.fullFlagName()),
                 isOptimized);
 
         // Set desired flag value in the FakeFeatureFlagsImpl
@@ -554,6 +599,56 @@ public final class SetFlagsRule implements TestRule {
             mFlagsClassToFlagDefaultMap.clear();
         } catch (Exception e) {
             throw new FlagSetException(flagsClassName, e);
+        }
+    }
+
+    private static class Flag {
+        private static final String PACKAGE_NAME_SIMPLE_NAME_SEPARATOR = ".";
+        private final String mFullFlagName;
+        private final String mPackageName;
+        private final String mSimpleFlagName;
+
+        public static Flag createFlag(String fullFlagName) {
+            int index = fullFlagName.lastIndexOf(PACKAGE_NAME_SIMPLE_NAME_SEPARATOR);
+            String packageName = fullFlagName.substring(0, index);
+            return createFlag(fullFlagName, packageName);
+        }
+
+        public static Flag createFlag(String fullFlagName, String packageName) {
+            if (!fullFlagName.contains(PACKAGE_NAME_SIMPLE_NAME_SEPARATOR)
+                    || !packageName.contains(PACKAGE_NAME_SIMPLE_NAME_SEPARATOR)) {
+                throw new IllegalArgumentException(
+                        String.format(
+                                "Flag %s is invalid. The format should be {packageName}"
+                                        + ".{simpleFlagName}",
+                                fullFlagName));
+            }
+            int index = fullFlagName.lastIndexOf(PACKAGE_NAME_SIMPLE_NAME_SEPARATOR);
+            String simpleFlagName = fullFlagName.substring(index + 1);
+
+            return new Flag(fullFlagName, packageName, simpleFlagName);
+        }
+
+        private Flag(String fullFlagName, String packageName, String simpleFlagName) {
+            this.mFullFlagName = fullFlagName;
+            this.mPackageName = packageName;
+            this.mSimpleFlagName = simpleFlagName;
+        }
+
+        public String fullFlagName() {
+            return mFullFlagName;
+        }
+
+        public String packageName() {
+            return mPackageName;
+        }
+
+        public String simpleFlagName() {
+            return mSimpleFlagName;
+        }
+
+        public String flagsClassName() {
+            return String.format("%s.%s", mPackageName, FLAGS_CLASS_NAME);
         }
     }
 }
