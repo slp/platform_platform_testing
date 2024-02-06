@@ -29,7 +29,7 @@ import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Test
 
-class TransitionTraceParserTest {
+class LegacyTransitionTraceParserTest {
     @Before
     fun before() {
         Cache.clear()

@@ -19,31 +19,25 @@ package android.tools.device.traces.io
 import android.tools.common.Timestamp
 import android.tools.common.io.TraceType
 import android.tools.utils.TestTraces
-import android.tools.utils.readAssetAsFile
+import org.junit.Assume.assumeTrue
+import org.junit.Before
 
 /** Tests for [ResultReader] parsing [TraceType.TRANSITION] */
 class ResultReaderTestParseTransitions : BaseResultReaderTestParseTrace() {
-    override val assetFiles =
-        mapOf(
-            TraceType.LEGACY_WM_TRANSITION to TestTraces.TransitionTrace.WM_FILE,
-            TraceType.LEGACY_SHELL_TRANSITION to TestTraces.TransitionTrace.SHELL_FILE
-        )
+    override val assetFiles = mapOf(TraceType.PERFETTO to TestTraces.TransitionTrace.FILE)
     override val traceName = "Transitions trace"
     override val startTimeTrace = TestTraces.TransitionTrace.START_TIME
     override val endTimeTrace = TestTraces.TransitionTrace.END_TIME
     override val validSliceTime = TestTraces.TransitionTrace.VALID_SLICE_TIME
     override val invalidSliceTime = TestTraces.TransitionTrace.INVALID_SLICE_TIME
     override val invalidSizeMessage = "Transitions trace cannot be empty"
-    override val expectedSlicedTraceSize = 10
+    override val expectedSlicedTraceSize = 1
+
+    @Before
+    fun before() {
+        assumeTrue(android.tracing.Flags.perfettoTransitionTracing())
+    }
 
     override fun doParse(reader: ResultReader) = reader.readTransitionsTrace()
     override fun getTime(traceTime: Timestamp) = traceTime.elapsedNanos
-    override fun setupWriter(writer: ResultWriter): ResultWriter {
-        return super.setupWriter(writer).also {
-            val wmTransitionTrace = readAssetAsFile("wm_transition_trace.winscope")
-            val shellTransitionTrace = readAssetAsFile("shell_transition_trace.winscope")
-            it.addTraceResult(TraceType.LEGACY_WM_TRANSITION, wmTransitionTrace)
-            it.addTraceResult(TraceType.LEGACY_SHELL_TRANSITION, shellTransitionTrace)
-        }
-    }
 }
