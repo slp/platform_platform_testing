@@ -3,6 +3,7 @@ x-test-params: &test-params
   wifi_ssid: ""
   wifi_password: ""
   advertising_discovery_medium: 2 # 0 - auto, 2 - BLE_ONLY
+  target_post_wifi_connection_idle_time_sec: 10
 
 x-controllers: &controllers
   Controllers:
