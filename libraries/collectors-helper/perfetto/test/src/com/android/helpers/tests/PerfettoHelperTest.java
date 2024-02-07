@@ -45,6 +45,27 @@ public class PerfettoHelperTest {
 
     private static final String REMOVE_CMD = "rm %s";
     private static final String FILE_SIZE_IN_BYTES = "wc -c %s";
+    private static final String DEFAULT_CFG =
+            """
+            buffers: {
+            size_kb: 63488
+            fill_policy: RING_BUFFER
+            }
+
+            data_sources {
+            config {
+                name: "linux.process_stats"
+                target_buffer: 0
+                # polled per-process memory counters and process/thread names.
+                # If you don't want the polled counters, remove the "process_stats_config"
+                # section, but keep the data source itself as it still provides on-demand
+                # thread/process naming for ftrace data below.
+                process_stats_config {
+                scan_all_processes_on_start: true
+                }
+            }
+            }
+            """;
 
     private PerfettoHelper mPerfettoHelper;
     private boolean isPerfettoStartSuccess = false;
@@ -84,6 +105,12 @@ public class PerfettoHelperTest {
         assertFalse(mPerfettoHelper.startCollecting("", false));
     }
 
+    /** Test perfetto collection returns false if the config is empty. */
+    @Test
+    public void testEmptyConfig() throws Exception {
+        assertFalse(mPerfettoHelper.startCollecting(""));
+    }
+
     @Test
     public void testNullRootDirName() throws Exception {
         mPerfettoHelper.setPerfettoConfigRootDir(null);
@@ -113,6 +140,13 @@ public class PerfettoHelperTest {
     @Test
     public void testPerfettoStartSuccess() throws Exception {
         assertTrue(mPerfettoHelper.startCollecting("trace_config.textproto", true));
+        isPerfettoStartSuccess = true;
+    }
+
+    /** Test perfetto collection returns true if the valid perfetto config file. */
+    @Test
+    public void testPerfettoStartConfigSuccess() throws Exception {
+        assertTrue(mPerfettoHelper.startCollecting(DEFAULT_CFG));
         isPerfettoStartSuccess = true;
     }
 
@@ -157,6 +191,25 @@ public class PerfettoHelperTest {
         UiDevice uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         String[] fileStats = uiDevice.executeShellCommand(String.format(
                 FILE_SIZE_IN_BYTES, "/data/local/tmp/out.perfetto-trace")).split(" ");
+        int fileSize = Integer.parseInt(fileStats[0].trim());
+        assertTrue(fileSize > 0);
+    }
+
+    /**
+     * Test perfetto collection returns true and output file size greater than zero if the valid
+     * perfetto config file used.
+     */
+    @Test
+    public void testPerfettoConfigSuccess() throws Exception {
+        assertTrue(mPerfettoHelper.startCollecting(DEFAULT_CFG));
+        isPerfettoStartSuccess = true;
+        assertTrue(mPerfettoHelper.stopCollecting(1000, "/data/local/tmp/out.perfetto-trace"));
+        UiDevice uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        String[] fileStats =
+                uiDevice.executeShellCommand(
+                                String.format(
+                                        FILE_SIZE_IN_BYTES, "/data/local/tmp/out.perfetto-trace"))
+                        .split(" ");
         int fileSize = Integer.parseInt(fileStats[0].trim());
         assertTrue(fileSize > 0);
     }
