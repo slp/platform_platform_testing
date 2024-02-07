@@ -77,6 +77,8 @@ public class PerfettoListener extends BaseMetricListener {
     public static final String DEFAULT_PERFETTO_PREFIX = "perfetto_";
     // Skip failure metrics collection if this flag is set to true.
     public static final String SKIP_TEST_FAILURE_METRICS = "skip_test_failure_metrics";
+    // Skip success metrics collection if this flag is set to true (i.e. collect only failures).
+    public static final String SKIP_TEST_SUCCESS_METRICS = "skip_test_success_metrics";
     // Argument to get custom time in millisecs to wait before starting the
     // perfetto trace.
     public static final String PERFETTO_START_WAIT_TIME_ARG = "perfetto_start_wait_time_ms";
@@ -111,6 +113,7 @@ public class PerfettoListener extends BaseMetricListener {
     // Enable the perfetto background wait during perfetto trace startup by default.
     private boolean mPerfettoStartBgWait = true;
     private boolean mSkipTestFailureMetrics;
+    private boolean mSkipTestSuccessMetrics;
     private boolean mIsTestFailed = false;
 
     private PerfettoHelper mPerfettoHelper = new PerfettoHelper();
@@ -262,14 +265,10 @@ public class PerfettoListener extends BaseMetricListener {
         Runnable task = null;
         if (mSkipTestFailureMetrics && mIsTestFailed) {
             Log.i(getTag(), "Skipping the metric collection due to test failure.");
-            // Stop the existing perfetto trace collection.
-            try {
-                if (!mPerfettoHelper.stopPerfetto(mPerfettoHelper.getPerfettoPid())) {
-                    Log.e(getTag(), "Failed to stop the perfetto process.");
-                }
-            } catch (IOException e) {
-                Log.e(getTag(), "Failed to stop the perfetto.", e);
-            }
+            stopPerfettoTracingWithoutMetric();
+        } else if (mSkipTestSuccessMetrics && !mIsTestFailed) {
+            Log.i(getTag(), "Skipping the metric collection due to test passing.");
+            stopPerfettoTracingWithoutMetric();
         } else {
             task =
                     () -> {
@@ -287,7 +286,7 @@ public class PerfettoListener extends BaseMetricListener {
                                                 getTestFileName(description),
                                                 mTestIdInvocationCount.get(
                                                         getTestFileName(description))));
-                        stopPerfettoTracing(path, testData);
+                        stopPerfettoTracingAndReportMetric(path, testData);
                     };
             if (mHoldWakelockWhileCollecting) {
                 Log.d(getTag(), "Holding a wakelock at onTestEnd.");
@@ -295,6 +294,17 @@ public class PerfettoListener extends BaseMetricListener {
             } else {
                 task.run();
             }
+        }
+    }
+
+    private void stopPerfettoTracingWithoutMetric() {
+        // Stop the existing perfetto trace collection.
+        try {
+            if (!mPerfettoHelper.stopPerfetto(mPerfettoHelper.getPerfettoPid())) {
+                Log.e(getTag(), "Failed to stop the perfetto process.");
+            }
+        } catch (IOException e) {
+            Log.e(getTag(), "Failed to stop the perfetto.", e);
         }
     }
 
@@ -323,7 +333,7 @@ public class PerfettoListener extends BaseMetricListener {
                                     String.format(
                                             "%s%d.perfetto-trace",
                                             getPerfettoFilePrefix(), UUID.randomUUID().hashCode()));
-                    stopPerfettoTracing(path, runData);
+                    stopPerfettoTracingAndReportMetric(path, runData);
                 };
 
         if (mHoldWakelockWhileCollecting) {
@@ -388,6 +398,7 @@ public class PerfettoListener extends BaseMetricListener {
 
         // By default this flag is set to false to collect the metrics on test failure.
         mSkipTestFailureMetrics = "true".equals(args.getString(SKIP_TEST_FAILURE_METRICS));
+        mSkipTestSuccessMetrics = "true".equals(args.getString(SKIP_TEST_SUCCESS_METRICS));
     }
 
     @VisibleForTesting
@@ -460,7 +471,7 @@ public class PerfettoListener extends BaseMetricListener {
      * Stop perfetto tracing and dumping the collected trace file in given path and updating the
      * record with the path to the trace file.
      */
-    private void stopPerfettoTracing(Path path, DataRecord record) {
+    private void stopPerfettoTracingAndReportMetric(Path path, DataRecord record) {
         if (!mPerfettoHelper.stopCollecting(mWaitTimeInMs, path.toString())) {
             Log.e(getTag(), "Failed to collect the perfetto output.");
         } else {
