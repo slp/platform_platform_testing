@@ -61,7 +61,8 @@ class FoldableRule(private val ensureScreenOn: Boolean = false) : TestWatcher() 
         }
     }
 
-    fun fold() {
+    @JvmOverloads
+    fun fold(turnOffDisplayAfterFold: Boolean = true) {
         trace("FoldableRule#fold") {
             check(!controller.isFolded) { "Trying to fold when already folded" }
             if (ensureScreenOn) {
@@ -72,9 +73,13 @@ class FoldableRule(private val ensureScreenOn: Boolean = false) : TestWatcher() 
 
             controller.fold()
 
-            uiDevice.sleep()
-            SystemClock.sleep(ANIMATION_TIMEOUT) // Wait for unfold + screen off animations
-            ensureThat("screen is off after folding") { !screenOn }
+            if (turnOffDisplayAfterFold) {
+                uiDevice.sleep()
+                SystemClock.sleep(ANIMATION_TIMEOUT) // Wait for fold + screen off animations
+                ensureThat("screen is off after folding") { !screenOn }
+            } else {
+                SystemClock.sleep(ANIMATION_TIMEOUT) // Wait for fold animations
+            }
 
             if (initialState == UNFOLDED || initialState == HALF_FOLDED) {
                 ensureThat("screen surface decreases after folding") {

@@ -58,7 +58,7 @@ public class KillAppsRuleTest {
         rule.apply(rule.getTestStatement(), createTestDescription("clzz", "mthd"))
                 .evaluate();
         assertThat(rule.getOperations())
-                .containsExactly("am stop-app example.package.name", "test")
+                .containsExactly("am stop-app --user current example.package.name", "test")
                 .inOrder();
     }
 
@@ -72,7 +72,7 @@ public class KillAppsRuleTest {
         rule.apply(rule.getTestStatement(), createTestDescription("clzz", "mthd"))
                 .evaluate();
         assertThat(rule.getOperations())
-                .containsExactly("test", "am stop-app example.package.name")
+                .containsExactly("test", "am stop-app --user current example.package.name")
                 .inOrder();
     }
 
@@ -89,9 +89,9 @@ public class KillAppsRuleTest {
                 .evaluate();
         assertThat(rule.getOperations())
                 .containsExactly(
-                        "am stop-app package.name1",
-                        "am stop-app package.name2",
-                        "am stop-app package.name3",
+                        "am stop-app --user current package.name1",
+                        "am stop-app --user current package.name2",
+                        "am stop-app --user current package.name3",
                         "test")
                 .inOrder();
     }
@@ -110,9 +110,9 @@ public class KillAppsRuleTest {
         assertThat(rule.getOperations())
                 .containsExactly(
                         "test",
-                        "am stop-app package.name1",
-                        "am stop-app package.name2",
-                        "am stop-app package.name3")
+                        "am stop-app --user current package.name1",
+                        "am stop-app --user current package.name2",
+                        "am stop-app --user current package.name3")
                 .inOrder();
     }
 
