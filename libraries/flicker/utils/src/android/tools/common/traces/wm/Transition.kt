@@ -83,7 +83,7 @@ class Transition(
 
     @JsName("changes") val changes: Array<TransitionChange> = wmData.changes ?: emptyArray()
 
-    @JsName("mergeTarget") val mergedInto = shellData.mergeTarget
+    @JsName("mergeTarget") val mergeTarget = shellData.mergeTarget
 
     @JsName("handler") val handler = shellData.handler
 
@@ -126,8 +126,8 @@ class Transition(
 
     @JsName("merge")
     fun merge(transition: Transition): Transition {
-        require(transition.mergedInto == this.id) {
-            "Can't merge transition with mergedInto id ${transition.mergedInto} " +
+        require(transition.mergeTarget == this.id) {
+            "Can't merge transition with mergedInto id ${transition.mergeTarget} " +
                 "into transition with id ${this.id}"
         }
 
@@ -184,7 +184,7 @@ class Transition(
             appendLine("startingWindowRemoveTime=${transition.startingWindowRemoveTime},")
             appendLine("startTransactionId=${transition.startTransactionId},")
             appendLine("finishTransactionId=${transition.finishTransactionId},")
-            appendLine("mergedInto=${transition.mergedInto}")
+            appendLine("mergedInto=${transition.mergeTarget}")
             appendLine("changes=[")
             appendLine(
                 transition.changes
