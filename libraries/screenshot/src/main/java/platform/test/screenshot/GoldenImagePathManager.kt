@@ -32,17 +32,13 @@ private const val ORIENTATION_TAG = "orientation"
 /**
  * Class to manage Directory structure of golden images.
  *
- *     When you run a AR Diff test, different attributes/dimensions of the platform you are running
+ * When you run a AR Diff test, different attributes/dimensions of the platform you are running on,
+ * such as build, screen resolution, orientation etc. will/may render differently and therefore may
+ * require a different golden image to compare against. You can manage these multiple golden images
+ * related to your test using this utility class. It supports both device-less or device based
+ * configurations. Please see GoldenImagePathManagerTest for detailed examples.
  *
- * on, such as build, screen resolution, orientation etc. will/may render differently and therefore
- * may require a different golden image to compare against. You can manage these multiple golden
- * images related to your test using this utility class. It supports both device-less or device
- * based configurations. Please see GoldenImagePathManagerTest for detailed examples.
- *
- *     You can configure where to find the golden images repo and local cache using [locationConfig]
- *
- * All the goldens are stored under a directory structure, which is determined by [pathConfig]. See
- * getDefaultPathConfig for the current implementation.
+ * You can configure where to find the golden images repo and local cache using [locationConfig].
  *
  * There are two ways to modify how the golden images are stored and retrieved for your test: A.
  * (Recommended) Create your own PathConfig object which takes a series of [PathElement]s Each path
@@ -55,6 +51,8 @@ private const val ORIENTATION_TAG = "orientation"
  *
  * NOTE: This class does not determine what combinations of attributes / dimensions your test code
  * will run for. That decision/configuration is part of your test configuration.
+ *
+ * @see GoldenPathManager use the file-type agnostic version instead.
  */
 open class GoldenImagePathManager
 @JvmOverloads
@@ -72,14 +70,42 @@ constructor(
         }
     }
 
-    public val imageExtension = "png"
+    val imageExtension = "png"
 
     /*
      * Uses [pathConfig] and [testName] to construct the full path to the golden image.
      */
-    public open fun goldenIdentifierResolver(testName: String): String {
+    open fun goldenIdentifierResolver(testName: String): String {
         val relativePath = pathConfig.resolveRelativePath(appContext)
         return "$relativePath$testName.$imageExtension"
+    }
+}
+
+/**
+ * Class to manage directory structure of golden files.
+ *
+ * Same as [GoldenImagePathManager], but without the builtin assumption about images.
+ *
+ * TODO(b/322324387): fold GoldenImagePathManager into this class.
+ */
+open class GoldenPathManager
+@JvmOverloads
+constructor(
+    appContext: Context,
+    assetsPathRelativeToBuildRoot: String = "assets",
+    deviceLocalPath: String = getDeviceOutputDirectory(appContext),
+    pathConfig: PathConfig = getSimplePathConfig()
+) : GoldenImagePathManager(appContext, assetsPathRelativeToBuildRoot, deviceLocalPath, pathConfig) {
+
+    final override fun goldenIdentifierResolver(testName: String) =
+        goldenIdentifierResolver(testName, imageExtension)
+
+    /*
+     * Uses [pathConfig] and [testName] to construct the full path to the golden image.
+     */
+    open fun goldenIdentifierResolver(testName: String, extension: String): String {
+        val relativePath = pathConfig.resolveRelativePath(appContext)
+        return "$relativePath$testName.$extension"
     }
 }
 
@@ -88,7 +114,7 @@ constructor(
  * that is used to access the golden. There are two types of attributes / dimensions.
  * One that depend on the device context and the once that are context agnostic.
  */
-abstract sealed class PathElementBase {
+sealed class PathElementBase {
     abstract val attr: String
     abstract val isDir: Boolean
 }
@@ -128,7 +154,6 @@ class PathConfig(vararg elems: PathElementBase) {
                 when (it) {
                     is PathElementWithContext -> it.func(context)
                     is PathElementNoContext -> it.func()
-                    else -> ""
                 } + if (it.isDir) "/" else "_"
             }
             .joinToString("")
@@ -140,7 +165,7 @@ class PathConfig(vararg elems: PathElementBase) {
  * An example directory structure using this config would be
  *  /google/pixel6/api32/600_400/
  */
-public fun getDefaultPathConfig(): PathConfig {
+fun getDefaultPathConfig(): PathConfig {
     return PathConfig(
         PathElementNoContext(BRAND_TAG, true, ::getDeviceBrand),
         PathElementNoContext(MODEL_TAG, true, ::getDeviceModel),
@@ -150,7 +175,7 @@ public fun getDefaultPathConfig(): PathConfig {
     )
 }
 
-public fun getSimplePathConfig(): PathConfig {
+fun getSimplePathConfig(): PathConfig {
     return PathConfig(PathElementNoContext(MODEL_TAG, true, ::getDeviceModel))
 }
 
@@ -172,11 +197,11 @@ fun getEmulatedDevicePathConfig(emulationSpec: DeviceEmulationSpec): PathConfig 
 /*
  * Default output directory where all images generated as part of the test are stored.
  */
-public fun getDeviceOutputDirectory(context: Context) =
+fun getDeviceOutputDirectory(context: Context) =
     File(context.filesDir, "platform_screenshots").toString()
 
 /* Standard implementations for the usual list of dimensions that affect a golden image. */
-public fun getDeviceModel(): String {
+fun getDeviceModel(): String {
     var model = Build.MODEL.lowercase()
     arrayOf("phone", "x86_64", "x86", "x64", "gms", "wear").forEach {
         model = model.replace(it, "")
@@ -184,7 +209,7 @@ public fun getDeviceModel(): String {
     return model.trim().replace(" ", "_")
 }
 
-public fun getDeviceBrand(): String {
+fun getDeviceBrand(): String {
     var brand = Build.BRAND.lowercase()
     arrayOf("phone", "x86_64", "x86", "x64", "gms", "wear").forEach {
         brand = brand.replace(it, "")
@@ -192,15 +217,14 @@ public fun getDeviceBrand(): String {
     return brand.trim().replace(" ", "_")
 }
 
-public fun getAPIVersion() = "API" + Build.VERSION.SDK_INT.toString()
+fun getAPIVersion() = "API" + Build.VERSION.SDK_INT.toString()
 
-public fun getScreenResolution(context: Context) =
+fun getScreenResolution(context: Context) =
     context.resources.displayMetrics.densityDpi.toString() + "dpi"
 
-public fun getScreenOrientation(context: Context) =
-    context.resources.configuration.orientation.toString()
+fun getScreenOrientation(context: Context) = context.resources.configuration.orientation.toString()
 
-public fun getScreenSize(context: Context): String {
+fun getScreenSize(context: Context): String {
     val heightdp = context.resources.configuration.screenHeightDp.toString()
     val widthdp = context.resources.configuration.screenWidthDp.toString()
     return "${heightdp}_$widthdp"
