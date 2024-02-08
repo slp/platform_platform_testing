@@ -23,6 +23,7 @@ import android.tools.device.traces.monitors.wm.LegacyShellTransitionTraceMonitor
 import android.tools.utils.CleanFlickerEnvironmentRule
 import android.tools.utils.readAsset
 import android.tracing.Flags
+import androidx.test.filters.FlakyTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.android.launcher3.tapl.LauncherInstrumentation
 import com.google.common.truth.Truth
@@ -50,6 +51,7 @@ class LegacyShellLegacyTransitionTraceParserTest {
         Truth.assertThat(lastEntry.timestamp.elapsedNanos).isEqualTo(2770678425968L)
     }
 
+    @FlakyTest(bugId = 318834436)
     @Test
     fun canParseAllEntriesFromNewTrace() {
         val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
