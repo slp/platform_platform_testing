@@ -20,6 +20,7 @@ import android.content.ContentResolver
 import android.hardware.display.AmbientDisplayConfiguration
 import android.provider.Settings
 import com.google.common.truth.Truth.assertThat
+import org.junit.Assume
 import org.junit.runner.Description
 
 /** This rule enables/disables always-on display. */
@@ -28,7 +29,10 @@ class EnableAodRule : TestWatcher() {
 
     override fun starting(description: Description) {
         super.starting(description)
-        assertThat(isAodSupported()).isTrue()
+        Assume.assumeTrue(
+            "This test requires AoD, but the current device doesn't support it.",
+            isAodSupported()
+        )
         val contentResolver: ContentResolver = context.contentResolver
         wasAodEnabled =
             Settings.Secure.getInt(contentResolver, Settings.Secure.DOZE_ALWAYS_ON, 0) == 1
