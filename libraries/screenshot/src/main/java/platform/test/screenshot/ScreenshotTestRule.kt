@@ -56,7 +56,8 @@ import platform.test.screenshot.proto.ScreenshotResultProto
  * @see Bitmap.assertAgainstGolden
  */
 @SuppressLint("SyntheticAccessor")
-open class ScreenshotTestRule(val goldenImagePathManager: GoldenImagePathManager) : TestRule {
+open class ScreenshotTestRule(val goldenImagePathManager: GoldenImagePathManager) :
+    TestRule, BitmapDiffer, ScreenshotAsserterFactory {
     private val imageExtension = ".png"
     private val resultBinaryProtoFileSuffix = "goldResult.pb"
     // This is used in CI to identify the files.
@@ -135,7 +136,7 @@ open class ScreenshotTestRule(val goldenImagePathManager: GoldenImagePathManager
      * @see PixelPerfectMatcher
      * @see Bitmap.assertAgainstGolden
      */
-    @Deprecated("use the ScreenshotTestRuleAsserter")
+    @Deprecated("use BitmapDiffer or ScreenshotAsserterFactory interfaces")
     fun assertBitmapAgainstGolden(
         actual: Bitmap,
         goldenIdentifier: String,
@@ -166,8 +167,8 @@ open class ScreenshotTestRule(val goldenImagePathManager: GoldenImagePathManager
      * @see PixelPerfectMatcher
      * @see Bitmap.assertAgainstGolden
      */
-    @Deprecated("use the ScreenshotTestRuleAsserter")
-    fun assertBitmapAgainstGolden(
+    @Deprecated("use BitmapDiffer or ScreenshotAsserterFactory interfaces")
+    override fun assertBitmapAgainstGolden(
         actual: Bitmap,
         goldenIdentifier: String,
         matcher: BitmapMatcher,
@@ -246,6 +247,15 @@ open class ScreenshotTestRule(val goldenImagePathManager: GoldenImagePathManager
         }
 
         expected.recycle()
+    }
+
+    override fun createScreenshotAsserter(config: ScreenshotAsserterConfig): ScreenshotAsserter {
+        return ScreenshotRuleAsserter.Builder(this)
+            .withMatcher(config.matcher)
+            .setOnBeforeScreenshot(config.beforeScreenshot)
+            .setOnAfterScreenshot(config.afterScreenshot)
+            .setScreenshotProvider(config.captureStrategy)
+            .build()
     }
 
     private fun reportResult(
@@ -501,6 +511,7 @@ class ScreenshotRuleAsserter private constructor(private val rule: ScreenshotTes
 
     private var prevPointerLocationSetting: Int? = null
     private var prevShowTouchesSetting: Int? = null
+    @Suppress("DEPRECATION")
     override fun assertGoldenImage(goldenId: String) {
         runBeforeScreenshot()
         var actual: Bitmap? = null
@@ -513,6 +524,7 @@ class ScreenshotRuleAsserter private constructor(private val rule: ScreenshotTes
         }
     }
 
+    @Suppress("DEPRECATION")
     override fun assertGoldenImage(goldenId: String, areas: List<Rect>) {
         runBeforeScreenshot()
         var actual: Bitmap? = null
@@ -542,6 +554,7 @@ class ScreenshotRuleAsserter private constructor(private val rule: ScreenshotTes
         prevShowTouchesSetting?.let { showTouchesSetting = it }
     }
 
+    @Deprecated("Use ScreenshotAsserterFactory instead")
     class Builder(private val rule: ScreenshotTestRule) {
         private var asserter = ScreenshotRuleAsserter(rule)
         fun withMatcher(matcher: BitmapMatcher): Builder = apply { asserter.matcher = matcher }
@@ -577,7 +590,7 @@ internal fun Bitmap.toIntArray(): IntArray {
  * to match the same golden). The name must not contain extension. You should also avoid adding
  * strings like "golden", "image" and instead describe what is the golder referring to.
  *
- * @param rule The screenshot test rule that provides the comparison and reporting.
+ * @param bitmapDiffer The screenshot test rule that provides the comparison and reporting.
  * @param goldenIdentifier Name of the golden. Allowed characters: 'A-Za-z0-9_-'
  * @param matcher The algorithm to be used to perform the matching. By default [MSSIMMatcher] is
  *   used.
@@ -585,12 +598,17 @@ internal fun Bitmap.toIntArray(): IntArray {
  * @see PixelPerfectMatcher
  */
 fun Bitmap.assertAgainstGolden(
-    rule: ScreenshotTestRule,
+    bitmapDiffer: BitmapDiffer,
     goldenIdentifier: String,
     matcher: BitmapMatcher = MSSIMMatcher(),
     regions: List<Rect> = emptyList()
 ) {
-    rule.assertBitmapAgainstGolden(this, goldenIdentifier, matcher = matcher, regions = regions)
+    bitmapDiffer.assertBitmapAgainstGolden(
+        this,
+        goldenIdentifier,
+        matcher = matcher,
+        regions = regions
+    )
 }
 
 /** Type of file that can be produced by the [ScreenshotTestRule]. */

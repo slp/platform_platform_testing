@@ -37,12 +37,12 @@ import org.junit.runners.model.Statement
  */
 class ExternalViewScreenshotTestRule(
     emulationSpec: DeviceEmulationSpec,
-    pathManager: GoldenImagePathManager
-) : TestRule {
+    pathManager: GoldenImagePathManager,
+    private val screenshotRule: ScreenshotTestRule = ScreenshotTestRule(pathManager)
+) : TestRule, BitmapDiffer by screenshotRule, ScreenshotAsserterFactory by screenshotRule {
 
     private val colorsRule = MaterialYouColorsRule()
     private val deviceEmulationRule = DeviceEmulationRule(emulationSpec)
-    private val screenshotRule = ScreenshotTestRule(pathManager)
     private val roboRule = RuleChain.outerRule(deviceEmulationRule).around(screenshotRule)
     private val delegateRule = RuleChain.outerRule(colorsRule).around(roboRule)
     private val matcher = UnitTestBitmapMatcher

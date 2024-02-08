@@ -34,11 +34,13 @@ import org.junit.rules.RuleChain
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
+import platform.test.screenshot.BitmapDiffer
 import platform.test.screenshot.DeviceEmulationRule
 import platform.test.screenshot.DeviceEmulationSpec
 import platform.test.screenshot.GoldenImagePathManager
 import platform.test.screenshot.MaterialYouColorsRule
 import platform.test.screenshot.ScreenshotActivity
+import platform.test.screenshot.ScreenshotAsserterFactory
 import platform.test.screenshot.ScreenshotTestRule
 import platform.test.screenshot.UnitTestBitmapMatcher
 import platform.test.screenshot.bitmapWithMaterialYouColorsSimulation
@@ -50,10 +52,10 @@ import platform.test.screenshot.toBitmap
 class ComposeScreenshotTestRule(
     private val emulationSpec: DeviceEmulationSpec,
     pathManager: GoldenImagePathManager,
-) : TestRule {
+    private val screenshotRule: ScreenshotTestRule = ScreenshotTestRule(pathManager)
+) : TestRule, BitmapDiffer by screenshotRule, ScreenshotAsserterFactory by screenshotRule {
     private val colorsRule = MaterialYouColorsRule()
     private val deviceEmulationRule = DeviceEmulationRule(emulationSpec)
-    private val screenshotRule = ScreenshotTestRule(pathManager)
     val composeRule = createAndroidComposeRule<ScreenshotActivity>()
     private val isRobolectric = Build.FINGERPRINT.contains("robolectric")
     private val delegateRule =
