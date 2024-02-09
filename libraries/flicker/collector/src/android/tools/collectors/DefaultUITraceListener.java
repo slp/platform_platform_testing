@@ -18,17 +18,15 @@ package android.tools.collectors;
 
 import android.content.Context;
 import android.device.collectors.PerfettoListener;
+import android.device.collectors.PerfettoTracingStrategy;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.android.helpers.PerfettoHelper;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
 /**
  * A {@link PerfettoListener} that captures the perfetto trace for UI traces during each test method
@@ -38,6 +36,7 @@ import java.util.Map;
 public class DefaultUITraceListener extends PerfettoListener {
     private static final String LOG_TAG = "UITraceListener";
     private static final String DEFAULT_TEXT_CONFIG_FILE = "trace_config.textproto";
+    private static final String DEFAULT_FILE_PREFIX = "uiTrace_";
 
     @SuppressWarnings("unused")
     public DefaultUITraceListener() {
@@ -49,37 +48,23 @@ public class DefaultUITraceListener extends PerfettoListener {
      * for testing.
      */
     @VisibleForTesting
-    DefaultUITraceListener(Bundle args, PerfettoHelper helper, Map<String, Integer> invocationMap) {
-        super(args, helper, invocationMap);
+    DefaultUITraceListener(Bundle args, PerfettoTracingStrategy strategy) {
+        super(args, strategy);
     }
 
     @Override
-    protected void startPerfettoTracing() {
-        Log.v(LOG_TAG, "startPerfettoTracing");
-        // Text proto config to be passed to perfetto via output stream
+    public void setupAdditionalArgs() {
+        Bundle args = getArgsBundle();
+        args.putString(PerfettoTracingStrategy.PERFETTO_CONFIG_TEXT_PROTO, "true");
         String protoConfig;
         try {
             protoConfig = readDefaultConfig();
         } catch (IOException e) {
             throw new RuntimeException("Unable to read config asset", e);
         }
-        boolean success = getPerfettoHelper().startCollecting(protoConfig);
-        if (!success) {
-            Log.e(LOG_TAG, "Perfetto did not start successfully.");
-        }
-
-        setPerfettoStartSuccess(success);
-    }
-
-    @Override
-    protected String getPerfettoFilePrefix() {
-        return "uiTrace_";
-    }
-
-    @Override
-    public void setupAdditionalArgs() {
-        Bundle args = getArgsBundle();
-        args.putBoolean(PERFETTO_CONFIG_TEXT_PROTO, true);
+        args.putString(
+                PerfettoTracingStrategy.PERFETTO_CONFIG_OUTPUT_FILE_PREFIX, DEFAULT_FILE_PREFIX);
+        args.putString(PerfettoTracingStrategy.PERFETTO_CONFIG_TEXT_CONTENT, protoConfig);
         super.setupAdditionalArgs();
     }
 

@@ -21,6 +21,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 import android.util.Log;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
@@ -75,6 +76,52 @@ public class PerfettoHelper {
 
     private int mPerfettoProcId = 0;
 
+    private String mTextProtoConfig;
+    private String mConfigFileName;
+    private boolean mIsTextProtoConfig;
+
+    /** Set content of the perfetto configuration to be used when tracing */
+    public PerfettoHelper setTextProtoConfig(String value) {
+        mTextProtoConfig = value;
+        return this;
+    }
+
+    /** Set file name of the perfetto configuration to be used when tracing */
+    public PerfettoHelper setConfigFileName(String value) {
+        mConfigFileName = value;
+        return this;
+    }
+
+    /** Set if the configuration is in text proto format */
+    public PerfettoHelper setIsTextProtoConfig(boolean value) {
+        mIsTextProtoConfig = value;
+        return this;
+    }
+
+    /**
+     * Start the perfetto tracing in background using the given config file or config, and write the
+     * output to /data/misc/perfetto-traces/trace_output.perfetto-trace. If both config file and
+     * config are received, use config file
+     *
+     * @throws IllegalStateException if neither a config or a config file is set
+     * @return true if trace collection started successfully otherwise return false.
+     */
+    public boolean startCollecting() {
+        String textProtoConfig = mTextProtoConfig != null ? mTextProtoConfig : "";
+        String configFileName = mConfigFileName != null ? mConfigFileName : "";
+        if (textProtoConfig.isEmpty() && configFileName.isEmpty()) {
+            throw new IllegalStateException(
+                    "Perfetto helper not configured. Set a configuration "
+                            + "or a configuration file before start tracing");
+        }
+
+        if (!textProtoConfig.isEmpty()) {
+            return startCollectingFromConfig(mTextProtoConfig);
+        }
+
+        return startCollectingFromConfigFile(mConfigFileName, mIsTextProtoConfig);
+    }
+
     /**
      * Start the perfetto tracing in background using the given config and write the output to
      * /data/misc/perfetto-traces/trace_output.perfetto-trace.
@@ -82,7 +129,8 @@ public class PerfettoHelper {
      * @param textProtoConfig configuration in text proto format to pass to perfetto
      * @return true if trace collection started successfully otherwise return false.
      */
-    public boolean startCollecting(String textProtoConfig) {
+    @VisibleForTesting
+    public boolean startCollectingFromConfig(String textProtoConfig) {
         mUIDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         if (textProtoConfig == null || textProtoConfig.isEmpty()) {
             Log.e(LOG_TAG, "Perfetto config is null or empty.");
@@ -140,7 +188,8 @@ public class PerfettoHelper {
      * @param isTextProtoConfig true if the config file is textproto format otherwise false.
      * @return true if trace collection started successfully otherwise return false.
      */
-    public boolean startCollecting(String configFileName, boolean isTextProtoConfig) {
+    @VisibleForTesting
+    public boolean startCollectingFromConfigFile(String configFileName, boolean isTextProtoConfig) {
         mUIDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         if (configFileName == null || configFileName.isEmpty()) {
             Log.e(LOG_TAG, "Perfetto config file name is null or empty.");
@@ -164,8 +213,8 @@ public class PerfettoHelper {
                             configFileName,
                             PERFETTO_TMP_OUTPUT_FILE);
 
-            if(isTextProtoConfig) {
-               perfettoCmd = perfettoCmd + PERFETTO_TXT_PROTO_ARG;
+            if (isTextProtoConfig) {
+                perfettoCmd = perfettoCmd + PERFETTO_TXT_PROTO_ARG;
             }
 
             // Start perfetto tracing.
