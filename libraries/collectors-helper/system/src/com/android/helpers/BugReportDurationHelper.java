@@ -250,7 +250,7 @@ public class BugReportDurationHelper implements ICollectorHelper<Double> {
                     device.executeShellCommand(String.format(LS_CMD, bugReportDir)).split("\n");
             HashSet<String> bugreports = new HashSet<>();
             for (String file : files) {
-                if (file.contains("bugreport") && file.contains("zip")) {
+                if (file.contains("bugreport") && file.endsWith("zip")) {
                     // We don't want to keep track of wifi or telephony bug reports because they
                     // break the assumption that lexicographically-greater bug reports are also
                     // more-recent.
