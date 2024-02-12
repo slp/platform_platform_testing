@@ -137,7 +137,7 @@ class WmTransitionTraceParser :
         if (this == 0L) {
             null
         } else {
-            this.toString()
+            this
         }
 
     companion object {
