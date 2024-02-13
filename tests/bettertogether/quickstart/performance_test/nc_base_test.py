@@ -88,7 +88,7 @@ class NCBaseTestClass(base_test.BaseTestClass):
     )
     run_identifier_str = f'{{{run_identifier_str}}}'
     self.record_data(
-        {'resultstore_properties': {'run_identifier': run_identifier_str}}
+        {'properties': {'run_identifier': run_identifier_str}}
     )
 
   def _disconnect_from_wifi(self, ad: android_device.AndroidDevice) -> None:
