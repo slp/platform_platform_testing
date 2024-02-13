@@ -44,9 +44,8 @@ import platform.test.screenshot.ScreenshotAsserterFactory
 import platform.test.screenshot.ScreenshotTestRule
 import platform.test.screenshot.UnitTestBitmapMatcher
 import platform.test.screenshot.bitmapWithMaterialYouColorsSimulation
-import platform.test.screenshot.captureToBitmap
+import platform.test.screenshot.captureToBitmapAsync
 import platform.test.screenshot.dialogScreenshotTest
-import platform.test.screenshot.toBitmap
 
 /** A rule for Compose screenshot diff tests. */
 class ComposeScreenshotTestRule(
@@ -124,15 +123,16 @@ class ComposeScreenshotTestRule(
         composeRule.waitForIdle()
 
         val view = (composeRule.onRoot().fetchSemanticsNode().root as ViewRootForTest).view
+        val bitmap = view.captureToBitmapAsync().get(10, TimeUnit.SECONDS)
         val viewBitmap =
             if (isRobolectric) {
                 bitmapWithMaterialYouColorsSimulation(
-                    view.captureToBitmap().get(10, TimeUnit.SECONDS),
+                    bitmap,
                     emulationSpec.isDarkTheme,
                     /* doPixelAveraging= */ false
                 )
             } else {
-                view.toBitmap()
+                bitmap
             }
         screenshotRule.assertBitmapAgainstGolden(viewBitmap, goldenIdentifier, matcher)
     }
