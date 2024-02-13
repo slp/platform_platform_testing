@@ -175,6 +175,8 @@ public class LockscreenUtils {
 
     /**
      * Goes to the Locked screen page
+     *
+     * @deprecated use Root.goToLockscreen() to improve validation b/322870306
      */
     public static void goToLockScreen() {
         try {
