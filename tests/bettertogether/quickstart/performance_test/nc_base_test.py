@@ -137,7 +137,7 @@ class NCBaseTestClass(base_test.BaseTestClass):
       setup_utils.enable_wifi_aware(ad)
 
     if self.test_parameters.wifi_country_code:
-      setup_utils.set_wifi_country_code(
+      setup_utils.set_country_code(
           ad, self.test_parameters.wifi_country_code
       )
 
