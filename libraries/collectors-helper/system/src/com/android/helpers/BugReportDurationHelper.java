@@ -55,6 +55,7 @@ public class BugReportDurationHelper implements ICollectorHelper<Double> {
     private static final String DUMPSTATE_DURATION_FILTER = "was the duration of \'";
     private static final String DUMPSYS_DURATION_FILTER = "was the duration of dumpsys";
     private static final String DUMPSTATE_TIMEOUT_FILTER = "timed out after";
+    private static final String DUMPSTATE_LOG_TAG_FILTER = "dumpstate:";
     private static final String SHOWMAP_FILTER = "SHOW MAP";
 
     // Filters for selecting lines from dumpstate_board.txt. Unlike raw bug reports, dumpstate_board
@@ -313,7 +314,8 @@ public class BugReportDurationHelper implements ICollectorHelper<Double> {
                     bugReportDurationLines.dumpstateLines.add(line);
                 } else if (line.contains(DUMPSYS_DURATION_FILTER)) {
                     bugReportDurationLines.dumpsysLines.add(line);
-                } else if (line.contains(DUMPSTATE_TIMEOUT_FILTER)) {
+                } else if (line.contains(DUMPSTATE_LOG_TAG_FILTER)
+                        && line.contains(DUMPSTATE_TIMEOUT_FILTER)) {
                     bugReportDurationLines.timeoutLines.add(line);
                 }
             }

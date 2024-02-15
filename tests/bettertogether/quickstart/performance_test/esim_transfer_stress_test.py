@@ -166,7 +166,7 @@ class EsimTransferStressTest(nc_base_test.NCBaseTestClass):
     self.record_data({
         'Test Class': self.TAG,
         'Test Name': self.current_test_info.name,
-        'sponge_properties': test_report,
+        'properties': test_report,
     })
 
   def _collect_current_test_metrics(self):
@@ -228,7 +228,7 @@ class EsimTransferStressTest(nc_base_test.NCBaseTestClass):
 
     self.record_data({
         'Test Class': self.TAG,
-        'sponge_properties': {
+        'properties': {
             'test_script_version': self._test_script_version,
             '00_test_report_alias_name': (
                 self.test_parameters.test_report_alias_name),
