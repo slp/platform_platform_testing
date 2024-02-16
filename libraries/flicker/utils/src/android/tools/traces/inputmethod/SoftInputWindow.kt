@@ -16,7 +16,7 @@
 
 package android.tools.traces.inputmethod
 
-import android.tools.datatypes.Rect
+import android.graphics.Rect
 
 /**
  * Represents the SoftInputWindowProto in IME traces

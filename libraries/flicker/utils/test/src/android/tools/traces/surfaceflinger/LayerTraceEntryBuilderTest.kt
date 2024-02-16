@@ -16,13 +16,13 @@
 
 package android.tools.traces.surfaceflinger
 
+import android.graphics.Rect
+import android.graphics.RectF
+import android.graphics.Region
 import android.tools.Timestamps
 import android.tools.datatypes.ActiveBuffer
-import android.tools.datatypes.Color
-import android.tools.datatypes.Rect
-import android.tools.datatypes.RectF
-import android.tools.datatypes.Region
 import android.tools.datatypes.Size
+import android.tools.datatypes.emptyColor
 import android.tools.traces.surfaceflinger.Display.Companion.BLANK_LAYER_STACK
 import android.tools.utils.CleanFlickerEnvironmentRule
 import com.google.common.truth.Truth
@@ -84,15 +84,15 @@ class LayerTraceEntryBuilderTest {
                     id = 1,
                     parentId = -1,
                     z = 1,
-                    visibleRegion = Region.EMPTY,
+                    visibleRegion = Region(),
                     activeBuffer = ActiveBuffer.EMPTY,
                     flags = 0,
-                    bounds = RectF.EMPTY,
-                    color = Color.EMPTY,
+                    bounds = RectF(),
+                    color = emptyColor(),
                     isOpaque = true,
                     shadowRadius = 0f,
                     cornerRadius = 0f,
-                    screenBounds = RectF.EMPTY,
+                    screenBounds = RectF(),
                     transform = Transform.EMPTY,
                     currFrame = 0,
                     effectiveScalingMode = 0,
@@ -114,7 +114,7 @@ class LayerTraceEntryBuilderTest {
                     name = "display",
                     layerStackId = offDisplayStackId,
                     size = Size.EMPTY,
-                    layerStackSpace = Rect.EMPTY,
+                    layerStackSpace = Rect(),
                     transform = Transform.EMPTY,
                     isVirtual = false,
                     dpiX = 270.0,
@@ -130,7 +130,7 @@ class LayerTraceEntryBuilderTest {
                 .setVSyncId(123)
         val entry = builder.build()
 
-        Truth.assertThat(entry.displays.all { it.isOff })
+        Truth.assertThat(entry.displays.all { it.isOff }).isTrue()
         Truth.assertThat(entry.flattenedLayers).isEmpty()
     }
 

@@ -29,7 +29,6 @@ import android.tools.traces.ConditionsFactory
 import android.tools.traces.component.ComponentNameMatcher
 import android.tools.traces.executeShellCommand
 import android.tools.traces.parsers.WindowManagerStateHelper
-import android.tools.traces.parsers.toAndroidRect
 import android.util.Log
 import android.util.Rational
 import android.view.View
@@ -93,7 +92,7 @@ fun UiDevice.openQuickstep(wmHelper: WindowManagerStateHelper) {
                 navBar.visibleBounds
             } else {
                 Log.e(TAG, "Could not find nav bar, infer location")
-                estimateNavigationBarPosition(Rotation.ROTATION_0).bounds.toAndroidRect()
+                estimateNavigationBarPosition(Rotation.ROTATION_0).bounds
             }
 
         val startX = navBarVisibleBounds.centerX()

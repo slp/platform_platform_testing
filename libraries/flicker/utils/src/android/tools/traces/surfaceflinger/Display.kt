@@ -16,9 +16,9 @@
 
 package android.tools.traces.surfaceflinger
 
+import android.graphics.Rect
 import android.tools.Position
 import android.tools.Rotation
-import android.tools.datatypes.Rect
 import android.tools.datatypes.Size
 import android.tools.traces.wm.DisplayContent
 import android.tools.withCache
@@ -103,7 +103,7 @@ private constructor(
                     name = "EMPTY",
                     layerStackId = BLANK_LAYER_STACK,
                     size = Size.EMPTY,
-                    layerStackSpace = Rect.EMPTY,
+                    layerStackSpace = Rect(),
                     transform = Transform.EMPTY,
                     isVirtual = false,
                     dpiX = 0.0,

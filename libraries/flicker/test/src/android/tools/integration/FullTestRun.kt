@@ -17,8 +17,8 @@
 package android.tools.integration
 
 import android.app.Instrumentation
+import android.graphics.Region
 import android.tools.Timestamps
-import android.tools.datatypes.Region
 import android.tools.device.apphelpers.MessagingAppHelper
 import android.tools.flicker.AssertionInvocationGroup
 import android.tools.flicker.FlickerConfig
@@ -207,10 +207,10 @@ class FullTestRun {
         ) {
             Truth.assertWithMessage("Actual visible region").that(actual).isNotNull()
             Truth.assertWithMessage("Expected visible region").that(expected).isNotNull()
-            actual?.coversExactly(expected?.region ?: Region.EMPTY)
+            actual?.coversExactly(expected?.region ?: Region())
 
             val failure: Result<Any?> = runCatching {
-                actual?.isHigher(expected?.region ?: Region.EMPTY)
+                actual?.isHigher(expected?.region ?: Region())
             }
             if (failure.isSuccess) {
                 error("Should have thrown failure")

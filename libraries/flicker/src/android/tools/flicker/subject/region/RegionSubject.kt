@@ -16,16 +16,21 @@
 
 package android.tools.flicker.subject.region
 
+import android.graphics.Point
+import android.graphics.Rect
+import android.graphics.RectF
+import android.graphics.Region
 import android.tools.Timestamp
-import android.tools.datatypes.Point
-import android.tools.datatypes.Rect
-import android.tools.datatypes.RectF
-import android.tools.datatypes.Region
+import android.tools.datatypes.coversAtLeast
+import android.tools.datatypes.coversAtMost
+import android.tools.datatypes.outOfBoundsRegion
+import android.tools.datatypes.uncoveredRegion
 import android.tools.flicker.subject.FlickerSubject
 import android.tools.flicker.subject.exceptions.ExceptionMessageBuilder
 import android.tools.flicker.subject.exceptions.IncorrectRegionException
 import android.tools.io.Reader
 import android.tools.traces.region.RegionEntry
+import androidx.core.graphics.toRect
 import kotlin.math.abs
 
 /**
@@ -42,14 +47,14 @@ class RegionSubject(
         region: Region?,
         timestamp: Timestamp,
         reader: Reader? = null
-    ) : this(RegionEntry(region ?: Region.EMPTY, timestamp), timestamp, reader)
+    ) : this(RegionEntry(region ?: Region(), timestamp), timestamp, reader)
 
     /** Custom constructor for existing rects */
     constructor(
         rect: Rect?,
         timestamp: Timestamp,
         reader: Reader? = null
-    ) : this(Region.from(rect), timestamp, reader)
+    ) : this(Region(rect ?: Rect()), timestamp, reader)
 
     /** Custom constructor for existing rects */
     constructor(
@@ -68,7 +73,7 @@ class RegionSubject(
     val region = regionEntry.region
 
     private val Rect.area
-        get() = this.width * this.height
+        get() = this.width() * this.height()
 
     /**
      * Asserts that the current [Region] doesn't contain layers
@@ -76,12 +81,12 @@ class RegionSubject(
      * @throws AssertionError
      */
     fun isEmpty(): RegionSubject = apply {
-        if (regionEntry.region.isNotEmpty) {
+        if (!regionEntry.region.isEmpty) {
             val errorMsgBuilder =
                 ExceptionMessageBuilder()
                     .forSubject(this)
                     .forIncorrectRegion("region")
-                    .setExpected(Region.EMPTY)
+                    .setExpected(Region())
                     .setActual(regionEntry.region)
             throw IncorrectRegionException(errorMsgBuilder)
         }
@@ -106,14 +111,14 @@ class RegionSubject(
 
     /** Subtracts [other] from this subject [region] */
     fun minus(other: Region): RegionSubject {
-        val remainingRegion = Region.from(this.region)
+        val remainingRegion = Region(this.region)
         remainingRegion.op(other, Region.Op.XOR)
         return RegionSubject(remainingRegion, timestamp, reader)
     }
 
     /** Adds [other] to this subject [region] */
     fun plus(other: Region): RegionSubject {
-        val remainingRegion = Region.from(this.region)
+        val remainingRegion = Region(this.region)
         remainingRegion.op(other, Region.Op.UNION)
         return RegionSubject(remainingRegion, timestamp, reader)
     }
@@ -122,7 +127,7 @@ class RegionSubject(
     fun isHigherOrEqual(subject: RegionSubject): RegionSubject = isHigherOrEqual(subject.region)
 
     /** {@inheritDoc} */
-    override fun isHigherOrEqual(other: Rect): RegionSubject = isHigherOrEqual(Region.from(other))
+    override fun isHigherOrEqual(other: Rect): RegionSubject = isHigherOrEqual(Region(other))
 
     /** {@inheritDoc} */
     override fun isHigherOrEqual(other: Region): RegionSubject = apply {
@@ -145,7 +150,7 @@ class RegionSubject(
     fun isLowerOrEqual(subject: RegionSubject): RegionSubject = isLowerOrEqual(subject.region)
 
     /** {@inheritDoc} */
-    override fun isLowerOrEqual(other: Rect): RegionSubject = isLowerOrEqual(Region.from(other))
+    override fun isLowerOrEqual(other: Rect): RegionSubject = isLowerOrEqual(Region(other))
 
     /** {@inheritDoc} */
     override fun isLowerOrEqual(other: Region): RegionSubject = apply {
@@ -185,7 +190,7 @@ class RegionSubject(
     fun isHigher(subject: RegionSubject): RegionSubject = isHigher(subject.region)
 
     /** {@inheritDoc} */
-    override fun isHigher(other: Rect): RegionSubject = isHigher(Region.from(other))
+    override fun isHigher(other: Rect): RegionSubject = isHigher(Region(other))
 
     /** {@inheritDoc} */
     override fun isHigher(other: Region): RegionSubject = apply {
@@ -208,7 +213,7 @@ class RegionSubject(
     fun isLower(subject: RegionSubject): RegionSubject = isLower(subject.region)
 
     /** {@inheritDoc} */
-    override fun isLower(other: Rect): RegionSubject = isLower(Region.from(other))
+    override fun isLower(other: Rect): RegionSubject = isLower(Region(other))
 
     /**
      * Asserts that the top and bottom coordinates of [other] are greater than those of [region].
@@ -248,7 +253,7 @@ class RegionSubject(
     }
 
     /** {@inheritDoc} */
-    override fun coversAtMost(other: Rect): RegionSubject = coversAtMost(Region.from(other))
+    override fun coversAtMost(other: Rect): RegionSubject = coversAtMost(Region(other))
 
     /** {@inheritDoc} */
     override fun notBiggerThan(other: Region): RegionSubject = apply {
@@ -296,9 +301,9 @@ class RegionSubject(
     }
 
     /** {@inheritDoc} */
-    override fun regionsCenterPointInside(other: Region): RegionSubject = apply {
-        if (!other.bounds.contains(region.bounds.centerX(), region.bounds.centerY())) {
-            var center = Point.from(region.bounds.centerX(), region.bounds.centerY())
+    override fun regionsCenterPointInside(other: Rect): RegionSubject = apply {
+        if (!other.contains(region.bounds.centerX(), region.bounds.centerY())) {
+            val center = Point(region.bounds.centerX(), region.bounds.centerY())
             val errorMsgBuilder =
                 ExceptionMessageBuilder()
                     .forSubject(this)
@@ -325,11 +330,11 @@ class RegionSubject(
     }
 
     /** {@inheritDoc} */
-    override fun coversAtLeast(other: Rect): RegionSubject = coversAtLeast(Region.from(other))
+    override fun coversAtLeast(other: Rect): RegionSubject = coversAtLeast(Region(other))
 
     /** {@inheritDoc} */
     override fun coversExactly(other: Region): RegionSubject = apply {
-        val intersection = Region.from(region)
+        val intersection = Region(region)
         val isNotEmpty = intersection.op(other, Region.Op.XOR)
 
         if (isNotEmpty) {
@@ -345,11 +350,11 @@ class RegionSubject(
     }
 
     /** {@inheritDoc} */
-    override fun coversExactly(other: Rect): RegionSubject = coversExactly(Region.from(other))
+    override fun coversExactly(other: Rect): RegionSubject = coversExactly(Region(other))
 
     /** {@inheritDoc} */
     override fun overlaps(other: Region): RegionSubject = apply {
-        val intersection = Region.from(region)
+        val intersection = Region(region)
         val isEmpty = !intersection.op(other, Region.Op.INTERSECT)
 
         if (isEmpty) {
@@ -364,11 +369,11 @@ class RegionSubject(
     }
 
     /** {@inheritDoc} */
-    override fun overlaps(other: Rect): RegionSubject = overlaps(Region.from(other))
+    override fun overlaps(other: Rect): RegionSubject = overlaps(Region(other))
 
     /** {@inheritDoc} */
     override fun notOverlaps(other: Region): RegionSubject = apply {
-        val intersection = Region.from(region)
+        val intersection = Region(region)
         val isEmpty = !intersection.op(other, Region.Op.INTERSECT)
 
         if (!isEmpty) {
@@ -384,12 +389,14 @@ class RegionSubject(
     }
 
     /** {@inheritDoc} */
-    override fun notOverlaps(other: Rect): RegionSubject = apply { notOverlaps(Region.from(other)) }
+    override fun notOverlaps(other: Rect): RegionSubject = apply { notOverlaps(Region(other)) }
 
     /** {@inheritDoc} */
     override fun isSameAspectRatio(other: Region, threshold: Double): RegionSubject = apply {
-        val aspectRatio = this.region.width.toFloat() / this.region.height
-        val otherAspectRatio = other.width.toFloat() / other.height
+        val thisBounds = this.region.bounds
+        val otherBounds = other.bounds
+        val aspectRatio = thisBounds.width().toFloat() / thisBounds.height()
+        val otherAspectRatio = otherBounds.width().toFloat() / otherBounds.height()
         if (abs(aspectRatio - otherAspectRatio) > threshold) {
             val errorMsgBuilder =
                 ExceptionMessageBuilder()
@@ -408,20 +415,20 @@ class RegionSubject(
 
     /** {@inheritDoc} */
     override fun hasSameBottomPosition(displayRect: Rect): RegionSubject = apply {
-        assertEquals("bottom", Region.from(displayRect)) { it.bottom }
+        assertEquals("bottom", Region(displayRect)) { it.bottom }
     }
 
     /** {@inheritDoc} */
     override fun hasSameTopPosition(displayRect: Rect): RegionSubject = apply {
-        assertEquals("top", Region.from(displayRect)) { it.top }
+        assertEquals("top", Region(displayRect)) { it.top }
     }
 
     override fun hasSameLeftPosition(displayRect: Rect): RegionSubject = apply {
-        assertEquals("left", Region.from(displayRect)) { it.left }
+        assertEquals("left", Region(displayRect)) { it.left }
     }
 
     override fun hasSameRightPosition(displayRect: Rect): RegionSubject = apply {
-        assertEquals("right", Region.from(displayRect)) { it.right }
+        assertEquals("right", Region(displayRect)) { it.right }
     }
 
     fun isSameAspectRatio(other: RegionSubject, threshold: Double = 0.1): RegionSubject =
@@ -478,10 +485,8 @@ class RegionSubject(
 
     companion object {
         private fun mergeRegions(regions: Collection<Region>): Region {
-            val result = Region.EMPTY
-            regions.forEach { region ->
-                region.rects.forEach { rect -> result.op(rect, Region.Op.UNION) }
-            }
+            val result = Region()
+            regions.forEach { region -> result.op(region, Region.Op.UNION) }
             return result
         }
     }
