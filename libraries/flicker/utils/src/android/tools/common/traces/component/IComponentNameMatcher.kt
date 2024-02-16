@@ -23,21 +23,14 @@ interface IComponentNameMatcher : IComponentMatcher, IComponentName {
 
     /**
      * @param layer to search
-     * @return if any of the [components] matches [layer]
+     * @return if any of the [layer] matches [layer]
      */
     fun activityRecordMatchesAnyOf(layer: Layer): Boolean =
-        activityRecordMatchesAnyOf(arrayOf(layer))
+        activityRecordMatchesAnyOf(listOf(layer))
 
     /**
      * @param layers to search
-     * @return if any of the [components] matches any of [layers]
+     * @return if any of the [layers] matches any of [layers]
      */
-    fun activityRecordMatchesAnyOf(layers: Collection<Layer>): Boolean =
-        activityRecordMatchesAnyOf(layers.toTypedArray())
-
-    /**
-     * @param layers to search
-     * @return if any of the [components] matches any of [layers]
-     */
-    fun activityRecordMatchesAnyOf(layers: Array<Layer>): Boolean
+    fun activityRecordMatchesAnyOf(layers: Collection<Layer>): Boolean
 }

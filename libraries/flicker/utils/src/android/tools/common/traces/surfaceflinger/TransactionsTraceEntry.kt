@@ -22,5 +22,5 @@ import android.tools.common.TraceEntry
 class TransactionsTraceEntry(
     override val timestamp: Timestamp,
     val vSyncId: Long,
-    val transactions: Array<Transaction>
+    val transactions: Collection<Transaction>
 ) : TraceEntry

@@ -16,8 +16,6 @@
 
 package android.tools.common.datatypes
 
-import kotlin.js.JsExport
-import kotlin.js.JsName
 import kotlin.math.min
 
 /**
@@ -30,7 +28,6 @@ import kotlin.math.min
  * It has a single constructor and different [from] functions on its companion because JS doesn't
  * support constructor overload
  */
-@JsExport
 class Region(rects: Array<Rect> = arrayOf()) : DataType() {
     private var fBounds = Rect.EMPTY
     private var fRunHead: RunHead? = RunHead(isEmptyHead = true)
@@ -45,26 +42,21 @@ class Region(rects: Array<Rect> = arrayOf()) : DataType() {
         }
     }
 
-    @JsName("rects")
     val rects
         get() = getRectsFromString(toString())
 
-    @JsName("width")
     val width: Int
         get() = bounds.width
-    @JsName("height")
     val height: Int
         get() = bounds.height
 
     // if null we are a rect not empty
     override val isEmpty
         get() = fRunHead?.isEmptyHead ?: false
-    @JsName("bounds")
     val bounds
         get() = fBounds
 
     /** Set the region to the empty region */
-    @JsName("setEmpty")
     fun setEmpty(): Boolean {
         fBounds = Rect.EMPTY
         fRunHead = RunHead(isEmptyHead = true)
@@ -73,7 +65,6 @@ class Region(rects: Array<Rect> = arrayOf()) : DataType() {
     }
 
     /** Set the region to the specified region. */
-    @JsName("setRegion")
     fun set(region: Region): Boolean {
         fBounds = region.fBounds.clone()
         fRunHead = region.fRunHead?.clone()
@@ -81,7 +72,6 @@ class Region(rects: Array<Rect> = arrayOf()) : DataType() {
     }
 
     /** Set the region to the specified rectangle */
-    @JsName("setRect")
     fun set(r: Rect): Boolean {
         return if (r.isEmpty || RUN_TYPE_SENTINEL == r.right || RUN_TYPE_SENTINEL == r.bottom) {
             this.setEmpty()
@@ -93,22 +83,18 @@ class Region(rects: Array<Rect> = arrayOf()) : DataType() {
     }
 
     /** Set the region to the specified rectangle */
-    @JsName("set")
     operator fun set(left: Int, top: Int, right: Int, bottom: Int): Boolean {
         return set(Rect.withoutCache(left, top, right, bottom))
     }
 
-    @JsName("isRect")
     fun isRect(): Boolean {
         return fRunHead == null
     }
 
-    @JsName("isComplex")
     fun isComplex(): Boolean {
         return !this.isEmpty && !this.isRect()
     }
 
-    @JsName("contains")
     fun contains(x: Int, y: Int): Boolean {
         if (!fBounds.contains(x, y)) {
             return false
@@ -211,7 +197,6 @@ class Region(rects: Array<Rect> = arrayOf()) : DataType() {
             fRunsIndex = runsIndex
         }
 
-        @JsName("done")
         fun done(): Boolean {
             return done
         }
@@ -388,7 +373,6 @@ class Region(rects: Array<Rect> = arrayOf()) : DataType() {
      * Set this region to the result of performing the Op on the specified regions. Return true if
      * the result is not empty.
      */
-    @JsName("opRegions")
     fun op(rgnA: Region, rgnB: Region, op: Op): Boolean {
         return this.oper(rgnA, rgnB, op)
     }
@@ -1035,7 +1019,6 @@ class Region(rects: Array<Rect> = arrayOf()) : DataType() {
      * Perform the specified Op on this region and the specified region. Return true if the result
      * of the op is not empty.
      */
-    @JsName("opRegion")
     fun op(region: Region, op: Op): Boolean {
         return op(this, region, op)
     }
@@ -1044,7 +1027,6 @@ class Region(rects: Array<Rect> = arrayOf()) : DataType() {
      * Perform the specified Op on this region and the specified rect. Return true if the result of
      * the op is not empty.
      */
-    @JsName("op")
     fun op(left: Int, top: Int, right: Int, bottom: Int, op: Op): Boolean {
         return op(Rect.withoutCache(left, top, right, bottom), op)
     }
@@ -1053,7 +1035,6 @@ class Region(rects: Array<Rect> = arrayOf()) : DataType() {
      * Perform the specified Op on this region and the specified rect. Return true if the result of
      * the op is not empty.
      */
-    @JsName("opRect")
     fun op(r: Rect, op: Op): Boolean {
         return op(from(r), op)
     }
@@ -1062,19 +1043,16 @@ class Region(rects: Array<Rect> = arrayOf()) : DataType() {
      * Set this region to the result of performing the Op on the specified rect and region. Return
      * true if the result is not empty.
      */
-    @JsName("opAndSetRegion")
     fun op(rect: Rect, region: Region, op: Op): Boolean {
         return op(from(rect), region, op)
     }
 
-    @JsName("minus")
     fun minus(other: Region): Region {
         val thisRegion = from(this)
         thisRegion.op(other, Op.XOR)
         return thisRegion
     }
 
-    @JsName("coversAtMost")
     fun coversAtMost(testRegion: Region): Boolean {
         if (this.isEmpty) {
             return true
@@ -1084,18 +1062,15 @@ class Region(rects: Array<Rect> = arrayOf()) : DataType() {
         return intersection.op(testRect, Op.INTERSECT) && !intersection.op(this, Op.XOR)
     }
 
-    @JsName("coversAtLeast")
     fun coversAtLeast(testRegion: Region): Boolean {
         val intersection = from(this)
         return intersection.op(testRegion, Op.INTERSECT) && !intersection.op(testRegion, Op.XOR)
     }
 
-    @JsName("coversMoreThan")
     fun coversMoreThan(testRegion: Region): Boolean {
         return coversAtLeast(testRegion) && from(this).minus(testRegion).isNotEmpty
     }
 
-    @JsName("outOfBoundsRegion")
     fun outOfBoundsRegion(testRegion: Region): Region {
         val testRect = testRegion.bounds
         val outOfBoundsRegion = from(this)
@@ -1103,7 +1078,6 @@ class Region(rects: Array<Rect> = arrayOf()) : DataType() {
         return outOfBoundsRegion
     }
 
-    @JsName("uncoveredRegion")
     fun uncoveredRegion(testRegion: Region): Region {
         val uncoveredRegion = from(this)
         uncoveredRegion.op(testRegion, Op.INTERSECT) && uncoveredRegion.op(testRegion, Op.XOR)
@@ -1111,7 +1085,6 @@ class Region(rects: Array<Rect> = arrayOf()) : DataType() {
     }
 
     companion object {
-        @JsName("EMPTY")
         val EMPTY: Region
             get() = Region()
 
@@ -1129,22 +1102,20 @@ class Region(rects: Array<Rect> = arrayOf()) : DataType() {
                 Op.XOR to MinMax(1, 2)
             )
 
-        @JsName("from")
         fun from(left: Int, top: Int, right: Int, bottom: Int): Region =
             from(Rect.withoutCache(left, top, right, bottom))
 
-        @JsName("fromRegion") fun from(region: Region): Region = Region().also { it.set(region) }
+        fun from(region: Region): Region = Region().also { it.set(region) }
 
-        @JsName("fromRect")
         fun from(rect: Rect? = null): Region =
             Region().also {
                 it.fRunHead = null
                 it.setRect(rect ?: Rect.EMPTY)
             }
 
-        @JsName("fromRectF") fun from(rect: RectF?): Region = from(rect?.toRect())
+        fun from(rect: RectF?): Region = from(rect?.toRect())
 
-        @JsName("fromEmpty") fun from(): Region = from(Rect.EMPTY)
+        fun from(): Region = from(Rect.EMPTY)
 
         private fun skRegionValueIsSentinel(value: Int): Boolean {
             return value == RUN_TYPE_SENTINEL

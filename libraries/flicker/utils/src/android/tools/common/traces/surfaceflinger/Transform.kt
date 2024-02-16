@@ -20,23 +20,18 @@ import android.tools.common.Rotation
 import android.tools.common.datatypes.Matrix33
 import android.tools.common.datatypes.RectF
 import android.tools.common.withCache
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /**
  * Wrapper for TransformProto (frameworks/native/services/surfaceflinger/layerproto/common.proto)
  *
  * This class is used by flicker and Winscope
  */
-@JsExport
-class Transform
-private constructor(@JsName("type") val type: Int?, @JsName("matrix") val matrix: Matrix33) {
+class Transform private constructor(val type: Int?, val matrix: Matrix33) {
 
     /**
      * Returns true if the applying the transform on an an axis aligned rectangle results in another
      * axis aligned rectangle.
      */
-    @JsName("isSimpleRotation")
     val isSimpleRotation: Boolean = !(type?.isFlagSet(ROT_INVALID_VAL) ?: false)
 
     /**
@@ -55,20 +50,16 @@ private constructor(@JsName("type") val type: Int?, @JsName("matrix") val matrix
      *
      * This check is included above.
      */
-    @JsName("isValid")
     val isValid: Boolean
         get() {
             // determinant of transform
             return matrix.dsdx * matrix.dtdy != matrix.dtdx * matrix.dsdy
         }
 
-    @JsName("isScaling")
     val isScaling: Boolean
         get() = type?.isFlagSet(SCALE_VAL) ?: false
-    @JsName("isTranslating")
     val isTranslating: Boolean
         get() = type?.isFlagSet(TRANSLATE_VAL) ?: false
-    @JsName("isRotating")
     val isRotating: Boolean
         get() = type?.isFlagSet(ROTATE_VAL) ?: false
 
@@ -86,10 +77,10 @@ private constructor(@JsName("type") val type: Int?, @JsName("matrix") val matrix
         }
     }
 
-    private val typeFlags: Array<String>
+    private val typeFlags: Collection<String>
         get() {
             if (type == null) {
-                return arrayOf("IDENTITY")
+                return listOf("IDENTITY")
             }
 
             val result = mutableListOf<String>()
@@ -127,11 +118,10 @@ private constructor(@JsName("type") val type: Int?, @JsName("matrix") val matrix
                 throw RuntimeException("Unknown transform type $type")
             }
 
-            return result.toTypedArray()
+            return result
         }
 
-    @JsName("prettyPrint")
-    fun prettyPrint(): String {
+    override fun toString(): String {
         val transformType = typeFlags.joinToString("|")
 
         if (isSimpleTransform(type)) {
@@ -141,14 +131,6 @@ private constructor(@JsName("type") val type: Int?, @JsName("matrix") val matrix
         return "$transformType $matrix"
     }
 
-    @JsName("getTypeAsString")
-    fun getTypeAsString(): String {
-        return typeFlags.joinToString("|")
-    }
-
-    override fun toString(): String = prettyPrint()
-
-    @JsName("apply")
     fun apply(bounds: RectF?): RectF {
         return multiplyRect(matrix, bounds ?: RectF.EMPTY)
     }
@@ -202,22 +184,20 @@ private constructor(@JsName("type") val type: Int?, @JsName("matrix") val matrix
     }
 
     companion object {
-        @JsName("EMPTY")
         val EMPTY: Transform
             get() = withCache { Transform(type = null, matrix = Matrix33.EMPTY) }
 
         /* transform type flags */
-        @JsName("TRANSLATE_VAL") const val TRANSLATE_VAL = 0x0001
-        @JsName("ROTATE_VAL") const val ROTATE_VAL = 0x0002
-        @JsName("SCALE_VAL") const val SCALE_VAL = 0x0004
+        const val TRANSLATE_VAL = 0x0001
+        const val ROTATE_VAL = 0x0002
+        const val SCALE_VAL = 0x0004
 
         /* orientation flags */
-        @JsName("FLIP_H_VAL") const val FLIP_H_VAL = 0x0100 // (1 << 0 << 8)
-        @JsName("FLIP_V_VAL") const val FLIP_V_VAL = 0x0200 // (1 << 1 << 8)
-        @JsName("ROT_90_VAL") const val ROT_90_VAL = 0x0400 // (1 << 2 << 8)
-        @JsName("ROT_INVALID_VAL") const val ROT_INVALID_VAL = 0x8000 // (0x80 << 8)
+        const val FLIP_H_VAL = 0x0100 // (1 << 0 << 8)
+        const val FLIP_V_VAL = 0x0200 // (1 << 1 << 8)
+        const val ROT_90_VAL = 0x0400 // (1 << 2 << 8)
+        const val ROT_INVALID_VAL = 0x8000 // (0x80 << 8)
 
-        @JsName("isSimpleTransform")
         fun isSimpleTransform(type: Int?): Boolean {
             return type?.isFlagClear(ROT_INVALID_VAL or SCALE_VAL) ?: false
         }
@@ -230,7 +210,6 @@ private constructor(@JsName("type") val type: Int?, @JsName("matrix") val matrix
             return this and bits == bits
         }
 
-        @JsName("from")
         fun from(type: Int?, matrix: Matrix33): Transform = withCache { Transform(type, matrix) }
     }
 }

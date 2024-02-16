@@ -43,8 +43,8 @@ class LayerTraceEntryBuilderTest {
         val builder =
             LayerTraceEntryBuilder()
                 .setElapsedTimestamp(100)
-                .setLayers(emptyArray())
-                .setDisplays(emptyArray())
+                .setLayers(emptyList())
+                .setDisplays(emptyList())
                 .setVSyncId(123)
                 .setRealToElapsedTimeOffsetNs(500)
         val entry = builder.build()
@@ -61,8 +61,8 @@ class LayerTraceEntryBuilderTest {
         val builder =
             LayerTraceEntryBuilder()
                 .setElapsedTimestamp(100)
-                .setLayers(emptyArray())
-                .setDisplays(emptyArray())
+                .setLayers(emptyList())
+                .setDisplays(emptyList())
                 .setVSyncId(123)
         val entry = builder.build()
         Truth.assertThat(entry.elapsedTimestamp).isEqualTo(100)
@@ -125,8 +125,8 @@ class LayerTraceEntryBuilderTest {
         val builder =
             LayerTraceEntryBuilder()
                 .setElapsedTimestamp(100)
-                .setLayers(layers.toTypedArray())
-                .setDisplays(displays.toTypedArray())
+                .setLayers(layers)
+                .setDisplays(displays)
                 .setVSyncId(123)
         val entry = builder.build()
 

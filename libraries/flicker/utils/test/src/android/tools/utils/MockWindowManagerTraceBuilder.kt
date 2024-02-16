@@ -34,7 +34,7 @@ class MockWindowManagerTraceBuilder(
             "Timestamps not strictly increasing between entries."
         }
 
-        val entries = entries.map { it.build() }.toTypedArray()
+        val entries = entries.map { it.build() }
         return WindowManagerTrace(entries)
     }
 }

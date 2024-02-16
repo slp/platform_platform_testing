@@ -33,12 +33,12 @@ class WindowContainerImpl(
     override val layerId: Int,
     _isVisible: Boolean,
     private val configurationContainer: ConfigurationContainer,
-    _children: Array<WindowContainer>,
+    _children: Collection<WindowContainer>,
     override val computedZ: Int
 ) : ConfigurationContainer by configurationContainer, WindowContainer {
     override val id: Int = if (token.isEmpty()) -1 else token.toInt(16)
 
-    override val children: Array<WindowContainer> = _children
+    override val children: Collection<WindowContainer> = _children
 
     override var parent: WindowContainer? = null
 
@@ -102,7 +102,7 @@ class WindowContainerImpl(
         var result = title.hashCode()
         result = 31 * result + token.hashCode()
         result = 31 * result + orientation
-        result = 31 * result + children.contentHashCode()
+        result = 31 * result + children.hashCode()
         result = 31 * result + isVisible.hashCode()
         result = 31 * result + name.hashCode()
         result = 31 * result + isFullscreen.hashCode()

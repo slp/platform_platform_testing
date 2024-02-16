@@ -33,21 +33,21 @@ class ExactComponentIdMatcher(private val windowId: Int, private val layerId: In
      * @param windows to search
      * @return if any of the components matches any of [windows]
      */
-    override fun windowMatchesAnyOf(windows: Array<WindowContainer>) =
+    override fun windowMatchesAnyOf(windows: Collection<WindowContainer>) =
         windows.any { it.token == windowId.toString(16) }
 
     /**
      * @param activities to search
      * @return if any of the components matches any of [activities]
      */
-    override fun activityMatchesAnyOf(activities: Array<Activity>) =
+    override fun activityMatchesAnyOf(activities: Collection<Activity>) =
         activities.any { it.token == windowId.toString(16) }
 
     /**
      * @param layers to search
      * @return if any of the components matches any of [layers]
      */
-    override fun layerMatchesAnyOf(layers: Array<Layer>) = layers.any { it.id == layerId }
+    override fun layerMatchesAnyOf(layers: Collection<Layer>) = layers.any { it.id == layerId }
 
     /** {@inheritDoc} */
     override fun check(

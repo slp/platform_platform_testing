@@ -17,15 +17,12 @@
 package android.tools.common.datatypes
 
 import android.tools.common.withCache
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /**
  * Wrapper for RectProto objects representing insets
  *
  * This class is used by flicker and Winscope
  */
-@JsExport
 class Insets
 private constructor(val left: Int = 0, val top: Int = 0, val right: Int = 0, val bottom: Int = 0) :
     DataType() {
@@ -34,11 +31,9 @@ private constructor(val left: Int = 0, val top: Int = 0, val right: Int = 0, val
     override fun doPrintValue() = "($left, $top) - ($right, $bottom)"
 
     companion object {
-        @JsName("EMPTY")
         val EMPTY: Insets
             get() = withCache { Insets() }
 
-        @JsName("from")
         fun from(left: Int, top: Int, right: Int, bottom: Int): Insets = withCache {
             Insets(left, top, right, bottom)
         }

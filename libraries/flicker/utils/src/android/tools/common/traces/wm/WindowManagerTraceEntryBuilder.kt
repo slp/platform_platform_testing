@@ -58,7 +58,7 @@ class WindowManagerTraceEntryBuilder {
         isDisplayFrozen = value
     }
 
-    fun setPendingActivities(value: Array<String>): WindowManagerTraceEntryBuilder = apply {
+    fun setPendingActivities(value: Collection<String>): WindowManagerTraceEntryBuilder = apply {
         pendingActivities.addAll(value)
     }
 
@@ -72,9 +72,9 @@ class WindowManagerTraceEntryBuilder {
 
     fun setWhere(value: String): WindowManagerTraceEntryBuilder = apply { where = value }
 
-    fun setElapsedTimestamp(value: Long): WindowManagerTraceEntryBuilder =
-        // Necessary for compatibility with JS number type
-        apply { elapsedTimestamp = value }
+    fun setElapsedTimestamp(value: Long): WindowManagerTraceEntryBuilder = apply {
+        elapsedTimestamp = value
+    }
 
     fun setRealToElapsedTimeOffsetNs(value: Long?): WindowManagerTraceEntryBuilder = apply {
         realTimestamp =
@@ -102,7 +102,7 @@ class WindowManagerTraceEntryBuilder {
             inputMethodWindowAppToken,
             isHomeRecentsComponent,
             isDisplayFrozen,
-            pendingActivities.toTypedArray(),
+            pendingActivities,
             root,
             keyguardControllerState
         )

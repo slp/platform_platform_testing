@@ -39,12 +39,11 @@ class WindowManagerTraceParserTest {
         val trace =
             WindowManagerTraceParser(legacyTrace = true)
                 .parse(readAsset("wm_trace_openchrome.pb"), clearCache = false)
-        val firstEntry = trace.entries[0]
+        val firstEntry = trace.entries.first()
         Truth.assertThat(firstEntry.timestamp.elapsedNanos).isEqualTo(9213763541297L)
         Truth.assertThat(firstEntry.windowStates.size).isEqualTo(10)
         Truth.assertThat(firstEntry.visibleWindows.size).isEqualTo(5)
-        Truth.assertThat(trace.entries[trace.entries.size - 1].timestamp.elapsedNanos)
-            .isEqualTo(9216093628925L)
+        Truth.assertThat(trace.entries.last().timestamp.elapsedNanos).isEqualTo(9216093628925L)
     }
 
     @Test
@@ -56,7 +55,7 @@ class WindowManagerTraceParserTest {
                 device.pressRecentApps()
             }
         val trace = WindowManagerTraceParser().parse(data, clearCache = false)
-        Truth.assertThat(trace.entries).asList().isNotEmpty()
+        Truth.assertThat(trace.entries).isNotEmpty()
     }
 
     companion object {

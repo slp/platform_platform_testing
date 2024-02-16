@@ -341,7 +341,7 @@ class WindowManagerStateSubjectTest {
                 inputMethodWindowAppToken = "",
                 isHomeRecentsComponent = false,
                 isDisplayFrozen = false,
-                _pendingActivities = emptyArray(),
+                _pendingActivities = emptyList(),
                 root = emptyRootContainer,
                 keyguardControllerState =
                     KeyguardControllerState.from(

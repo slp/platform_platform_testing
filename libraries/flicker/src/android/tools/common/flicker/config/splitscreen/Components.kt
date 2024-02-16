@@ -45,7 +45,8 @@ object Components {
                     Components.getSplitscreenOpeningComponentMatchers(
                             associatedTransition,
                             layersTrace
-                        )[0]
+                        )
+                        .first()
                 }
                 ScenarioId("SPLIT_SCREEN_EXIT") -> {
                     TODO(

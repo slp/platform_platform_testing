@@ -22,19 +22,19 @@ import android.tools.common.traces.wm.WindowContainer
 
 class EdgeExtensionComponentMatcher : IComponentMatcher {
     /** {@inheritDoc} */
-    override fun windowMatchesAnyOf(windows: Array<WindowContainer>): Boolean {
+    override fun windowMatchesAnyOf(windows: Collection<WindowContainer>): Boolean {
         // Doesn't have a window component only layers
         return false
     }
 
     /** {@inheritDoc} */
-    override fun activityMatchesAnyOf(activities: Array<Activity>): Boolean {
+    override fun activityMatchesAnyOf(activities: Collection<Activity>): Boolean {
         // Doesn't have a window component only layers
         return false
     }
 
     /** {@inheritDoc} */
-    override fun layerMatchesAnyOf(layers: Array<Layer>): Boolean {
+    override fun layerMatchesAnyOf(layers: Collection<Layer>): Boolean {
         return layers.any {
             if (it.name.contains("bbq-wrapper")) {
                 val parent = it.parent ?: return false

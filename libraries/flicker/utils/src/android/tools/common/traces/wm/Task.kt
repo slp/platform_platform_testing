@@ -54,28 +54,28 @@ class Task(
 
     val isRootTask: Boolean
         get() = taskId == rootTaskId
-    val tasks: Array<Task>
-        get() = this.children.reversed().filterIsInstance<Task>().toTypedArray()
-    val taskFragments: Array<TaskFragment>
-        get() = this.children.reversed().filterIsInstance<TaskFragment>().toTypedArray()
-    val activities: Array<Activity>
-        get() = this.children.reversed().filterIsInstance<Activity>().toTypedArray()
+    val tasks: Collection<Task>
+        get() = this.children.reversed().filterIsInstance<Task>()
+    val taskFragments: Collection<TaskFragment>
+        get() = this.children.reversed().filterIsInstance<TaskFragment>()
+    val activities: Collection<Activity>
+        get() = this.children.reversed().filterIsInstance<Activity>()
 
     /** The top task in the stack. */
     // NOTE: Unlike the WindowManager internals, we dump the state from top to bottom,
     //       so the indices are inverted
     val topTask: Task?
         get() = tasks.firstOrNull()
-    val resumedActivities: Array<String>
+    val resumedActivities: Collection<String>
         get() {
-            val result = mutableSetOf<String>()
+            val result = mutableListOf<String>()
             if (this._resumedActivity.isNotEmpty()) {
                 result.add(this._resumedActivity)
             }
             val activitiesInChildren =
-                this.tasks.flatMap { it.resumedActivities.toList() }.filter { it.isNotEmpty() }
+                this.tasks.flatMap { it.resumedActivities }.filter { it.isNotEmpty() }
             result.addAll(activitiesInChildren)
-            return result.toTypedArray()
+            return result
         }
 
     /** @return The first [Task] matching [predicate], or null otherwise */

@@ -58,7 +58,7 @@ class LayerSubject(
     val visibleRegion: RegionSubject
         get() = RegionSubject(layer.visibleRegion, timestamp, reader)
 
-    val visibilityReason: Array<String>
+    val visibilityReason: Collection<String>
         get() = layer.visibilityReason
 
     /**

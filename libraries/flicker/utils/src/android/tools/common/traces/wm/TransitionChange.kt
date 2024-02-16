@@ -17,14 +17,11 @@
 package android.tools.common.traces.wm
 
 import android.tools.common.traces.surfaceflinger.LayersTrace
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
-@JsExport
 class TransitionChange(
-    @JsName("transitMode") val transitMode: TransitionType,
-    @JsName("layerId") val layerId: Int,
-    @JsName("windowId") val windowId: Int,
+    val transitMode: TransitionType,
+    val layerId: Int,
+    val windowId: Int,
 ) {
 
     override fun toString(): String = Formatter(null, null).format(this)
@@ -50,14 +47,14 @@ class TransitionChange(
             val layerName =
                 layersTrace
                     ?.entries
-                    ?.flatMap { it.flattenedLayers.asList() }
+                    ?.flatMap { it.flattenedLayers }
                     ?.firstOrNull { it.id == change.layerId }
                     ?.name
 
             val windowName =
                 wmTrace
                     ?.entries
-                    ?.flatMap { it.windowStates.asList() }
+                    ?.flatMap { it.windowStates }
                     ?.firstOrNull { it.id == change.windowId }
                     ?.name
 

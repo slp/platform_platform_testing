@@ -18,7 +18,6 @@ package android.tools.common.parsers
 
 import android.tools.common.Cache
 import android.tools.common.Timestamp
-import kotlin.js.JsName
 
 /** Base parser class */
 abstract class AbstractParser<InputTypeTrace, OutputTypeTrace> {
@@ -32,7 +31,6 @@ abstract class AbstractParser<InputTypeTrace, OutputTypeTrace> {
      * @param bytes Parsed proto data
      * @param clearCache If the caching used while parsing the object should be cleared
      */
-    @JsName("parse")
     open fun parse(bytes: ByteArray, clearCache: Boolean = true): OutputTypeTrace {
         val input = decodeByteArray(bytes)
         return parse(input, clearCache)

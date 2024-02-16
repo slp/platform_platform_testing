@@ -32,7 +32,7 @@ class TransitionsTraceTest {
     fun canBeCompressed() {
         val compressedTrace =
             TransitionsTrace(
-                    arrayOf(
+                    listOf(
                         Transition(
                             id = 1,
                             wmData =
@@ -62,9 +62,9 @@ class TransitionsTraceTest {
 
         Truth.assertThat(compressedTrace.entries.size).isEqualTo(1)
 
-        Truth.assertThat(compressedTrace.entries[0].createTime.elapsedNanos).isEqualTo(10)
-        Truth.assertThat(compressedTrace.entries[0].sendTime.elapsedNanos).isEqualTo(20)
-        Truth.assertThat(compressedTrace.entries[0].dispatchTime.elapsedNanos).isEqualTo(22)
-        Truth.assertThat(compressedTrace.entries[0].finishTime.elapsedNanos).isEqualTo(40)
+        Truth.assertThat(compressedTrace.entries.first().createTime.elapsedNanos).isEqualTo(10)
+        Truth.assertThat(compressedTrace.entries.first().sendTime.elapsedNanos).isEqualTo(20)
+        Truth.assertThat(compressedTrace.entries.first().dispatchTime.elapsedNanos).isEqualTo(22)
+        Truth.assertThat(compressedTrace.entries.first().finishTime.elapsedNanos).isEqualTo(40)
     }
 }

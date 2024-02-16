@@ -16,15 +16,12 @@
 
 package android.tools.common.traces.events
 
-import kotlin.js.JsExport
-
 /**
  * From com.android.internal.jank.InteractionJankMonitor.
  *
  * NOTE: Make sure order is the same as in {@see com.android.internal.jank.InteractionJankMonitor}.
  */
 // TODO: Can we re-use to enum generated from the proto stats/enums/jank/enums.proto?
-@JsExport
 enum class CujType(val id: Int) {
     CUJ_NOTIFICATION_SHADE_EXPAND_COLLAPSE(0),
     CUJ_NOTIFICATION_SHADE_SCROLL_FLING(2),

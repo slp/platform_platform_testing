@@ -32,7 +32,7 @@ class ExceptionMessageBuilder {
 
     fun forSubject(value: FlickerSubject) = apply {
         setTimestamp(value.timestamp)
-        addExtraDescription(*value.selfFacts.toTypedArray())
+        addExtraDescription(value.selfFacts)
         val reader = value.reader
         if (reader != null) {
             setReader(reader)
@@ -59,15 +59,15 @@ class ExceptionMessageBuilder {
 
     fun setActual(value: Collection<String>) = apply { actual.addAll(value) }
 
-    fun setActual(value: List<Fact>) = apply { actual.addAll(value.map { it.toString() }) }
-
     fun setActual(value: Any?) = setActual(listOf(value?.toString() ?: "null"))
 
     fun setReader(value: Reader) = addExtraDescription("Artifact", value.artifact)
 
     fun addExtraDescription(key: String, value: Any?) = addExtraDescription(Fact(key, value))
 
-    fun addExtraDescription(vararg value: Fact) = apply { extraDescription.addAll(value.toList()) }
+    fun addExtraDescription(vararg value: Fact) = addExtraDescription(value.toList())
+
+    fun addExtraDescription(value: Collection<Fact>) = apply { extraDescription.addAll(value) }
 
     fun build(): String = buildString {
         if (headerDescription.isNotEmpty()) {

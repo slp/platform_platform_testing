@@ -36,8 +36,8 @@ class WmTransitionTraceParser :
     >() {
     override val traceName: String = "Transition trace (WM)"
 
-    override fun createTrace(entries: List<Transition>): TransitionsTrace {
-        return TransitionsTrace(entries.toTypedArray())
+    override fun createTrace(entries: Collection<Transition>): TransitionsTrace {
+        return TransitionsTrace(entries)
     }
 
     override fun doDecodeByteArray(bytes: ByteArray): TransitionTraceProto =
@@ -49,7 +49,7 @@ class WmTransitionTraceParser :
 
     override fun getEntries(
         input: TransitionTraceProto
-    ): List<com.android.server.wm.shell.nano.Transition> = input.transitions.toList()
+    ): Collection<com.android.server.wm.shell.nano.Transition> = input.transitions.toList()
 
     override fun getTimestamp(entry: com.android.server.wm.shell.nano.Transition): Timestamp {
         requireValidTimestamp(entry)
@@ -93,15 +93,13 @@ class WmTransitionTraceParser :
             if (entry.targets.isEmpty()) {
                 null
             } else {
-                entry.targets
-                    .map {
-                        TransitionChange(
-                            TransitionType.fromInt(it.mode),
-                            it.layerId,
-                            it.windowId,
-                        )
-                    }
-                    .toTypedArray()
+                entry.targets.map {
+                    TransitionChange(
+                        TransitionType.fromInt(it.mode),
+                        it.layerId,
+                        it.windowId,
+                    )
+                }
             }
 
         return Transition(

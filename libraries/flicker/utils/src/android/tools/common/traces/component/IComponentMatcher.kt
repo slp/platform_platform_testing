@@ -22,61 +22,44 @@ import android.tools.common.traces.wm.WindowContainer
 
 interface IComponentMatcher {
     fun or(other: IComponentMatcher): IComponentMatcher {
-        return OrComponentMatcher(arrayOf(this, other))
+        return OrComponentMatcher(listOf(this, other))
     }
 
     /**
      * @param window to search
      * @return if any of the components matches [window]
      */
-    fun windowMatchesAnyOf(window: WindowContainer): Boolean = windowMatchesAnyOf(arrayOf(window))
-
-    /**
-     * @param windows to search
-     * @return if any of the components matches any of [windows]
-     */
-    fun windowMatchesAnyOf(windows: Collection<WindowContainer>): Boolean =
-        windowMatchesAnyOf(windows.toTypedArray())
+    fun windowMatchesAnyOf(window: WindowContainer): Boolean = windowMatchesAnyOf(listOf(window))
 
     /**
      * @param windows to search
      * @return if any of the [windows] fit the matching conditions of the matcher
      */
-    fun windowMatchesAnyOf(windows: Array<WindowContainer>): Boolean
+    fun windowMatchesAnyOf(windows: Collection<WindowContainer>): Boolean
 
     /**
      * @param activity to search
      * @return if any of the components matches [activity]
      */
-    fun activityMatchesAnyOf(activity: Activity): Boolean = activityMatchesAnyOf(arrayOf(activity))
+    fun activityMatchesAnyOf(activity: Activity): Boolean = activityMatchesAnyOf(listOf(activity))
 
     /**
      * @param activities to search
      * @return if any of the components matches any of [activities]
      */
-    fun activityMatchesAnyOf(activities: Collection<Activity>): Boolean =
-        activityMatchesAnyOf(activities.toTypedArray())
-
-    /**
-     * @param activities to search
-     * @return if any of the components matches any of [activities]
-     */
-    fun activityMatchesAnyOf(activities: Array<Activity>): Boolean
+    fun activityMatchesAnyOf(activities: Collection<Activity>): Boolean
 
     /**
      * @param layer to search
      * @return if any of the components matches [layer]
      */
-    fun layerMatchesAnyOf(layer: Layer): Boolean = layerMatchesAnyOf(arrayOf(layer))
+    fun layerMatchesAnyOf(layer: Layer): Boolean = layerMatchesAnyOf(listOf(layer))
 
     /**
      * @param layers to search
      * @return if any of the components matches any of [layers]
      */
-    fun layerMatchesAnyOf(layers: Collection<Layer>): Boolean =
-        layerMatchesAnyOf(layers.toTypedArray())
-
-    fun layerMatchesAnyOf(layers: Array<Layer>): Boolean
+    fun layerMatchesAnyOf(layers: Collection<Layer>): Boolean
 
     /**
      * @return an identifier string that provides enough information to determine which activities

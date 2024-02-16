@@ -16,9 +16,6 @@
 
 package android.tools.common
 
-import kotlin.js.JsExport
-
-@JsExport
 object PlatformConsts {
     /**
      * The default Display id, which is the id of the primary display assuming there is one.

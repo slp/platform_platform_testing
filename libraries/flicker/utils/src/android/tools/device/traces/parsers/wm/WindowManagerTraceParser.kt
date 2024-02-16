@@ -36,11 +36,10 @@ open class WindowManagerTraceParser(private val legacyTrace: Boolean = false) :
     override fun doDecodeByteArray(bytes: ByteArray): WindowManagerTraceFileProto =
         WindowManagerTraceFileProto.parseFrom(bytes)
 
-    override fun createTrace(entries: List<WindowManagerState>): WindowManagerTrace =
-        WindowManagerTrace(entries.toTypedArray())
+    override fun createTrace(entries: Collection<WindowManagerState>): WindowManagerTrace =
+        WindowManagerTrace(entries)
 
-    override fun getEntries(input: WindowManagerTraceFileProto): List<WindowManagerTraceProto> =
-        input.entry.toList()
+    override fun getEntries(input: WindowManagerTraceFileProto) = input.entry.toList()
 
     override fun getTimestamp(entry: WindowManagerTraceProto): Timestamp {
         require(legacyTrace || realToElapsedTimeOffsetNanos != 0L)

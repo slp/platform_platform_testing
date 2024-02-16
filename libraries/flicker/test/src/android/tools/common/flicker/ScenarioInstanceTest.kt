@@ -100,13 +100,13 @@ class ScenarioInstanceTest {
             results.first { it.name == "MY_CUSTOM_SCENARIO::myAssertionMultiple" }
 
         Truth.assertThat(singleAssertionResult.failed).isTrue()
-        Truth.assertThat(singleAssertionResult.assertionErrors.asList()).hasSize(1)
+        Truth.assertThat(singleAssertionResult.assertionErrors).hasSize(1)
         Truth.assertThat(singleAssertionResult.assertionErrors.first())
             .hasMessageThat()
             .startsWith(errorMessage)
 
         Truth.assertThat(multipleAssertionResult.failed).isTrue()
-        Truth.assertThat(multipleAssertionResult.assertionErrors.asList()).hasSize(2)
+        Truth.assertThat(multipleAssertionResult.assertionErrors).hasSize(2)
         Truth.assertThat(multipleAssertionResult.assertionErrors.first())
             .hasMessageThat()
             .startsWith(errorMessage)
@@ -169,15 +169,17 @@ class ScenarioInstanceTest {
 
         val assertion1Result = results.first { it.name == "MY_CUSTOM_SCENARIO::myAssertion1" }
         Truth.assertThat(assertion1Result.failed).isTrue()
-        Truth.assertThat(assertion1Result.assertionErrors.asList()).hasSize(1)
+        Truth.assertThat(assertion1Result.assertionErrors).hasSize(1)
         Truth.assertThat(assertion1Result.assertionErrors.first())
             .hasMessageThat()
             .startsWith(errorMessage)
 
         val assertion2Result = results.first { it.name == "MY_CUSTOM_SCENARIO::myAssertion2" }
         Truth.assertThat(assertion2Result.failed).isTrue()
-        Truth.assertThat(assertion2Result.assertionErrors.asList()).hasSize(2)
-        Truth.assertThat(assertion2Result.assertionErrors[0].message).contains("Some flicker error")
-        Truth.assertThat(assertion2Result.assertionErrors[1].message).contains(errorMessage)
+        Truth.assertThat(assertion2Result.assertionErrors).hasSize(2)
+        Truth.assertThat(assertion2Result.assertionErrors.first().message)
+            .contains("Some flicker error")
+        Truth.assertThat(assertion2Result.assertionErrors.drop(1).first().message)
+            .contains(errorMessage)
     }
 }

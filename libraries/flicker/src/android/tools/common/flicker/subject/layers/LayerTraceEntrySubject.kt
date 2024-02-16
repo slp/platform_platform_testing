@@ -17,6 +17,7 @@
 package android.tools.common.flicker.subject.layers
 
 import android.tools.common.datatypes.Color
+import android.tools.common.datatypes.Region
 import android.tools.common.flicker.assertions.Fact
 import android.tools.common.flicker.subject.FlickerSubject
 import android.tools.common.flicker.subject.exceptions.ExceptionMessageBuilder
@@ -117,10 +118,10 @@ class LayerTraceEntrySubject(
 
         val visibleLayers = selectedLayers.filter { it.isVisible }
         return if (useCompositionEngineRegionOnly) {
-            val visibleAreas = visibleLayers.mapNotNull { it.layer.visibleRegion }.toTypedArray()
+            val visibleAreas = visibleLayers.mapNotNull { it.layer.visibleRegion }
             RegionSubject(visibleAreas, timestamp, reader)
         } else {
-            val visibleAreas = visibleLayers.map { it.layer.screenBounds }.toTypedArray()
+            val visibleAreas = visibleLayers.map { Region.from(it.layer.screenBounds) }
             RegionSubject(visibleAreas, timestamp, reader)
         }
     }

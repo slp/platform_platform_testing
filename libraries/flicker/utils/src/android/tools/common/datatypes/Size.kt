@@ -17,26 +17,20 @@
 package android.tools.common.datatypes
 
 import android.tools.common.withCache
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /**
  * Wrapper for SizeProto (frameworks/native/services/surfaceflinger/layerproto/common.proto)
  *
  * This class is used by flicker and Winscope
  */
-@JsExport
-open class Size
-protected constructor(@JsName("width") val width: Int, @JsName("height") val height: Int) :
-    DataType() {
+open class Size protected constructor(val width: Int, val height: Int) : DataType() {
     override val isEmpty = height == 0 || width == 0
 
     override fun doPrintValue() = "$width x $height"
 
     companion object {
-        @JsName("EMPTY")
         val EMPTY: Size
             get() = withCache { Size(width = 0, height = 0) }
-        @JsName("from") fun from(width: Int, height: Int): Size = withCache { Size(width, height) }
+        fun from(width: Int, height: Int): Size = withCache { Size(width, height) }
     }
 }

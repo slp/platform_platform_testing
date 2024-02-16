@@ -16,23 +16,17 @@
 
 package android.tools.common.datatypes
 
-import kotlin.js.JsExport
-import kotlin.js.JsName
-
-@JsExport
 abstract class DataType {
     private val hashCode by lazy { doPrintValue().hashCode() }
 
-    @JsName("isEmpty") abstract val isEmpty: Boolean
+    abstract val isEmpty: Boolean
 
     val isNotEmpty
         get() = !isEmpty
 
     protected abstract fun doPrintValue(): String
 
-    @JsName("prettyPrint") fun prettyPrint(): String = if (isEmpty) "[empty]" else doPrintValue()
-
-    final override fun toString() = prettyPrint()
+    final override fun toString() = if (isEmpty) "[empty]" else doPrintValue()
 
     final override fun hashCode() = hashCode
 
