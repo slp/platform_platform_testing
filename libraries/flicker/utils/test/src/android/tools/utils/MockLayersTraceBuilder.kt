@@ -16,7 +16,7 @@
 
 package android.tools.utils
 
-import android.tools.common.traces.surfaceflinger.LayersTrace
+import android.tools.traces.surfaceflinger.LayersTrace
 
 class MockLayersTraceBuilder(
     private var entries: MutableList<MockLayerTraceEntryBuilder> = mutableListOf()

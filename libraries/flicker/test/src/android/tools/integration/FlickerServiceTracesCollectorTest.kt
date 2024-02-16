@@ -17,12 +17,12 @@
 package android.tools.integration
 
 import android.app.Instrumentation
-import android.tools.common.io.TraceType
 import android.tools.device.apphelpers.ClockAppHelper
-import android.tools.device.flicker.FlickerServiceTracesCollector
-import android.tools.device.flicker.isShellTransitionsEnabled
-import android.tools.device.flicker.rules.ArtifactSaverRule
-import android.tools.device.traces.parsers.WindowManagerStateHelper
+import android.tools.flicker.FlickerServiceTracesCollector
+import android.tools.flicker.isShellTransitionsEnabled
+import android.tools.flicker.rules.ArtifactSaverRule
+import android.tools.io.TraceType
+import android.tools.traces.parsers.WindowManagerStateHelper
 import android.tools.utils.CleanFlickerEnvironmentRule
 import android.tools.utils.TEST_SCENARIO
 import android.tools.utils.assertArchiveContainsFiles

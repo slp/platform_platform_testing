@@ -16,7 +16,7 @@
 
 package android.tools.utils
 
-import android.tools.common.datatypes.Rect
+import android.tools.datatypes.Rect
 import com.google.common.truth.Truth
 import org.junit.ClassRule
 import org.junit.Test
