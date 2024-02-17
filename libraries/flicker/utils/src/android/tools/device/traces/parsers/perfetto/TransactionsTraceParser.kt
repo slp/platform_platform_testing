@@ -32,8 +32,8 @@ class TransactionsTraceParser :
 
     override val traceName = "Layers trace (SF)"
 
-    override fun createTrace(entries: List<TransactionsTraceEntry>): TransactionsTrace {
-        return TransactionsTrace(entries.toTypedArray())
+    override fun createTrace(entries: Collection<TransactionsTraceEntry>): TransactionsTrace {
+        return TransactionsTrace(entries)
     }
 
     override fun doDecodeByteArray(bytes: ByteArray): TraceProcessorSession {
@@ -101,25 +101,19 @@ class TransactionsTraceParser :
             realToMonotonicTimeOffsetNs: Long
         ): TransactionsTraceEntry {
             val args = Args.build(rows)
-            val transactions: Array<Transaction> =
-                args
-                    .getChildren("transactions")
-                    ?.map { transaction ->
-                        Transaction(
-                            transaction.getChild("pid")?.getInt() ?: -1,
-                            transaction.getChild("uid")?.getInt() ?: -1,
-                            transaction.getChild("vsync_id")?.getLong() ?: -1,
-                            transaction.getChild("post_time")?.getLong() ?: -1,
-                            transaction.getChild("transaction_id")?.getLong() ?: -1,
-                            transaction
-                                .getChildren("merged_transaction_ids")
-                                ?.map { it.getLong() }
-                                ?.toTypedArray()
-                                ?: arrayOf()
-                        )
-                    }
-                    ?.toTypedArray()
-                    ?: arrayOf()
+            val transactions: Collection<Transaction> =
+                args.getChildren("transactions")?.map { transaction ->
+                    Transaction(
+                        transaction.getChild("pid")?.getInt() ?: -1,
+                        transaction.getChild("uid")?.getInt() ?: -1,
+                        transaction.getChild("vsync_id")?.getLong() ?: -1,
+                        transaction.getChild("post_time")?.getLong() ?: -1,
+                        transaction.getChild("transaction_id")?.getLong() ?: -1,
+                        transaction.getChildren("merged_transaction_ids")?.map { it.getLong() }
+                            ?: emptyList()
+                    )
+                }
+                    ?: emptyList()
 
             val traceEntry =
                 TransactionsTraceEntry(

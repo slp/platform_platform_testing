@@ -41,7 +41,7 @@ private constructor(
     val clipChildren: Boolean,
     val visibility: Int,
     val elevation: Double,
-    val children: Array<ViewNode>
+    val children: Collection<ViewNode>
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -98,7 +98,7 @@ private constructor(
             clipChildren: Boolean,
             visibility: Int,
             elevation: Double,
-            children: Array<ViewNode>
+            children: Collection<ViewNode>
         ): ViewNode = withCache {
             ViewNode(
                 classNameIndex,

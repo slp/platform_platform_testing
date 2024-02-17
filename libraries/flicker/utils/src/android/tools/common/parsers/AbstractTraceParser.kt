@@ -26,10 +26,10 @@ abstract class AbstractTraceParser<
     InputTypeTrace, InputTypeEntry, OutputTypeEntry, OutputTypeTrace> :
     AbstractParser<InputTypeTrace, OutputTypeTrace>() {
     protected abstract fun onBeforeParse(input: InputTypeTrace)
-    protected abstract fun getEntries(input: InputTypeTrace): List<InputTypeEntry>
+    protected abstract fun getEntries(input: InputTypeTrace): Collection<InputTypeEntry>
     protected abstract fun getTimestamp(entry: InputTypeEntry): Timestamp
     protected abstract fun doParseEntry(entry: InputTypeEntry): OutputTypeEntry
-    protected abstract fun createTrace(entries: List<OutputTypeEntry>): OutputTypeTrace
+    protected abstract fun createTrace(entries: Collection<OutputTypeEntry>): OutputTypeTrace
 
     open fun shouldParseEntry(entry: InputTypeEntry) = true
 

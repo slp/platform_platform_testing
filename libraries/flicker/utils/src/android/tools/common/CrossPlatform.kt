@@ -16,18 +16,13 @@
 
 package android.tools.common
 
-import kotlin.js.JsExport
-import kotlin.js.JsName
-
-@JsExport
 object CrossPlatform {
     val timestamp: TimestampFactory
         get() = Timestamps
 
-    @JsName("setLogger") fun setLogger(logger: ILogger) = apply { Logger = logger }
+    fun setLogger(logger: ILogger) = apply { Logger = logger }
 
-    @JsName("setTimestampFactory")
     fun setTimestampFactory(factory: TimestampFactory) = apply { Timestamps = factory }
 
-    @JsName("setCache") fun setCache(cache: ICache) = apply { Cache = cache }
+    fun setCache(cache: ICache) = apply { Cache = cache }
 }

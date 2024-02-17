@@ -27,23 +27,13 @@ abstract class DatatypeTest<T : DataType> {
     protected abstract val expectedValueAString: String
 
     @Test
-    fun testPrettyPrint() {
-        Assert.assertEquals(expectedValueAString, valueTest.prettyPrint())
-    }
-
-    @Test
-    fun testEmptyPrettyPrint() {
-        Assert.assertEquals("[empty]", valueEmpty.prettyPrint())
-    }
-
-    @Test
     fun testToString() {
-        Assert.assertEquals(valueTest.prettyPrint(), valueTest.toString())
+        Assert.assertEquals(expectedValueAString, valueTest.toString())
     }
 
     @Test
     fun testEmptyToString() {
-        Assert.assertEquals(valueEmpty.prettyPrint(), valueEmpty.toString())
+        Assert.assertEquals("[empty]", valueEmpty.toString())
     }
 
     @Test

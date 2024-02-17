@@ -16,9 +16,6 @@
 
 package android.tools.common
 
-import kotlin.js.JsExport
-
-@JsExport
 class NoCache : ICache {
     override fun <T : Any> get(element: T): T {
         return element

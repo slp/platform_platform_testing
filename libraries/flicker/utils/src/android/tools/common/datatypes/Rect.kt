@@ -17,8 +17,6 @@
 package android.tools.common.datatypes
 
 import android.tools.common.withCache
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /**
  * Wrapper for RectProto
@@ -30,23 +28,17 @@ import kotlin.js.JsName
  *
  * This class is used by flicker and Winscope
  */
-@JsExport
-open class Rect(
-    @JsName("left") val left: Int = 0,
-    @JsName("top") val top: Int = 0,
-    @JsName("right") val right: Int = 0,
-    @JsName("bottom") val bottom: Int = 0
-) : DataType() {
-    @JsName("height") val height: Int = bottom - top
-    @JsName("width") val width: Int = right - left
-    @JsName("centerX") fun centerX(): Int = (left + right) / 2
-    @JsName("centerY") fun centerY(): Int = (top + bottom) / 2
+open class Rect(val left: Int = 0, val top: Int = 0, val right: Int = 0, val bottom: Int = 0) :
+    DataType() {
+    val height: Int = bottom - top
+    val width: Int = right - left
+    fun centerX(): Int = (left + right) / 2
+    fun centerY(): Int = (top + bottom) / 2
 
     /** Returns true if the rectangle is empty (left >= right or top >= bottom) */
     override val isEmpty: Boolean = width <= 0 || height <= 0
 
     /** Returns a [RectF] version fo this rectangle. */
-    @JsName("toRectF")
     fun toRectF(): RectF {
         return RectF.from(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat())
     }
@@ -75,7 +67,6 @@ open class Rect(
      *
      * @param crop The crop that should be applied to this layer
      */
-    @JsName("crop")
     fun crop(crop: Rect): Rect {
         val newLeft = maxOf(left, crop.left)
         val newTop = maxOf(top, crop.top)
@@ -94,7 +85,6 @@ open class Rect(
      * @param x test SkIPoint x-coordinate @param y test SkIPoint y-coordinate @return true if (x,
      *   y) is inside SkIRect
      */
-    @JsName("containsPoint")
     fun contains(x: Int, y: Int): Boolean {
         return x in left until right && y in top until bottom
     }
@@ -108,24 +98,20 @@ open class Rect(
      * @param rect The rectangle being intersected with this rectangle.
      * @return A rectangle with the intersection coordinates
      */
-    @JsName("intersection")
     fun intersection(rect: Rect): Rect {
         val thisRect = toRectF()
         val otherRect = rect.toRectF()
         return thisRect.intersection(otherRect).toRect()
     }
 
-    @JsName("clone")
     fun clone(): Rect {
         return from(left, top, right, bottom)
     }
 
     companion object {
-        @JsName("EMPTY")
         val EMPTY: Rect
             get() = withCache { Rect() }
 
-        @JsName("from")
         fun from(left: Int, top: Int, right: Int, bottom: Int): Rect = withCache {
             Rect(left, top, right, bottom)
         }

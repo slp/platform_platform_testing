@@ -30,6 +30,6 @@ class WindowManagerDumpParser :
 
     override fun doParse(input: WindowManagerServiceDumpProto): WindowManagerTrace {
         val parsedEntry = WindowManagerStateBuilder().forProto(input).build()
-        return WindowManagerTrace(arrayOf(parsedEntry))
+        return WindowManagerTrace(listOf(parsedEntry))
     }
 }

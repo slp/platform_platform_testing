@@ -36,14 +36,14 @@ class WindowManagerDumpParserTest {
     @Test
     fun canParseFromStoredDump() {
         val trace = WindowManagerDumpParser().parse(readAsset("wm_trace_dump.pb"))
-        Truth.assertWithMessage("Unable to parse dump").that(trace.entries).asList().hasSize(1)
+        Truth.assertWithMessage("Unable to parse dump").that(trace.entries).hasSize(1)
     }
 
     @Test
     fun canParseFromNewDump() {
         val data = getCurrentState(TraceType.WM_DUMP)
         val trace = WindowManagerDumpParser().parse(data.first)
-        Truth.assertWithMessage("Unable to parse dump").that(trace.entries).asList().hasSize(1)
+        Truth.assertWithMessage("Unable to parse dump").that(trace.entries).hasSize(1)
     }
 
     companion object {

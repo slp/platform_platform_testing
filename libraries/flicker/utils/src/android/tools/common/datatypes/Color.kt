@@ -18,14 +18,12 @@ package android.tools.common.datatypes
 
 import android.tools.common.FloatFormatter
 import android.tools.common.withCache
-import kotlin.js.JsExport
 
 /**
  * Wrapper for ColorProto (frameworks/native/services/surfaceflinger/layerproto/common.proto)
  *
  * This class is used by flicker and Winscope
  */
-@JsExport
 class Color private constructor(val r: Float, val g: Float, val b: Float, val a: Float) :
     DataType() {
     override val isEmpty = a == 0f || (a == 1f && (r < 0 || g < 0 || b < 0))

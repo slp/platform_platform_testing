@@ -16,8 +16,6 @@
 
 package android.tools.common
 
-import kotlin.js.JsExport
-import kotlin.js.JsName
 import kotlin.math.max
 
 /**
@@ -27,7 +25,6 @@ import kotlin.math.max
  * @param systemUptimeNanos Nanoseconds since boot, not counting time spent in deep sleep
  * @param unixNanos Nanoseconds since Unix epoch
  */
-@JsExport
 data class Timestamp
 internal constructor(
     val elapsedNanos: Long = 0L,
@@ -40,8 +37,7 @@ internal constructor(
     val hasUnixTimestamp = unixNanos != 0L
     val isEmpty = !hasElapsedTimestamp && !hasSystemUptimeTimestamp && !hasUnixTimestamp
     val hasAllTimestamps = hasUnixTimestamp && hasSystemUptimeTimestamp && hasElapsedTimestamp
-    @JsName("isMin") val isMin = elapsedNanos == 1L && systemUptimeNanos == 1L && unixNanos == 1L
-    @JsName("isMax")
+    val isMin = elapsedNanos == 1L && systemUptimeNanos == 1L && unixNanos == 1L
     val isMax =
         elapsedNanos == Long.MAX_VALUE &&
             systemUptimeNanos == Long.MAX_VALUE &&
@@ -98,7 +94,6 @@ internal constructor(
         }
     }
 
-    @JsName("minusLong")
     operator fun minus(nanos: Long): Timestamp {
         val elapsedNanos = max(this.elapsedNanos - nanos, 0L)
         val systemUptimeNanos = max(this.systemUptimeNanos - nanos, 0L)
@@ -106,7 +101,6 @@ internal constructor(
         return Timestamp(elapsedNanos, systemUptimeNanos, unixNanos, realTimestampFormatter)
     }
 
-    @JsName("minusTimestamp")
     operator fun minus(timestamp: Timestamp): Timestamp {
         val elapsedNanos =
             if (this.hasElapsedTimestamp && timestamp.hasElapsedTimestamp) {
@@ -184,6 +178,13 @@ internal constructor(
                 }
             }
         }
+    }
+
+    override fun hashCode(): Int {
+        var result = elapsedNanos.hashCode()
+        result = 31 * result + systemUptimeNanos.hashCode()
+        result = 31 * result + unixNanos.hashCode()
+        return result
     }
 
     companion object {

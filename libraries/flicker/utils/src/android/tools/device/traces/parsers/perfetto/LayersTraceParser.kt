@@ -44,8 +44,8 @@ class LayersTraceParser(
 
     override val traceName = "Layers trace (SF)"
 
-    override fun createTrace(entries: List<LayerTraceEntry>): LayersTrace {
-        return LayersTrace(entries.toTypedArray())
+    override fun createTrace(entries: Collection<LayerTraceEntry>): LayersTrace {
+        return LayersTrace(entries)
     }
 
     override fun doDecodeByteArray(bytes: ByteArray): TraceProcessorSession {
@@ -93,9 +93,7 @@ class LayersTraceParser(
         realToMonotonicTimeOffsetNs: Long
     ): LayerTraceEntry {
         val snapshotArgs = Args.build(snapshotRows)
-        val displays =
-            snapshotArgs.getChildren("displays")?.map { newDisplay(it) }?.toTypedArray()
-                ?: arrayOf()
+        val displays = snapshotArgs.getChildren("displays")?.map { newDisplay(it) } ?: emptyList()
 
         val idAndLayers =
             layersRows
@@ -104,7 +102,7 @@ class LayersTraceParser(
                 .toMutableList()
         idAndLayers.sortBy { it.first.toLong() }
 
-        val layers = idAndLayers.map { it.second }.toTypedArray()
+        val layers = idAndLayers.map { it.second }
 
         return LayerTraceEntryBuilder()
             .setElapsedTimestamp(snapshotArgs.getChild("elapsed_realtime_nanos")?.getLong() ?: 0L)
@@ -274,8 +272,8 @@ class LayersTraceParser(
             if (region == null) {
                 return null
             }
-            val rects = region.getChildren("rect")?.map { newRect(it) }?.toTypedArray() ?: arrayOf()
-            return Region(rects)
+            val rects = region.getChildren("rect")?.map { newRect(it) } ?: emptyList()
+            return Region(rects.toTypedArray())
         }
 
         private fun newRect(rect: Args?): Rect =

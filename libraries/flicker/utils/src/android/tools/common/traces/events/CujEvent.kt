@@ -18,15 +18,12 @@ package android.tools.common.traces.events
 
 import android.tools.common.Timestamp
 import android.tools.common.Timestamps
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /**
  * Represents a CUJ Event from the [EventLog]
  *
  * {@inheritDoc}
  */
-@JsExport
 class CujEvent(
     timestamp: Timestamp,
     val cuj: CujType,
@@ -51,7 +48,6 @@ class CujEvent(
     }
 
     companion object {
-        @JsName("fromData")
         fun fromData(
             processId: Int,
             uid: String,
@@ -76,7 +72,7 @@ class CujEvent(
 
         private fun getCujMarkerFromData(data: String, cujType: Type): CujType {
             val dataEntries = getDataEntries(data, cujType)
-            val eventId = dataEntries[0].toInt()
+            val eventId = dataEntries.first().toInt()
             return CujType.from(eventId)
         }
 

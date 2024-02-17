@@ -63,7 +63,7 @@ class LegacyShellLegacyTransitionTraceParserTest {
                 tapl.goHome()
             }
         val trace = ShellTransitionTraceParser().parse(data, clearCache = false)
-        Truth.assertThat(trace.entries).asList().isNotEmpty()
+        Truth.assertThat(trace.entries).isNotEmpty()
     }
 
     companion object {

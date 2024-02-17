@@ -29,14 +29,14 @@ class TaskFragment(
     val minHeight: Int,
     private val windowContainer: WindowContainer
 ) : WindowContainer by windowContainer {
-    val tasks: Array<Task>
-        get() = this.children.reversed().filterIsInstance<Task>().toTypedArray()
+    val tasks: Collection<Task>
+        get() = this.children.reversed().filterIsInstance<Task>()
 
-    val taskFragments: Array<TaskFragment>
-        get() = this.children.reversed().filterIsInstance<TaskFragment>().toTypedArray()
+    val taskFragments: Collection<TaskFragment>
+        get() = this.children.reversed().filterIsInstance<TaskFragment>()
 
-    val activities: Array<Activity>
-        get() = this.children.reversed().filterIsInstance<Activity>().toTypedArray()
+    val activities: Collection<Activity>
+        get() = this.children.reversed().filterIsInstance<Activity>()
 
     fun getActivity(predicate: (Activity) -> Boolean): Activity? {
         var activity: Activity? = activities.firstOrNull { predicate(it) }

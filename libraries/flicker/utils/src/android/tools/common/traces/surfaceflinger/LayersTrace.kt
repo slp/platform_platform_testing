@@ -27,30 +27,14 @@ import android.tools.common.Trace
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-data class LayersTrace(override val entries: Array<LayerTraceEntry>) : Trace<LayerTraceEntry> {
+data class LayersTrace(override val entries: Collection<LayerTraceEntry>) : Trace<LayerTraceEntry> {
     override fun toString(): String {
         return "LayersTrace(Start: ${entries.firstOrNull()}, " + "End: ${entries.lastOrNull()})"
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is LayersTrace) return false
-
-        if (!entries.contentEquals(other.entries)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return entries.contentHashCode()
-    }
-
     fun vSyncSlice(from: Int, to: Int): LayersTrace {
         return LayersTrace(
-            this.entries
-                .dropWhile { it.vSyncId < from }
-                .dropLastWhile { it.vSyncId > to }
-                .toTypedArray()
+            this.entries.dropWhile { it.vSyncId < from }.dropLastWhile { it.vSyncId > to }
         )
     }
 
@@ -59,7 +43,6 @@ data class LayersTrace(override val entries: Array<LayerTraceEntry>) : Trace<Lay
             entries
                 .dropWhile { it.timestamp < startTimestamp }
                 .dropLastWhile { it.timestamp > endTimestamp }
-                .toTypedArray()
         )
     }
 

@@ -38,7 +38,7 @@ class TransactionsTraceParserTest {
             ) { session ->
                 TransactionsTraceParser().parse(session)
             }
-        Truth.assertWithMessage("Trace").that(trace.entries).asList().isNotEmpty()
+        Truth.assertWithMessage("Trace").that(trace.entries).isNotEmpty()
         Truth.assertWithMessage("Trace contains entries")
             .that(trace.entries.map { it.timestamp.elapsedNanos })
             .contains(1556111744859L)

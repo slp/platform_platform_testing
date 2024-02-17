@@ -214,7 +214,7 @@ fun newEmptyRootContainer(orientation: Int = 0, layerId: Int = 0) =
             orientation = orientation,
             layerId = layerId,
             _isVisible = true,
-            _children = emptyArray(),
+            _children = emptyList(),
             configurationContainer = ConfigurationContainerImpl.EMPTY,
             computedZ = 0
         )

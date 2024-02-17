@@ -23,7 +23,7 @@ import com.android.app.viewcapture.data.ExportedData
 import com.android.app.viewcapture.data.WindowData
 
 class ViewTraceParser :
-    AbstractTraceParser<ExportedData, WindowData, ViewTrace, List<ViewTrace>>() {
+    AbstractTraceParser<ExportedData, WindowData, ViewTrace, Collection<ViewTrace>>() {
     override val traceName: String = "View trace"
 
     override fun doDecodeByteArray(bytes: ByteArray): ExportedData = ExportedData.parseFrom(bytes)
@@ -32,7 +32,7 @@ class ViewTraceParser :
         // no op
     }
 
-    override fun getEntries(input: ExportedData): List<WindowData> = input.windowDataList
+    override fun getEntries(input: ExportedData): Collection<WindowData> = input.windowDataList
 
     override fun getTimestamp(entry: WindowData) =
         if (entry.frameDataList.isEmpty()) {
@@ -44,5 +44,5 @@ class ViewTraceParser :
     override fun doParseEntry(entry: WindowData): ViewTrace =
         WindowDataParser(entry.title, entry).parse(ByteArray(0))
 
-    override fun createTrace(entries: List<ViewTrace>): List<ViewTrace> = entries
+    override fun createTrace(entries: Collection<ViewTrace>): Collection<ViewTrace> = entries
 }

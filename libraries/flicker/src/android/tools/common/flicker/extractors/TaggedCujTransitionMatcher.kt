@@ -131,10 +131,14 @@ object TransitionTransforms {
         }
         if (
             transitions.size == 2 &&
-                isTrampolinedOpenTransition(transitions[0], transitions[1], reader)
+                isTrampolinedOpenTransition(
+                    transitions.first(),
+                    transitions.drop(1).first(),
+                    reader
+                )
         ) {
             // Remove the trampoline transition
-            listOf(transitions[0])
+            listOf(transitions.first())
         } else {
             transitions
         }
@@ -147,14 +151,13 @@ object TransitionTransforms {
             return false
         }
 
-        val change = transition.changes[0]
+        val change = transition.changes.first()
         if (transition.type != TransitionType.OPEN || change.transitMode != TransitionType.OPEN) {
             return false
         }
 
         val layersTrace = reader.readLayersTrace() ?: error("Missing layers trace")
-        val layers =
-            layersTrace.entries.flatMap { it.flattenedLayers.asList() }.distinctBy { it.id }
+        val layers = layersTrace.entries.flatMap { it.flattenedLayers }.distinctBy { it.id }
 
         val candidateLayer =
             layers.firstOrNull { it.id == change.layerId }
@@ -183,10 +186,9 @@ object TransitionTransforms {
         }
 
         val layersTrace = reader.readLayersTrace() ?: error("Missing layers trace")
-        val layers =
-            layersTrace.entries.flatMap { it.flattenedLayers.asList() }.distinctBy { it.id }
+        val layers = layersTrace.entries.flatMap { it.flattenedLayers }.distinctBy { it.id }
 
-        val candidateTaskLayerId = candidateTaskLayers[0]
+        val candidateTaskLayerId = candidateTaskLayers.first()
         val candidateTaskLayer = layers.first { it.id == candidateTaskLayerId }
         if (!candidateTaskLayer.name.contains("Task")) {
             return false
@@ -215,13 +217,13 @@ object TransitionTransforms {
             "Unhandled case (more than 1 target candidate) in isTrampolinedOpenTransition()"
         }
 
-        val candidateTrampolinedActivityId = candidateTargetActivities[0]
+        val candidateTrampolinedActivityId = candidateTargetActivities.first()
         val candidateTrampolinedActivity = layers.first { it.id == candidateTrampolinedActivityId }
         if (candidateTrampolinedActivity.parent?.id != candidateTaskLayerId) {
             return false
         }
 
-        val candidateTargetActivityId = candidateTargetActivities[0]
+        val candidateTargetActivityId = candidateTargetActivities.first()
         val candidateTargetActivity = layers.first { it.id == candidateTargetActivityId }
         if (candidateTargetActivity.parent?.id != candidateTaskLayerId) {
             return false

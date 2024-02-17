@@ -18,41 +18,8 @@ package android.tools.common.traces.wm
 
 import android.tools.common.Timestamp
 import android.tools.common.Trace
-import kotlin.js.JsExport
-import kotlin.js.JsName
-import kotlin.text.StringBuilder
 
-@JsExport
-data class TransitionsTrace(override val entries: Array<Transition>) : Trace<Transition> {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is TransitionsTrace) return false
-
-        if (!entries.contentEquals(other.entries)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return entries.contentHashCode()
-    }
-
-    @JsName("prettyPrint")
-    fun prettyPrint(): String {
-        val sb = StringBuilder("TransitionTrace(")
-
-        for (transition in entries) {
-            sb.append("\n\t- ").append(transition)
-        }
-        if (entries.isEmpty()) {
-            sb.append("EMPTY)")
-        } else {
-            sb.append("\n)")
-        }
-        return sb.toString()
-    }
-
-    @JsName("asCompressed")
+data class TransitionsTrace(override val entries: Collection<Transition>) : Trace<Transition> {
     fun asCompressed(): TransitionsTrace {
         val transitionById = mutableMapOf<Int, Transition>()
 
@@ -70,7 +37,7 @@ data class TransitionsTrace(override val entries: Array<Transition>) : Trace<Tra
         val sortedCompressedTransitions =
             transitionById.values.sortedWith(compareBy { it.timestamp })
 
-        return TransitionsTrace(sortedCompressedTransitions.toTypedArray())
+        return TransitionsTrace(sortedCompressedTransitions)
     }
 
     override fun slice(startTimestamp: Timestamp, endTimestamp: Timestamp): TransitionsTrace {
@@ -83,7 +50,6 @@ data class TransitionsTrace(override val entries: Array<Transition>) : Trace<Tra
             this.entries
                 .dropWhile { it.sendTime.elapsedNanos < from }
                 .dropLastWhile { it.createTime.elapsedNanos > to }
-                .toTypedArray()
         )
     }
 }

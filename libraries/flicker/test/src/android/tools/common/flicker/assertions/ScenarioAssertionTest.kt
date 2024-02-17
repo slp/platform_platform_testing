@@ -29,8 +29,8 @@ class ScenarioAssertionTest {
 
         val assertionResult = scenarioAssertion.execute()
 
-        Truth.assertThat(assertionResult.assertionErrors).hasLength(1)
-        val assertionMessage = assertionResult.assertionErrors[0].message
+        Truth.assertThat(assertionResult.assertionErrors).hasSize(1)
+        val assertionMessage = assertionResult.assertionErrors.first().message
         Truth.assertThat(assertionMessage).contains("My assertion")
         Truth.assertThat(assertionMessage).contains("extraKey")
         Truth.assertThat(assertionMessage).contains("extraValue")

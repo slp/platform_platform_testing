@@ -37,7 +37,7 @@ class Activity(
      *
      * @param componentMatcher Components to search
      */
-    fun getWindows(componentMatcher: IComponentMatcher): Array<WindowState> = getWindows {
+    fun getWindows(componentMatcher: IComponentMatcher): Collection<WindowState> = getWindows {
         componentMatcher.windowMatchesAnyOf(it)
     }
 

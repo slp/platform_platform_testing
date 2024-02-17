@@ -27,12 +27,12 @@ import android.tools.common.traces.wm.Utils.collectDescendants
  */
 class DisplayArea(val isTaskDisplayArea: Boolean, private val windowContainer: WindowContainer) :
     WindowContainer by windowContainer {
-    val activities: Array<Activity>
+    val activities: Collection<Activity>
         get() =
             if (isTaskDisplayArea) {
                 collectDescendants()
             } else {
-                emptyArray()
+                emptyList()
             }
 
     /**

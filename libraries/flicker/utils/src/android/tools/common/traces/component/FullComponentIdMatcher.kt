@@ -32,7 +32,7 @@ class FullComponentIdMatcher(val windowId: Int, val layerId: Int) : IComponentMa
      * @param windows to search
      * @return if any of the components matches any of [windows]
      */
-    override fun windowMatchesAnyOf(windows: Array<WindowContainer>): Boolean =
+    override fun windowMatchesAnyOf(windows: Collection<WindowContainer>): Boolean =
         windows.any {
             val parent = it.parent
             when {
@@ -46,14 +46,14 @@ class FullComponentIdMatcher(val windowId: Int, val layerId: Int) : IComponentMa
      * @param activities to search
      * @return if any of the components matches any of [activities]
      */
-    override fun activityMatchesAnyOf(activities: Array<Activity>) =
+    override fun activityMatchesAnyOf(activities: Collection<Activity>) =
         activities.any { it.token == windowId.toString(16) }
 
     /**
      * @param layers to search
      * @return if any of the components matches any of [layers]
      */
-    override fun layerMatchesAnyOf(layers: Array<Layer>) =
+    override fun layerMatchesAnyOf(layers: Collection<Layer>) =
         layers.any {
             val parent = it.parent
             when {

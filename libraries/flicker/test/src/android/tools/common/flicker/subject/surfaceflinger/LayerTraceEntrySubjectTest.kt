@@ -193,7 +193,7 @@ class LayerTraceEntrySubjectTest {
         val subject = LayerTraceEntrySubject(layerTraceEntry)
         val component =
             OrComponentMatcher(
-                arrayOf(ComponentNameMatcher(app1Name), ComponentNameMatcher(app2Name))
+                listOf(ComponentNameMatcher(app1Name), ComponentNameMatcher(app2Name))
             )
 
         subject.isVisible(ComponentNameMatcher(app1Name))
@@ -223,7 +223,7 @@ class LayerTraceEntrySubjectTest {
         val subject = LayerTraceEntrySubject(layerTraceEntry)
         val component =
             OrComponentMatcher(
-                arrayOf(ComponentNameMatcher(app1Name), ComponentNameMatcher(app2Name))
+                listOf(ComponentNameMatcher(app1Name), ComponentNameMatcher(app2Name))
             )
 
         subject.isVisible(ComponentNameMatcher(app1Name))
@@ -258,7 +258,7 @@ class LayerTraceEntrySubjectTest {
         val subject = LayerTraceEntrySubject(layerTraceEntry)
         val component =
             OrComponentMatcher(
-                arrayOf(ComponentNameMatcher(app1Name), ComponentNameMatcher(app2Name))
+                listOf(ComponentNameMatcher(app1Name), ComponentNameMatcher(app2Name))
             )
 
         subject.isVisible(ComponentNameMatcher(app1Name))
@@ -288,7 +288,7 @@ class LayerTraceEntrySubjectTest {
         val subject = LayerTraceEntrySubject(layerTraceEntry)
         val component =
             OrComponentMatcher(
-                arrayOf(ComponentNameMatcher(app1Name), ComponentNameMatcher(app2Name))
+                listOf(ComponentNameMatcher(app1Name), ComponentNameMatcher(app2Name))
             )
 
         subject.contains(ComponentNameMatcher(app1Name))
@@ -309,7 +309,7 @@ class LayerTraceEntrySubjectTest {
         val subject = LayerTraceEntrySubject(layerTraceEntry)
         val component =
             OrComponentMatcher(
-                arrayOf(ComponentNameMatcher(app1Name), ComponentNameMatcher(app2Name))
+                listOf(ComponentNameMatcher(app1Name), ComponentNameMatcher(app2Name))
             )
 
         subject.notContains(ComponentNameMatcher(app1Name))
@@ -342,7 +342,7 @@ class LayerTraceEntrySubjectTest {
         val subject = LayerTraceEntrySubject(layerTraceEntry)
         val component =
             OrComponentMatcher(
-                arrayOf(ComponentNameMatcher(app1Name), ComponentNameMatcher(app2Name))
+                listOf(ComponentNameMatcher(app1Name), ComponentNameMatcher(app2Name))
             )
 
         subject.contains(ComponentNameMatcher(app1Name))
@@ -377,7 +377,6 @@ class LayerTraceEntrySubjectTest {
         // and simple activity is partially covered by IME activity
         Truth.assertWithMessage("IME activity has rounded corners")
             .that(simpleActivityLayer.occludedBy)
-            .asList()
             .contains(imeActivityLayer)
         // because IME activity has rounded corners
         Truth.assertWithMessage("IME activity has rounded corners")

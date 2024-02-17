@@ -30,23 +30,8 @@ import android.tools.common.traces.component.IComponentMatcher
  */
 data class RegionTrace(
     val components: IComponentMatcher?,
-    override val entries: Array<RegionEntry>
+    override val entries: Collection<RegionEntry>
 ) : Trace<RegionEntry> {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is RegionTrace) return false
-
-        if (components != other.components) return false
-        if (!entries.contentEquals(other.entries)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = components.hashCode()
-        result = 31 * result + entries.contentHashCode()
-        return result
-    }
 
     override fun slice(startTimestamp: Timestamp, endTimestamp: Timestamp): Trace<RegionEntry> {
         return RegionTrace(
@@ -54,7 +39,6 @@ data class RegionTrace(
             entries
                 .dropWhile { it.timestamp < startTimestamp }
                 .dropLastWhile { it.timestamp > endTimestamp }
-                .toTypedArray()
         )
     }
 }

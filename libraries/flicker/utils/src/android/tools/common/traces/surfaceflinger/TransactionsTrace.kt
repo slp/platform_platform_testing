@@ -19,13 +19,12 @@ package android.tools.common.traces.surfaceflinger
 import android.tools.common.Timestamp
 import android.tools.common.Trace
 
-class TransactionsTrace(override val entries: Array<TransactionsTraceEntry>) :
+class TransactionsTrace(override val entries: Collection<TransactionsTraceEntry>) :
     Trace<TransactionsTraceEntry> {
 
     init {
         val alwaysIncreasing =
             entries
-                .toList()
                 .zipWithNext { prev, next ->
                     prev.timestamp.elapsedNanos < next.timestamp.elapsedNanos
                 }
@@ -33,14 +32,13 @@ class TransactionsTrace(override val entries: Array<TransactionsTraceEntry>) :
         require(alwaysIncreasing) { "Transaction timestamp not always increasing..." }
     }
 
-    val allTransactions: List<Transaction> = entries.toList().flatMap { it.transactions.toList() }
+    val allTransactions: Collection<Transaction> = entries.flatMap { it.transactions }
 
     override fun slice(startTimestamp: Timestamp, endTimestamp: Timestamp): TransactionsTrace {
         return TransactionsTrace(
             entries
                 .dropWhile { it.timestamp < startTimestamp }
                 .dropLastWhile { it.timestamp > endTimestamp }
-                .toTypedArray()
         )
     }
 }

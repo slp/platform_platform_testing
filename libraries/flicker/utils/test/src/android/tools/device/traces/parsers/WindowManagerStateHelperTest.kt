@@ -126,7 +126,7 @@ class WindowManagerStateHelperTest {
         )
     }
 
-    private fun createImaginaryVisibleLayers(names: List<IComponentName>): Array<Layer> {
+    private fun createImaginaryVisibleLayers(names: List<IComponentName>): Collection<Layer> {
         val root = createImaginaryLayer("root", -1, id = "root".hashCode(), parentId = -1)
         val layers = mutableListOf(root)
         names.forEachIndexed { index, name ->
@@ -139,7 +139,7 @@ class WindowManagerStateHelperTest {
                 )
             )
         }
-        return layers.toTypedArray()
+        return layers
     }
 
     /**
@@ -173,7 +173,7 @@ class WindowManagerStateHelperTest {
                 val layerTraceEntry =
                     LayerTraceEntryBuilder()
                         .setElapsedTimestamp(0)
-                        .setDisplays(emptyArray())
+                        .setDisplays(emptyList())
                         .setLayers(createImaginaryVisibleLayers(layerList))
                         .setVSyncId(-1)
                         .build()
@@ -377,7 +377,6 @@ class WindowManagerStateHelperTest {
         val entry = trace.entries.first()
         Truth.assertWithMessage("Trace should have a resumed activity in stacks")
             .that(entry.resumedActivities)
-            .asList()
             .hasSize(1)
     }
 

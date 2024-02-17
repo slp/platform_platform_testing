@@ -355,9 +355,7 @@ class LayersTraceSubjectTest {
                             subject.isVisible
                     }
                 val visibleAreas =
-                    snapshotLayers
-                        .mapNotNull { snapshotLayer -> snapshotLayer.layer.visibleRegion }
-                        .toTypedArray()
+                    snapshotLayers.mapNotNull { snapshotLayer -> snapshotLayer.layer.visibleRegion }
                 val snapshotRegion = RegionSubject(visibleAreas, timestamp)
                 // Verify the size of snapshotRegion covers appVisibleRegion exactly in animation.
                 if (snapshotRegion.region.isNotEmpty) {

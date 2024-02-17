@@ -22,12 +22,9 @@ import android.tools.common.TraceEntry
 import android.tools.common.traces.surfaceflinger.LayersTrace
 import android.tools.common.traces.surfaceflinger.Transaction
 import android.tools.common.traces.surfaceflinger.TransactionsTrace
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
-@JsExport
 class Transition(
-    @JsName("id") val id: Int,
+    val id: Int,
     val wmData: WmTransitionData = WmTransitionData(),
     val shellData: ShellTransitionData = ShellTransitionData(),
 ) : TraceEntry {
@@ -54,45 +51,42 @@ class Transition(
                 ?: wmData.abortTime ?: wmData.startingWindowRemoveTime
                 ?: error("Missing non-null timestamp")
 
-    @JsName("createTime") val createTime: Timestamp = wmData.createTime ?: Timestamps.min()
+    val createTime: Timestamp = wmData.createTime ?: Timestamps.min()
 
-    @JsName("sendTime") val sendTime: Timestamp = wmData.sendTime ?: Timestamps.min()
+    val sendTime: Timestamp = wmData.sendTime ?: Timestamps.min()
 
-    @JsName("abortTime") val abortTime: Timestamp? = wmData.abortTime
+    val abortTime: Timestamp? = wmData.abortTime
 
-    @JsName("finishTime")
     val finishTime: Timestamp = wmData.finishTime ?: wmData.abortTime ?: Timestamps.max()
-    @JsName("startingWindowRemoveTime")
+
     val startingWindowRemoveTime: Timestamp? = wmData.startingWindowRemoveTime
 
-    @JsName("dispatchTime") val dispatchTime: Timestamp = shellData.dispatchTime ?: Timestamps.min()
+    val dispatchTime: Timestamp = shellData.dispatchTime ?: Timestamps.min()
 
-    @JsName("mergeRequestTime") val mergeRequestTime: Timestamp? = shellData.mergeRequestTime
+    val mergeRequestTime: Timestamp? = shellData.mergeRequestTime
 
-    @JsName("mergeTime") val mergeTime: Timestamp? = shellData.mergeTime
+    val mergeTime: Timestamp? = shellData.mergeTime
 
-    @JsName("shellAbortTime") val shellAbortTime: Timestamp? = shellData.abortTime
+    val shellAbortTime: Timestamp? = shellData.abortTime
 
-    @JsName("startTransactionId") val startTransactionId: Long = wmData.startTransactionId ?: -1L
+    val startTransactionId: Long = wmData.startTransactionId ?: -1L
 
-    @JsName("finishTransactionId") val finishTransactionId: Long = wmData.finishTransactionId ?: -1L
+    val finishTransactionId: Long = wmData.finishTransactionId ?: -1L
 
-    @JsName("type") val type: TransitionType = wmData.type ?: TransitionType.UNDEFINED
+    val type: TransitionType = wmData.type ?: TransitionType.UNDEFINED
 
-    @JsName("changes") val changes: Array<TransitionChange> = wmData.changes ?: emptyArray()
+    val changes: Collection<TransitionChange> = wmData.changes ?: emptyList()
 
-    @JsName("mergeTarget") val mergeTarget = shellData.mergeTarget
+    val mergeTarget = shellData.mergeTarget
 
-    @JsName("handler") val handler = shellData.handler
+    val handler = shellData.handler
 
-    @JsName("merged") val merged: Boolean = shellData.mergeTime != null
+    val merged: Boolean = shellData.mergeTime != null
 
-    @JsName("played") val played: Boolean = wmData.finishTime != null
+    val played: Boolean = wmData.finishTime != null
 
-    @JsName("aborted")
     val aborted: Boolean = wmData.abortTime != null || shellData.abortTime != null
 
-    @JsName("getStartTransaction")
     fun getStartTransaction(transactionsTrace: TransactionsTrace): Transaction? {
         val matches =
             transactionsTrace.allTransactions.filter {
@@ -105,7 +99,6 @@ class Transition(
         return matches.firstOrNull()
     }
 
-    @JsName("getFinishTransaction")
     fun getFinishTransaction(transactionsTrace: TransactionsTrace): Transaction? {
         val matches =
             transactionsTrace.allTransactions.filter {
@@ -118,11 +111,9 @@ class Transition(
         return matches.firstOrNull()
     }
 
-    @JsName("isIncomplete")
     val isIncomplete: Boolean
         get() = !played || aborted
 
-    @JsName("merge")
     fun merge(transition: Transition): Transition {
         require(transition.mergeTarget == this.id) {
             "Can't merge transition with mergedInto id ${transition.mergeTarget} " +
@@ -150,10 +141,9 @@ class Transition(
                         finishTransactionId = finishTransition.wmData.finishTransactionId,
                         type = wmData.type,
                         changes =
-                            (wmData.changes ?: emptyArray())
-                                .toMutableSet()
-                                .apply { addAll(transition.wmData.changes ?: emptyArray()) }
-                                .toTypedArray()
+                            (wmData.changes?.toMutableList() ?: mutableListOf())
+                                .apply { addAll(transition.wmData.changes ?: emptyList()) }
+                                .toSet()
                     ),
                 shellData = shellData
             )
@@ -195,7 +185,6 @@ class Transition(
     }
 
     companion object {
-        @JsName("mergePartialTransitions")
         fun mergePartialTransitions(transition1: Transition, transition2: Transition): Transition {
             require(transition1.id == transition2.id) {
                 "Can't merge transitions with mismatching ids"

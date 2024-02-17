@@ -61,7 +61,7 @@ class LegacyWmLegacyTransitionTraceParserTest {
                 tapl.goHome()
             }
         val trace = WmTransitionTraceParser().parse(data, clearCache = false)
-        Truth.assertThat(trace.entries).asList().isNotEmpty()
+        Truth.assertThat(trace.entries).isNotEmpty()
     }
     companion object {
         @ClassRule @JvmField val ENV_CLEANUP = CleanFlickerEnvironmentRule()

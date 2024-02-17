@@ -167,7 +167,7 @@ constructor(
             return
         }
         val failedMetrics = metricsCollector.resultsForTest(description).filter { it.failed }
-        val assertionErrors = failedMetrics.flatMap { it.assertionErrors.asList() }
+        val assertionErrors = failedMetrics.flatMap { it.assertionErrors }
         assertionErrors.forEach {
             Logger.e(LOG_TAG, "FaaS reported an assertion failure:")
             Logger.e(LOG_TAG, it.message)

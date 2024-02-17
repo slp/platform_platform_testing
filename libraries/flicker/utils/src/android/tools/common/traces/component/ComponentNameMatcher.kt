@@ -37,7 +37,7 @@ class ComponentNameMatcher(var component: ComponentName) : IComponentNameMatcher
 
     constructor(className: String) : this("", className)
 
-    override fun activityRecordMatchesAnyOf(layers: Array<Layer>): Boolean =
+    override fun activityRecordMatchesAnyOf(layers: Collection<Layer>): Boolean =
         layers.any { activityRecordFilter.invoke(it.name) }
 
     override fun componentNameMatcherToString(): String {
@@ -45,15 +45,15 @@ class ComponentNameMatcher(var component: ComponentName) : IComponentNameMatcher
     }
 
     /** {@inheritDoc} */
-    override fun windowMatchesAnyOf(windows: Array<WindowContainer>): Boolean =
+    override fun windowMatchesAnyOf(windows: Collection<WindowContainer>): Boolean =
         windows.any { windowNameFilter.invoke(it.title) }
 
     /** {@inheritDoc} */
-    override fun activityMatchesAnyOf(activities: Array<Activity>): Boolean =
+    override fun activityMatchesAnyOf(activities: Collection<Activity>): Boolean =
         activities.any { activityNameFilter.invoke(it.name) }
 
     /** {@inheritDoc} */
-    override fun layerMatchesAnyOf(layers: Array<Layer>): Boolean =
+    override fun layerMatchesAnyOf(layers: Collection<Layer>): Boolean =
         layers.any { layerNameFilter.invoke(it.name) }
 
     /** {@inheritDoc} */

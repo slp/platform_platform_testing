@@ -19,22 +19,19 @@ package android.tools.common.traces.events
 import android.tools.common.Timestamp
 import android.tools.common.Timestamps
 import android.tools.common.Trace
-import kotlin.js.JsExport
 
-@JsExport
-class CujTrace(override val entries: Array<Cuj>) : Trace<Cuj> {
+class CujTrace(override val entries: Collection<Cuj>) : Trace<Cuj> {
 
     override fun slice(startTimestamp: Timestamp, endTimestamp: Timestamp): CujTrace {
         return CujTrace(
             entries
                 .dropWhile { it.endTimestamp < startTimestamp }
                 .dropLastWhile { it.startTimestamp > endTimestamp }
-                .toTypedArray()
         )
     }
 
     companion object {
-        fun from(cujEvents: Array<CujEvent>): CujTrace {
+        fun from(cujEvents: Collection<CujEvent>): CujTrace {
             val cujs = mutableListOf<Cuj>()
 
             val sortedCujEvents = cujEvents.sortedBy { it.timestamp.unixNanos }
@@ -70,7 +67,7 @@ class CujTrace(override val entries: Array<Cuj>) : Trace<Cuj> {
                 )
             }
 
-            return CujTrace(cujs.toTypedArray())
+            return CujTrace(cujs)
         }
     }
 }
