@@ -100,9 +100,7 @@ class WindowManagerStateBuilder {
             )
             .setIsHomeRecentsComponent(proto.rootWindowContainer.isHomeRecentsComponent)
             .setIsDisplayFrozen(proto.displayFrozen)
-            .setPendingActivities(
-                proto.rootWindowContainer.pendingActivities.map { it.title }.toTypedArray()
-            )
+            .setPendingActivities(proto.rootWindowContainer.pendingActivities.map { it.title })
             .setRoot(createRootWindowContainer(proto.rootWindowContainer))
             .setKeyguardControllerState(
                 createKeyguardControllerState(proto.rootWindowContainer.keyguardController)
@@ -507,7 +505,7 @@ class WindowManagerStateBuilder {
                 _isVisible = visibleOverride ?: proto.visible,
                 configurationContainer = createConfigurationContainer(proto.configurationContainer),
                 layerId = proto.surfaceControl?.layerId ?: 0,
-                _children = children.toTypedArray(),
+                _children = children,
                 computedZ = computedZCounter++
             )
         }

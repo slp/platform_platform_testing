@@ -30,10 +30,9 @@ class WindowDataParser(private val windowTitle: String, private val parsedTrace:
 
     override fun doDecodeByteArray(bytes: ByteArray): WindowData = parsedTrace
 
-    override fun createTrace(entries: List<ViewFrame>): ViewTrace =
-        ViewTrace(windowTitle, entries.toTypedArray())
+    override fun createTrace(entries: Collection<ViewFrame>) = ViewTrace(windowTitle, entries)
 
-    override fun getEntries(input: WindowData): List<FrameData> = input.frameDataList
+    override fun getEntries(input: WindowData): Collection<FrameData> = input.frameDataList
 
     override fun getTimestamp(entry: FrameData): Timestamp =
         Timestamps.from(systemUptimeNanos = entry.timestamp)

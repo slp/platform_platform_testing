@@ -69,7 +69,7 @@ class DeviceDumpParser {
                                 LayersTraceParser()
                                     .parse(session, clearCache = clearCacheAfterParsing)
                                     .entries
-                                    .getOrNull(0)
+                                    .first()
                             }
                         } else {
                             null

@@ -49,14 +49,14 @@ class FlickerServiceCachedTestCaseTest {
             object : AssertionResult {
                 override val name: String = "MOCK_SCENARIO#mockAssertion"
                 override val assertionData =
-                    arrayOf<AssertionData>(
+                    listOf<AssertionData>(
                         object : AssertionData {
                             override fun checkAssertion(run: SubjectsParser) {
                                 error("Unimplemented - shouldn't be called")
                             }
                         }
                     )
-                override val assertionErrors = emptyArray<FlickerAssertionError>()
+                override val assertionErrors = emptyList<FlickerAssertionError>()
                 override val stabilityGroup = AssertionInvocationGroup.BLOCKING
                 override val passed = true
             }
@@ -102,7 +102,7 @@ class FlickerServiceCachedTestCaseTest {
             object : AssertionResult {
                 override val name: String = "MY_CUSTOM_SCENARIO#myAssertion"
                 override val assertionData =
-                    arrayOf<AssertionData>(
+                    listOf<AssertionData>(
                         object : AssertionData {
                             override fun checkAssertion(run: SubjectsParser) {
                                 error("Unimplemented - shouldn't be called")
@@ -110,7 +110,7 @@ class FlickerServiceCachedTestCaseTest {
                         }
                     )
                 override val assertionErrors =
-                    arrayOf<FlickerAssertionError>(SimpleFlickerAssertionError("EXPECTED"))
+                    listOf<FlickerAssertionError>(SimpleFlickerAssertionError("EXPECTED"))
                 override val stabilityGroup = AssertionInvocationGroup.BLOCKING
                 override val passed = false
             }
@@ -158,7 +158,7 @@ class FlickerServiceCachedTestCaseTest {
             object : AssertionResult {
                 override val name: String = "MY_CUSTOM_SCENARIO#myAssertion"
                 override val assertionData =
-                    arrayOf<AssertionData>(
+                    listOf<AssertionData>(
                         object : AssertionData {
                             override fun checkAssertion(run: SubjectsParser) {
                                 error("Unimplemented - shouldn't be called")
@@ -166,7 +166,7 @@ class FlickerServiceCachedTestCaseTest {
                         }
                     )
                 override val assertionErrors =
-                    arrayOf<FlickerAssertionError>(SimpleFlickerAssertionError("EXPECTED"))
+                    listOf<FlickerAssertionError>(SimpleFlickerAssertionError("EXPECTED"))
                 override val stabilityGroup = AssertionInvocationGroup.NON_BLOCKING
                 override val passed = false
             }

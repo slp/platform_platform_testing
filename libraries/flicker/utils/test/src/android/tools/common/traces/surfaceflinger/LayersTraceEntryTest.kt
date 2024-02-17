@@ -42,7 +42,7 @@ class LayersTraceEntryTest {
         Truth.assertThat(trace.entries).isNotEmpty()
         Truth.assertThat(trace.entries.first().timestamp.systemUptimeNanos).isEqualTo(922839428857)
         Truth.assertThat(trace.entries.last().timestamp.systemUptimeNanos).isEqualTo(941432656959)
-        Truth.assertThat(trace.entries.last().flattenedLayers).asList().hasSize(57)
+        Truth.assertThat(trace.entries.last().flattenedLayers).hasSize(57)
     }
 
     @Test
@@ -54,7 +54,7 @@ class LayersTraceEntryTest {
                 .getEntryExactlyAt(Timestamps.from(systemUptimeNanos = 90480846872160))
                 .visibleLayers
         val msg = "Visible Layers:\n" + visibleLayers.joinToString("\n") { "\t" + it.name }
-        Truth.assertWithMessage(msg).that(visibleLayers).asList().hasSize(6)
+        Truth.assertWithMessage(msg).that(visibleLayers).hasSize(6)
         Truth.assertThat(msg).contains("ScreenDecorOverlay#0")
         Truth.assertThat(msg).contains("ScreenDecorOverlayBottom#0")
         Truth.assertThat(msg).contains("NavigationBar0#0")
@@ -72,7 +72,7 @@ class LayersTraceEntryTest {
                 .getEntryExactlyAt(Timestamps.from(systemUptimeNanos = 90493757372977))
                 .visibleLayers
         val msg = "Visible Layers:\n" + visibleLayers.joinToString("\n") { "\t" + it.name }
-        Truth.assertWithMessage(msg).that(visibleLayers).asList().hasSize(7)
+        Truth.assertWithMessage(msg).that(visibleLayers).hasSize(7)
         Truth.assertThat(msg).contains("ScreenDecorOverlayBottom#0")
         Truth.assertThat(msg).contains("ScreenDecorOverlay#0")
         Truth.assertThat(msg).contains("NavigationBar0#0")
@@ -91,7 +91,7 @@ class LayersTraceEntryTest {
                 .getEntryExactlyAt(Timestamps.from(systemUptimeNanos = 90488463619533))
                 .visibleLayers
         val msg = "Visible Layers:\n" + visibleLayers.joinToString("\n") { "\t" + it.name }
-        Truth.assertWithMessage(msg).that(visibleLayers).asList().hasSize(10)
+        Truth.assertWithMessage(msg).that(visibleLayers).hasSize(10)
         Truth.assertThat(msg).contains("ScreenDecorOverlayBottom#0")
         Truth.assertThat(msg).contains("ScreenDecorOverlay#0")
         Truth.assertThat(msg).contains("NavigationBar0#0")
@@ -112,10 +112,10 @@ class LayersTraceEntryTest {
         Truth.assertThat(trace.entries).isNotEmpty()
         Truth.assertThat(trace.entries.first().timestamp.systemUptimeNanos).isEqualTo(922839428857)
         Truth.assertThat(trace.entries.last().timestamp.systemUptimeNanos).isEqualTo(941432656959)
-        Truth.assertThat(trace.entries.first().flattenedLayers).asList().hasSize(57)
+        Truth.assertThat(trace.entries.first().flattenedLayers).hasSize(57)
         val layers = trace.entries.first().children
-        Truth.assertThat(layers[0].children).asList().hasSize(3)
-        Truth.assertThat(layers[1].children).isEmpty()
+        Truth.assertThat(layers.first().children).hasSize(3)
+        Truth.assertThat(layers.drop(1).first().children).isEmpty()
     }
 
     // b/76099859
@@ -150,7 +150,6 @@ class LayersTraceEntryTest {
         val layer = entry.flattenedLayers.first { it.name == layerName }
         Truth.assertWithMessage("$layerName should be invisible because of HWC region")
             .that(layer.visibilityReason)
-            .asList()
             .contains("Visible region calculated by Composition Engine is empty")
     }
 
@@ -177,9 +176,9 @@ class LayersTraceEntryTest {
                 clockTimestamp = 600,
                 hwcBlob = "",
                 where = "",
-                displays = emptyArray(),
+                displays = emptyList(),
                 vSyncId = 123,
-                _rootLayers = emptyArray()
+                _rootLayers = emptyList()
             )
         Truth.assertThat(entry.timestamp.elapsedNanos).isEqualTo(Timestamps.empty().elapsedNanos)
         Truth.assertThat(entry.timestamp.systemUptimeNanos).isEqualTo(100)
@@ -191,9 +190,9 @@ class LayersTraceEntryTest {
                 clockTimestamp = null,
                 hwcBlob = "",
                 where = "",
-                displays = emptyArray(),
+                displays = emptyList(),
                 vSyncId = 123,
-                _rootLayers = emptyArray()
+                _rootLayers = emptyList()
             )
         Truth.assertThat(entry.timestamp.elapsedNanos).isEqualTo(Timestamps.empty().elapsedNanos)
         Truth.assertThat(entry.timestamp.systemUptimeNanos).isEqualTo(100)

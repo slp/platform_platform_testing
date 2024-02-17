@@ -33,9 +33,7 @@ data class CheckSubject<T>(
     private val exceptionMessageBuilder: ExceptionMessageBuilder
         get() {
             val builder =
-                ExceptionMessageBuilder()
-                    .setTimestamp(timestamp)
-                    .addExtraDescription(*extraFacts.toTypedArray())
+                ExceptionMessageBuilder().setTimestamp(timestamp).addExtraDescription(extraFacts)
             if (reader != null) {
                 builder.setReader(reader)
             }

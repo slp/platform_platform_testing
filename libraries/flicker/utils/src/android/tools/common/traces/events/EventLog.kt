@@ -18,8 +18,6 @@ package android.tools.common.traces.events
 
 import android.tools.common.Timestamp
 import android.tools.common.Trace
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /**
  * Represents the data from the Android EventLog and contains a collection of parsed events of
@@ -28,17 +26,13 @@ import kotlin.js.JsName
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-@JsExport
-class EventLog(override val entries: Array<Event>) : Trace<Event> {
-    val focusEvents: Array<FocusEvent> =
-        entries
-            .filterIsInstance<FocusEvent>()
-            .filter { it.type !== FocusEvent.Type.REQUESTED }
-            .toTypedArray()
+class EventLog(override val entries: Collection<Event>) : Trace<Event> {
+    val focusEvents: Collection<FocusEvent> =
+        entries.filterIsInstance<FocusEvent>().filter { it.type !== FocusEvent.Type.REQUESTED }
 
-    val cujEvents: Array<CujEvent> = entries.filterIsInstance<CujEvent>().toTypedArray()
+    val cujEvents: Collection<CujEvent> = entries.filterIsInstance<CujEvent>()
 
-    @JsName("cujTrace") val cujTrace: CujTrace = CujTrace.from(cujEvents)
+    val cujTrace: CujTrace = CujTrace.from(cujEvents)
 
     companion object {
         const val MAGIC_NUMBER = "EventLog"
@@ -49,7 +43,6 @@ class EventLog(override val entries: Array<Event>) : Trace<Event> {
             entries
                 .dropWhile { it.timestamp < startTimestamp }
                 .dropLastWhile { it.timestamp > endTimestamp }
-                .toTypedArray()
         )
     }
 }

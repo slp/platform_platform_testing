@@ -27,27 +27,4 @@ data class InputMethodManager(
     val displayId: Int,
     val active: Boolean,
     val servedConnecting: Boolean,
-) {
-    override fun toString(): String {
-        return "${this::class.simpleName}: {$curId, fullscreenMode: $fullscreenMode, " +
-            "displayId: $displayId, active: $active, servedConnecting: $servedConnecting}"
-    }
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is InputMethodManager) return false
-        if (curId != other.curId) return false
-        if (fullscreenMode != other.fullscreenMode) return false
-        if (displayId != other.displayId) return false
-        if (active != other.active) return false
-        if (servedConnecting != other.servedConnecting) return false
-        return true
-    }
-    override fun hashCode(): Int {
-        var result = curId.hashCode()
-        result = 31 * result + fullscreenMode.hashCode()
-        result = 31 * result + displayId
-        result = 31 * result + active.hashCode()
-        result = 31 * result + servedConnecting.hashCode()
-        return result
-    }
-}
+)

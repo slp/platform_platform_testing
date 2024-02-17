@@ -108,11 +108,9 @@ class AssertionsChecker<T : FlickerSubject> {
                     .forSubject(entries.first())
                     .setMessage("Assertion never passed ${assertions.first()}")
                     .addExtraDescription(
-                        *assertions
-                            .mapIndexed { idx, assertion ->
-                                Fact("Assertion$idx", assertion.toString())
-                            }
-                            .toTypedArray()
+                        assertions.mapIndexed { idx, assertion ->
+                            Fact("Assertion$idx", assertion.toString())
+                        }
                     )
             throw SubjectAssertionError(errorMsg)
         }
@@ -128,8 +126,8 @@ class AssertionsChecker<T : FlickerSubject> {
                     .setMessage(
                         "Assertion $assertionIndex never failed: ${assertions[assertionIndex]}"
                     )
-                    .addExtraDescription(*passedAssertionsFacts.toTypedArray())
-                    .addExtraDescription(*untestedAssertionsFacts.toTypedArray())
+                    .addExtraDescription(passedAssertionsFacts)
+                    .addExtraDescription(untestedAssertionsFacts)
 
             throw SubjectAssertionError(errorMsg)
         }

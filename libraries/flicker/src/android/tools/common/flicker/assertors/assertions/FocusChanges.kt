@@ -41,7 +41,7 @@ class FocusChanges(
             } else {
                 requireNotNull(layersTrace) { "Missing layers trace" }
                 layersTrace.entries
-                    .flatMap { it.flattenedLayers.asList() }
+                    .flatMap { it.flattenedLayers }
                     .first { fromComponent.layerMatchesAnyOf(it) }
                     .packageName
             }
@@ -52,7 +52,7 @@ class FocusChanges(
             } else {
                 requireNotNull(layersTrace) { "Missing layers trace" }
                 layersTrace.entries
-                    .flatMap { it.flattenedLayers.asList() }
+                    .flatMap { it.flattenedLayers }
                     .first { toComponent.layerMatchesAnyOf(it) }
                     .packageName
             }

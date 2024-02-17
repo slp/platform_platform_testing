@@ -16,20 +16,15 @@
 
 package android.tools.common
 
-import kotlin.js.JsExport
-import kotlin.js.JsName
-
-@JsExport
 interface Trace<Entry : TraceEntry> {
-    @JsName("entries") val entries: Array<Entry>
+    val entries: Collection<Entry>
 
-    @JsName("slice") fun slice(startTimestamp: Timestamp, endTimestamp: Timestamp): Trace<Entry>
+    fun slice(startTimestamp: Timestamp, endTimestamp: Timestamp): Trace<Entry>
 
     /**
      * @return an entry that matches exactly [timestamp]
      * @throws if there is no entry in the trace at [timestamp]
      */
-    @JsName("getEntryExactlyAt")
     fun getEntryExactlyAt(timestamp: Timestamp): Entry {
         return entries.firstOrNull { it.timestamp == timestamp }
             ?: throw RuntimeException("Entry does not exist for timestamp $timestamp")
@@ -45,9 +40,8 @@ interface Trace<Entry : TraceEntry> {
      *
      * the provided [timestamp] is before all entries in the trace
      */
-    @JsName("getEntryAt")
     fun getEntryAt(timestamp: Timestamp): Entry {
-        return entries.dropLastWhile { it.timestamp > timestamp }.lastOrNull()
+        return entries.toList().dropLastWhile { it.timestamp > timestamp }.lastOrNull()
             ?: error("No entry at or before timestamp $timestamp")
     }
 }

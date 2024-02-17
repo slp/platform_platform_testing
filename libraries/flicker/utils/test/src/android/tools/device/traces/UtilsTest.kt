@@ -70,11 +70,11 @@ class UtilsTest {
     @Test
     fun canParseCurrentDeviceState() {
         val currState = this.getCurrStateDump()
-        val wmArray = currState.wmState?.asTrace()?.entries ?: emptyArray()
-        Truth.assertThat(wmArray).asList().hasSize(1)
+        val wmArray = currState.wmState?.asTrace()?.entries ?: emptyList()
+        Truth.assertThat(wmArray).hasSize(1)
         Truth.assertThat(wmArray.first().windowStates).isNotEmpty()
-        val layersArray = currState.layerState?.asTrace()?.entries ?: emptyArray()
-        Truth.assertThat(layersArray).asList().hasSize(1)
+        val layersArray = currState.layerState?.asTrace()?.entries ?: emptyList()
+        Truth.assertThat(layersArray).hasSize(1)
         Truth.assertThat(layersArray.first().flattenedLayers).isNotEmpty()
     }
 

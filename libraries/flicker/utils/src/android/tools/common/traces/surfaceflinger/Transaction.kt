@@ -22,7 +22,7 @@ data class Transaction(
     val requestedVSyncId: Long,
     val postTime: Long,
     val id: Long,
-    val mergedTransactionIds: Array<Long>,
+    val mergedTransactionIds: Collection<Long>,
 ) {
     var appliedInEntry: TransactionsTraceEntry? = null
 
@@ -37,7 +37,7 @@ data class Transaction(
 
     companion object {
         fun emptyTransaction(): Transaction {
-            return Transaction(0, 0, 0, 0, 0, emptyArray())
+            return Transaction(0, 0, 0, 0, 0, emptyList())
         }
     }
 }

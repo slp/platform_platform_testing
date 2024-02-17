@@ -16,9 +16,6 @@
 
 package android.tools.common
 
-import kotlin.js.JsExport
-
-@JsExport
 enum class Rotation(val description: String, val value: Int) {
     ROTATION_0("ROTATION_0", PlatformConsts.ROTATION_0),
     ROTATION_90("ROTATION_90", PlatformConsts.ROTATION_90),

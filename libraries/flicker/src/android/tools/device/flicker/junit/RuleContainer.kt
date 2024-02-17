@@ -32,8 +32,8 @@ import org.junit.runners.model.Statement
  */
 internal class RuleContainer {
     private val orderValues = IdentityHashMap<Any, Int>()
-    private val testRules: MutableList<TestRule> = ArrayList()
-    private val methodRules: MutableList<MethodRule> = ArrayList()
+    private val testRules = mutableListOf<TestRule>()
+    private val methodRules = mutableListOf<MethodRule>()
 
     /** Sets order value for the specified rule. */
     fun setOrder(rule: Any, order: Int) {
@@ -50,7 +50,7 @@ internal class RuleContainer {
 
     /** Returns entries in the order how they should be applied, i.e. inner-to-outer. */
     private val sortedEntries: List<RuleEntry>
-        private get() {
+        get() {
             val ruleEntries: MutableList<RuleEntry> = ArrayList(methodRules.size + testRules.size)
             for (rule in methodRules) {
                 ruleEntries.add(RuleEntry(rule, RuleEntry.TYPE_METHOD_RULE, orderValues[rule]))
@@ -90,7 +90,7 @@ internal class RuleContainer {
      */
     val sortedRules: List<Any>
         get() {
-            val result: MutableList<Any> = ArrayList()
+            val result = mutableListOf<Any>()
             for (entry in sortedEntries) {
                 result.add(entry.rule)
             }

@@ -21,8 +21,8 @@ import android.tools.common.flicker.subject.exceptions.FlickerAssertionError
 
 interface AssertionResult {
     val name: String
-    val assertionData: Array<AssertionData>
-    val assertionErrors: Array<FlickerAssertionError>
+    val assertionData: Collection<AssertionData>
+    val assertionErrors: Collection<FlickerAssertionError>
     val stabilityGroup: AssertionInvocationGroup
     val passed: Boolean
         get() = assertionErrors.isEmpty()

@@ -18,8 +18,6 @@ package android.tools.common.datatypes
 
 import android.tools.common.FloatFormatter
 import android.tools.common.withCache
-import kotlin.js.JsExport
-import kotlin.js.JsName
 import kotlin.math.abs
 
 /**
@@ -27,18 +25,11 @@ import kotlin.math.abs
  *
  * This class is used by flicker and Winscope
  */
-@JsExport
 class RectF
-private constructor(
-    @JsName("left") val left: Float,
-    @JsName("top") val top: Float,
-    @JsName("right") val right: Float,
-    @JsName("bottom") val bottom: Float
-) : DataType() {
-    @JsName("height")
+private constructor(val left: Float, val top: Float, val right: Float, val bottom: Float) :
+    DataType() {
     val height: Float
         get() = bottom - top
-    @JsName("width")
     val width: Float
         get() = right - left
 
@@ -51,7 +42,6 @@ private constructor(
      *
      * All fractional parts are rounded to 0
      */
-    @JsName("toRect")
     fun toRect(): Rect {
         return Rect.from(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
     }
@@ -92,7 +82,6 @@ private constructor(
      *
      * @param crop The crop that should be applied to this layer
      */
-    @JsName("crop")
     fun crop(crop: RectF): RectF {
         val newLeft = maxOf(left, crop.left)
         val newTop = maxOf(top, crop.top)
@@ -113,7 +102,6 @@ private constructor(
      * @param bottom The bottom of the rectangle being intersected with this rectangle.
      * @return A rectangle with the intersection coordinates
      */
-    @JsName("intersection")
     fun intersection(left: Float, top: Float, right: Float, bottom: Float): RectF {
         if (this.left < right && left < this.right && this.top <= bottom && top <= this.bottom) {
             var intersectionLeft = this.left
@@ -147,7 +135,6 @@ private constructor(
      * @param r The rectangle being intersected with this rectangle.
      * @return A rectangle with the intersection coordinates
      */
-    @JsName("intersectionWithRect")
     fun intersection(r: RectF): RectF = intersection(r.left, r.top, r.right, r.bottom)
 
     override fun doPrintValue(): String {
@@ -159,11 +146,9 @@ private constructor(
     }
 
     companion object {
-        @JsName("EMPTY")
         val EMPTY: RectF
             get() = withCache { RectF(left = 0f, top = 0f, right = 0f, bottom = 0f) }
 
-        @JsName("from")
         fun from(left: Float, top: Float, right: Float, bottom: Float): RectF = withCache {
             RectF(left, top, right, bottom)
         }

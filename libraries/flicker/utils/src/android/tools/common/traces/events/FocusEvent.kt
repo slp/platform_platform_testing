@@ -17,7 +17,6 @@
 package android.tools.common.traces.events
 
 import android.tools.common.Timestamp
-import kotlin.js.JsExport
 
 /**
  * An Event from the [EventLog] representing a window focus change or request.
@@ -32,7 +31,6 @@ import kotlin.js.JsExport
  * @param threadId The thread which wrote the log entry
  * @param tag The type tag code of the entry
  */
-@JsExport
 class FocusEvent(
     timestamp: Timestamp,
     val window: String,
@@ -62,13 +60,13 @@ class FocusEvent(
             processId: Int,
             uid: String,
             threadId: Int,
-            data: Array<String>
+            data: Collection<String>
         ) =
             FocusEvent(
                 timestamp,
-                getWindowFromData(data[0]),
-                getFocusFromData(data[0]),
-                data[1].removePrefix("reason="),
+                getWindowFromData(data.first()),
+                getFocusFromData(data.first()),
+                data.drop(1).first().removePrefix("reason="),
                 processId,
                 uid,
                 threadId

@@ -53,7 +53,7 @@ class ViewFrameBuilder {
             clipChildren = node.clipChildren,
             visibility = node.visibility,
             elevation = node.elevation.toDouble(),
-            children = node.childrenList.map { parseViewNode(it) }.toTypedArray()
+            children = node.childrenList.map { parseViewNode(it) }
         )
 
     fun build(): ViewFrame {

@@ -17,6 +17,8 @@
 package android.tools.device.traces.monitors
 
 import android.tools.common.io.Reader
+import android.tools.common.traces.surfaceflinger.LayerTraceEntry
+import android.tools.common.traces.wm.WindowManagerState
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.google.common.truth.Truth
@@ -39,12 +41,10 @@ class MonitorUtilsTest {
 
     private fun validateTrace(dump: Reader) {
         Truth.assertWithMessage("Could not obtain SF trace")
-            .that(dump.readLayersTrace()?.entries ?: emptyArray())
-            .asList()
+            .that(dump.readLayersTrace()?.entries ?: emptyList<LayerTraceEntry>())
             .isNotEmpty()
         Truth.assertWithMessage("Could not obtain WM trace")
-            .that(dump.readWmTrace()?.entries ?: emptyArray())
-            .asList()
+            .that(dump.readWmTrace()?.entries ?: emptyList<WindowManagerState>())
             .isNotEmpty()
     }
 }

@@ -39,21 +39,18 @@ data class ScenarioAssertionImpl(
         Logger.withTracing("executeAssertion") {
             AssertionResultImpl(
                     name,
-                    assertionData.toTypedArray(),
-                    assertionData
-                        .mapNotNull {
-                            val exception =
-                                assertionRunner.runAssertion(it) ?: return@mapNotNull null
-                            if (exception !is FlickerAssertionError) {
-                                throw exception
-                            } else {
-                                assertionExtraData.forEach { (key, value) ->
-                                    exception.messageBuilder.addExtraDescription(key, value)
-                                }
+                    assertionData,
+                    assertionData.mapNotNull {
+                        val exception = assertionRunner.runAssertion(it) ?: return@mapNotNull null
+                        if (exception !is FlickerAssertionError) {
+                            throw exception
+                        } else {
+                            assertionExtraData.forEach { (key, value) ->
+                                exception.messageBuilder.addExtraDescription(key, value)
                             }
-                            exception
                         }
-                        .toTypedArray(),
+                        exception
+                    },
                     stabilityGroup
                 )
                 .also { log(it) }

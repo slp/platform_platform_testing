@@ -34,8 +34,8 @@ class ShellTransitionTraceParser :
     >() {
     override val traceName: String = "Transition trace (shell)"
 
-    override fun createTrace(entries: List<Transition>): TransitionsTrace {
-        return TransitionsTrace(entries.toTypedArray())
+    override fun createTrace(entries: Collection<Transition>): TransitionsTrace {
+        return TransitionsTrace(entries)
     }
 
     override fun doDecodeByteArray(bytes: ByteArray): WmShellTransitionTraceProto =
@@ -47,7 +47,7 @@ class ShellTransitionTraceParser :
 
     override fun getEntries(
         input: WmShellTransitionTraceProto
-    ): List<com.android.wm.shell.nano.Transition> = input.transitions.toList()
+    ): Collection<com.android.wm.shell.nano.Transition> = input.transitions.toList()
 
     override fun getTimestamp(entry: com.android.wm.shell.nano.Transition): Timestamp {
         requireValidTimestamp(entry)

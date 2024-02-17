@@ -60,7 +60,7 @@ class DisplayContent(
             return smallestWidth >= PlatformConsts.TABLET_MIN_DPS
         }
 
-    val rootTasks: Array<Task>
+    val rootTasks: Collection<Task>
         get() {
             val tasks = collectDescendants<Task> { it.isRootTask }.toMutableList()
             // TODO(b/149338177): figure out how CTS tests deal with organizer. For now,
@@ -79,7 +79,7 @@ class DisplayContent(
                 tasks.addAll(task.children.reversed().map { it as Task })
             }
 
-            return tasks.toTypedArray()
+            return tasks
         }
 
     /**

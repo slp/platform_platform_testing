@@ -219,14 +219,14 @@ class FlickerServiceRuleTest {
             object : AssertionResult {
                 override val name = "MOCK_SCENARIO#mockAssertion"
                 override val assertionData =
-                    arrayOf<AssertionData>(
+                    listOf<AssertionData>(
                         object : AssertionData {
                             override fun checkAssertion(run: SubjectsParser) {
                                 error("Unimplemented - shouldn't be called")
                             }
                         }
                     )
-                override val assertionErrors = arrayOf(error)
+                override val assertionErrors = listOf(error)
                 override val stabilityGroup = AssertionInvocationGroup.BLOCKING
                 override val passed = false
             }

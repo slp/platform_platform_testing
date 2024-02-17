@@ -38,7 +38,7 @@ class LayerTraceParserTest {
             ) { session ->
                 LayersTraceParser().parse(session)
             }
-        Truth.assertWithMessage("Trace").that(trace.entries).asList().isNotEmpty()
+        Truth.assertWithMessage("Trace").that(trace.entries).isNotEmpty()
         Truth.assertWithMessage("Trace contains entry")
             .that(trace.entries.map { it.elapsedTimestamp })
             .contains(1700382131522L)
@@ -55,7 +55,6 @@ class LayerTraceParserTest {
         Truth.assertWithMessage("Dump").that(trace.entries.size).isEqualTo(1)
         Truth.assertWithMessage("Dump contains display")
             .that(trace.entries.first().displays)
-            .asList()
             .isNotEmpty()
     }
 

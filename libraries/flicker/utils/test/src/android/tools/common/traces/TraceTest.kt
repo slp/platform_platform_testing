@@ -31,7 +31,7 @@ class TraceTest {
         val entry1 = SimpleTraceEntry(Timestamps.from(1, 1, 1))
         val entry2 = SimpleTraceEntry(Timestamps.from(5, 5, 5))
         val entry3 = SimpleTraceEntry(Timestamps.from(25, 25, 25))
-        val trace = SimpleTrace(arrayOf(entry1, entry2, entry3))
+        val trace = SimpleTrace(listOf(entry1, entry2, entry3))
 
         Truth.assertThat(trace.getEntryExactlyAt(Timestamps.from(1, 1, 1))).isEqualTo(entry1)
         Truth.assertThat(trace.getEntryExactlyAt(Timestamps.from(5, 5, 5))).isEqualTo(entry2)
@@ -49,7 +49,7 @@ class TraceTest {
         val entry1 = SimpleTraceEntry(Timestamps.from(2, 2, 2))
         val entry2 = SimpleTraceEntry(Timestamps.from(5, 5, 5))
         val entry3 = SimpleTraceEntry(Timestamps.from(25, 25, 25))
-        val trace = SimpleTrace(arrayOf(entry1, entry2, entry3))
+        val trace = SimpleTrace(listOf(entry1, entry2, entry3))
 
         Truth.assertThat(trace.getEntryAt(Timestamps.from(2, 2, 2))).isEqualTo(entry1)
         Truth.assertThat(trace.getEntryAt(Timestamps.from(5, 5, 5))).isEqualTo(entry2)
@@ -66,7 +66,7 @@ class TraceTest {
 
     class SimpleTraceEntry(override val timestamp: Timestamp) : TraceEntry
 
-    class SimpleTrace(override val entries: Array<TraceEntry>) : Trace<TraceEntry> {
+    class SimpleTrace(override val entries: List<TraceEntry>) : Trace<TraceEntry> {
         override fun slice(startTimestamp: Timestamp, endTimestamp: Timestamp): Trace<TraceEntry> {
             error("Not yet implemented")
         }

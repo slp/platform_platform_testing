@@ -41,8 +41,7 @@ object TransitionFilters {
 
     val CLOSE_APP_TO_LAUNCHER_FILTER: TransitionsTransform = { ts, _, reader ->
         val layersTrace = reader.readLayersTrace() ?: error("Missing layers trace")
-        val layers =
-            layersTrace.entries.flatMap { it.flattenedLayers.asList() }.distinctBy { it.id }
+        val layers = layersTrace.entries.flatMap { it.flattenedLayers }.distinctBy { it.id }
         val launcherLayers = layers.filter { ComponentNameMatcher.LAUNCHER.layerMatchesAnyOf(it) }
 
         ts.filter { t ->
@@ -141,7 +140,7 @@ object TransitionFilters {
     val QUICK_SWITCH_TRANSITION_POST_PROCESSING: TransitionsTransform = { transitions, _, reader ->
         require(transitions.size == 1) { "Expected 1 transition but got ${transitions.size}" }
 
-        val transition = transitions[0]
+        val transition = transitions.first()
 
         val layersTrace = reader.readLayersTrace() ?: error("Missing layers trace")
         val wallpaperId =
@@ -176,7 +175,7 @@ object TransitionFilters {
                     startTransactionId = transition.wmData.startTransactionId,
                     finishTransactionId = transition.wmData.finishTransactionId,
                     type = transition.wmData.type,
-                    changes = arrayOf(closingAppChange, openingAppChange),
+                    changes = listOf(closingAppChange, openingAppChange),
                 ),
                 transition.shellData
             )

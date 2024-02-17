@@ -37,7 +37,7 @@ class EventLogSubjectTest {
                 artifact = TestArtifact.EMPTY,
                 eventLog =
                     EventLog(
-                        arrayOf(
+                        listOf(
                             FocusEvent(
                                 Timestamps.from(unixNanos = 0),
                                 "WinB",
@@ -91,7 +91,7 @@ class EventLogSubjectTest {
     @Test
     fun canDetectFocusDoesNotChange() {
         val reader =
-            ParsedTracesReader(artifact = TestArtifact.EMPTY, eventLog = EventLog(emptyArray()))
+            ParsedTracesReader(artifact = TestArtifact.EMPTY, eventLog = EventLog(emptyList()))
         val subjectsParser = SubjectsParser(reader)
 
         val subject = subjectsParser.eventLogSubject ?: error("Event log subject not built")
