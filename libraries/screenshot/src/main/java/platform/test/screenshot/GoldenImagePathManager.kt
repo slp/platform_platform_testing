@@ -33,30 +33,32 @@ private const val ORIENTATION_TAG = "orientation"
  * Class to manage Directory structure of golden images.
  *
  *     When you run a AR Diff test, different attributes/dimensions of the platform you are running
+ *
  * on, such as build, screen resolution, orientation etc. will/may render differently and therefore
  * may require a different golden image to compare against. You can manage these multiple golden
- * images related to your test using this utility class. It supports both device-less or device based
- * configurations. Please see GoldenImagePathManagerTest for detailed examples.
+ * images related to your test using this utility class. It supports both device-less or device
+ * based configurations. Please see GoldenImagePathManagerTest for detailed examples.
  *
  *     You can configure where to find the golden images repo and local cache using [locationConfig]
- * All the goldens are stored under a directory structure, which is determined by
- * [pathConfig]. See getDefaultPathConfig for the current implementation.
  *
- * There are two ways to modify how the golden images are stored and retrieved for your test:
- *  A. (Recommended) Create your own PathConfig object which takes a series of [PathElement]s
- *     Each path element represents a dimension such as screen resolution that affects the golden
- *     image. This dimension will be embedded either into the directory structure or into the
- *     filename itself. Your test can also provide its own custom implementation of [PathElement]
- *     if the dimension your test needs to rely on, is not supported.
- *  B. If you have a completely unique way of managing your golden image repository and
- *     corresponding local cache, implement a derived class and override the
- *     goldenIdentifierResolver function.
+ * All the goldens are stored under a directory structure, which is determined by [pathConfig]. See
+ * getDefaultPathConfig for the current implementation.
  *
- * NOTE: This class does not determine what combinations of attributes / dimensions your
- * test code will run for. That decision/configuration is part of your test configuration.
+ * There are two ways to modify how the golden images are stored and retrieved for your test: A.
+ * (Recommended) Create your own PathConfig object which takes a series of [PathElement]s Each path
+ * element represents a dimension such as screen resolution that affects the golden image. This
+ * dimension will be embedded either into the directory structure or into the filename itself. Your
+ * test can also provide its own custom implementation of [PathElement] if the dimension your test
+ * needs to rely on, is not supported. B. If you have a completely unique way of managing your
+ * golden image repository and corresponding local cache, implement a derived class and override the
+ * goldenIdentifierResolver function.
  *
+ * NOTE: This class does not determine what combinations of attributes / dimensions your test code
+ * will run for. That decision/configuration is part of your test configuration.
  */
-open class GoldenImagePathManager @JvmOverloads constructor(
+open class GoldenImagePathManager
+@JvmOverloads
+constructor(
     open val appContext: Context,
     open val assetsPathRelativeToBuildRoot: String = "assets",
     open var deviceLocalPath: String = getDeviceOutputDirectory(appContext),
@@ -121,38 +123,35 @@ class PathConfig(vararg elems: PathElementBase) {
     val data = listOf(*elems)
 
     public fun resolveRelativePath(context: Context): String {
-        return data.map {
-            when (it) {
-                is PathElementWithContext -> it.func(context)
-                is PathElementNoContext -> it.func()
-                else -> ""
-            } + if (it.isDir) "/" else "_"
-        }.joinToString("")
+        return data
+            .map {
+                when (it) {
+                    is PathElementWithContext -> it.func(context)
+                    is PathElementNoContext -> it.func()
+                    else -> ""
+                } + if (it.isDir) "/" else "_"
+            }
+            .joinToString("")
     }
 }
 
 /*
-* This is the PathConfig that will be used by default.
-* An example directory structure using this config would be
-*  /google/pixel6/api32/600_400/
-*/
+ * This is the PathConfig that will be used by default.
+ * An example directory structure using this config would be
+ *  /google/pixel6/api32/600_400/
+ */
 public fun getDefaultPathConfig(): PathConfig {
     return PathConfig(
         PathElementNoContext(BRAND_TAG, true, ::getDeviceBrand),
         PathElementNoContext(MODEL_TAG, true, ::getDeviceModel),
         PathElementNoContext(API_TAG, true, ::getAPIVersion),
         PathElementWithContext(SIZE_TAG, true, ::getScreenSize),
-        PathElementWithContext(
-            RESOLUTION_TAG,
-            true,
-                ::getScreenResolution)
+        PathElementWithContext(RESOLUTION_TAG, true, ::getScreenResolution)
     )
 }
 
 public fun getSimplePathConfig(): PathConfig {
-    return PathConfig(
-        PathElementNoContext(MODEL_TAG, true, ::getDeviceModel)
-    )
+    return PathConfig(PathElementNoContext(MODEL_TAG, true, ::getDeviceModel))
 }
 
 /** The [PathConfig] that should be used when emulating a device using the [DeviceEmulationRule]. */

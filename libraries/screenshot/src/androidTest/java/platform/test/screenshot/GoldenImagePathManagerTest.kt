@@ -51,12 +51,13 @@ class GoldenImagePathManagerTest {
 
     @Test
     fun pathConfigTest() {
-        val pc = PathConfig(
-            PathElementNoContext("nocontext1", true, ::pathNoContextExtractor1),
-            PathElementNoContext("nocontext2", true, ::pathNoContextExtractor2),
-            PathElementWithContext("context1", true, ::pathContextExtractor),
-            PathElementWithContext("context2", true, ::pathContextExtractor)
-        )
+        val pc =
+            PathConfig(
+                PathElementNoContext("nocontext1", true, ::pathNoContextExtractor1),
+                PathElementNoContext("nocontext2", true, ::pathNoContextExtractor2),
+                PathElementWithContext("context1", true, ::pathContextExtractor),
+                PathElementWithContext("context2", true, ::pathContextExtractor)
+            )
         val context = InstrumentationRegistry.getInstrumentation().getContext()
         val pcResolvedRelativePath = pc.resolveRelativePath(context)
         assertThat(pcResolvedRelativePath).isEqualTo("nocontext1/nocontext2/context/context/")

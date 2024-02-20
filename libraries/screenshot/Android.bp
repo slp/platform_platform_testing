@@ -22,7 +22,7 @@ android_test {
     manifest: "src/androidTest/manifest/AndroidManifest.xml",
     platform_apis: true,
     optimize: {
-        enabled: false
+        enabled: false,
     },
     srcs: [
         "src/**/*.java",
@@ -48,9 +48,11 @@ android_library {
     name: "platform-screenshot-diff-core",
     manifest: "AndroidManifest.xml",
     platform_apis: true,
-    lint: { test: true },
+    lint: {
+        test: true,
+    },
     optimize: {
-        enabled: false
+        enabled: false,
     },
     srcs: [
         "src/main/java/platform/test/screenshot/**/*.java",
@@ -74,6 +76,6 @@ java_library {
         "**/*.proto",
     ],
     optimize: {
-        enabled: false
-    }
+        enabled: false,
+    },
 }

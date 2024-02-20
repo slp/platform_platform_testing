@@ -56,9 +56,7 @@ import platform.test.screenshot.proto.ScreenshotResultProto
  * @see Bitmap.assertAgainstGolden
  */
 @SuppressLint("SyntheticAccessor")
-open class ScreenshotTestRule(
-    val goldenImagePathManager: GoldenImagePathManager
-) : TestRule {
+open class ScreenshotTestRule(val goldenImagePathManager: GoldenImagePathManager) : TestRule {
     private val imageExtension = ".png"
     private val resultBinaryProtoFileSuffix = "goldResult.pb"
     // This is used in CI to identify the files.
@@ -84,11 +82,11 @@ open class ScreenshotTestRule(
         }
 
     open fun getTestIdentifier(description: Description): String =
-            "${description.className}_${description.methodName}"
+        "${description.className}_${description.methodName}"
 
     private val isRobolectric = Build.FINGERPRINT.contains("robolectric")
     private fun isGradle(): Boolean =
-            java.lang.System.getProperty("java.class.path").contains("gradle-worker.jar")
+        java.lang.System.getProperty("java.class.path").contains("gradle-worker.jar")
 
     fun Bitmap.writeTo(path: Path) {
         // Make sure we either create a new file or overwrite an existing one.
@@ -105,20 +103,20 @@ open class ScreenshotTestRule(
 
     private fun fetchExpectedImage(goldenIdentifier: String): Bitmap? {
         val instrument = InstrumentationRegistry.getInstrumentation()
-        return listOf(
-            instrument.targetContext.applicationContext,
-            instrument.context
-        ).map { context ->
-            try {
-                context.assets.open(
-                    goldenImagePathManager.goldenIdentifierResolver(goldenIdentifier)
-                ).use {
-                    return@use BitmapFactory.decodeStream(it)
+        return listOf(instrument.targetContext.applicationContext, instrument.context)
+            .map { context ->
+                try {
+                    context.assets
+                        .open(goldenImagePathManager.goldenIdentifierResolver(goldenIdentifier))
+                        .use {
+                            return@use BitmapFactory.decodeStream(it)
+                        }
+                } catch (e: FileNotFoundException) {
+                    return@map null
                 }
-            } catch (e: FileNotFoundException) {
-                return@map null
             }
-        }.filterNotNull().firstOrNull()
+            .filterNotNull()
+            .firstOrNull()
     }
 
     /**
@@ -131,13 +129,11 @@ open class ScreenshotTestRule(
      * @param actual The bitmap captured during the test.
      * @param goldenIdentifier Name of the golden. Allowed characters: 'A-Za-z0-9_-'
      * @param matcher The algorithm to be used to perform the matching.
-     *
+     * @throws IllegalArgumentException If the golden identifier contains forbidden characters or is
+     *   empty.
      * @see MSSIMMatcher
      * @see PixelPerfectMatcher
      * @see Bitmap.assertAgainstGolden
-     *
-     * @throws IllegalArgumentException If the golden identifier contains forbidden characters or
-     * is empty.
      */
     @Deprecated("use the ScreenshotTestRuleAsserter")
     fun assertBitmapAgainstGolden(
@@ -164,13 +160,11 @@ open class ScreenshotTestRule(
      * @param goldenIdentifier Name of the golden. Allowed characters: 'A-Za-z0-9_-'
      * @param matcher The algorithm to be used to perform the matching.
      * @param regions An optional array of interesting regions for partial screenshot diff.
-     *
+     * @throws IllegalArgumentException If the golden identifier contains forbidden characters or is
+     *   empty.
      * @see MSSIMMatcher
      * @see PixelPerfectMatcher
      * @see Bitmap.assertAgainstGolden
-     *
-     * @throws IllegalArgumentException If the golden identifier contains forbidden characters or
-     * is empty.
      */
     @Deprecated("use the ScreenshotTestRuleAsserter")
     fun assertBitmapAgainstGolden(
@@ -215,19 +209,21 @@ open class ScreenshotTestRule(
             )
         }
 
-        val comparisonResult = matcher.compareBitmaps(
-            expected = expected.toIntArray(),
-            given = actual.toIntArray(),
-            width = actual.width,
-            height = actual.height,
-            regions = regions
-        )
+        val comparisonResult =
+            matcher.compareBitmaps(
+                expected = expected.toIntArray(),
+                given = actual.toIntArray(),
+                width = actual.width,
+                height = actual.height,
+                regions = regions
+            )
 
-        val status = if (comparisonResult.matches) {
-            ScreenshotResultProto.DiffResult.Status.PASSED
-        } else {
-            ScreenshotResultProto.DiffResult.Status.FAILED
-        }
+        val status =
+            if (comparisonResult.matches) {
+                ScreenshotResultProto.DiffResult.Status.PASSED
+            } else {
+                ScreenshotResultProto.DiffResult.Status.FAILED
+            }
 
         if (!comparisonResult.matches) {
             val expectedWithHighlight = highlightedBitmap(expected, regions)
@@ -245,7 +241,7 @@ open class ScreenshotTestRule(
             expected.recycle()
 
             throw AssertionError(
-                    "Image mismatch! Comparison stats: '${comparisonResult.comparisonStatistics}'"
+                "Image mismatch! Comparison stats: '${comparisonResult.comparisonStatistics}'"
             )
         }
 
@@ -261,21 +257,20 @@ open class ScreenshotTestRule(
         expected: Bitmap? = null,
         diff: Bitmap? = null
     ) {
-        val resultProto = ScreenshotResultProto.DiffResult
-            .newBuilder()
-            .setResultType(status)
-            .addMetadata(
-                ScreenshotResultProto.Metadata.newBuilder()
-                    .setKey("repoRootPath")
-                    .setValue(goldenImagePathManager.deviceLocalPath)
-            )
+        val resultProto =
+            ScreenshotResultProto.DiffResult.newBuilder()
+                .setResultType(status)
+                .addMetadata(
+                    ScreenshotResultProto.Metadata.newBuilder()
+                        .setKey("repoRootPath")
+                        .setValue(goldenImagePathManager.deviceLocalPath)
+                )
 
         if (comparisonStatistics != null) {
             resultProto.comparisonStatistics = comparisonStatistics
         }
 
-        val pathRelativeToAssets =
-            goldenImagePathManager.goldenIdentifierResolver(goldenIdentifier)
+        val pathRelativeToAssets = goldenImagePathManager.goldenIdentifierResolver(goldenIdentifier)
         resultProto.imageLocationGolden = "$assetsPathRelativeToRepo/$pathRelativeToAssets"
 
         val report = Bundle()
@@ -293,24 +288,23 @@ open class ScreenshotTestRule(
         expected?.run {
             writeToDevice(OutputFileType.IMAGE_EXPECTED, goldenIdentifier).also {
                 resultProto.imageLocationReference = it.name
-                report.putString(
-                    bundleKeyPrefix + OutputFileType.IMAGE_EXPECTED,
-                    it.absolutePath
-                )
+                report.putString(bundleKeyPrefix + OutputFileType.IMAGE_EXPECTED, it.absolutePath)
             }
         }
 
         writeToDevice(OutputFileType.RESULT_PROTO, goldenIdentifier) {
-            it.write(resultProto.build().toString().toByteArray())
-        }.also {
-            report.putString(bundleKeyPrefix + OutputFileType.RESULT_PROTO, it.absolutePath)
-        }
+                it.write(resultProto.build().toString().toByteArray())
+            }
+            .also {
+                report.putString(bundleKeyPrefix + OutputFileType.RESULT_PROTO, it.absolutePath)
+            }
 
         writeToDevice(OutputFileType.RESULT_BIN_PROTO, goldenIdentifier) {
-            it.write(resultProto.build().toByteArray())
-        }.also {
-            report.putString(bundleKeyPrefix + OutputFileType.RESULT_BIN_PROTO, it.absolutePath)
-        }
+                it.write(resultProto.build().toByteArray())
+            }
+            .also {
+                report.putString(bundleKeyPrefix + OutputFileType.RESULT_BIN_PROTO, it.absolutePath)
+            }
 
         InstrumentationRegistry.getInstrumentation().sendStatus(bundleStatusInProgress, report)
 
@@ -349,7 +343,8 @@ open class ScreenshotTestRule(
                             <h2><a href="file://$image">$name</a></h2>
                             <img src="$image" alt="$alt"/>
                         </p>
-                    """.trimIndent()
+                    """
+                        .trimIndent()
                 }
             }
 
@@ -362,7 +357,8 @@ open class ScreenshotTestRule(
                     ${html(expected, expectedImagePath, "Expected", "Golden")}
                     ${html(actual, actualImagePath, "Actual", "Actual")}
                     ${html(diff, diffImagePath, "Diff", "Diff")}
-                """.trimIndent()
+                """
+                    .trimIndent()
             )
         }
     }
@@ -373,24 +369,21 @@ open class ScreenshotTestRule(
         val binProtoSuffix =
             getOnDeviceArtifactsSuffix(goldenIdentifier, resultBinaryProtoFileSuffix)
         val succinctTestIdentifier = getSuccinctTestIdentifier(testIdentifier)
-        val fileName = when (fileType) {
-            OutputFileType.IMAGE_ACTUAL ->
-                "${succinctTestIdentifier}_actual_$imageSuffix"
-            OutputFileType.IMAGE_EXPECTED ->
-                "${succinctTestIdentifier}_expected_$imageSuffix"
-            OutputFileType.IMAGE_DIFF ->
-                "${succinctTestIdentifier}_diff_$imageSuffix"
-            OutputFileType.RESULT_PROTO ->
-                "${succinctTestIdentifier}_$protoSuffix"
-            OutputFileType.RESULT_BIN_PROTO ->
-                "${succinctTestIdentifier}_$binProtoSuffix"
-        }
+        val fileName =
+            when (fileType) {
+                OutputFileType.IMAGE_ACTUAL -> "${succinctTestIdentifier}_actual_$imageSuffix"
+                OutputFileType.IMAGE_EXPECTED -> "${succinctTestIdentifier}_expected_$imageSuffix"
+                OutputFileType.IMAGE_DIFF -> "${succinctTestIdentifier}_diff_$imageSuffix"
+                OutputFileType.RESULT_PROTO -> "${succinctTestIdentifier}_$protoSuffix"
+                OutputFileType.RESULT_BIN_PROTO -> "${succinctTestIdentifier}_$binProtoSuffix"
+            }
         return File(goldenImagePathManager.deviceLocalPath, fileName)
     }
 
     open fun getOnDeviceImageSuffix(goldenIdentifier: String): String {
         val resolvedGoldenIdentifier =
-            goldenImagePathManager.goldenIdentifierResolver(goldenIdentifier)
+            goldenImagePathManager
+                .goldenIdentifierResolver(goldenIdentifier)
                 .replace('/', '_')
                 .replace(imageExtension, "")
         return "$resolvedGoldenIdentifier$imageExtension"
@@ -398,7 +391,8 @@ open class ScreenshotTestRule(
 
     open fun getOnDeviceArtifactsSuffix(goldenIdentifier: String, suffix: String): String {
         val resolvedGoldenIdentifier =
-            goldenImagePathManager.goldenIdentifierResolver(goldenIdentifier)
+            goldenImagePathManager
+                .goldenIdentifierResolver(goldenIdentifier)
                 .replace('/', '_')
                 .replace(imageExtension, "")
         return "${resolvedGoldenIdentifier}_$suffix"
@@ -431,12 +425,12 @@ open class ScreenshotTestRule(
             // compared with. In this scenario, multiple actual/expected/diff images with same
             // names will be attempted to write to the device.
             try {
-                FileOutputStream(file).use {
-                    writeAction(it)
-                }
+                FileOutputStream(file).use { writeAction(it) }
             } catch (e: Exception) {
                 throw IOException(
-                        "Could not write file to storage (path: ${file.absolutePath}). ", e)
+                    "Could not write file to storage (path: ${file.absolutePath}). ",
+                    e
+                )
             }
         }
 
@@ -451,11 +445,11 @@ open class ScreenshotTestRule(
         val imageRect = Rect(0, 0, original.width, original.height)
         val regionLineWidth = 2
         for (region in regions) {
-            val regionToDraw = Rect(region)
-                    .apply {
-                        inset(-regionLineWidth, -regionLineWidth)
-                        intersect(imageRect)
-                    }
+            val regionToDraw =
+                Rect(region).apply {
+                    inset(-regionLineWidth, -regionLineWidth)
+                    intersect(imageRect)
+                }
 
             repeat(regionLineWidth) {
                 drawRectOnBitmap(outputBitmap, regionToDraw, Color.RED)
@@ -482,12 +476,9 @@ open class ScreenshotTestRule(
 
 typealias BitmapSupplier = () -> Bitmap
 
-/**
- * Implements a screenshot asserter based on the ScreenshotRule
- */
-class ScreenshotRuleAsserter private constructor(
-    private val rule: ScreenshotTestRule
-) : ScreenshotAsserter {
+/** Implements a screenshot asserter based on the ScreenshotRule */
+class ScreenshotRuleAsserter private constructor(private val rule: ScreenshotTestRule) :
+    ScreenshotAsserter {
     // use the most constraining matcher as default
     private var matcher: BitmapMatcher = PixelPerfectMatcher()
     private var beforeScreenshot: Runnable? = null
@@ -498,11 +489,15 @@ class ScreenshotRuleAsserter private constructor(
 
     private var pointerLocationSetting: Int
         get() = shell("settings get system ${System.POINTER_LOCATION}").trim().toIntOrNull() ?: 0
-        set(value) { shell("settings put system ${System.POINTER_LOCATION} $value") }
+        set(value) {
+            shell("settings put system ${System.POINTER_LOCATION} $value")
+        }
 
     private var showTouchesSetting
         get() = shell("settings get system ${System.SHOW_TOUCHES}").trim().toIntOrNull() ?: 0
-        set(value) { shell("settings put system ${System.SHOW_TOUCHES} $value") }
+        set(value) {
+            shell("settings put system ${System.SHOW_TOUCHES} $value")
+        }
 
     private var prevPointerLocationSetting: Int? = null
     private var prevShowTouchesSetting: Int? = null
@@ -555,11 +550,13 @@ class ScreenshotRuleAsserter private constructor(
          * The [Bitmap] produced by [screenshotProvider] will be recycled immediately after
          * assertions are completed. Therefore, do not retain references to created [Bitmap]s.
          */
-        fun setScreenshotProvider(screenshotProvider: BitmapSupplier): Builder =
-                apply { asserter.screenShotter = screenshotProvider }
+        fun setScreenshotProvider(screenshotProvider: BitmapSupplier): Builder = apply {
+            asserter.screenShotter = screenshotProvider
+        }
 
-        fun setOnBeforeScreenshot(run: Runnable): Builder =
-                apply { asserter.beforeScreenshot = run }
+        fun setOnBeforeScreenshot(run: Runnable): Builder = apply {
+            asserter.beforeScreenshot = run
+        }
 
         fun setOnAfterScreenshot(run: Runnable): Builder = apply { asserter.afterScreenshot = run }
 
@@ -582,9 +579,8 @@ internal fun Bitmap.toIntArray(): IntArray {
  *
  * @param rule The screenshot test rule that provides the comparison and reporting.
  * @param goldenIdentifier Name of the golden. Allowed characters: 'A-Za-z0-9_-'
- * @param matcher The algorithm to be used to perform the matching. By default [MSSIMMatcher]
- * is used.
- *
+ * @param matcher The algorithm to be used to perform the matching. By default [MSSIMMatcher] is
+ *   used.
  * @see MSSIMMatcher
  * @see PixelPerfectMatcher
  */
@@ -597,9 +593,7 @@ fun Bitmap.assertAgainstGolden(
     rule.assertBitmapAgainstGolden(this, goldenIdentifier, matcher = matcher, regions = regions)
 }
 
-/**
- * Type of file that can be produced by the [ScreenshotTestRule].
- */
+/** Type of file that can be produced by the [ScreenshotTestRule]. */
 internal enum class OutputFileType {
     IMAGE_ACTUAL,
     IMAGE_EXPECTED,
