@@ -1854,7 +1854,7 @@
     },
     "LOCATION_WIDGET": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "qc_location_status_icon",
+      "VALUE": "read_only_location_icon",
       "PACKAGE": "com.android.systemui"
     },
     "RECENTLY_CLOSED_TEXT": {
