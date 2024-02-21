@@ -74,7 +74,7 @@ public class PerfettoListener extends BaseMetricListener {
     // Collect per run if it is set to true otherwise collect per test.
     public static final String COLLECT_PER_RUN = "per_run";
     public static final String PERFETTO_START_BG_WAIT = "perfetto_start_bg_wait";
-    public static final String PERFETTO_PREFIX = "perfetto_";
+    public static final String DEFAULT_PERFETTO_PREFIX = "perfetto_";
     // Skip failure metrics collection if this flag is set to true.
     public static final String SKIP_TEST_FAILURE_METRICS = "skip_test_failure_metrics";
     // Argument to get custom time in millisecs to wait before starting the
@@ -150,6 +150,33 @@ public class PerfettoListener extends BaseMetricListener {
         mWakeLockAcquirer = wakeLockAcquirer;
         mWakeLockReleaser = wakeLockReleaser;
         mWakelockSupplier = wakelockSupplier;
+    }
+
+    /**
+     * Constructor to simulate receiving the instrumentation arguments. Should not be used except
+     * for testing.
+     */
+    @VisibleForTesting
+    protected PerfettoListener(Bundle args, PerfettoHelper helper, Map invocationMap) {
+        super(args);
+        mPerfettoHelper = helper;
+        mTestIdInvocationCount = invocationMap;
+        mWakeLockContext = this::runWithWakeLock;
+        mWakelockSupplier = this::getWakeLock;
+        mWakeLockAcquirer = this::acquireWakelock;
+        mWakeLockReleaser = this::releaseWakelock;
+    }
+
+    protected PerfettoHelper getPerfettoHelper() {
+        return mPerfettoHelper;
+    }
+
+    protected void setPerfettoStartSuccess(boolean success) {
+        mPerfettoStartSuccess = success;
+    }
+
+    protected String getPerfettoFilePrefix() {
+        return DEFAULT_PERFETTO_PREFIX;
     }
 
     @Override
@@ -256,7 +283,7 @@ public class PerfettoListener extends BaseMetricListener {
                                         this.getClass().getSimpleName(),
                                         String.format(
                                                 "%s%s-%d.perfetto-trace",
-                                                PERFETTO_PREFIX,
+                                                getPerfettoFilePrefix(),
                                                 getTestFileName(description),
                                                 mTestIdInvocationCount.get(
                                                         getTestFileName(description))));
@@ -295,7 +322,7 @@ public class PerfettoListener extends BaseMetricListener {
                                     this.getClass().getSimpleName(),
                                     String.format(
                                             "%s%d.perfetto-trace",
-                                            PERFETTO_PREFIX, UUID.randomUUID().hashCode()));
+                                            getPerfettoFilePrefix(), UUID.randomUUID().hashCode()));
                     stopPerfettoTracing(path, runData);
                 };
 
@@ -417,16 +444,16 @@ public class PerfettoListener extends BaseMetricListener {
         return pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, PerfettoListener.class.getName());
     }
 
-    /**
-     * Start perfetto tracing using the given config file.
-     */
-    private void startPerfettoTracing() {
+    /** Start perfetto tracing using the given config file. */
+    protected void startPerfettoTracing() {
+        boolean perfettoStartSuccess;
         SystemClock.sleep(mWaitStartTimeInMs);
-        mPerfettoStartSuccess = mPerfettoHelper.startCollecting(mConfigFileName,
-                mIsConfigTextProto);
-        if (!mPerfettoStartSuccess) {
+        perfettoStartSuccess = mPerfettoHelper.startCollecting(mConfigFileName, mIsConfigTextProto);
+        if (!perfettoStartSuccess) {
             Log.e(getTag(), "Perfetto did not start successfully.");
         }
+
+        setPerfettoStartSuccess(perfettoStartSuccess);
     }
 
     /**
