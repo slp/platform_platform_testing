@@ -53,5 +53,4 @@ java_library {
         "statsd-helper",
         "statsd-config-protos",
     ],
-    platform_apis: true,
 }
