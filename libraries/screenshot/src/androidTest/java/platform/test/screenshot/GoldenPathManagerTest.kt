@@ -26,17 +26,42 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
-class GoldenImagePathManagerTest {
+class GoldenPathManagerTest {
 
     @Test
-    fun goldenWithContextTest() {
-        val localGoldenRoot = "/localgoldenroot/"
-        val context = InstrumentationRegistry.getInstrumentation().getContext()
-        val gim = GoldenImagePathManager(context, localGoldenRoot)
+    fun goldenImageWithContextTest() {
+        val subject = GoldenImagePathManager(InstrumentationRegistry.getInstrumentation().context)
         // Test for resolving device local paths.
-        val localGoldenFullImagePath = gim.goldenIdentifierResolver(testName = "test1")
+        val localGoldenFullImagePath = subject.goldenIdentifierResolver(testName = "test1")
         assertThat(localGoldenFullImagePath).endsWith("/test1.png")
         assertThat(localGoldenFullImagePath.split("/").size).isEqualTo(2)
+    }
+
+    @Test
+    fun goldenPathManager_includesPathConfig() {
+        val subject =
+            GoldenPathManager(
+                InstrumentationRegistry.getInstrumentation().context,
+                pathConfig = PathConfig(PathElementNoContext("something", true) { "mydevice" })
+            )
+        val pathSegments = subject.goldenIdentifierResolver(testName = "test1").split("/")
+        assertThat(pathSegments).containsExactly("mydevice", "test1.png").inOrder()
+    }
+
+    @Test
+    fun goldenPathManager_appendsPngExtensionByDefault() {
+        val context = InstrumentationRegistry.getInstrumentation().context
+        val subject = GoldenPathManager(context)
+        val result = subject.goldenIdentifierResolver(testName = "test1")
+        assertThat(result).endsWith("/test1.png")
+    }
+
+    @Test
+    fun goldenPathManager_allowsOverrideFileExtension() {
+        val context = InstrumentationRegistry.getInstrumentation().context
+        val subject = GoldenPathManager(context)
+        val result = subject.goldenIdentifierResolver(testName = "test1", extension = "proto")
+        assertThat(result).endsWith("/test1.proto")
     }
 
     private fun pathContextExtractor(context: Context): String {
@@ -51,12 +76,13 @@ class GoldenImagePathManagerTest {
 
     @Test
     fun pathConfigTest() {
-        val pc = PathConfig(
-            PathElementNoContext("nocontext1", true, ::pathNoContextExtractor1),
-            PathElementNoContext("nocontext2", true, ::pathNoContextExtractor2),
-            PathElementWithContext("context1", true, ::pathContextExtractor),
-            PathElementWithContext("context2", true, ::pathContextExtractor)
-        )
+        val pc =
+            PathConfig(
+                PathElementNoContext("nocontext1", true, ::pathNoContextExtractor1),
+                PathElementNoContext("nocontext2", true, ::pathNoContextExtractor2),
+                PathElementWithContext("context1", true, ::pathContextExtractor),
+                PathElementWithContext("context2", true, ::pathContextExtractor)
+            )
         val context = InstrumentationRegistry.getInstrumentation().getContext()
         val pcResolvedRelativePath = pc.resolveRelativePath(context)
         assertThat(pcResolvedRelativePath).isEqualTo("nocontext1/nocontext2/context/context/")
