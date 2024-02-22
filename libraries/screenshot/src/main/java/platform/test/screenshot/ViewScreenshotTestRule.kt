@@ -111,18 +111,18 @@ open class ViewScreenshotTestRule(
             beforeScreenshot(activity)
         }
 
-        if (isRobolectric) {
-            val originalBitmap = contentView?.captureToBitmap()?.get(10, TimeUnit.SECONDS)
-            if (originalBitmap == null) {
-                error("timeout while trying to capture view to bitmap")
-            }
-            return bitmapWithMaterialYouColorsSimulation(
+        val originalBitmap = contentView?.captureToBitmapAsync()?.get(10, TimeUnit.SECONDS)
+        if (originalBitmap == null) {
+            error("timeout while trying to capture view to bitmap")
+        }
+        return if (isRobolectric) {
+            bitmapWithMaterialYouColorsSimulation(
                 originalBitmap,
                 emulationSpec.isDarkTheme,
                 /* doPixelAveraging= */ true
             )
         } else {
-            return contentView?.toBitmap() ?: error("contentView is null")
+            originalBitmap
         }
     }
 

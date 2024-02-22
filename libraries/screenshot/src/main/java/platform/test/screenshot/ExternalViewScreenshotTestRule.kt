@@ -27,6 +27,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
 import androidx.test.platform.app.InstrumentationRegistry
+import java.util.concurrent.TimeUnit
 import org.junit.rules.RuleChain
 import org.junit.rules.TestRule
 import org.junit.runner.Description
@@ -63,7 +64,7 @@ class ExternalViewScreenshotTestRule(
         view.removeElevationRecursively()
 
         ScreenshotRuleAsserter.Builder(screenshotRule)
-            .setScreenshotProvider { view.toBitmap(window) }
+            .setScreenshotProvider { view.captureToBitmapAsync().get(10, TimeUnit.SECONDS) }
             .withMatcher(matcher)
             .build()
             .assertGoldenImage(goldenIdentifier)
