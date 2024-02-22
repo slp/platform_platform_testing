@@ -34,6 +34,4 @@ java_library {
         "mockito-target-minus-junit4",
         "launcher-aosp-tapl"
     ],
-
-    platform_apis: true,
 }
