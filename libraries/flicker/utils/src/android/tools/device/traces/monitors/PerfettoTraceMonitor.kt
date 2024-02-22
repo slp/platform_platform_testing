@@ -19,9 +19,11 @@ package android.tools.device.traces.monitors
 import android.tools.common.io.TraceType
 import android.tools.device.traces.executeShellCommand
 import android.tools.device.traces.io.IoUtils
+import com.android.internal.protolog.common.LogLevel
 import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.locks.ReentrantLock
+import perfetto.protos.PerfettoConfig
 import perfetto.protos.PerfettoConfig.DataSourceConfig
 import perfetto.protos.PerfettoConfig.SurfaceFlingerLayersConfig
 import perfetto.protos.PerfettoConfig.SurfaceFlingerTransactionsConfig
@@ -106,8 +108,18 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
             enableCustomTrace(createTransitionsDataSourceConfig())
         }
 
-        fun enableProtoLog(): Builder = apply {
-            enableCustomTrace(createProtoLogDataSourceConfig())
+        data class ProtoLogGroupOverride(
+            val groupName: String,
+            val logFrom: LogLevel,
+            val collectStackTrace: Boolean,
+        )
+
+        @JvmOverloads
+        fun enableProtoLog(
+            logAll: Boolean = true,
+            groupOverrides: List<ProtoLogGroupOverride> = emptyList()
+        ): Builder = apply {
+            enableCustomTrace(createProtoLogDataSourceConfig(logAll, groupOverrides))
         }
 
         fun enableCustomTrace(dataSourceConfig: DataSourceConfig): Builder = apply {
@@ -184,8 +196,35 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
             return DataSourceConfig.newBuilder().setName(TRANSITIONS_DATA_SOURCE).build()
         }
 
-        private fun createProtoLogDataSourceConfig(): DataSourceConfig {
-            return DataSourceConfig.newBuilder().setName(PROTOLOG_DATA_SOURCE).build()
+        private fun createProtoLogDataSourceConfig(
+            logAll: Boolean,
+            groupOverrides: List<ProtoLogGroupOverride>
+        ): DataSourceConfig {
+            val protoLogConfigBuilder = PerfettoConfig.ProtoLogConfig.newBuilder()
+
+            if (logAll) {
+                protoLogConfigBuilder.setTracingMode(
+                    PerfettoConfig.ProtoLogConfig.TracingMode.ENABLE_ALL
+                )
+            }
+
+            for (groupOverride in groupOverrides) {
+                protoLogConfigBuilder.addGroupOverrides(
+                    PerfettoConfig.ProtoLogGroup.newBuilder()
+                        .setGroupName(groupOverride.groupName)
+                        .setLogFrom(
+                            PerfettoConfig.ProtoLogLevel.forNumber(
+                                groupOverride.logFrom.ordinal + 1
+                            )
+                        )
+                        .setCollectStacktrace(groupOverride.collectStackTrace)
+                )
+            }
+
+            return DataSourceConfig.newBuilder()
+                .setName(PROTOLOG_DATA_SOURCE)
+                .setProtologConfig(protoLogConfigBuilder)
+                .build()
         }
 
         private fun createDataSourceWithConfig(

@@ -19,6 +19,7 @@ package android.tools.common
 interface Trace<Entry : TraceEntry> {
     val entries: Collection<Entry>
 
+    /** @return a slice inclusive of both start and end timestamp */
     fun slice(startTimestamp: Timestamp, endTimestamp: Timestamp): Trace<Entry>
 
     /**

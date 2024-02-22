@@ -20,6 +20,7 @@ import android.tools.common.Tag
 import android.tools.common.Timestamp
 import android.tools.common.traces.events.CujTrace
 import android.tools.common.traces.events.EventLog
+import android.tools.common.traces.protolog.ProtoLogTrace
 import android.tools.common.traces.surfaceflinger.LayersTrace
 import android.tools.common.traces.surfaceflinger.TransactionsTrace
 import android.tools.common.traces.wm.TransitionsTrace
@@ -57,6 +58,9 @@ interface Reader {
 
     /** @return a [CujTrace] for the part of the trace we want to run the assertions on */
     fun readCujTrace(): CujTrace?
+
+    /** @return a [ProtoLogTrace] for the part of the trace we want to run the assertions on */
+    fun readProtoLogTrace(): ProtoLogTrace?
 
     /** @return an [Reader] for the subsection of the trace we are reading in this reader */
     fun slice(startTimestamp: Timestamp, endTimestamp: Timestamp): Reader
