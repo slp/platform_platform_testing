@@ -24,8 +24,8 @@ import android.platform.test.annotations.Presubmit;
 import android.support.test.launcherhelper2.ILauncherStrategy;
 import android.support.test.launcherhelper2.LauncherStrategyFactory;
 import android.test.InstrumentationTestCase;
-import android.test.suitebuilder.annotation.MediumTest;
 
+import androidx.test.filters.MediumTest;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject2;

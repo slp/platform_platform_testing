@@ -41,11 +41,11 @@ open class ViewScreenshotTestRule(
     pathManager: GoldenImagePathManager,
     private val matcher: BitmapMatcher = UnitTestBitmapMatcher,
     private val decorFitsSystemWindows: Boolean = false,
-) : TestRule {
+    private val screenshotRule: ScreenshotTestRule = ScreenshotTestRule(pathManager)
+) : TestRule, BitmapDiffer by screenshotRule, ScreenshotAsserterFactory by screenshotRule {
     private val colorsRule = MaterialYouColorsRule()
     private val timeZoneRule = TimeZoneRule()
     private val deviceEmulationRule = DeviceEmulationRule(emulationSpec)
-    protected val screenshotRule = ScreenshotTestRule(pathManager)
     private val activityRule = ActivityScenarioRule(ScreenshotActivity::class.java)
     private val commonRule =
         RuleChain.outerRule(deviceEmulationRule).around(screenshotRule).around(activityRule)

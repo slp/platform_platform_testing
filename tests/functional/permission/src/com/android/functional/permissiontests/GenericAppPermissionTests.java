@@ -23,8 +23,9 @@ import android.support.test.launcherhelper2.LauncherStrategyFactory;
 import android.system.helpers.PackageHelper;
 import android.system.helpers.PermissionHelper;
 import android.test.InstrumentationTestCase;
-import android.test.suitebuilder.annotation.MediumTest;
-import android.test.suitebuilder.annotation.SmallTest;
+
+import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.BySelector;
