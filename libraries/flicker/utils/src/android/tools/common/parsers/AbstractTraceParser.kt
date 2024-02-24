@@ -25,7 +25,7 @@ import android.tools.common.Timestamps
 abstract class AbstractTraceParser<
     InputTypeTrace, InputTypeEntry, OutputTypeEntry, OutputTypeTrace> :
     AbstractParser<InputTypeTrace, OutputTypeTrace>() {
-    protected abstract fun onBeforeParse(input: InputTypeTrace)
+    protected open fun onBeforeParse(input: InputTypeTrace) {}
     protected abstract fun getEntries(input: InputTypeTrace): Collection<InputTypeEntry>
     protected abstract fun getTimestamp(entry: InputTypeEntry): Timestamp
     protected abstract fun doParseEntry(entry: InputTypeEntry): OutputTypeEntry

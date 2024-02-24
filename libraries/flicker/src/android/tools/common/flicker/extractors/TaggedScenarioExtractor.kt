@@ -16,6 +16,7 @@
 
 package android.tools.common.flicker.extractors
 
+import android.tools.common.Logger
 import android.tools.common.Timestamp
 import android.tools.common.Timestamps
 import android.tools.common.io.Reader
@@ -31,6 +32,10 @@ class TaggedScenarioExtractor(
     private val adjustCuj: CujAdjust,
     private val ignoreIfNoMatchingTransition: Boolean = false,
 ) : ScenarioExtractor {
+    companion object {
+        val LOG_TAG = "FlickerTaggedScenarioExtractor"
+    }
+
     override fun extract(reader: Reader): List<TraceSlice> {
         val cujTrace = reader.readCujTrace() ?: error("Missing CUJ trace")
 
@@ -46,8 +51,18 @@ class TaggedScenarioExtractor(
         }
 
         return targetCujEntries.mapNotNull { cujEntry ->
-            val associatedTransition =
-                transitionMatcher?.getMatches(reader, cujEntry)?.firstOrNull()
+            val associatedTransitions = transitionMatcher?.getMatches(reader, cujEntry)
+
+            if ((associatedTransitions?.size ?: 0) > 1) {
+                Logger.w(
+                    LOG_TAG,
+                    "Got more than one associated transition: " +
+                        "[${associatedTransitions?.joinToString()}]. " +
+                        "Picking first transition in list."
+                )
+            }
+
+            val associatedTransition = associatedTransitions?.firstOrNull()
 
             if (ignoreIfNoMatchingTransition && associatedTransition == null) {
                 return@mapNotNull null
