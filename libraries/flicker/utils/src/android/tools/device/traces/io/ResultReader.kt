@@ -27,6 +27,7 @@ import android.tools.common.io.TraceType
 import android.tools.common.parsers.events.EventLogParser
 import android.tools.common.traces.events.CujTrace
 import android.tools.common.traces.events.EventLog
+import android.tools.common.traces.protolog.ProtoLogTrace
 import android.tools.common.traces.surfaceflinger.LayersTrace
 import android.tools.common.traces.surfaceflinger.TransactionsTrace
 import android.tools.common.traces.wm.TransitionsTrace
@@ -34,6 +35,7 @@ import android.tools.common.traces.wm.WindowManagerTrace
 import android.tools.device.traces.TraceConfig
 import android.tools.device.traces.TraceConfigs
 import android.tools.device.traces.parsers.perfetto.LayersTraceParser
+import android.tools.device.traces.parsers.perfetto.ProtoLogTraceParser
 import android.tools.device.traces.parsers.perfetto.TraceProcessorSession
 import android.tools.device.traces.parsers.perfetto.TransactionsTraceParser
 import android.tools.device.traces.parsers.perfetto.TransitionsTraceParser
@@ -214,6 +216,29 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
             }
 
             trace
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IOException if the artifact file doesn't exist or can't be read
+     */
+    @Throws(IOException::class)
+    override fun readProtoLogTrace(): ProtoLogTrace? {
+        return Logger.withTracing("readProtoLogTrace") {
+            val traceData = artifact.readBytes(ResultArtifactDescriptor(TraceType.PERFETTO))
+
+            traceData?.let {
+                TraceProcessorSession.loadPerfettoTrace(traceData) { session ->
+                    ProtoLogTraceParser()
+                        .parse(
+                            session,
+                            from = transitionTimeRange.start,
+                            to = transitionTimeRange.end
+                        )
+                }
+            }
         }
     }
 

@@ -47,6 +47,7 @@ object Utils {
             startTransactionAppliedTimestamp?.systemUptimeNanos
                 ?: transition.createTime.systemUptimeNanos
 
+        // This fallback doesn't really work because then systemUptimeNanos is 0...
         return Timestamps.from(elapsedNanos, systemUptimeNanos, unixNanos)
     }
 

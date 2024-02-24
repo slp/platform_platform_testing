@@ -67,6 +67,7 @@ android_library {
         "androidx.appcompat_appcompat",
         "guava",
         "uiautomator-helpers",
+        "androidx.concurrent_concurrent-futures-ktx",
     ],
 }
 

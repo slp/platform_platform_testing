@@ -112,6 +112,30 @@ object TestTraces {
             get() = readAssetAsFile(ASSET)
     }
 
+    object ProtoLogTrace {
+        private const val ASSET = "protolog.perfetto-trace"
+
+        val START_TIME =
+            Timestamps.from(elapsedNanos = 479583450794, systemUptimeNanos = 0, unixNanos = 0)
+        val VALID_SLICE_TIME =
+            Timestamps.from(
+                elapsedNanos = 479583450794 + 5000,
+                systemUptimeNanos = 0,
+                unixNanos = 0
+            )
+        val INVALID_SLICE_TIME =
+            Timestamps.from(
+                elapsedNanos = 487330863192 + 1,
+                systemUptimeNanos = 0,
+                unixNanos = 0,
+            )
+        val END_TIME =
+            Timestamps.from(elapsedNanos = 487330863192, systemUptimeNanos = 0, unixNanos = 0)
+
+        val FILE
+            get() = readAssetAsFile(ASSET)
+    }
+
     val TIME_5 = Timestamps.from(5, 5, 5)
     val TIME_10 = Timestamps.from(10, 10, 10)
 

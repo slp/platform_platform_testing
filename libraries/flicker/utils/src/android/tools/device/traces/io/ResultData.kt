@@ -41,8 +41,12 @@ open class ResultData(
 
     /** {@inheritDoc} */
     override fun slice(startTimestamp: Timestamp, endTimestamp: Timestamp) = apply {
-        require(startTimestamp.hasAllTimestamps)
-        require(endTimestamp.hasAllTimestamps)
+        require(startTimestamp.hasAllTimestamps) {
+            "startTimestamp ($startTimestamp) has missing timestamps"
+        }
+        require(endTimestamp.hasAllTimestamps) {
+            "endTimestamp ($endTimestamp) has missing timestamps"
+        }
         return ResultData(
             artifact,
             TransitionTimeRange(startTimestamp, endTimestamp),
