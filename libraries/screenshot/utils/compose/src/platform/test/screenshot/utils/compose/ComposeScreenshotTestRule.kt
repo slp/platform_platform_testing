@@ -26,6 +26,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.ViewRootForTest
+import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import com.android.compose.theme.PlatformTheme
@@ -80,6 +81,7 @@ class ComposeScreenshotTestRule(
         goldenIdentifier: String,
         clearFocus: Boolean = false,
         beforeScreenshot: () -> Unit = {},
+        viewFinder: () -> SemanticsNodeInteraction = { composeRule.onRoot() },
         content: (@Composable () -> Unit)? = null,
     ) {
         // Make sure that the activity draws full screen and fits the whole display instead of the
@@ -122,7 +124,7 @@ class ComposeScreenshotTestRule(
         }
         composeRule.waitForIdle()
 
-        val view = (composeRule.onRoot().fetchSemanticsNode().root as ViewRootForTest).view
+        val view = (viewFinder().fetchSemanticsNode().root as ViewRootForTest).view
         val bitmap = view.captureToBitmapAsync().get(10, TimeUnit.SECONDS)
         val viewBitmap =
             if (isRobolectric) {
