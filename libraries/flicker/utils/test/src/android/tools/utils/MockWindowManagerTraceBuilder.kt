@@ -16,7 +16,7 @@
 
 package android.tools.utils
 
-import android.tools.common.traces.wm.WindowManagerTrace
+import android.tools.traces.wm.WindowManagerTrace
 
 class MockWindowManagerTraceBuilder(
     private var entries: MutableList<MockWindowStateBuilder> = mutableListOf()

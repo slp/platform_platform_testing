@@ -16,8 +16,8 @@
 
 package android.tools.utils
 
-import android.tools.common.traces.wm.KeyguardControllerState
-import android.tools.common.traces.wm.WindowManagerState
+import android.tools.traces.wm.KeyguardControllerState
+import android.tools.traces.wm.WindowManagerState
 
 class MockWindowStateBuilder() {
     var timestamp = -1L
