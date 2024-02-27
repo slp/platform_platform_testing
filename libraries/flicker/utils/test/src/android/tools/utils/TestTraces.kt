@@ -16,9 +16,9 @@
 
 package android.tools.utils
 
-import android.tools.common.Timestamps
-import android.tools.device.traces.TraceConfig
-import android.tools.device.traces.TraceConfigs
+import android.tools.Timestamps
+import android.tools.traces.TraceConfig
+import android.tools.traces.TraceConfigs
 
 object TestTraces {
     object LayerTrace {

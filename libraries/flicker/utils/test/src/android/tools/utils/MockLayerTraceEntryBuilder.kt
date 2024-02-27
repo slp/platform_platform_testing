@@ -16,12 +16,12 @@
 
 package android.tools.utils
 
-import android.tools.common.datatypes.Rect
-import android.tools.common.datatypes.Size
-import android.tools.common.traces.surfaceflinger.Display
-import android.tools.common.traces.surfaceflinger.Layer
-import android.tools.common.traces.surfaceflinger.LayerTraceEntry
-import android.tools.common.traces.surfaceflinger.Transform
+import android.tools.datatypes.Rect
+import android.tools.datatypes.Size
+import android.tools.traces.surfaceflinger.Display
+import android.tools.traces.surfaceflinger.Layer
+import android.tools.traces.surfaceflinger.LayerTraceEntry
+import android.tools.traces.surfaceflinger.Transform
 
 class MockLayerTraceEntryBuilder() {
     private val displays = mutableListOf<Display>()
