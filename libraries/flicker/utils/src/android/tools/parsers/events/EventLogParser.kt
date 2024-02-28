@@ -42,14 +42,17 @@ class EventLogParser : AbstractParser<Collection<String>, EventLog>() {
 
     override fun doParse(input: Collection<String>): EventLog {
         val events =
-            input.map { log ->
-                val (metaData, eventData) = log.split(":", limit = 2).map { it.trim() }
-                val (rawTimestamp, uid, pid, tid, priority, tag) =
-                    metaData.split(" ").filter { it.isNotEmpty() }
+            input
+                .map { log ->
+                    val (metaData, eventData) = log.split(":", limit = 2).map { it.trim() }
+                    val (rawTimestamp, uid, pid, tid, priority, tag) =
+                        metaData.split(" ").filter { it.isNotEmpty() }
 
-                val timestamp = Timestamps.from(unixNanos = rawTimestamp.replace(".", "").toLong())
-                parseEvent(timestamp, pid.toInt(), uid, tid.toInt(), tag, eventData)
-            }
+                    val timestamp =
+                        Timestamps.from(unixNanos = rawTimestamp.replace(".", "").toLong())
+                    parseEvent(timestamp, pid.toInt(), uid, tid.toInt(), tag, eventData)
+                }
+                .sortedBy { it.timestamp.unixNanos }
 
         return EventLog(events)
     }
