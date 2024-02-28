@@ -143,6 +143,14 @@ interface IRegionSubject {
     fun isToTheRightBottom(other: Region, threshold: Int): IRegionSubject
 
     /**
+     * Asserts that [other] contains the center of the region.
+     *
+     * @param other Expected area that the center should be in
+     * @throws AssertionError
+     */
+    fun regionsCenterPointInside(other: Region): IRegionSubject
+
+    /**
      * Asserts that region covers at least [other], that is, its area covers each point in the
      * region
      *
