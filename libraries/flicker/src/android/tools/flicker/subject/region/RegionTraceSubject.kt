@@ -104,6 +104,13 @@ class RegionTraceSubject(val trace: RegionTrace, override val reader: Reader? = 
     }
 
     /** {@inheritDoc} */
+    override fun regionsCenterPointInside(other: Region): RegionTraceSubject = apply {
+        addAssertion("regionsCenterPointInside($other, $componentsAsString") {
+            it.regionsCenterPointInside(other)
+        }
+    }
+
+    /** {@inheritDoc} */
     override fun coversAtLeast(other: Region): RegionTraceSubject = apply {
         addAssertion("coversAtLeast($other, $componentsAsString)") { it.coversAtLeast(other) }
     }

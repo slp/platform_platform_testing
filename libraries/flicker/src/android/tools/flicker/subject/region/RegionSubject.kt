@@ -17,6 +17,7 @@
 package android.tools.flicker.subject.region
 
 import android.tools.Timestamp
+import android.tools.datatypes.Point
 import android.tools.datatypes.Rect
 import android.tools.datatypes.RectF
 import android.tools.datatypes.Region
@@ -290,6 +291,21 @@ class RegionSubject(
                         "Vertically positioned to the bottom",
                         verticallyPositionedToTheBottom
                     )
+            throw IncorrectRegionException(errorMsgBuilder)
+        }
+    }
+
+    /** {@inheritDoc} */
+    override fun regionsCenterPointInside(other: Region): RegionSubject = apply {
+        if (!other.bounds.contains(region.bounds.centerX(), region.bounds.centerY())) {
+            var center = Point.from(region.bounds.centerX(), region.bounds.centerY())
+            val errorMsgBuilder =
+                ExceptionMessageBuilder()
+                    .forSubject(this)
+                    .forIncorrectRegion("region. $region center point should be inside $other")
+                    .setExpected(other)
+                    .setActual(regionEntry.region)
+                    .addExtraDescription("Center point", center)
             throw IncorrectRegionException(errorMsgBuilder)
         }
     }
