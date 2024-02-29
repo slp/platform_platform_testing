@@ -24,10 +24,25 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.platform.test.composer.Iterate;
 import android.platform.test.rule.DynamicRuleChain;
+import android.platform.test.rule.HandlesClassLevelExceptions;
 import android.platform.test.rule.TracePointRule;
 import android.util.Log;
+
 import androidx.annotation.VisibleForTesting;
 import androidx.test.InstrumentationRegistry;
+
+import org.junit.internal.AssumptionViolatedException;
+import org.junit.internal.runners.model.EachTestNotifier;
+import org.junit.internal.runners.model.ReflectiveCallable;
+import org.junit.internal.runners.statements.RunAfters;
+import org.junit.rules.RunRules;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runner.notification.RunNotifier;
+import org.junit.runners.BlockJUnit4ClassRunner;
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.InitializationError;
+import org.junit.runners.model.Statement;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -38,19 +53,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.junit.internal.AssumptionViolatedException;
-import org.junit.internal.runners.model.EachTestNotifier;
-import org.junit.internal.runners.model.ReflectiveCallable;
-import org.junit.internal.runners.statements.RunAfters;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runner.notification.RunNotifier;
-import org.junit.runners.BlockJUnit4ClassRunner;
-import org.junit.runners.model.FrameworkMethod;
-import org.junit.runners.model.InitializationError;
-import org.junit.runners.model.Statement;
-import org.junit.rules.RunRules;
 
 /**
  * The {@code Microbenchmark} runner allows you to run individual JUnit {@code @Test} methods
@@ -69,6 +71,7 @@ import org.junit.rules.RunRules;
  * documented below), and can be configured to terminate early if the battery drops too low or if
  * any test fails.
  */
+@HandlesClassLevelExceptions
 public class Microbenchmark extends BlockJUnit4ClassRunner {
 
     private static final String LOG_TAG = Microbenchmark.class.getSimpleName();
