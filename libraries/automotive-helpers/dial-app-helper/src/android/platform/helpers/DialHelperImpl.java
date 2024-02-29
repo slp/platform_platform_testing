@@ -599,10 +599,10 @@ public class DialHelperImpl extends AbstractStandardAppHelper implements IAutoDi
         searchBox.setText(contact);
 
         BySelector searchResultSelector =
-                getUiElementFromConfig(AutomotiveConfigConstants.SEARCH_RESULT);
+                getUiElementFromConfig(AutomotiveConfigConstants.CONTACT_SEARCH_RESULT);
         UiObject2 searchResult = getSpectatioUiUtil().findUiObject(searchResultSelector);
         getSpectatioUiUtil()
-                .validateUiObject(searchResult, AutomotiveConfigConstants.SEARCH_RESULT);
+                .validateUiObject(searchResult, AutomotiveConfigConstants.CONTACT_SEARCH_RESULT);
         getSpectatioUiUtil().clickAndWait(searchResult);
     }
 

@@ -23,35 +23,21 @@
         6) Verify contact is removed from the favorites
 """
 
-# import logging
-
-import sys
-import logging
-import pprint
-
-from mobly import asserts
-from mobly import base_test
-from mobly import test_runner
-from mobly.controllers import android_device
 from bluetooth_test import bluetooth_base_test
 
 from utilities import constants
-from utilities import spectatio_utils
-from utilities import bt_utils
-
+from utilities.main_utils import common_main
 
 class AddRemoveFavoriteContact(bluetooth_base_test.BluetoothBaseTest):
   """Enable and Disable Bluetooth from Bluetooth Palette."""
 
   def setup_test(self):
     """Setup steps before any test is executed."""
-   # Todo - testing was done by loading contacts manually , this function needs to be tested.
+
     # Upload contacts to phone device
-    file_path = 'platform_testing/tests/automotive/mobly_tests/utils/contacts_test.vcf'
-    self.call_utils.upload_vcf_contacts_to_device(
-        self.target,
-        file_path,
-    )
+    file_path = constants.PATH_TO_CONTACTS_VCF_FILE
+    self.call_utils.upload_vcf_contacts_to_device(self.target, file_path)
+
     self.call_utils.wait_with_log(5)
     # Pair caller phone with automotive device
     self.bt_utils.pair_primary_to_secondary()
