@@ -142,10 +142,7 @@ public class BootTimeTest extends BaseHostJUnit4Test {
 
     @Before
     public void setUp() throws Exception {
-        ITestDevice testDevice = getDevice();
         setUpDeviceForSuccessiveBoots();
-        String logcatCommand = mBootTimePatterns.isEmpty() ? LOGCAT_CMD_ALL : LOGCAT_CMD;
-        mRebootLogcatReceiver = new LogcatReceiver(testDevice, logcatCommand, LOGCAT_SIZE, 0);
     }
 
     @Test
@@ -165,7 +162,7 @@ public class BootTimeTest extends BaseHostJUnit4Test {
         if (mForceF2FsShutdown) {
             forseF2FsShutdown();
         }
-        clearLogcat();
+        clearAndStartLogcat();
         sleep(5000);
         getDevice().nonBlockingReboot();
         getDevice().waitForDeviceOnline(mDeviceBootTime);
@@ -217,10 +214,16 @@ public class BootTimeTest extends BaseHostJUnit4Test {
                 filename, LogDataType.HOST_LOG, new FileInputStreamSource(dmesgFile, false));
     }
 
-    private void clearLogcat() throws DeviceNotAvailableException {
+    private void clearAndStartLogcat() throws DeviceNotAvailableException {
         getDevice().executeShellCommand(LOGCAT_CMD_CLEAR);
-        getDevice().clearLogcat();
-        mRebootLogcatReceiver.clear();
+        if (mRebootLogcatReceiver != null) {
+            mRebootLogcatReceiver.clear();
+            mRebootLogcatReceiver.stop();
+            mRebootLogcatReceiver = null;
+        }
+        String logcatCommand = mBootTimePatterns.isEmpty() ? LOGCAT_CMD_ALL : LOGCAT_CMD;
+        mRebootLogcatReceiver = new LogcatReceiver(getDevice(), logcatCommand, LOGCAT_SIZE, 0);
+        mRebootLogcatReceiver.start();
     }
 
     private void sleep(long duration) {
