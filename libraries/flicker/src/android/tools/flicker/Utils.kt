@@ -55,7 +55,7 @@ object Utils {
                     this.add(LegacyShellTransitionTraceMonitor())
                 }
 
-                if (android.tracing.Flags.perfettoProtolog()) {
+                if (android.tracing.Flags.perfettoProtologTracing()) {
                     perfettoMonitorBuilder.enableProtoLog()
                 }
 
