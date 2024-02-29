@@ -65,5 +65,10 @@ class DialerPageRefresh(bluetooth_base_test.BluetoothBaseTest):
                                str(stored_number)))
 
 
+    def teardown_test(self):
+        self.call_utils.wait_with_log(5)
+        self.call_utils.press_home()
+        super().teardown_test()
+
 if __name__ == '__main__':
     common_main()

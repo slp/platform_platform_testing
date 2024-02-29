@@ -36,10 +36,13 @@ class MakeCallFromHistotyTest(bluetooth_base_test.BluetoothBaseTest):
     self.call_utils.call_most_recent_call_history()
     self.call_utils.wait_with_log(5)
     self.call_utils.verify_dialing_number(dialer_test_phone_number)
+    self.call_utils.press_home()
 
   def teardown_test(self):
     # End call if test failed
     self.call_utils.end_call_using_adb_command(self.target)
+    self.call_utils.wait_with_log(5)
+    super().teardown_test()
 
 if __name__ == '__main__':
-  common_main()
+    common_main()
