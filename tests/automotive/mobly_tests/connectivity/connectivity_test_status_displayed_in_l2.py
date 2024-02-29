@@ -27,20 +27,11 @@
 
 """
 
-import sys
-import logging
-import pprint
-
 from bluetooth_test import bluetooth_base_test
-
 from mobly import asserts
-from mobly import base_test
-from mobly import test_runner
-from mobly.controllers import android_device
-
+from utilities.main_utils import common_main
 from utilities import constants
-from utilities import spectatio_utils
-from utilities import bt_utils
+
 
 MOBILE_DEVICE_NAME = 'target'
 AUTOMOTIVE_DEVICE_NAME = 'discoverer'
@@ -76,4 +67,4 @@ class BluetoothConnectionStatusOnLevelTwo(bluetooth_base_test.BluetoothBaseTest)
 
 if __name__ == '__main__':
     # Take test args
-    test_runner.main()
+    common_main()
