@@ -95,11 +95,15 @@ class LayersTraceParser(
     ): LayerTraceEntry {
         val snapshotArgs = Args.build(snapshotRows)
         val displays = snapshotArgs.getChildren("displays")?.map { newDisplay(it) } ?: emptyList()
+        val excludesCompositionState =
+            snapshotArgs.getChild("excludes_composition_state")?.getBoolean() ?: false
 
         val idAndLayers =
             layersRows
                 .groupBy { it["layer_id"].toString() }
-                .map { (layerId, layerRows) -> Pair(layerId, newLayer(Args.build(layerRows))) }
+                .map { (layerId, layerRows) ->
+                    Pair(layerId, newLayer(Args.build(layerRows), excludesCompositionState))
+                }
                 .toMutableList()
         idAndLayers.sortBy { it.first.toLong() }
 
@@ -150,7 +154,7 @@ class LayersTraceParser(
                 .trimIndent()
         }
 
-        private fun newLayer(layer: Args, excludeCompositionState: Boolean = false): Layer {
+        private fun newLayer(layer: Args, excludesCompositionState: Boolean): Layer {
             // Differentiate between the cases when there's no HWC data on
             // the trace, and when the visible region is actually empty
             val activeBuffer = newActiveBuffer(layer.getChild("active_buffer"))
@@ -180,7 +184,7 @@ class LayersTraceParser(
                 layer.getChild("is_relative_of")?.getBoolean() ?: false,
                 layer.getChild("z_order_relative_of")?.getInt() ?: 0,
                 layer.getChild("layer_stack")?.getInt() ?: 0,
-                excludeCompositionState
+                excludesCompositionState
             )
         }
 
