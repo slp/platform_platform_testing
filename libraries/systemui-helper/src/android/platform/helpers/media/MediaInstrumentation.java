@@ -257,8 +257,8 @@ public final class MediaInstrumentation {
         mMediaSession.setMetadata(mMediaSources.get(mCurrentMediaSource));
         mPlayer.setDataSource(mMediaSources.get(mCurrentMediaSource));
         mPlayer.reset();
-        mPlayer.start();
-        setCurrentMediaState(PlaybackState.STATE_PLAYING);
+        mPlayer.pause();
+        setCurrentMediaState(PlaybackState.STATE_PAUSED);
         createNotification();
     }
 
