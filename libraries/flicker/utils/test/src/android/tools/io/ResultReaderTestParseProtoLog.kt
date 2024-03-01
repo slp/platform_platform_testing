@@ -35,7 +35,7 @@ class ResultReaderTestParseProtoLog : BaseResultReaderTestParseTrace() {
 
     @Before
     fun before() {
-        assumeTrue(android.tracing.Flags.perfettoProtolog())
+        assumeTrue(android.tracing.Flags.perfettoProtologTracing())
     }
 
     override fun doParse(reader: ResultReader) = reader.readProtoLogTrace()
