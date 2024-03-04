@@ -43,7 +43,7 @@ class Region(rects: Array<Rect> = arrayOf()) : DataType() {
     }
 
     val rects
-        get() = getRectsFromString(toString())
+        get() = getRectsFromString(doPrintValue())
 
     val width: Int
         get() = bounds.width
