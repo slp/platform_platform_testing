@@ -30,6 +30,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -64,6 +65,8 @@ public class CommonUtils {
     private static final int DEFAULT_MARGIN = 5;
     private static final String LIST_ALL_USERS_COMMAND = "cmd user list -v --all";
     private static final String GET_MAIN_USER_COMMAND = "cmd user get-main-user";
+    private static final String SYSTEM_UI_PACKAGE = "com.android.systemui";
+    private static final String SPLIT_SHADE_RES_NAME = "config_use_split_notification_shade";
 
     private CommonUtils() {
     }
@@ -358,8 +361,19 @@ public class CommonUtils {
     }
 
     public static boolean isSplitShade() {
+        try {
+            Resources sysUiResources =
+                    getContext().getPackageManager().getResourcesForApplication(SYSTEM_UI_PACKAGE);
+            int resourceId =
+                    sysUiResources.getIdentifier(SPLIT_SHADE_RES_NAME, "bool", SYSTEM_UI_PACKAGE);
+            return sysUiResources.getBoolean(resourceId);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Couldn't get SysUI resources");
+        }
+
+        // Fallback check, accurate for most but not necessarily all devices
         int orientation = getContext().getResources().getConfiguration().orientation;
-        return isLargeScreen() && orientation == Configuration.ORIENTATION_LANDSCAPE;
+        return isLargeScreen() && (orientation == Configuration.ORIENTATION_LANDSCAPE);
     }
 
     public static boolean isLargeScreen() {
