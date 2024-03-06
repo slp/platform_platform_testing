@@ -21,9 +21,7 @@ import android.app.Instrumentation
 import android.app.WindowConfiguration
 import android.os.SystemClock
 import android.os.Trace
-import android.tools.CrossPlatform
 import android.tools.Rotation
-import android.tools.TimestampFactory
 import android.tools.datatypes.Region
 import android.tools.traces.Condition
 import android.tools.traces.ConditionsFactory
@@ -38,7 +36,6 @@ import android.tools.traces.component.ComponentNameMatcher.Companion.SPLASH_SCRE
 import android.tools.traces.component.ComponentNameMatcher.Companion.SPLIT_DIVIDER
 import android.tools.traces.component.ComponentNameMatcher.Companion.TRANSITION_SNAPSHOT
 import android.tools.traces.component.IComponentMatcher
-import android.tools.traces.formatRealTimestamp
 import android.tools.traces.getCurrentStateDump
 import android.tools.traces.surfaceflinger.LayerTraceEntry
 import android.tools.traces.surfaceflinger.LayersTrace
@@ -66,10 +63,6 @@ constructor(
     /** Interval between wait for state dumps during wait conditions */
     private val retryIntervalMs: Long = DEFAULT_RETRY_INTERVAL_MS
 ) {
-    init {
-        CrossPlatform.setTimestampFactory(TimestampFactory { formatRealTimestamp(it) })
-    }
-
     private var internalState: DeviceStateDump? = null
 
     /** Queries the supplier for a new device state */

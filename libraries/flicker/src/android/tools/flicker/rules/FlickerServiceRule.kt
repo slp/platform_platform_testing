@@ -17,9 +17,7 @@
 package android.tools.flicker.rules
 
 import android.platform.test.rule.TestWatcher
-import android.tools.CrossPlatform
 import android.tools.FLICKER_TAG
-import android.tools.TimestampFactory
 import android.tools.flicker.FlickerConfig
 import android.tools.flicker.FlickerService
 import android.tools.flicker.FlickerServiceResultsCollector
@@ -29,7 +27,6 @@ import android.tools.flicker.annotation.FlickerTest
 import android.tools.flicker.config.FlickerConfig
 import android.tools.flicker.config.FlickerServiceConfig
 import android.tools.flicker.config.ScenarioId
-import android.tools.traces.formatRealTimestamp
 import android.tools.traces.getDefaultFlickerOutputDir
 import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
@@ -72,10 +69,6 @@ constructor(
 
     private var testFailed = false
     private var testSkipped = false
-
-    init {
-        CrossPlatform.setTimestampFactory(TimestampFactory { formatRealTimestamp(it) })
-    }
 
     /** Invoked when a test is about to start */
     public override fun starting(description: Description) {
