@@ -16,14 +16,14 @@
 
 package android.tools.flicker
 
-import android.tools.Logger
 import android.tools.flicker.config.FlickerConfig
 import android.tools.io.Reader
+import android.tools.withTracing
 
 /** Contains the logic for Flicker as a Service. */
 class FlickerServiceImpl(private val flickerConfig: FlickerConfig) : FlickerService {
     override fun detectScenarios(reader: Reader): Collection<ScenarioInstance> {
-        return Logger.withTracing("FlickerService#detectScenarios") {
+        return withTracing("FlickerService#detectScenarios") {
             flickerConfig.getEntries().flatMap { configEntry ->
                 configEntry.extractor.extract(reader).map { traceSlice ->
                     ScenarioInstanceImpl.fromSlice(traceSlice, reader, configEntry)

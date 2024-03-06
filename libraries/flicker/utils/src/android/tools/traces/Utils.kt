@@ -21,13 +21,13 @@ package android.tools.traces
 import android.app.UiAutomation
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
-import android.tools.Logger
 import android.tools.MILLISECOND_AS_NANOSECONDS
 import android.tools.io.TraceType
 import android.tools.traces.monitors.PerfettoTraceMonitor
 import android.tools.traces.parsers.DeviceDumpParser
 import android.tools.traces.surfaceflinger.LayerTraceEntry
 import android.tools.traces.wm.WindowManagerState
+import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -46,7 +46,7 @@ fun formatRealTimestamp(timestampNs: Long): String {
 }
 
 fun executeShellCommand(cmd: String): ByteArray {
-    Logger.d(LOG_TAG, "Executing shell command $cmd")
+    Log.d(LOG_TAG, "Executing shell command $cmd")
     val uiAutomation: UiAutomation = InstrumentationRegistry.getInstrumentation().uiAutomation
     val fileDescriptor = uiAutomation.executeShellCommand(cmd)
     ParcelFileDescriptor.AutoCloseInputStream(fileDescriptor).use { inputStream ->
@@ -98,7 +98,7 @@ fun getCurrentState(
         throw IllegalArgumentException("Only dump types are supported. Invalid types: $traceTypes")
     }
 
-    Logger.d(LOG_TAG, "Requesting new device state dump")
+    Log.d(LOG_TAG, "Requesting new device state dump")
     val wmTraceData =
         if (dumpTypes.contains(TraceType.WM_DUMP)) {
             getCurrentWindowManagerState()

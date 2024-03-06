@@ -17,7 +17,6 @@
 package android.tools.flicker.junit
 
 import android.os.Bundle
-import android.tools.AndroidLogger
 import android.tools.CrossPlatform
 import android.tools.TimestampFactory
 import android.tools.flicker.legacy.LegacyFlickerTest
@@ -34,8 +33,7 @@ import org.junit.runners.parameterized.TestWithParameters
  */
 class FlickerParametersRunnerFactory : ParametersRunnerFactory {
     init {
-        CrossPlatform.setLogger(AndroidLogger())
-            .setTimestampFactory(TimestampFactory { formatRealTimestamp(it) })
+        CrossPlatform.setTimestampFactory(TimestampFactory { formatRealTimestamp(it) })
     }
 
     @VisibleForTesting

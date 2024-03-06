@@ -16,5 +16,15 @@
 
 package android.tools
 
+import android.os.Trace
+
 inline fun <reified T : Any> withCache(newInstancePredicate: () -> T): T =
     Cache.get(newInstancePredicate())
+
+inline fun <T> withTracing(name: String, predicate: () -> T): T =
+    try {
+        Trace.beginSection(name)
+        predicate()
+    } finally {
+        Trace.endSection()
+    }

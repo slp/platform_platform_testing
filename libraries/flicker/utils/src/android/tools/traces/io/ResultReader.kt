@@ -16,7 +16,6 @@
 
 package android.tools.traces.io
 
-import android.tools.Logger
 import android.tools.Tag
 import android.tools.Timestamp
 import android.tools.io.Artifact
@@ -25,6 +24,8 @@ import android.tools.io.Reader
 import android.tools.io.ResultArtifactDescriptor
 import android.tools.io.TraceType
 import android.tools.parsers.events.EventLogParser
+import android.tools.traces.TraceConfig
+import android.tools.traces.TraceConfigs
 import android.tools.traces.events.CujTrace
 import android.tools.traces.events.EventLog
 import android.tools.traces.parsers.perfetto.LayersTraceParser
@@ -40,8 +41,8 @@ import android.tools.traces.surfaceflinger.LayersTrace
 import android.tools.traces.surfaceflinger.TransactionsTrace
 import android.tools.traces.wm.TransitionsTrace
 import android.tools.traces.wm.WindowManagerTrace
-import android.tools.traces.TraceConfig
-import android.tools.traces.TraceConfigs
+import android.tools.withTracing
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import java.io.IOException
 
@@ -77,9 +78,9 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
      */
     @Throws(IOException::class)
     override fun readWmState(tag: String): WindowManagerTrace? {
-        return Logger.withTracing("readWmState#$tag") {
+        return withTracing("readWmState#$tag") {
             val descriptor = ResultArtifactDescriptor(TraceType.WM_DUMP, tag)
-            Logger.d(FLICKER_IO_TAG, "Reading WM trace descriptor=$descriptor from $result")
+            Log.d(FLICKER_IO_TAG, "Reading WM trace descriptor=$descriptor from $result")
             val traceData = artifact.readBytes(descriptor)
             traceData?.let { WindowManagerDumpParser().parse(it, clearCache = true) }
         }
@@ -92,7 +93,7 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
      */
     @Throws(IOException::class)
     override fun readWmTrace(): WindowManagerTrace? {
-        return Logger.withTracing("readWmTrace") {
+        return withTracing("readWmTrace") {
             val descriptor = ResultArtifactDescriptor(TraceType.WM)
             artifact.readBytes(descriptor)?.let {
                 val trace =
@@ -123,7 +124,7 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
      */
     @Throws(IOException::class)
     override fun readLayersTrace(): LayersTrace? {
-        return Logger.withTracing("readLayersTrace") {
+        return withTracing("readLayersTrace") {
             val descriptor = ResultArtifactDescriptor(TraceType.SF)
             artifact.readBytes(descriptor)?.let {
                 val trace =
@@ -156,7 +157,7 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
      */
     @Throws(IOException::class)
     override fun readLayersDump(tag: String): LayersTrace? {
-        return Logger.withTracing("readLayersDump#$tag") {
+        return withTracing("readLayersDump#$tag") {
             val descriptor = ResultArtifactDescriptor(TraceType.SF_DUMP, tag)
             val traceData = artifact.readBytes(descriptor)
             if (traceData != null) {
@@ -176,7 +177,7 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
      */
     @Throws(IOException::class)
     override fun readTransactionsTrace(): TransactionsTrace? =
-        Logger.withTracing("readTransactionsTrace") {
+        withTracing("readTransactionsTrace") {
             doReadTransactionsTrace(from = transitionTimeRange.start, to = transitionTimeRange.end)
         }
 
@@ -199,7 +200,7 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
      */
     @Throws(IOException::class)
     override fun readTransitionsTrace(): TransitionsTrace? {
-        return Logger.withTracing("readTransitionsTrace") {
+        return withTracing("readTransitionsTrace") {
             val trace =
                 if (android.tracing.Flags.perfettoTransitionTracing()) {
                     readPerfettoTransitionsTrace()
@@ -226,7 +227,7 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
      */
     @Throws(IOException::class)
     override fun readProtoLogTrace(): ProtoLogTrace? {
-        return Logger.withTracing("readProtoLogTrace") {
+        return withTracing("readProtoLogTrace") {
             val traceData = artifact.readBytes(ResultArtifactDescriptor(TraceType.PERFETTO))
 
             traceData?.let {
@@ -283,7 +284,7 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
      */
     @Throws(IOException::class)
     override fun readEventLogTrace(): EventLog? {
-        return Logger.withTracing("readEventLogTrace") {
+        return withTracing("readEventLogTrace") {
             val descriptor = ResultArtifactDescriptor(TraceType.EVENT_LOG)
             artifact.readBytes(descriptor)?.let {
                 EventLogParser()
