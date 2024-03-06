@@ -228,7 +228,6 @@ class CallUtils:
 
     def upload_vcf_contacts_to_device(self, device_target, path_to_contacts_file):
         """Upload contacts do device"""
-        self.push_vcf_contacts_to_device(device_target, path_to_contacts_file)
         self.import_contacts_from_vcf_file(device_target)
         device_target.mbs.pressDevice()
 
