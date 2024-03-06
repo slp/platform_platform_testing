@@ -99,7 +99,9 @@ class NotFoundDataPoint<T> private constructor() : DataPoint<T> {
         internal val instance = NotFoundDataPoint<Any>()
 
         fun isNotFoundValue(jsonValue: Any): Boolean {
-            return jsonValue is JSONObject && "not_found" == jsonValue.getString("type")
+            return jsonValue is JSONObject &&
+                jsonValue.has("type") &&
+                jsonValue.getString("type") == "not_found"
         }
     }
 }
