@@ -126,6 +126,12 @@ class ComponentNameMatcher(var component: ComponentName) : IComponentNameMatcher
 
         val FLOATING_ROTATION_BUTTON = ComponentNameMatcher("", "FloatingRotationButton")
 
+        val SCREEN_DECOR_OVERLAY = ComponentNameMatcher("", "ScreenDecorHwcOverlay#")
+
+        val POINTER_LOCATION = ComponentNameMatcher("", "PointerLocation")
+
+        val SCREEN_RECORDING_OVERLAYS = SCREEN_DECOR_OVERLAY.or(POINTER_LOCATION)
+
         val LAUNCHER =
             ComponentNameMatcher(
                 "com.google.android.apps.nexuslauncher",
