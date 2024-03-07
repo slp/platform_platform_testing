@@ -51,17 +51,14 @@ import platform.test.screenshot.report.DiffResultExportStrategy
 open class ScreenshotTestRule
 @VisibleForTesting
 internal constructor(
-    val goldenImagePathManager: GoldenImagePathManager,
+    val goldenPathManager: GoldenPathManager,
     /** Strategy to report diffs to external systems. */
     private val diffEscrowStrategy: DiffResultExportStrategy
 ) : TestRule, BitmapDiffer, ScreenshotAsserterFactory {
 
     constructor(
-        goldenImagePathManager: GoldenImagePathManager
-    ) : this(
-        goldenImagePathManager,
-        DiffResultExportStrategy.createDefaultStrategy(goldenImagePathManager)
-    )
+        goldenPathManager: GoldenPathManager
+    ) : this(goldenPathManager, DiffResultExportStrategy.createDefaultStrategy(goldenPathManager))
 
     private lateinit var testIdentifier: String
 
@@ -87,7 +84,7 @@ internal constructor(
             .map { context ->
                 try {
                     context.assets
-                        .open(goldenImagePathManager.goldenIdentifierResolver(goldenIdentifier))
+                        .open(goldenPathManager.goldenImageIdentifierResolver(goldenIdentifier))
                         .use {
                             return@use BitmapFactory.decodeStream(it)
                         }
@@ -170,7 +167,7 @@ internal constructor(
             )
             throw AssertionError(
                 "Missing golden image " +
-                    "'${goldenImagePathManager.goldenIdentifierResolver(goldenIdentifier)}'. " +
+                    "'${goldenPathManager.goldenImageIdentifierResolver(goldenIdentifier)}'. " +
                     "Did you mean to check in a new image?"
             )
         }

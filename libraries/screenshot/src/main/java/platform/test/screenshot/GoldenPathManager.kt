@@ -30,37 +30,33 @@ private const val THEME_TAG = "theme"
 private const val ORIENTATION_TAG = "orientation"
 
 /**
- * Class to manage Directory structure of golden images.
+ * Class to manage Directory structure of golden files.
  *
  * When you run a AR Diff test, different attributes/dimensions of the platform you are running on,
  * such as build, screen resolution, orientation etc. will/may render differently and therefore may
- * require a different golden image to compare against. You can manage these multiple golden images
+ * require a different golden file to compare against. You can manage these multiple golden files
  * related to your test using this utility class. It supports both device-less or device based
- * configurations. Please see GoldenImagePathManagerTest for detailed examples.
+ * configurations. Please see GoldenPathManagerTest for detailed examples.
  *
- * You can configure where to find the golden images repo and local cache using [locationConfig].
- *
- * There are two ways to modify how the golden images are stored and retrieved for your test: A.
+ * There are two ways to modify how the golden files are stored and retrieved for your test: A.
  * (Recommended) Create your own PathConfig object which takes a series of [PathElement]s Each path
- * element represents a dimension such as screen resolution that affects the golden image. This
+ * element represents a dimension such as screen resolution that affects the golden file. This
  * dimension will be embedded either into the directory structure or into the filename itself. Your
  * test can also provide its own custom implementation of [PathElement] if the dimension your test
  * needs to rely on, is not supported. B. If you have a completely unique way of managing your
- * golden image repository and corresponding local cache, implement a derived class and override the
+ * golden files repository and corresponding local cache, implement a derived class and override the
  * goldenIdentifierResolver function.
  *
  * NOTE: This class does not determine what combinations of attributes / dimensions your test code
  * will run for. That decision/configuration is part of your test configuration.
- *
- * @see GoldenPathManager use the file-type agnostic version instead.
  */
-open class GoldenImagePathManager
+open class GoldenPathManager
 @JvmOverloads
 constructor(
-    open val appContext: Context,
-    open val assetsPathRelativeToBuildRoot: String = "assets",
-    open var deviceLocalPath: String = getDeviceOutputDirectory(appContext),
-    open val pathConfig: PathConfig = getSimplePathConfig()
+    val appContext: Context,
+    val assetsPathRelativeToBuildRoot: String = "assets",
+    var deviceLocalPath: String = getDeviceOutputDirectory(appContext),
+    val pathConfig: PathConfig = getSimplePathConfig()
 ) {
 
     init {
@@ -70,47 +66,24 @@ constructor(
         }
     }
 
-    val imageExtension = "png"
+    fun goldenImageIdentifierResolver(testName: String) =
+        goldenIdentifierResolver(testName, IMAGE_EXTENSION)
 
     /*
-     * Uses [pathConfig] and [testName] to construct the full path to the golden image.
-     */
-    open fun goldenIdentifierResolver(testName: String): String {
-        val relativePath = pathConfig.resolveRelativePath(appContext)
-        return "$relativePath$testName.$imageExtension"
-    }
-}
-
-/**
- * Class to manage directory structure of golden files.
- *
- * Same as [GoldenImagePathManager], but without the builtin assumption about images.
- *
- * TODO(b/322324387): fold GoldenImagePathManager into this class.
- */
-open class GoldenPathManager
-@JvmOverloads
-constructor(
-    appContext: Context,
-    assetsPathRelativeToBuildRoot: String = "assets",
-    deviceLocalPath: String = getDeviceOutputDirectory(appContext),
-    pathConfig: PathConfig = getSimplePathConfig()
-) : GoldenImagePathManager(appContext, assetsPathRelativeToBuildRoot, deviceLocalPath, pathConfig) {
-
-    final override fun goldenIdentifierResolver(testName: String) =
-        goldenIdentifierResolver(testName, imageExtension)
-
-    /*
-     * Uses [pathConfig] and [testName] to construct the full path to the golden image.
+     * Uses [pathConfig] and [testName] to construct the full path to the golden file.
      */
     open fun goldenIdentifierResolver(testName: String, extension: String): String {
         val relativePath = pathConfig.resolveRelativePath(appContext)
         return "$relativePath$testName.$extension"
     }
+
+    companion object {
+        const val IMAGE_EXTENSION = "png"
+    }
 }
 
 /*
- * Every dimension that impacts the golden image needs to be a part of the path/filename
+ * Every dimension that impacts the golden file needs to be a part of the path/filename
  * that is used to access the golden. There are two types of attributes / dimensions.
  * One that depend on the device context and the once that are context agnostic.
  */
@@ -143,7 +116,7 @@ data class PathElementWithContext(
 /*
  * Converts an ordered list of PathElements into a relative path on filesystem.
  * The relative path is then combined with either repo path of local cache path
- * to get the full path to golden image.
+ * to get the full path to golden file.
  */
 class PathConfig(vararg elems: PathElementBase) {
     val data = listOf(*elems)
@@ -195,12 +168,12 @@ fun getEmulatedDevicePathConfig(emulationSpec: DeviceEmulationSpec): PathConfig 
 }
 
 /*
- * Default output directory where all images generated as part of the test are stored.
+ * Default output directory where all files generated as part of the test are stored.
  */
 fun getDeviceOutputDirectory(context: Context) =
     File(context.filesDir, "platform_screenshots").toString()
 
-/* Standard implementations for the usual list of dimensions that affect a golden image. */
+/* Standard implementations for the usual list of dimensions that affect a golden file. */
 fun getDeviceModel(): String {
     var model = Build.MODEL.lowercase()
     arrayOf("phone", "x86_64", "x86", "x64", "gms", "wear").forEach {

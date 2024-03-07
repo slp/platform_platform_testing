@@ -22,7 +22,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import platform.test.screenshot.GoldenImagePathManager
+import platform.test.screenshot.GoldenPathManager
 import platform.test.screenshot.proto.ScreenshotResultProto
 
 /**
@@ -33,7 +33,7 @@ import platform.test.screenshot.proto.ScreenshotResultProto
  *   is now an argument rather than a member) from http://shortn/_7AMZiumx0f for reviewability.
  */
 class ExportToScubaStrategy(
-    private val goldenPathManager: GoldenImagePathManager,
+    private val goldenPathManager: GoldenPathManager,
 ) : DiffResultExportStrategy {
     private val imageExtension = ".png"
     private val resultBinaryProtoFileSuffix = "goldResult.pb"
@@ -67,7 +67,7 @@ class ExportToScubaStrategy(
             resultProto.comparisonStatistics = comparisonStatistics
         }
 
-        val pathRelativeToAssets = goldenPathManager.goldenIdentifierResolver(goldenIdentifier)
+        val pathRelativeToAssets = goldenPathManager.goldenImageIdentifierResolver(goldenIdentifier)
         resultProto.imageLocationGolden =
             "${goldenPathManager.assetsPathRelativeToBuildRoot}/$pathRelativeToAssets"
 
@@ -131,7 +131,7 @@ class ExportToScubaStrategy(
     private fun getOnDeviceImageSuffix(goldenIdentifier: String): String {
         val resolvedGoldenIdentifier =
             goldenPathManager
-                .goldenIdentifierResolver(goldenIdentifier)
+                .goldenImageIdentifierResolver(goldenIdentifier)
                 .replace('/', '_')
                 .replace(imageExtension, "")
         return "$resolvedGoldenIdentifier$imageExtension"
@@ -140,7 +140,7 @@ class ExportToScubaStrategy(
     private fun getOnDeviceArtifactsSuffix(goldenIdentifier: String, suffix: String): String {
         val resolvedGoldenIdentifier =
             goldenPathManager
-                .goldenIdentifierResolver(goldenIdentifier)
+                .goldenImageIdentifierResolver(goldenIdentifier)
                 .replace('/', '_')
                 .replace(imageExtension, "")
         return "${resolvedGoldenIdentifier}_$suffix"

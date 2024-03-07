@@ -40,9 +40,10 @@ import platform.test.screenshot.proto.ScreenshotResultProto.DiffResult
 import platform.test.screenshot.report.DiffResultExportStrategy
 import platform.test.screenshot.utils.loadBitmap
 
-class CustomGoldenImagePathManager(appcontext: Context, assetsPath: String = "assets") :
-    GoldenImagePathManager(appcontext, assetsPath) {
-    public override fun goldenIdentifierResolver(testName: String): String = "$testName.png"
+class CustomGoldenPathManager(appcontext: Context, assetsPath: String = "assets") :
+    GoldenPathManager(appcontext, assetsPath) {
+    override fun goldenIdentifierResolver(testName: String, extension: String): String =
+        "$testName.$extension"
 }
 
 @RunWith(AndroidJUnit4::class)
@@ -54,7 +55,7 @@ class ScreenshotTestRuleTest {
     @get:Rule
     val rule =
         ScreenshotTestRule(
-            CustomGoldenImagePathManager(InstrumentationRegistry.getInstrumentation().context),
+            CustomGoldenPathManager(InstrumentationRegistry.getInstrumentation().context),
             diffEscrowStrategy = fakeDiffEscrow
         )
 
@@ -319,7 +320,7 @@ class ScreenshotTestRuleTest {
     @After
     fun after() {
         // Clear all files we generated so we don't have dependencies between tests
-        File(rule.goldenImagePathManager.deviceLocalPath).deleteRecursively()
+        File(rule.goldenPathManager.deviceLocalPath).deleteRecursively()
     }
 
     private fun expectErrorMessage(expectedErrorMessage: String, block: () -> Unit) {

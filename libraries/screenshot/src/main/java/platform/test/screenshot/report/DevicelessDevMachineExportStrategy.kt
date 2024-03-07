@@ -22,7 +22,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.outputStream
 import kotlin.io.path.writeText
-import platform.test.screenshot.GoldenImagePathManager
+import platform.test.screenshot.GoldenPathManager
 import platform.test.screenshot.proto.ScreenshotResultProto
 
 /**
@@ -34,7 +34,7 @@ import platform.test.screenshot.proto.ScreenshotResultProto
  *   http://shortn/_nZmmj8v5zv for reviewability.
  */
 internal class DevicelessDevMachineExportStrategy(
-    private val goldenPathManager: GoldenImagePathManager,
+    private val goldenPathManager: GoldenPathManager,
 ) : DiffResultExportStrategy {
     private val imageExtension = ".png"
 
@@ -53,7 +53,7 @@ internal class DevicelessDevMachineExportStrategy(
         val diffDir = localDir.resolve("diff")
         val reportDir = localDir.resolve("report")
 
-        val imagePath = goldenPathManager.goldenIdentifierResolver(goldenIdentifier)
+        val imagePath = goldenPathManager.goldenImageIdentifierResolver(goldenIdentifier)
         val actualImagePath = actualDir.resolve(imagePath)
         val expectedImagePath = expectedDir.resolve(imagePath)
         val diffImagePath = diffDir.resolve(imagePath)

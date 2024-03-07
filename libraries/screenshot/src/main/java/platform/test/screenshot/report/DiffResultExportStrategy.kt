@@ -18,7 +18,7 @@ package platform.test.screenshot.report
 
 import android.graphics.Bitmap
 import android.os.Build
-import platform.test.screenshot.GoldenImagePathManager
+import platform.test.screenshot.GoldenPathManager
 import platform.test.screenshot.proto.ScreenshotResultProto.DiffResult
 
 /**
@@ -44,10 +44,8 @@ interface DiffResultExportStrategy {
 
     companion object {
         /** Creates the export strategy to be used in Android tests. */
-        fun createDefaultStrategy(
-            goldenImagePathManager: GoldenImagePathManager
-        ): DiffResultExportStrategy {
-            val exportStrategy = ExportToScubaStrategy(goldenImagePathManager)
+        fun createDefaultStrategy(goldenPathManager: GoldenPathManager): DiffResultExportStrategy {
+            val exportStrategy = ExportToScubaStrategy(goldenPathManager)
 
             val isRobolectric = Build.FINGERPRINT.contains("robolectric")
             val isGradle =
@@ -55,10 +53,7 @@ interface DiffResultExportStrategy {
 
             return if (isRobolectric && isGradle) {
                 MultiplexedStrategy(
-                    listOf(
-                        exportStrategy,
-                        DevicelessDevMachineExportStrategy(goldenImagePathManager)
-                    )
+                    listOf(exportStrategy, DevicelessDevMachineExportStrategy(goldenPathManager))
                 )
             } else {
                 exportStrategy
