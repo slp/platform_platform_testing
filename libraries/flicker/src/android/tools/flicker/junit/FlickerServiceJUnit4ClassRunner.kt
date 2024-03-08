@@ -18,10 +18,7 @@ package android.tools.flicker.junit
 
 import android.os.Bundle
 import android.platform.test.util.TestFilter
-import android.tools.CrossPlatform
 import android.tools.Scenario
-import android.tools.TimestampFactory
-import android.tools.traces.formatRealTimestamp
 import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import java.util.Collections
@@ -71,8 +68,6 @@ constructor(
     private var initialized: Boolean? = null
 
     init {
-        CrossPlatform.setTimestampFactory(TimestampFactory { formatRealTimestamp(it) })
-
         val errors = mutableListOf<Throwable>()
         flickerDecorator.doValidateInstanceMethods().let { errors.addAll(it) }
         flickerDecorator.doValidateConstructor().let { errors.addAll(it) }
