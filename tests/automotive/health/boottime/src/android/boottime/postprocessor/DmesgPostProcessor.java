@@ -124,7 +124,8 @@ public class DmesgPostProcessor extends BaseBootTimeTestLogPostProcessor {
                                     analyzeDmesgActionInfo(dmesgItem.getActionInfoItems())));
                 }
             } catch (IOException ioe) {
-                CLog.e("Failed to analyze the dmesg logs", ioe);
+                CLog.e("Failed to analyze the dmesg logs");
+                CLog.e(ioe);
             }
         }
         if (mBootloaderInfo) {
