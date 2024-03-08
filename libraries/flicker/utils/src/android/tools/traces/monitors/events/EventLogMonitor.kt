@@ -16,7 +16,6 @@
 
 package android.tools.traces.monitors.events
 
-import android.tools.Logger
 import android.tools.Timestamp
 import android.tools.io.TraceType
 import android.tools.traces.events.EventLog
@@ -24,6 +23,7 @@ import android.tools.traces.executeShellCommand
 import android.tools.traces.monitors.LOG_TAG
 import android.tools.traces.monitors.TraceMonitor
 import android.tools.traces.now
+import android.util.Log
 import java.io.File
 import java.io.FileOutputStream
 
@@ -54,7 +54,7 @@ open class EventLogMonitor : TraceMonitor() {
             val command =
                 "logcat -b events -v threadtime -v printable -v uid -v nsec " +
                     "-v epoch -t $sinceTime >> $outputFile"
-            Logger.d(LOG_TAG, "Running '$command'")
+            Log.d(LOG_TAG, "Running '$command'")
             val eventLogString = executeShellCommand(command)
             it.write(eventLogString)
         }

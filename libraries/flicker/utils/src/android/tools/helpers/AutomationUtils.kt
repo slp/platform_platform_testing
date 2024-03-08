@@ -22,7 +22,6 @@ import android.graphics.Point
 import android.graphics.Rect
 import android.os.RemoteException
 import android.os.SystemClock
-import android.tools.Logger
 import android.tools.Rotation
 import android.tools.helpers.WindowUtils.displayBounds
 import android.tools.helpers.WindowUtils.estimateNavigationBarPosition
@@ -31,6 +30,7 @@ import android.tools.traces.component.ComponentNameMatcher
 import android.tools.traces.executeShellCommand
 import android.tools.traces.parsers.WindowManagerStateHelper
 import android.tools.traces.parsers.toAndroidRect
+import android.util.Log
 import android.util.Rational
 import android.view.View
 import android.view.ViewConfiguration
@@ -69,7 +69,7 @@ fun setDefaultWait() {
 /** Checks if the device is running on gestural or 2-button navigation modes */
 fun UiDevice.isQuickstepEnabled(): Boolean {
     val enabled = this.findObject(By.res(SYSTEMUI_PACKAGE, "recent_apps")) == null
-    Logger.d(TAG, "Quickstep enabled: $enabled")
+    Log.d(TAG, "Quickstep enabled: $enabled")
     return enabled
 }
 
@@ -92,7 +92,7 @@ fun UiDevice.openQuickstep(wmHelper: WindowManagerStateHelper) {
             if (navBar != null) {
                 navBar.visibleBounds
             } else {
-                Logger.e(TAG, "Could not find nav bar, infer location")
+                Log.e(TAG, "Could not find nav bar, infer location")
                 estimateNavigationBarPosition(Rotation.ROTATION_0).bounds.toAndroidRect()
             }
 
@@ -167,7 +167,7 @@ private fun openQuickStepAndLongPressOverviewIcon(
         try {
             device.pressRecentApps()
         } catch (e: RemoteException) {
-            Logger.e(TAG, "launchSplitScreen", e)
+            Log.e(TAG, "launchSplitScreen", e)
         }
     }
     val overviewIconSelector = By.res(device.launcherPackageName, "icon").clazz(View::class.java)
@@ -183,7 +183,7 @@ fun UiDevice.openQuickStepAndClearRecentAppsFromOverview(wmHelper: WindowManager
         try {
             this.pressRecentApps()
         } catch (e: RemoteException) {
-            Logger.e(TAG, "launchSplitScreen", e)
+            Log.e(TAG, "launchSplitScreen", e)
         }
     }
     for (i in 0..9) {

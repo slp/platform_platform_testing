@@ -16,7 +16,6 @@
 
 package android.tools.traces.io
 
-import android.tools.Logger
 import android.tools.Scenario
 import android.tools.io.Artifact
 import android.tools.io.BUFFER_SIZE
@@ -24,6 +23,8 @@ import android.tools.io.FLICKER_IO_TAG
 import android.tools.io.ResultArtifactDescriptor
 import android.tools.io.RunStatus
 import android.tools.traces.deleteIfExists
+import android.tools.withTracing
+import android.util.Log
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.ByteArrayOutputStream
@@ -61,7 +62,7 @@ internal constructor(private val scenario: Scenario, artifactFile: File, private
         val currFile = file
         val newFile = getNewFilePath(newStatus)
         if (currFile != newFile) {
-            Logger.withTracing("${this::class.simpleName}#updateStatus") {
+            withTracing("${this::class.simpleName}#updateStatus") {
                 IoUtils.moveFile(currFile, newFile)
                 file = newFile
             }
@@ -106,7 +107,7 @@ internal constructor(private val scenario: Scenario, artifactFile: File, private
 
     @Throws(IOException::class)
     override fun readBytes(descriptor: ResultArtifactDescriptor): ByteArray? {
-        Logger.d(FLICKER_IO_TAG, "Reading descriptor=$descriptor from $this")
+        Log.d(FLICKER_IO_TAG, "Reading descriptor=$descriptor from $this")
 
         var foundFile = false
         val outByteArray = ByteArrayOutputStream()

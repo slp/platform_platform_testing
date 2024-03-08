@@ -17,10 +17,11 @@
 package android.tools.flicker.assertions
 
 import android.tools.FLICKER_TAG
-import android.tools.Logger
 import android.tools.flicker.AssertionInvocationGroup
 import android.tools.flicker.subject.exceptions.FlickerAssertionError
 import android.tools.io.Reader
+import android.tools.withTracing
+import android.util.Log
 
 // internal data class but visible for testing
 data class ScenarioAssertionImpl(
@@ -36,7 +37,7 @@ data class ScenarioAssertionImpl(
     }
 
     override fun execute(): AssertionResult =
-        Logger.withTracing("executeAssertion") {
+        withTracing("executeAssertion") {
             AssertionResultImpl(
                     name,
                     assertionData,
@@ -60,12 +61,12 @@ data class ScenarioAssertionImpl(
 
     private fun log(result: AssertionResult) {
         if (result.failed) {
-            Logger.w(
+            Log.w(
                 "$FLICKER_TAG-SERVICE",
                 "${result.name} FAILED :: " + result.assertionErrors.map { it.message }
             )
         } else {
-            Logger.w("$FLICKER_TAG-SERVICE", "${result.name} PASSED")
+            Log.w("$FLICKER_TAG-SERVICE", "${result.name} PASSED")
         }
     }
 }

@@ -16,7 +16,6 @@
 
 package android.tools.traces.io
 
-import android.tools.Logger
 import android.tools.Timestamp
 import android.tools.io.FLICKER_IO_TAG
 import android.tools.io.Reader
@@ -27,6 +26,8 @@ import android.tools.traces.TraceConfigs
 import android.tools.traces.events.EventLog
 import android.tools.traces.surfaceflinger.LayersTrace
 import android.tools.traces.wm.WindowManagerTrace
+import android.tools.withTracing
+import android.util.Log
 import android.util.LruCache
 import java.io.IOException
 
@@ -75,19 +76,19 @@ open class ResultReaderWithLru(
         key: CacheKey,
         predicate: () -> TraceType?
     ): TraceType? {
-        return Logger.withTracing("logAndReadTrace") {
+        return withTracing("logAndReadTrace") {
             var value = this[key]
             if (value == null) {
                 value =
-                    Logger.withTracing("cache miss") {
-                        Logger.d(FLICKER_IO_TAG, "Cache miss $key, $reader")
+                    withTracing("cache miss") {
+                        Log.d(FLICKER_IO_TAG, "Cache miss $key, $reader")
                         predicate()
                     }
             }
 
             if (value != null) {
                 this.put(key, value)
-                Logger.d(FLICKER_IO_TAG, "Add to cache $key, $reader")
+                Log.d(FLICKER_IO_TAG, "Add to cache $key, $reader")
             }
             value
         }

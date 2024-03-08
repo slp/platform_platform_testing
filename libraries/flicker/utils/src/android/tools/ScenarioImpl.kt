@@ -16,6 +16,8 @@
 
 package android.tools
 
+import android.util.Log
+
 /**
  * Legacy flicker test scenario
  *
@@ -54,7 +56,7 @@ internal constructor(
     val isTablet: Boolean
         get() {
             if (!extraConfig.containsKey(IS_TABLET)) {
-                Logger.e(
+                Log.e(
                     FLICKER_TAG,
                     "$IS_TABLET property not initialized. Use [setIsTablet] to initialize"
                 )

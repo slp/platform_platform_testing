@@ -16,12 +16,12 @@
 
 package android.tools.traces.monitors.wm
 
-import android.tools.Logger
 import android.tools.io.TraceType
 import android.tools.traces.executeShellCommand
 import android.tools.traces.monitors.LOG_TAG
 import android.tools.traces.monitors.TraceMonitor
 import android.tools.traces.wm.TransitionsTrace
+import android.util.Log
 import java.io.File
 
 /** Captures [TransitionsTrace] from SurfaceFlinger. */
@@ -33,14 +33,14 @@ open class LegacyShellTransitionTraceMonitor : TraceMonitor() {
     override fun doStart() {
         require(!isEnabled) { "Trace already running" }
         isEnabled = true
-        Logger.d(LOG_TAG, "Running '$START_TRACING_COMMAND'")
+        Log.d(LOG_TAG, "Running '$START_TRACING_COMMAND'")
         executeShellCommand(START_TRACING_COMMAND)
     }
 
     override fun doStop(): File {
         require(isEnabled) { "Trace not running" }
         isEnabled = false
-        Logger.d(LOG_TAG, "Running '$START_TRACING_COMMAND'")
+        Log.d(LOG_TAG, "Running '$START_TRACING_COMMAND'")
         executeShellCommand(STOP_TRACING_COMMAND)
 
         return TRACE_DIR.resolve(traceType.fileName)

@@ -16,12 +16,12 @@
 
 package android.tools.traces.monitors.view
 
-import android.tools.Logger
 import android.tools.io.TraceType
 import android.tools.traces.executeShellCommand
 import android.tools.traces.io.ResultWriter
 import android.tools.traces.monitors.LOG_TAG
 import android.tools.traces.monitors.TraceMonitor
+import android.util.Log
 import java.io.File
 import java.util.zip.ZipFile
 
@@ -56,13 +56,13 @@ open class ViewTraceMonitor : TraceMonitor() {
     }
 
     private fun ResultWriter.writeTraces(viewCaptureZip: File) {
-        Logger.d(LOG_TAG, "Uncompressing $viewCaptureZip from zip")
+        Log.d(LOG_TAG, "Uncompressing $viewCaptureZip from zip")
         ZipFile(viewCaptureZip).use { zipFile ->
             val entries = zipFile.entries()
             while (entries.hasMoreElements()) {
                 val entry = entries.nextElement()
                 if (!entry.isDirectory) {
-                    Logger.d(LOG_TAG, "Found ${entry.name}")
+                    Log.d(LOG_TAG, "Found ${entry.name}")
                     val fileName = entry.name.split("/").last()
                     zipFile.getInputStream(entry).use { inputStream ->
                         val unzippedFile = File.createTempFile(traceType.fileName, fileName)

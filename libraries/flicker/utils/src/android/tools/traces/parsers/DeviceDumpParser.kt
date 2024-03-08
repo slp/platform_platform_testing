@@ -16,7 +16,6 @@
 
 package android.tools.traces.parsers
 
-import android.tools.Logger
 import android.tools.traces.DeviceStateDump
 import android.tools.traces.NullableDeviceStateDump
 import android.tools.traces.parsers.perfetto.LayersTraceParser
@@ -26,6 +25,7 @@ import android.tools.traces.surfaceflinger.LayerTraceEntry
 import android.tools.traces.surfaceflinger.LayersTrace
 import android.tools.traces.wm.WindowManagerState
 import android.tools.traces.wm.WindowManagerTrace
+import android.tools.withTracing
 
 /**
  * Represents a state dump containing the [WindowManagerTrace] and the [LayersTrace] both parsed and
@@ -52,7 +52,7 @@ class DeviceDumpParser {
             layersTraceData: ByteArray,
             clearCacheAfterParsing: Boolean
         ): NullableDeviceStateDump {
-            return Logger.withTracing("fromNullableDump") {
+            return withTracing("fromNullableDump") {
                 NullableDeviceStateDump(
                     wmState =
                         if (wmTraceData.isNotEmpty()) {
@@ -85,7 +85,7 @@ class DeviceDumpParser {
             layersTraceData: ByteArray,
             clearCacheAfterParsing: Boolean
         ): DeviceStateDump {
-            return Logger.withTracing("fromDump") {
+            return withTracing("fromDump") {
                 val nullableDump =
                     fromNullableDump(wmTraceData, layersTraceData, clearCacheAfterParsing)
                 DeviceStateDump(

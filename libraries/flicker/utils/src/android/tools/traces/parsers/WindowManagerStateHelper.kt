@@ -21,9 +21,7 @@ import android.app.Instrumentation
 import android.app.WindowConfiguration
 import android.os.SystemClock
 import android.os.Trace
-import android.tools.AndroidLogger
 import android.tools.CrossPlatform
-import android.tools.Logger
 import android.tools.Rotation
 import android.tools.TimestampFactory
 import android.tools.datatypes.Region
@@ -48,6 +46,7 @@ import android.tools.traces.wm.Activity
 import android.tools.traces.wm.WindowManagerState
 import android.tools.traces.wm.WindowManagerTrace
 import android.tools.traces.wm.WindowState
+import android.util.Log
 import android.view.Display
 import androidx.test.platform.app.InstrumentationRegistry
 
@@ -68,8 +67,7 @@ constructor(
     private val retryIntervalMs: Long = DEFAULT_RETRY_INTERVAL_MS
 ) {
     init {
-        CrossPlatform.setLogger(AndroidLogger())
-            .setTimestampFactory(TimestampFactory { formatRealTimestamp(it) })
+        CrossPlatform.setTimestampFactory(TimestampFactory { formatRealTimestamp(it) })
     }
 
     private var internalState: DeviceStateDump? = null
@@ -124,9 +122,9 @@ constructor(
                 .onLog { msg, isError ->
                     lastMessage = msg
                     if (isError) {
-                        Logger.e(LOG_TAG, msg)
+                        Log.e(LOG_TAG, msg)
                     } else {
-                        Logger.d(LOG_TAG, msg)
+                        Log.d(LOG_TAG, msg)
                     }
                 }
                 .onRetry { SystemClock.sleep(retryIntervalMs) }
@@ -476,13 +474,10 @@ constructor(
                 val activityWindowVisible = matchingWindowStates.isNotEmpty()
 
                 if (!activityWindowVisible) {
-                    Logger.i(
-                        LOG_TAG,
-                        "Activity window not visible: ${activityState.windowIdentifier}"
-                    )
+                    Log.i(LOG_TAG, "Activity window not visible: ${activityState.windowIdentifier}")
                     allActivityWindowsVisible = false
                 } else if (!state.wmState.isActivityVisible(activityState.activityMatcher)) {
-                    Logger.i(LOG_TAG, "Activity not visible: ${activityState.activityMatcher}")
+                    Log.i(LOG_TAG, "Activity not visible: ${activityState.activityMatcher}")
                     allActivityWindowsVisible = false
                 } else {
                     // Check if window is already the correct state requested by test.
@@ -508,7 +503,7 @@ constructor(
                         break
                     }
                     if (!windowInCorrectState) {
-                        Logger.i(LOG_TAG, "Window in incorrect stack: $activityState")
+                        Log.i(LOG_TAG, "Window in incorrect stack: $activityState")
                         tasksInCorrectStacks = false
                     }
                 }
