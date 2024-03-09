@@ -17,7 +17,6 @@
 package android.tools.flicker.legacy.runner
 
 import android.app.Instrumentation
-import android.tools.Logger
 import android.tools.Scenario
 import android.tools.flicker.FlickerTag
 import android.tools.flicker.junit.Utils
@@ -28,7 +27,9 @@ import android.tools.traces.io.ResultWriter
 import android.tools.traces.monitors.NoTraceMonitor
 import android.tools.traces.now
 import android.tools.traces.parsers.WindowManagerStateHelper
+import android.tools.withTracing
 import android.util.EventLog
+import android.util.Log
 import java.io.File
 import org.junit.rules.TestRule
 import org.junit.runner.Description
@@ -57,7 +58,7 @@ class TransitionExecutionRule(
     override fun apply(base: Statement?, description: Description?): Statement {
         return object : Statement() {
             override fun evaluate() {
-                Logger.withTracing("transition") {
+                withTracing("transition") {
                     try {
                         Utils.notifyRunnerProgress(scenario, "Running transition $description")
                         doRunBeforeTransition()
@@ -73,9 +74,9 @@ class TransitionExecutionRule(
 
     private fun doRunBeforeTransition() {
         Utils.doWaitForUiStabilize(wmHelper)
-        Logger.withTracing("doRunBeforeTransition") {
+        withTracing("doRunBeforeTransition") {
             Utils.notifyRunnerProgress(scenario, "Running doRunBeforeTransition")
-            Logger.d(FLICKER_RUNNER_TAG, "doRunBeforeTransition")
+            Log.d(FLICKER_RUNNER_TAG, "doRunBeforeTransition")
             val now = now()
             resultWriter.setTransitionStartTime(now)
             EventLog.writeEvent(
@@ -91,9 +92,9 @@ class TransitionExecutionRule(
 
     private fun doRunAfterTransition() {
         Utils.doWaitForUiStabilize(wmHelper)
-        Logger.withTracing("doRunAfterTransition") {
+        withTracing("doRunAfterTransition") {
             Utils.notifyRunnerProgress(scenario, "Running doRunAfterTransition")
-            Logger.d(FLICKER_RUNNER_TAG, "doRunAfterTransition")
+            Log.d(FLICKER_RUNNER_TAG, "doRunAfterTransition")
             val now = now()
             resultWriter.setTransitionEndTime(now)
             EventLog.writeEvent(
@@ -120,7 +121,7 @@ class TransitionExecutionRule(
     }
 
     private fun doCreateTag(tag: String) {
-        Logger.withTracing("doRunAfterTransition") {
+        withTracing("doRunAfterTransition") {
             Utils.notifyRunnerProgress(scenario, "Creating tag $tag")
             doValidateTag(tag)
             tags.add(tag)

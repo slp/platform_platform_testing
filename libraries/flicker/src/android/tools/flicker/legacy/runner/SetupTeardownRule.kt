@@ -17,12 +17,12 @@
 package android.tools.flicker.legacy.runner
 
 import android.app.Instrumentation
-import android.tools.Logger
 import android.tools.Scenario
 import android.tools.flicker.junit.Utils
 import android.tools.flicker.legacy.FlickerTestData
 import android.tools.traces.io.ResultWriter
 import android.tools.traces.parsers.WindowManagerStateHelper
+import android.tools.withTracing
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -61,7 +61,7 @@ class SetupTeardownRule(
     }
 
     private fun doRunTransitionSetup(description: Description?) {
-        Logger.withTracing("doRunTransitionSetup") {
+        withTracing("doRunTransitionSetup") {
             Utils.notifyRunnerProgress(scenario, "Running transition setup for $description")
             setupCommands.forEach { it.invoke(flicker) }
             Utils.doWaitForUiStabilize(wmHelper)
@@ -69,7 +69,7 @@ class SetupTeardownRule(
     }
 
     private fun doRunTransitionTeardown(description: Description?) {
-        Logger.withTracing("doRunTransitionTeardown") {
+        withTracing("doRunTransitionTeardown") {
             Utils.notifyRunnerProgress(scenario, "Running transition teardown for $description")
             teardownCommands.forEach { it.invoke(flicker) }
             Utils.doWaitForUiStabilize(wmHelper)

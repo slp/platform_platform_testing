@@ -16,7 +16,6 @@
 
 package android.tools.flicker.assertions
 
-import android.tools.Logger
 import android.tools.flicker.subject.events.EventLogSubject
 import android.tools.flicker.subject.layers.LayerTraceEntrySubject
 import android.tools.flicker.subject.layers.LayersTraceSubject
@@ -24,6 +23,7 @@ import android.tools.flicker.subject.region.RegionTraceSubject
 import android.tools.flicker.subject.wm.WindowManagerStateSubject
 import android.tools.flicker.subject.wm.WindowManagerTraceSubject
 import android.tools.traces.component.IComponentMatcher
+import android.tools.withTracing
 
 abstract class BaseFlickerTest(
     private val assertionFactory: AssertionFactory = AssertionFactory()
@@ -31,28 +31,28 @@ abstract class BaseFlickerTest(
     protected abstract fun doProcess(assertion: AssertionData)
 
     override fun assertWmStart(assertion: WindowManagerStateSubject.() -> Unit) {
-        Logger.withTracing("assertWmStart") {
+        withTracing("assertWmStart") {
             val assertionData = assertionFactory.createWmStartAssertion(assertion)
             doProcess(assertionData)
         }
     }
 
     override fun assertWmEnd(assertion: WindowManagerStateSubject.() -> Unit) {
-        Logger.withTracing("assertWmEnd") {
+        withTracing("assertWmEnd") {
             val assertionData = assertionFactory.createWmEndAssertion(assertion)
             doProcess(assertionData)
         }
     }
 
     override fun assertWm(assertion: WindowManagerTraceSubject.() -> Unit) {
-        Logger.withTracing("assertWm") {
+        withTracing("assertWm") {
             val assertionData = assertionFactory.createWmAssertion(assertion)
             doProcess(assertionData)
         }
     }
 
     override fun assertWmTag(tag: String, assertion: WindowManagerStateSubject.() -> Unit) {
-        Logger.withTracing("assertWmTag") {
+        withTracing("assertWmTag") {
             val assertionData = assertionFactory.createWmTagAssertion(tag, assertion)
             doProcess(assertionData)
         }
@@ -62,7 +62,7 @@ abstract class BaseFlickerTest(
         componentMatcher: IComponentMatcher,
         assertion: RegionTraceSubject.() -> Unit
     ) {
-        Logger.withTracing("assertWmVisibleRegion") {
+        withTracing("assertWmVisibleRegion") {
             val assertionData =
                 assertionFactory.createWmVisibleRegionAssertion(componentMatcher, assertion)
             doProcess(assertionData)
@@ -70,28 +70,28 @@ abstract class BaseFlickerTest(
     }
 
     override fun assertLayersStart(assertion: LayerTraceEntrySubject.() -> Unit) {
-        Logger.withTracing("assertLayersStart") {
+        withTracing("assertLayersStart") {
             val assertionData = assertionFactory.createLayersStartAssertion(assertion)
             doProcess(assertionData)
         }
     }
 
     override fun assertLayersEnd(assertion: LayerTraceEntrySubject.() -> Unit) {
-        Logger.withTracing("assertLayersEnd") {
+        withTracing("assertLayersEnd") {
             val assertionData = assertionFactory.createLayersEndAssertion(assertion)
             doProcess(assertionData)
         }
     }
 
     override fun assertLayers(assertion: LayersTraceSubject.() -> Unit) {
-        Logger.withTracing("assertLayers") {
+        withTracing("assertLayers") {
             val assertionData = assertionFactory.createLayersAssertion(assertion)
             doProcess(assertionData)
         }
     }
 
     override fun assertLayersTag(tag: String, assertion: LayerTraceEntrySubject.() -> Unit) {
-        Logger.withTracing("assertLayersTag") {
+        withTracing("assertLayersTag") {
             val assertionData = assertionFactory.createLayersTagAssertion(tag, assertion)
             doProcess(assertionData)
         }
@@ -102,7 +102,7 @@ abstract class BaseFlickerTest(
         useCompositionEngineRegionOnly: Boolean,
         assertion: RegionTraceSubject.() -> Unit
     ) {
-        Logger.withTracing("assertLayersVisibleRegion") {
+        withTracing("assertLayersVisibleRegion") {
             val assertionData =
                 assertionFactory.createLayersVisibleRegionAssertion(
                     componentMatcher,
@@ -114,7 +114,7 @@ abstract class BaseFlickerTest(
     }
 
     override fun assertEventLog(assertion: EventLogSubject.() -> Unit) {
-        Logger.withTracing("assertEventLog") {
+        withTracing("assertEventLog") {
             val assertionData = assertionFactory.createEventLogAssertion(assertion)
             doProcess(assertionData)
         }

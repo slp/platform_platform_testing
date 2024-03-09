@@ -21,11 +21,7 @@ import android.app.Instrumentation
 import android.app.WindowConfiguration
 import android.os.SystemClock
 import android.os.Trace
-import android.tools.AndroidLogger
-import android.tools.CrossPlatform
-import android.tools.Logger
 import android.tools.Rotation
-import android.tools.TimestampFactory
 import android.tools.datatypes.Region
 import android.tools.traces.Condition
 import android.tools.traces.ConditionsFactory
@@ -40,7 +36,6 @@ import android.tools.traces.component.ComponentNameMatcher.Companion.SPLASH_SCRE
 import android.tools.traces.component.ComponentNameMatcher.Companion.SPLIT_DIVIDER
 import android.tools.traces.component.ComponentNameMatcher.Companion.TRANSITION_SNAPSHOT
 import android.tools.traces.component.IComponentMatcher
-import android.tools.traces.formatRealTimestamp
 import android.tools.traces.getCurrentStateDump
 import android.tools.traces.surfaceflinger.LayerTraceEntry
 import android.tools.traces.surfaceflinger.LayersTrace
@@ -48,6 +43,7 @@ import android.tools.traces.wm.Activity
 import android.tools.traces.wm.WindowManagerState
 import android.tools.traces.wm.WindowManagerTrace
 import android.tools.traces.wm.WindowState
+import android.util.Log
 import android.view.Display
 import androidx.test.platform.app.InstrumentationRegistry
 
@@ -67,11 +63,6 @@ constructor(
     /** Interval between wait for state dumps during wait conditions */
     private val retryIntervalMs: Long = DEFAULT_RETRY_INTERVAL_MS
 ) {
-    init {
-        CrossPlatform.setLogger(AndroidLogger())
-            .setTimestampFactory(TimestampFactory { formatRealTimestamp(it) })
-    }
-
     private var internalState: DeviceStateDump? = null
 
     /** Queries the supplier for a new device state */
@@ -124,9 +115,9 @@ constructor(
                 .onLog { msg, isError ->
                     lastMessage = msg
                     if (isError) {
-                        Logger.e(LOG_TAG, msg)
+                        Log.e(LOG_TAG, msg)
                     } else {
-                        Logger.d(LOG_TAG, msg)
+                        Log.d(LOG_TAG, msg)
                     }
                 }
                 .onRetry { SystemClock.sleep(retryIntervalMs) }
@@ -476,13 +467,10 @@ constructor(
                 val activityWindowVisible = matchingWindowStates.isNotEmpty()
 
                 if (!activityWindowVisible) {
-                    Logger.i(
-                        LOG_TAG,
-                        "Activity window not visible: ${activityState.windowIdentifier}"
-                    )
+                    Log.i(LOG_TAG, "Activity window not visible: ${activityState.windowIdentifier}")
                     allActivityWindowsVisible = false
                 } else if (!state.wmState.isActivityVisible(activityState.activityMatcher)) {
-                    Logger.i(LOG_TAG, "Activity not visible: ${activityState.activityMatcher}")
+                    Log.i(LOG_TAG, "Activity not visible: ${activityState.activityMatcher}")
                     allActivityWindowsVisible = false
                 } else {
                     // Check if window is already the correct state requested by test.
@@ -508,7 +496,7 @@ constructor(
                         break
                     }
                     if (!windowInCorrectState) {
-                        Logger.i(LOG_TAG, "Window in incorrect stack: $activityState")
+                        Log.i(LOG_TAG, "Window in incorrect stack: $activityState")
                         tasksInCorrectStacks = false
                     }
                 }

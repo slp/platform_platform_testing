@@ -22,13 +22,13 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.tools.Logger
 import android.tools.PlatformConsts
 import android.tools.traces.ConditionsFactory
 import android.tools.traces.component.ComponentNameMatcher
 import android.tools.traces.component.IComponentMatcher
 import android.tools.traces.component.IComponentNameMatcher
 import android.tools.traces.parsers.WindowManagerStateHelper
+import android.tools.withTracing
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiDevice
@@ -94,7 +94,7 @@ open class StandardAppHelper(
 
     /** {@inheritDoc} */
     open fun exit() {
-        Logger.withTracing("${this::class.simpleName}#exit") {
+        withTracing("${this::class.simpleName}#exit") {
             // Ensure all testing components end up being closed.
             activityManager?.forceStopPackage(packageName)
         }
@@ -102,7 +102,7 @@ open class StandardAppHelper(
 
     /** Exits the activity and wait for activity destroyed */
     fun exit(wmHelper: WindowManagerStateHelper) {
-        Logger.withTracing("${this::class.simpleName}#exitAndWait") {
+        withTracing("${this::class.simpleName}#exitAndWait") {
             exit()
             waitForActivityDestroyed(wmHelper)
         }
@@ -127,7 +127,7 @@ open class StandardAppHelper(
         action: String? = null,
         stringExtras: Map<String, String> = mapOf()
     ) {
-        Logger.withTracing("${this::class.simpleName}#launchAppViaIntent") {
+        withTracing("${this::class.simpleName}#launchAppViaIntent") {
             val intent = openAppIntent
             intent.action = action ?: Intent.ACTION_MAIN
             stringExtras.forEach { intent.putExtra(it.key, it.value) }
@@ -186,7 +186,7 @@ open class StandardAppHelper(
                 .add(ConditionsFactory.isWMStateComplete())
                 .withAppTransitionIdle()
     ) {
-        Logger.withTracing("${this::class.simpleName}#launchViaIntent") {
+        withTracing("${this::class.simpleName}#launchViaIntent") {
             context.startActivity(intent)
             doWaitShown(launchedAppComponentMatcherOverride, waitConditionsBuilder)
         }
@@ -196,7 +196,7 @@ open class StandardAppHelper(
         launchedAppComponentMatcherOverride: IComponentMatcher? = null,
         waitConditionsBuilder: WindowManagerStateHelper.StateSyncBuilder
     ) {
-        Logger.withTracing("${this::class.simpleName}#doWaitShown") {
+        withTracing("${this::class.simpleName}#doWaitShown") {
             val expectedWindow = launchedAppComponentMatcherOverride ?: componentMatcher
             val builder = waitConditionsBuilder.withWindowSurfaceAppeared(expectedWindow)
             builder.waitForAndVerify()

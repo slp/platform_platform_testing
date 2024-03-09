@@ -17,11 +17,7 @@
 package android.tools.flicker.rules
 
 import android.platform.test.rule.TestWatcher
-import android.tools.AndroidLogger
-import android.tools.CrossPlatform
 import android.tools.FLICKER_TAG
-import android.tools.Logger
-import android.tools.TimestampFactory
 import android.tools.flicker.FlickerConfig
 import android.tools.flicker.FlickerService
 import android.tools.flicker.FlickerServiceResultsCollector
@@ -31,8 +27,8 @@ import android.tools.flicker.annotation.FlickerTest
 import android.tools.flicker.config.FlickerConfig
 import android.tools.flicker.config.FlickerServiceConfig
 import android.tools.flicker.config.ScenarioId
-import android.tools.traces.formatRealTimestamp
 import android.tools.traces.getDefaultFlickerOutputDir
+import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth
 import org.junit.AssumptionViolatedException
@@ -74,11 +70,6 @@ constructor(
     private var testFailed = false
     private var testSkipped = false
 
-    init {
-        CrossPlatform.setLogger(AndroidLogger())
-            .setTimestampFactory(TimestampFactory { formatRealTimestamp(it) })
-    }
-
     /** Invoked when a test is about to start */
     public override fun starting(description: Description) {
         if (shouldRun(description)) {
@@ -115,24 +106,24 @@ constructor(
     }
 
     private fun handleStarting(description: Description) {
-        Logger.i(LOG_TAG, "Test starting $description")
+        Log.i(LOG_TAG, "Test starting $description")
         metricsCollector.testStarted(description)
         testFailed = false
         testSkipped = false
     }
 
     private fun handleSucceeded(description: Description) {
-        Logger.i(LOG_TAG, "Test succeeded $description")
+        Log.i(LOG_TAG, "Test succeeded $description")
     }
 
     private fun handleFailed(e: Throwable?, description: Description) {
-        Logger.e(LOG_TAG, "$description test failed with", e)
+        Log.e(LOG_TAG, "$description test failed with", e)
         metricsCollector.testFailure(Failure(description, e))
         testFailed = true
     }
 
     private fun handleSkipped(e: AssumptionViolatedException, description: Description) {
-        Logger.i(LOG_TAG, "Test skipped $description with", e)
+        Log.i(LOG_TAG, "Test skipped $description with", e)
         metricsCollector.testSkipped(description)
         testSkipped = true
     }
@@ -155,10 +146,10 @@ constructor(
     }
 
     private fun handleFinished(description: Description) {
-        Logger.i(LOG_TAG, "Test finished $description")
+        Log.i(LOG_TAG, "Test finished $description")
         metricsCollector.testFinished(description)
         for (executionError in metricsCollector.executionErrors) {
-            Logger.e(LOG_TAG, "FaaS reported execution errors", executionError)
+            Log.e(LOG_TAG, "FaaS reported execution errors", executionError)
         }
         if (testSkipped || testFailed || metricsCollector.executionErrors.isNotEmpty()) {
             // If we had an execution error or the underlying test failed or was skipped, then we
@@ -169,9 +160,9 @@ constructor(
         val failedMetrics = metricsCollector.resultsForTest(description).filter { it.failed }
         val assertionErrors = failedMetrics.flatMap { it.assertionErrors }
         assertionErrors.forEach {
-            Logger.e(LOG_TAG, "FaaS reported an assertion failure:")
-            Logger.e(LOG_TAG, it.message)
-            Logger.e(LOG_TAG, it.stackTraceToString())
+            Log.e(LOG_TAG, "FaaS reported an assertion failure:")
+            Log.e(LOG_TAG, it.message)
+            Log.e(LOG_TAG, it.stackTraceToString())
         }
 
         if (failTestOnFlicker && testContainsFlicker(description)) {

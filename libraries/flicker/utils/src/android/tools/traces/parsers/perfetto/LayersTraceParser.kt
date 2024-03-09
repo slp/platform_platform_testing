@@ -16,7 +16,6 @@
 
 package android.tools.traces.parsers.perfetto
 
-import android.tools.Logger
 import android.tools.Timestamp
 import android.tools.datatypes.ActiveBuffer
 import android.tools.datatypes.Color
@@ -35,6 +34,7 @@ import android.tools.traces.surfaceflinger.LayersTrace
 import android.tools.traces.surfaceflinger.Transform
 import android.tools.traces.surfaceflinger.Transform.Companion.isFlagClear
 import android.tools.traces.surfaceflinger.Transform.Companion.isFlagSet
+import android.tools.withTracing
 
 /** Parser for [LayersTrace] */
 class LayersTraceParser(
@@ -64,12 +64,12 @@ class LayersTraceParser(
             val snapshotGroups = snapshotsRows.groupBy { it["snapshot_id"] }
 
             for (snapshotId in 0L until snapshotGroups.size) {
-                Logger.withTracing("query + build entry") {
+                withTracing("query + build entry") {
                     val layerRows =
-                        Logger.withTracing("query layer rows") {
+                        withTracing("query layer rows") {
                             input.query(getSqlQueryLayers(snapshotId)) { it }
                         }
-                    Logger.withTracing("build entry") {
+                    withTracing("build entry") {
                         val snapshotRows = snapshotGroups[snapshotId]!!
                         val entry =
                             buildTraceEntry(snapshotRows, layerRows, realToMonotonicTimeOffsetNs)

@@ -16,10 +16,6 @@
 
 package android.tools.rules
 
-import android.tools.AndroidLogger
-import android.tools.CrossPlatform
-import android.tools.TimestampFactory
-import android.tools.traces.formatRealTimestamp
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -28,9 +24,6 @@ class InitializeCrossPlatformRule : TestRule {
     override fun apply(base: Statement?, description: Description?): Statement {
         return object : Statement() {
             override fun evaluate() {
-                CrossPlatform.setLogger(AndroidLogger())
-                    .setTimestampFactory(TimestampFactory { formatRealTimestamp(it) })
-
                 base?.evaluate()
             }
         }
