@@ -67,7 +67,7 @@ class JsonGoldenSerializer(
             )
             put(
                 KEY_FEATURES,
-                JSONArray().apply { golden.features.map(::featureToJson).forEach(this::put) }
+                JSONArray().apply { golden.features.values.map(::featureToJson).forEach(this::put) }
             )
         }
 

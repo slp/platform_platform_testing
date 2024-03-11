@@ -46,6 +46,10 @@ class DataPointType<T>(
     }
 
     fun toJson(value: T): Any = valueToJson(value)
+
+    override fun toString(): String {
+        return typeName
+    }
 }
 
 /** Signals that a JSON value cannot be deserialized by a [DataPointType]. */
