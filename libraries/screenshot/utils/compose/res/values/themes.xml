@@ -26,7 +26,7 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
 
         <!-- Make sure that device specific cutouts don't impact the outcome of screenshot tests -->
-        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">always</item>
     </style>
 
     <style name="Theme.PlatformUi.Dialog.Screenshot" parent="Theme.PlatformUi.Dialog.DayAndNightScreenshot" />
