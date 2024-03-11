@@ -22,22 +22,13 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Rect
-import android.os.Build
-import android.os.Bundle
 import android.platform.uiautomator_helpers.DeviceHelpers.shell
 import android.provider.Settings.System
+import androidx.annotation.VisibleForTesting
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.screenshot.Screenshot
 import com.android.internal.app.SimpleIconFactory
-import java.io.File
 import java.io.FileNotFoundException
-import java.io.FileOutputStream
-import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
-import kotlin.io.path.outputStream
-import kotlin.io.path.writeText
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -45,6 +36,7 @@ import platform.test.screenshot.matchers.BitmapMatcher
 import platform.test.screenshot.matchers.MSSIMMatcher
 import platform.test.screenshot.matchers.PixelPerfectMatcher
 import platform.test.screenshot.proto.ScreenshotResultProto
+import platform.test.screenshot.report.DiffResultExportStrategy
 
 /**
  * Rule to be added to a test to facilitate screenshot testing.
@@ -56,16 +48,20 @@ import platform.test.screenshot.proto.ScreenshotResultProto
  * @see Bitmap.assertAgainstGolden
  */
 @SuppressLint("SyntheticAccessor")
-open class ScreenshotTestRule(val goldenImagePathManager: GoldenImagePathManager) :
-    TestRule, BitmapDiffer, ScreenshotAsserterFactory {
-    private val imageExtension = ".png"
-    private val resultBinaryProtoFileSuffix = "goldResult.pb"
-    // This is used in CI to identify the files.
-    private val resultProtoFileSuffix = "goldResult.textproto"
+open class ScreenshotTestRule
+@VisibleForTesting
+internal constructor(
+    val goldenImagePathManager: GoldenImagePathManager,
+    /** Strategy to report diffs to external systems. */
+    private val diffEscrowStrategy: DiffResultExportStrategy
+) : TestRule, BitmapDiffer, ScreenshotAsserterFactory {
 
-    // Magic number for an in-progress status report
-    private val bundleStatusInProgress = 2
-    private val bundleKeyPrefix = "platform_screenshots_"
+    constructor(
+        goldenImagePathManager: GoldenImagePathManager
+    ) : this(
+        goldenImagePathManager,
+        DiffResultExportStrategy.createDefaultStrategy(goldenImagePathManager)
+    )
 
     private lateinit var testIdentifier: String
 
@@ -84,23 +80,6 @@ open class ScreenshotTestRule(val goldenImagePathManager: GoldenImagePathManager
 
     open fun getTestIdentifier(description: Description): String =
         "${description.className}_${description.methodName}"
-
-    private val isRobolectric = Build.FINGERPRINT.contains("robolectric")
-    private fun isGradle(): Boolean =
-        java.lang.System.getProperty("java.class.path").contains("gradle-worker.jar")
-
-    fun Bitmap.writeTo(path: Path) {
-        // Make sure we either create a new file or overwrite an existing one.
-        check(!Files.exists(path) || Files.isRegularFile(path))
-
-        // Make sure the parent directory exists.
-        Files.createDirectories(path.parent)
-
-        // Write the Bitmap to the given file.
-        path.outputStream().use { stream ->
-            this@writeTo.compress(Bitmap.CompressFormat.PNG, 0, stream)
-        }
-    }
 
     private fun fetchExpectedImage(goldenIdentifier: String): Bitmap? {
         val instrument = InstrumentationRegistry.getInstrumentation()
@@ -183,10 +162,10 @@ open class ScreenshotTestRule(val goldenImagePathManager: GoldenImagePathManager
 
         val expected = fetchExpectedImage(goldenIdentifier)
         if (expected == null) {
-            reportResult(
-                status = ScreenshotResultProto.DiffResult.Status.MISSING_REFERENCE,
-                assetsPathRelativeToRepo = goldenImagePathManager.assetsPathRelativeToBuildRoot,
+            diffEscrowStrategy.reportResult(
+                testIdentifier = testIdentifier,
                 goldenIdentifier = goldenIdentifier,
+                status = ScreenshotResultProto.DiffResult.Status.MISSING_REFERENCE,
                 actual = actual
             )
             throw AssertionError(
@@ -197,10 +176,10 @@ open class ScreenshotTestRule(val goldenImagePathManager: GoldenImagePathManager
         }
 
         if (actual.width != expected.width || actual.height != expected.height) {
-            reportResult(
-                status = ScreenshotResultProto.DiffResult.Status.FAILED,
-                assetsPathRelativeToRepo = goldenImagePathManager.assetsPathRelativeToBuildRoot,
+            diffEscrowStrategy.reportResult(
+                testIdentifier = testIdentifier,
                 goldenIdentifier = goldenIdentifier,
+                status = ScreenshotResultProto.DiffResult.Status.FAILED,
                 actual = actual,
                 expected = expected
             )
@@ -228,10 +207,10 @@ open class ScreenshotTestRule(val goldenImagePathManager: GoldenImagePathManager
 
         if (!comparisonResult.matches) {
             val expectedWithHighlight = highlightedBitmap(expected, regions)
-            reportResult(
-                status = status,
-                assetsPathRelativeToRepo = goldenImagePathManager.assetsPathRelativeToBuildRoot,
+            diffEscrowStrategy.reportResult(
+                testIdentifier = testIdentifier,
                 goldenIdentifier = goldenIdentifier,
+                status = status,
                 actual = actual,
                 comparisonStatistics = comparisonResult.comparisonStatistics,
                 expected = expectedWithHighlight,
@@ -256,195 +235,6 @@ open class ScreenshotTestRule(val goldenImagePathManager: GoldenImagePathManager
             .setOnAfterScreenshot(config.afterScreenshot)
             .setScreenshotProvider(config.captureStrategy)
             .build()
-    }
-
-    private fun reportResult(
-        status: ScreenshotResultProto.DiffResult.Status,
-        assetsPathRelativeToRepo: String,
-        goldenIdentifier: String,
-        actual: Bitmap,
-        comparisonStatistics: ScreenshotResultProto.DiffResult.ComparisonStatistics? = null,
-        expected: Bitmap? = null,
-        diff: Bitmap? = null
-    ) {
-        val resultProto =
-            ScreenshotResultProto.DiffResult.newBuilder()
-                .setResultType(status)
-                .addMetadata(
-                    ScreenshotResultProto.Metadata.newBuilder()
-                        .setKey("repoRootPath")
-                        .setValue(goldenImagePathManager.deviceLocalPath)
-                )
-
-        if (comparisonStatistics != null) {
-            resultProto.comparisonStatistics = comparisonStatistics
-        }
-
-        val pathRelativeToAssets = goldenImagePathManager.goldenIdentifierResolver(goldenIdentifier)
-        resultProto.imageLocationGolden = "$assetsPathRelativeToRepo/$pathRelativeToAssets"
-
-        val report = Bundle()
-
-        actual.writeToDevice(OutputFileType.IMAGE_ACTUAL, goldenIdentifier).also {
-            resultProto.imageLocationTest = it.name
-            report.putString(bundleKeyPrefix + OutputFileType.IMAGE_ACTUAL, it.absolutePath)
-        }
-        diff?.run {
-            writeToDevice(OutputFileType.IMAGE_DIFF, goldenIdentifier).also {
-                resultProto.imageLocationDiff = it.name
-                report.putString(bundleKeyPrefix + OutputFileType.IMAGE_DIFF, it.absolutePath)
-            }
-        }
-        expected?.run {
-            writeToDevice(OutputFileType.IMAGE_EXPECTED, goldenIdentifier).also {
-                resultProto.imageLocationReference = it.name
-                report.putString(bundleKeyPrefix + OutputFileType.IMAGE_EXPECTED, it.absolutePath)
-            }
-        }
-
-        writeToDevice(OutputFileType.RESULT_PROTO, goldenIdentifier) {
-                it.write(resultProto.build().toString().toByteArray())
-            }
-            .also {
-                report.putString(bundleKeyPrefix + OutputFileType.RESULT_PROTO, it.absolutePath)
-            }
-
-        writeToDevice(OutputFileType.RESULT_BIN_PROTO, goldenIdentifier) {
-                it.write(resultProto.build().toByteArray())
-            }
-            .also {
-                report.putString(bundleKeyPrefix + OutputFileType.RESULT_BIN_PROTO, it.absolutePath)
-            }
-
-        InstrumentationRegistry.getInstrumentation().sendStatus(bundleStatusInProgress, report)
-
-        if (isGradle() && isRobolectric) {
-            val localDir = Paths.get("/tmp/screenshots")
-            val actualDir = localDir.resolve("actual")
-            val expectedDir = localDir.resolve("expected")
-            val diffDir = localDir.resolve("diff")
-            val reportDir = localDir.resolve("report")
-
-            val imagePath = goldenImagePathManager.goldenIdentifierResolver(goldenIdentifier)
-            val actualImagePath = actualDir.resolve(imagePath)
-            val expectedImagePath = expectedDir.resolve(imagePath)
-            val diffImagePath = diffDir.resolve(imagePath)
-
-            actual.writeTo(actualImagePath)
-            expected?.writeTo(expectedImagePath)
-            diff?.writeTo(diffImagePath)
-
-            check(imagePath.endsWith(imageExtension))
-
-            val reportPath =
-                reportDir.resolve(
-                    imagePath.substring(0, imagePath.length - imageExtension.length) + ".html"
-                )
-
-            println("file://$reportPath")
-            Files.createDirectories(reportPath.parent)
-
-            fun html(bitmap: Bitmap?, image: Path, name: String, alt: String): String {
-                return if (bitmap == null) {
-                    ""
-                } else {
-                    """
-                        <p>
-                            <h2><a href="file://$image">$name</a></h2>
-                            <img src="$image" alt="$alt"/>
-                        </p>
-                    """
-                        .trimIndent()
-                }
-            }
-
-            reportPath.writeText(
-                """
-                    <!DOCTYPE html>
-                    <meta charset="utf-8">
-                    <title>$imagePath</title>
-                    <p><h1>$testIdentifier</h1></p>
-                    ${html(expected, expectedImagePath, "Expected", "Golden")}
-                    ${html(actual, actualImagePath, "Actual", "Actual")}
-                    ${html(diff, diffImagePath, "Diff", "Diff")}
-                """
-                    .trimIndent()
-            )
-        }
-    }
-
-    internal fun getPathOnDeviceFor(fileType: OutputFileType, goldenIdentifier: String): File {
-        val imageSuffix = getOnDeviceImageSuffix(goldenIdentifier)
-        val protoSuffix = getOnDeviceArtifactsSuffix(goldenIdentifier, resultProtoFileSuffix)
-        val binProtoSuffix =
-            getOnDeviceArtifactsSuffix(goldenIdentifier, resultBinaryProtoFileSuffix)
-        val succinctTestIdentifier = getSuccinctTestIdentifier(testIdentifier)
-        val fileName =
-            when (fileType) {
-                OutputFileType.IMAGE_ACTUAL -> "${succinctTestIdentifier}_actual_$imageSuffix"
-                OutputFileType.IMAGE_EXPECTED -> "${succinctTestIdentifier}_expected_$imageSuffix"
-                OutputFileType.IMAGE_DIFF -> "${succinctTestIdentifier}_diff_$imageSuffix"
-                OutputFileType.RESULT_PROTO -> "${succinctTestIdentifier}_$protoSuffix"
-                OutputFileType.RESULT_BIN_PROTO -> "${succinctTestIdentifier}_$binProtoSuffix"
-            }
-        return File(goldenImagePathManager.deviceLocalPath, fileName)
-    }
-
-    open fun getOnDeviceImageSuffix(goldenIdentifier: String): String {
-        val resolvedGoldenIdentifier =
-            goldenImagePathManager
-                .goldenIdentifierResolver(goldenIdentifier)
-                .replace('/', '_')
-                .replace(imageExtension, "")
-        return "$resolvedGoldenIdentifier$imageExtension"
-    }
-
-    open fun getOnDeviceArtifactsSuffix(goldenIdentifier: String, suffix: String): String {
-        val resolvedGoldenIdentifier =
-            goldenImagePathManager
-                .goldenIdentifierResolver(goldenIdentifier)
-                .replace('/', '_')
-                .replace(imageExtension, "")
-        return "${resolvedGoldenIdentifier}_$suffix"
-    }
-
-    open fun getSuccinctTestIdentifier(identifier: String): String {
-        val pattern = Regex("\\[([A-Za-z0-9_]+)\\]")
-        return pattern.replace(identifier, "")
-    }
-
-    private fun Bitmap.writeToDevice(fileType: OutputFileType, goldenIdentifier: String): File {
-        return writeToDevice(fileType, goldenIdentifier) {
-            compress(Bitmap.CompressFormat.PNG, 0 /*ignored for png*/, it)
-        }
-    }
-
-    private fun writeToDevice(
-        fileType: OutputFileType,
-        goldenIdentifier: String,
-        writeAction: (FileOutputStream) -> Unit
-    ): File {
-        val fileGolden = File(goldenImagePathManager.deviceLocalPath)
-        if (!fileGolden.exists() && !fileGolden.mkdirs()) {
-            throw IOException("Could not create folder $fileGolden.")
-        }
-
-        val file = getPathOnDeviceFor(fileType, goldenIdentifier)
-        if (!file.exists()) {
-            // file typically exists when in one test, the same golden image was repeatedly
-            // compared with. In this scenario, multiple actual/expected/diff images with same
-            // names will be attempted to write to the device.
-            try {
-                FileOutputStream(file).use { writeAction(it) }
-            } catch (e: Exception) {
-                throw IOException(
-                    "Could not write file to storage (path: ${file.absolutePath}). ",
-                    e
-                )
-            }
-        }
-
-        return file
     }
 
     /** This will create a new Bitmap with the output (not modifying the [original] Bitmap */
@@ -609,13 +399,4 @@ fun Bitmap.assertAgainstGolden(
         matcher = matcher,
         regions = regions
     )
-}
-
-/** Type of file that can be produced by the [ScreenshotTestRule]. */
-internal enum class OutputFileType {
-    IMAGE_ACTUAL,
-    IMAGE_EXPECTED,
-    IMAGE_DIFF,
-    RESULT_PROTO,
-    RESULT_BIN_PROTO
 }
