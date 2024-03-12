@@ -95,6 +95,36 @@ LOCAL_PREBUILT_MODULE_FILE := prebuilts/tools/linux-x86_64/perfetto/configs/trac
 include $(BUILD_PREBUILT)
 
 include $(CLEAR_VARS)
+LOCAL_MODULE := trace_config_post_boot.textproto
+LOCAL_LICENSE_KINDS := SPDX-license-identifier-Apache-2.0
+LOCAL_LICENSE_CONDITIONS := notice
+LOCAL_MODULE_CLASS := ETC
+LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE_PATH := $(TARGET_OUT_DATA)/local/tmp
+LOCAL_PREBUILT_MODULE_FILE := prebuilts/tools/linux-x86_64/perfetto/configs/trace_config_post_boot.textproto
+include $(BUILD_PREBUILT)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := trace_config_boot_time.textproto
+LOCAL_LICENSE_KINDS := SPDX-license-identifier-Apache-2.0
+LOCAL_LICENSE_CONDITIONS := notice
+LOCAL_MODULE_CLASS := ETC
+LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE_PATH := $(TARGET_OUT_DATA)/local/tmp
+LOCAL_PREBUILT_MODULE_FILE := prebuilts/tools/linux-x86_64/perfetto/configs/trace_config_boot_time.textproto
+include $(BUILD_PREBUILT)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := trace_config_boot_time_stop.textproto
+LOCAL_LICENSE_KINDS := SPDX-license-identifier-Apache-2.0
+LOCAL_LICENSE_CONDITIONS := notice
+LOCAL_MODULE_CLASS := ETC
+LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE_PATH := $(TARGET_OUT_DATA)/local/tmp
+LOCAL_PREBUILT_MODULE_FILE := prebuilts/tools/linux-x86_64/perfetto/configs/trace_config_boot_time_stop.textproto
+include $(BUILD_PREBUILT)
+
+include $(CLEAR_VARS)
 LOCAL_MODULE := perfetto_trace_processor_shell
 LOCAL_LICENSE_KINDS := SPDX-license-identifier-Apache-2.0
 LOCAL_LICENSE_CONDITIONS := notice
