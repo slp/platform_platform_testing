@@ -28,7 +28,7 @@ import org.junit.runner.RunWith
 import platform.test.motion.golden.DataPoint.Companion.notFound
 import platform.test.motion.golden.DataPoint.Companion.nullValue
 import platform.test.motion.golden.DataPoint.Companion.unknownType
-import platform.test.motion.golden.JsonSubject.Companion.json
+import platform.test.motion.testing.JsonSubject.Companion.json
 
 @RunWith(AndroidJUnit4::class)
 class JsonGoldenSerializerTest {

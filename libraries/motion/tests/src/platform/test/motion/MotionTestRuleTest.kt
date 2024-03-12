@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-package platform.test.motion.impl
+package platform.test.motion
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
 import java.io.File
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert.assertThrows
 import org.junit.Test
 import org.junit.runner.RunWith
-import platform.test.motion.golden.JsonSubject.Companion.assertThat
+import platform.test.motion.golden.TimeSeries
 import platform.test.screenshot.GoldenPathManager
 import platform.test.screenshot.PathConfig
 
 @RunWith(AndroidJUnit4::class)
-class GoldenDataManagerTest {
+class MotionTestRuleTest {
 
     private val goldenPathManager =
         GoldenPathManager(
@@ -38,45 +39,51 @@ class GoldenDataManagerTest {
             pathConfig = PathConfig()
         )
 
-    private val subject = GoldenDataManager(goldenPathManager)
+    private val subject = MotionTestRule(goldenPathManager)
 
     @Test
-    fun readGoldenJson_withExistingGolden_returnsParsedJson() {
-        assertThat(subject.readGoldenJson("golden_json_data"))
-            .isEqualTo(JSONObject().apply { put("valid", "json") })
+    fun readGoldenTimeSeries_withExistingGolden_returnsParsedJson() {
+        assertThat(subject.readGoldenTimeSeries("empty_timeseries"))
+            .isEqualTo(TimeSeries(listOf(), emptyList()))
     }
 
     @Test
-    fun readGoldenJson_withUnavailableGolden_throwsGoldenNotFoundException() {
+    fun readGoldenTimeSeries_withUnavailableGolden_throwsGoldenNotFoundException() {
         val exception =
             assertThrows(GoldenNotFoundException::class.java) {
-                subject.readGoldenJson("no_golden")
+                subject.readGoldenTimeSeries("no_golden")
             }
         assertThat(exception.missingGoldenFile).endsWith("no_golden.json")
     }
 
     @Test
-    fun readGoldenJson_withInvalidJsonFile_throwsJSONException() {
-        assertThrows(JSONException::class.java) { subject.readGoldenJson("invalid_json_data") }
+    fun readGoldenTimeSeries_withInvalidJsonFile_throwsJSONException() {
+        assertThrows(JSONException::class.java) {
+            subject.readGoldenTimeSeries("invalid_json_data")
+        }
     }
 
     @Test
-    fun writeGeneratedJson_createsFile() {
-        val sampleJson = JSONObject().apply { put("key", "value") }
-        subject.writeGeneratedJson("updated_golden", sampleJson)
+    fun writeGeneratedTimeSeries_createsFile() {
+        val emptyTimeSeries =
+            JSONObject().apply {
+                put("frame_ids", JSONArray())
+                put("features", JSONArray())
+            }
+        subject.writeGeneratedTimeSeries("updated_golden", TimeSeries(listOf(), emptyList()))
 
         val expectedFile = File(goldenPathManager.deviceLocalPath).resolve("updated_golden.json")
 
         assertThat(expectedFile.exists()).isTrue()
-        assertThat(expectedFile.readText()).isEqualTo(sampleJson.toString(2))
+        assertThat(expectedFile.readText()).isEqualTo(emptyTimeSeries.toString(2))
     }
 
     @Test
-    fun writeGeneratedJson_withInvalidIdentifier_throws() {
+    fun writeGeneratedTimeSeries_withInvalidIdentifier_throws() {
         assertThrows(IllegalArgumentException::class.java) {
-            subject.writeGeneratedJson(
+            subject.writeGeneratedTimeSeries(
                 "invalid identifier!",
-                JSONObject().apply { put("valid", "json") }
+                TimeSeries(listOf(), emptyList())
             )
         }
     }

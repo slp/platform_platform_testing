@@ -33,6 +33,7 @@ android_test {
         // directly once Kotlin tests can access internal declarations.
         ":PlatformMotionTesting-srcs",
     ],
+    resource_dirs: ["res"],
     asset_dirs: ["assets"],
     static_libs: [
         "platform-screenshot-diff-core",
