@@ -38,7 +38,7 @@ import platform.test.screenshot.matchers.BitmapMatcher
 /** A rule for View screenshot diff unit tests. */
 open class ViewScreenshotTestRule(
     private val emulationSpec: DeviceEmulationSpec,
-    pathManager: GoldenImagePathManager,
+    pathManager: GoldenPathManager,
     private val matcher: BitmapMatcher = UnitTestBitmapMatcher,
     private val decorFitsSystemWindows: Boolean = false,
     private val screenshotRule: ScreenshotTestRule = ScreenshotTestRule(pathManager)
