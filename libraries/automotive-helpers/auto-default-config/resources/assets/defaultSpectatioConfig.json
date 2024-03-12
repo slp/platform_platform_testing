@@ -75,9 +75,11 @@
     "OPEN_CAR_UI": "am crash com.android.car"
   },
   "UI_ELEMENTS": {
-
-
-
+    "MAKE_CALL": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "call_button",
+      "PACKAGE": "com.android.car.dialer"
+    },
     "MOBILE_PHONE_ICON": {
       "TYPE": "TEXT",
       "VALUE": "Phone"
@@ -174,7 +176,7 @@
     },
     "DIALING_NUMBER": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "user_profile_phone_number",
+      "VALUE": "user_profile_title",
       "PACKAGE": "com.android.car.dialer"
     },
     "CONTACT_SEARCH_BAR": {
