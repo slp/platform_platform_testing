@@ -49,11 +49,12 @@ class DataPointTypeTest {
 
     @Test
     fun makeDataPoint_ofInstance_createsValueDataPoint() {
-        val dataPoint = subject.makeDataPoint(Native("one"))
+        val nativeValue = Native("one")
+        val dataPoint = subject.makeDataPoint(nativeValue)
 
         assertThat(dataPoint).isInstanceOf(ValueDataPoint::class.java)
         val valueDataPoint = dataPoint as ValueDataPoint
-        assertThat(valueDataPoint.value).isSameInstanceAs(Native("one"))
+        assertThat(valueDataPoint.value).isSameInstanceAs(nativeValue)
         assertThat(valueDataPoint.type).isSameInstanceAs(subject)
     }
 

@@ -56,6 +56,8 @@ sealed interface DataPoint<in T> {
  */
 data class ValueDataPoint<T>(val value: T & Any, val type: DataPointType<T>) : DataPoint<T> {
     override fun asJson() = type.toJson(this.value)
+
+    override fun toString(): String = "$value (${type.typeName})"
 }
 
 /**
@@ -75,6 +77,8 @@ class NullDataPoint<T> private constructor() : DataPoint<T> {
             return jsonValue == JSONObject.NULL
         }
     }
+
+    override fun toString(): String = "null"
 }
 
 /**
@@ -89,11 +93,15 @@ class NotFoundDataPoint<T> private constructor() : DataPoint<T> {
 
     override fun asJson() = JSONObject().apply { put("type", "not_found") }
 
+    override fun toString(): String = "{{not_found}}"
+
     companion object {
         internal val instance = NotFoundDataPoint<Any>()
 
         fun isNotFoundValue(jsonValue: Any): Boolean {
-            return jsonValue is JSONObject && "not_found" == jsonValue.getString("type")
+            return jsonValue is JSONObject &&
+                jsonValue.has("type") &&
+                jsonValue.getString("type") == "not_found"
         }
     }
 }
@@ -103,11 +111,9 @@ class UnknownType<T> private constructor() : DataPoint<T> {
 
     override fun asJson() = throw JSONException("Feature must not contain UnknownDataPoints")
 
-    companion object {
-        fun isUnknownValue(jsonValue: Any): Boolean {
-            return jsonValue is JSONObject && "not_found" == jsonValue.getString("unknown")
-        }
+    override fun toString(): String = "{{unknown_type}}"
 
+    companion object {
         internal val instance = UnknownType<Any>()
     }
 }

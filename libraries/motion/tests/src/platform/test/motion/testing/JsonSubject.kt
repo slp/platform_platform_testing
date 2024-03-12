@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package platform.test.motion.golden
+package platform.test.motion.testing
 
 import com.google.common.truth.FailureMetadata
 import com.google.common.truth.Subject

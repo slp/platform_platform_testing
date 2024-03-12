@@ -87,10 +87,13 @@ platform_tests += \
     SysAppJankTestsWear \
     TouchLatencyJankTestWear \
     trace_config.textproto \
+    trace_config_boot_time.textproto \
+    trace_config_boot_time_stop.textproto \
     trace_config_detailed.textproto \
     trace_config_detailed_heapdump.textproto \
     trace_config_experimental.textproto \
     trace_config_multi_user_cuj_tests.textproto \
+    trace_config_post_boot.textproto \
     UbSystemUiJankTests \
     UbWebViewJankTests \
     UiBench \

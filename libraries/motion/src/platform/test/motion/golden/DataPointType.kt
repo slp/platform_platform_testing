@@ -16,6 +16,8 @@
 
 package platform.test.motion.golden
 
+import org.json.JSONException
+
 /** Golden value type to convert to/from JSON. */
 class DataPointType<T>(
     /** Type identifier written to the JSON, to support de-serialization of the values again. */
@@ -23,7 +25,7 @@ class DataPointType<T>(
     /**
      * Function to convert the [jsonValue] to a native [T].
      *
-     * @throws UnknownTypeException if [jsonValue] cannot be converted to [T].
+     * @throws JSONException if [jsonValue] cannot be converted to [T].
      */
     private val jsonToValue: (jsonValue: Any) -> T,
     private val valueToJson: (T) -> Any
@@ -39,14 +41,18 @@ class DataPointType<T>(
             else ->
                 try {
                     makeDataPoint(jsonToValue(jsonValue))
-                } catch (e: UnknownTypeException) {
+                } catch (e: JSONException) {
                     DataPoint.unknownType()
                 }
         }
     }
 
     fun toJson(value: T): Any = valueToJson(value)
+
+    override fun toString(): String {
+        return typeName
+    }
 }
 
 /** Signals that a JSON value cannot be deserialized by a [DataPointType]. */
-class UnknownTypeException : Exception()
+class UnknownTypeException : JSONException("JSON cannot be converted to DataPoint value")

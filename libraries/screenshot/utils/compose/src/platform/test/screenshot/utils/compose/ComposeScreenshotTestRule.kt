@@ -38,7 +38,7 @@ import org.junit.runners.model.Statement
 import platform.test.screenshot.BitmapDiffer
 import platform.test.screenshot.DeviceEmulationRule
 import platform.test.screenshot.DeviceEmulationSpec
-import platform.test.screenshot.GoldenImagePathManager
+import platform.test.screenshot.GoldenPathManager
 import platform.test.screenshot.MaterialYouColorsRule
 import platform.test.screenshot.ScreenshotActivity
 import platform.test.screenshot.ScreenshotAsserterFactory
@@ -51,7 +51,7 @@ import platform.test.screenshot.dialogScreenshotTest
 /** A rule for Compose screenshot diff tests. */
 class ComposeScreenshotTestRule(
     private val emulationSpec: DeviceEmulationSpec,
-    pathManager: GoldenImagePathManager,
+    pathManager: GoldenPathManager,
     private val screenshotRule: ScreenshotTestRule = ScreenshotTestRule(pathManager)
 ) : TestRule, BitmapDiffer by screenshotRule, ScreenshotAsserterFactory by screenshotRule {
     private val colorsRule = MaterialYouColorsRule()

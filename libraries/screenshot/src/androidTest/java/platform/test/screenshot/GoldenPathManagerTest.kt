@@ -29,35 +29,28 @@ import org.junit.runner.RunWith
 class GoldenPathManagerTest {
 
     @Test
-    fun goldenImageWithContextTest() {
-        val subject = GoldenImagePathManager(InstrumentationRegistry.getInstrumentation().context)
+    fun goldenImageIdentifierResolver_appendsPng() {
+        val subject = GoldenPathManager(InstrumentationRegistry.getInstrumentation().context)
         // Test for resolving device local paths.
-        val localGoldenFullImagePath = subject.goldenIdentifierResolver(testName = "test1")
+        val localGoldenFullImagePath = subject.goldenImageIdentifierResolver(testName = "test1")
         assertThat(localGoldenFullImagePath).endsWith("/test1.png")
         assertThat(localGoldenFullImagePath.split("/").size).isEqualTo(2)
     }
 
     @Test
-    fun goldenPathManager_includesPathConfig() {
+    fun goldenIdentifierResolver_includesPathConfig() {
         val subject =
             GoldenPathManager(
                 InstrumentationRegistry.getInstrumentation().context,
                 pathConfig = PathConfig(PathElementNoContext("something", true) { "mydevice" })
             )
-        val pathSegments = subject.goldenIdentifierResolver(testName = "test1").split("/")
+        val pathSegments =
+            subject.goldenIdentifierResolver(testName = "test1", extension = "png").split("/")
         assertThat(pathSegments).containsExactly("mydevice", "test1.png").inOrder()
     }
 
     @Test
-    fun goldenPathManager_appendsPngExtensionByDefault() {
-        val context = InstrumentationRegistry.getInstrumentation().context
-        val subject = GoldenPathManager(context)
-        val result = subject.goldenIdentifierResolver(testName = "test1")
-        assertThat(result).endsWith("/test1.png")
-    }
-
-    @Test
-    fun goldenPathManager_allowsOverrideFileExtension() {
+    fun goldenIdentifierResolver_allowsOverrideFileExtension() {
         val context = InstrumentationRegistry.getInstrumentation().context
         val subject = GoldenPathManager(context)
         val result = subject.goldenIdentifierResolver(testName = "test1", extension = "proto")
