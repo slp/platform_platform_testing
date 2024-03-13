@@ -116,7 +116,7 @@ YOUTUBE_MUSIC_PACKAGE = 'com.google.android.apps.youtube.music'
 START_YOUTUBE_MEDIA_SHELL = 'am start ' + YOUTUBE_MUSIC_PACKAGE
 STOP_YOUTUBE_MEDIA_SHELL = 'am force-stop ' + YOUTUBE_MUSIC_PACKAGE
 GET_DUMPSYS_METADATA = 'dumpsys media_session'
-SONG_METADATA_PATTERN = r"description=.[^\n]*"
+SONG_METADATA_PATTERN = r"description=.[^\n]+"
 DEFAULT_YOUTUBE_MUSIC_PLAYLIST = 'am start -a android.intent.action.VIEW -d https://music.youtube.com/watch?v=sjuOaAf9C70'
 BLUETOOTH_AUDIO_APP = "Bluetooth Audio"
 YOUTUBE_MUSIC_APP = "YouTube Music"
@@ -127,6 +127,7 @@ FM_FREQUENCY_PATTERN = '^(10[1-7][13579])|(8[789][1357])|(9\\d[1357])$'
 RADIO_FM_RANGE = "FM"
 CONFIRM_RADIO_FREQUENCY = "Enter"
 DEFAULT_FM_FREQUENCY = "1013"
+NULL_VALUE = 'null'
 
 # SMS
 SMS_TEXT = "sms_test"
