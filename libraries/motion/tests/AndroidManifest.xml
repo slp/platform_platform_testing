@@ -30,9 +30,4 @@
         android:name="androidx.test.runner.AndroidJUnitRunner"
         android:label="Android Motion Testing Tests"
         android:targetPackage="platform.test.motion.tests" />
-
-    <uses-sdk
-        android:minSdkVersion="21"
-        android:targetSdkVersion="24" />
-
 </manifest>
