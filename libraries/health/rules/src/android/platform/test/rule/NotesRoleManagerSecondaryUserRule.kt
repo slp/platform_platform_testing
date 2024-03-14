@@ -85,7 +85,7 @@ constructor(
 
                 // Install the required notes taking app on the new user.
                 DeviceHelpers.shell(
-                    "pm install-existing --user $it $requiredNotesRoleHolderPackage"
+                    "pm install-existing --user $it --wait $requiredNotesRoleHolderPackage"
                 )
 
                 // Update the secondary user's notes role holder.

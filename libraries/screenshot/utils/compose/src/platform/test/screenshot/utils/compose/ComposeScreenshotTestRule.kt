@@ -44,7 +44,6 @@ import platform.test.screenshot.ScreenshotActivity
 import platform.test.screenshot.ScreenshotAsserterFactory
 import platform.test.screenshot.ScreenshotTestRule
 import platform.test.screenshot.UnitTestBitmapMatcher
-import platform.test.screenshot.bitmapWithMaterialYouColorsSimulation
 import platform.test.screenshot.captureToBitmapAsync
 import platform.test.screenshot.dialogScreenshotTest
 
@@ -57,19 +56,15 @@ class ComposeScreenshotTestRule(
     private val colorsRule = MaterialYouColorsRule()
     private val deviceEmulationRule = DeviceEmulationRule(emulationSpec)
     val composeRule = createAndroidComposeRule<ScreenshotActivity>()
-    private val isRobolectric = Build.FINGERPRINT.contains("robolectric")
     private val delegateRule =
         RuleChain.outerRule(colorsRule)
             .around(deviceEmulationRule)
             .around(screenshotRule)
             .around(composeRule)
-    private val roboRule =
-        RuleChain.outerRule(deviceEmulationRule).around(screenshotRule).around(composeRule)
     private val matcher = UnitTestBitmapMatcher
 
     override fun apply(base: Statement, description: Description): Statement {
-        val ruleToApply = if (isRobolectric) roboRule else delegateRule
-        return ruleToApply.apply(base, description)
+        return delegateRule.apply(base, description)
     }
 
     /**
@@ -126,17 +121,7 @@ class ComposeScreenshotTestRule(
 
         val view = (viewFinder().fetchSemanticsNode().root as ViewRootForTest).view
         val bitmap = view.captureToBitmapAsync().get(10, TimeUnit.SECONDS)
-        val viewBitmap =
-            if (isRobolectric) {
-                bitmapWithMaterialYouColorsSimulation(
-                    bitmap,
-                    emulationSpec.isDarkTheme,
-                    /* doPixelAveraging= */ false
-                )
-            } else {
-                bitmap
-            }
-        screenshotRule.assertBitmapAgainstGolden(viewBitmap, goldenIdentifier, matcher)
+        screenshotRule.assertBitmapAgainstGolden(bitmap, goldenIdentifier, matcher)
     }
 
     fun dialogScreenshotTest(

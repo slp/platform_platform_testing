@@ -78,7 +78,8 @@ class DeviceEmulationRule(private val spec: DeviceEmulationSpec) : TestRule {
                 runtimeEnvironment.getDeclaredMethod("setQualifiers", String::class.java)
             val scaledWidth = width * 160 / density
             val scaledHeight = height * 160 / density
-            val qualifier = "w${scaledWidth}dp-h${scaledHeight}dp-${density}dpi"
+            val darkMode = if (spec.isDarkTheme) "night" else "notnight"
+            val qualifier = "w${scaledWidth}dp-h${scaledHeight}dp-${darkMode}-${density}dpi"
             setQualifiers.invoke(null, qualifier)
         } else {
             val curNightMode =

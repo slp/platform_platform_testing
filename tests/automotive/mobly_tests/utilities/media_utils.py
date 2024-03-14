@@ -100,12 +100,30 @@ class MediaUtils:
         # get dumpsys
         dumpsys_metadata = self.execute_shell_on_device(constants.GET_DUMPSYS_METADATA).decode(
             'utf8')
+
         # compile regex
         regex_pattern = re.compile(constants.SONG_METADATA_PATTERN)
+
         # match regex
-        actual_song_metadata = regex_pattern.findall(dumpsys_metadata)[0]
+        actual_dumpsys_metadata = regex_pattern.findall(dumpsys_metadata)
+
+        # check if dumpsys_metadata is not empty
+        if len(actual_dumpsys_metadata) < 1:
+            logging.info('dumpsys media_session metadata is empty after matching with RegEx ' +
+                         'pattern <%s>', constants.SONG_METADATA_PATTERN)
+            return constants.NULL_VALUE
+        logging.info('Actual dumpsys media_session on phone device metadata: %s"',
+                     actual_dumpsys_metadata)
+
+        # assign actual_song_metadata after '=' sign in actual_dumpsys_metadata
+        # if 'null' not in actual_dumpsys_metadata and length of String > 1
+        actual_song_metadata = [x.split('=', 1)[1] for x in actual_dumpsys_metadata if
+                                constants.NULL_VALUE not in x and len(x.split('=', 1)) > 1]
         logging.info("Actual song metadata on phone device: %s", actual_song_metadata)
-        parsed_song_metadata = actual_song_metadata.split('=')[1]
+
+        # assign parsed_song_metadata
+        parsed_song_metadata = actual_song_metadata[0] if len(
+            actual_song_metadata) > 0 else constants.NULL_VALUE
         logging.info("Parsed song metadata on phone device: %s", parsed_song_metadata)
         return parsed_song_metadata
 
