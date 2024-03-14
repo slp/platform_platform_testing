@@ -22,6 +22,7 @@ import android.content.Context
 import android.os.Build
 import android.os.UserHandle
 import android.platform.uiautomator_helpers.DeviceHelpers
+import android.util.Log
 import androidx.core.content.getSystemService
 import androidx.test.platform.app.InstrumentationRegistry
 import java.util.concurrent.CompletableFuture
@@ -102,6 +103,11 @@ class NotesRoleUtil(private val context: Context) {
     /** Sets the supplied package as the Notes role holder app. */
     fun setRoleHolder(packageName: String, userHandle: UserHandle = context.user) {
         val currentRoleHolderPackageName = getRoleHolderPackageName()
+        Log.d(
+            TAG,
+            "Trying to set note role to $packageName. Current role holder: " +
+                "$currentRoleHolderPackageName"
+        )
 
         // Return early if current role holder package is the same as supplied package name.
         if (currentRoleHolderPackageName == packageName) {
@@ -112,6 +118,7 @@ class NotesRoleUtil(private val context: Context) {
         // package to the role. RoleManager has an "addRoleHolder" but no setRoleHolder API so we
         // have to clear the current role holder before adding the supplied package as role holder.
         clearRoleHolder(userHandle)
+        Log.d(TAG, "After clear note role")
 
         // If the supplied package name is empty it indicates that we want to select "None" as the
         // new Notes role holder, so return early in this case.
@@ -121,6 +128,7 @@ class NotesRoleUtil(private val context: Context) {
 
         // Add the supplied package name to the Notes role.
         val addRoleHolderFuture = CompletableFuture<Boolean>()
+        Log.d(TAG, "Start setting note holder to $packageName")
         callWithManageRoleHolderPermission {
             roleManager.addRoleHolderAsUser(
                 RoleManager.ROLE_NOTES,
@@ -128,8 +136,10 @@ class NotesRoleUtil(private val context: Context) {
                 /* flags= */ 0,
                 userHandle,
                 context.mainExecutor,
-                addRoleHolderFuture::complete
-            )
+            ) {
+                Log.d(TAG, "Callback for setting note role to $packageName: $it")
+                addRoleHolderFuture.complete(it)
+            }
         }
 
         // Synchronously wait for the role to update.
@@ -138,6 +148,7 @@ class NotesRoleUtil(private val context: Context) {
         ) {
             "Failed to set $packageName as default notes role holder"
         }
+        Log.d(TAG, "After setting note role to $packageName")
     }
 
     /** Calls the supplied callable with the provided permissions using shell identity. */
@@ -162,6 +173,7 @@ class NotesRoleUtil(private val context: Context) {
     }
 
     private companion object {
-        const val ROLE_MANAGER_VERIFICATION_TIMEOUT_IN_SECONDS = 10L
+        const val TAG = "NotesRoleUtil"
+        const val ROLE_MANAGER_VERIFICATION_TIMEOUT_IN_SECONDS = 60L
     }
 }
