@@ -47,7 +47,7 @@ open class FragmentScreenshotTestRule(
     private val commonRule =
         RuleChain.outerRule(deviceEmulationRule).around(screenshotRule).around(activityRule)
     private val deviceRule = RuleChain.outerRule(colorsRule).around(commonRule)
-    private val roboRule = RuleChain.outerRule(timeZoneRule).around(commonRule)
+    private val roboRule = RuleChain.outerRule(colorsRule).around(timeZoneRule).around(commonRule)
     private val isRobolectric = if (Build.FINGERPRINT.contains("robolectric")) true else false
 
     override fun apply(base: Statement, description: Description): Statement {
@@ -99,19 +99,8 @@ open class FragmentScreenshotTestRule(
             beforeScreenshot(activity)
         }
 
-        val originalBitmap = contentView?.captureToBitmapAsync()?.get(10, TimeUnit.SECONDS)
-        if (originalBitmap == null) {
-            error("timeout while trying to capture view to bitmap")
-        }
-        return if (isRobolectric) {
-            bitmapWithMaterialYouColorsSimulation(
-                originalBitmap,
-                emulationSpec.isDarkTheme,
-                /* doPixelAveraging= */ true
-            )
-        } else {
-            originalBitmap
-        }
+        return contentView?.captureToBitmapAsync()?.get(10, TimeUnit.SECONDS)
+            ?: error("timeout while trying to capture view to bitmap")
     }
 
     /**
