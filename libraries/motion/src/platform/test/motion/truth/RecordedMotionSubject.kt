@@ -95,9 +95,15 @@ internal constructor(
             checkNotNull(motionTestRule.bitmapDiffer) {
                 "BitmapDiffer must be supplied to MotionTestRule for filmstrip golden support"
             }
+
+        val filmstrip =
+            checkNotNull(recordedMotion.filmstrip) {
+                "non-null `visualCapture` must be provided to [MotionRecorder.record]"
+            }
+
         val goldenIdentifier = getGoldenIdentifier(recordedMotion, goldenName)
-        val filmstrip = recordedMotion.filmstrip.renderFilmstrip()
-        bitmapDiffer.assertBitmapAgainstGolden(filmstrip, goldenIdentifier, bitmapMatcher)
+        val filmstripBitmap = filmstrip.renderFilmstrip()
+        bitmapDiffer.assertBitmapAgainstGolden(filmstripBitmap, goldenIdentifier, bitmapMatcher)
     }
 
     private fun getGoldenIdentifier(recordedMotion: RecordedMotion, goldenName: String?): String =

@@ -22,12 +22,12 @@ import org.json.JSONObject
 import platform.test.motion.golden.DataPointType
 import platform.test.motion.golden.UnknownTypeException
 
-fun Rect.asDataPoint() = ViewDataPointTypes.rect.makeDataPoint(this)
+fun Rect.asDataPoint() = DataPointTypes.rect.makeDataPoint(this)
 
-fun Point.asDataPoint() = ViewDataPointTypes.point.makeDataPoint(this)
+fun Point.asDataPoint() = DataPointTypes.point.makeDataPoint(this)
 
 /** [DataPointType] implementations for core [View] related types. */
-object ViewDataPointTypes {
+object DataPointTypes {
     val point: DataPointType<Point> =
         DataPointType(
             "point",
@@ -62,5 +62,39 @@ object ViewDataPointTypes {
             }
         )
 
-    val allTypes = listOf(point, rect)
+    /** [GradientDrawable] corner radii */
+    val cornerRadii: DataPointType<CornerRadii> =
+        DataPointType(
+            "cornerRadii",
+            jsonToValue = {
+                with(it as? JSONObject ?: throw UnknownTypeException()) {
+                    CornerRadii(
+                        FloatArray(length()) { index ->
+                            getDouble(cornerRadiiPropertyNames[index]).toFloat()
+                        }
+                    )
+                }
+            },
+            valueToJson = {
+                JSONObject().apply {
+                    for (i in it.rawValues.indices) {
+                        put(cornerRadiiPropertyNames[i], it.rawValues[i])
+                    }
+                }
+            }
+        )
+    // property name
+    private val cornerRadiiPropertyNames =
+        listOf(
+            "top_left_x",
+            "top_left_y",
+            "top_right_x",
+            "top_right_y",
+            "bottom_right_x",
+            "bottom_right_y",
+            "bottom_left_x",
+            "bottom_left_y",
+        )
+
+    val allTypes = listOf(point, rect, cornerRadii)
 }

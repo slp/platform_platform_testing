@@ -29,11 +29,12 @@ import platform.test.motion.golden.DataPoint
 import platform.test.motion.golden.DataPoint.Companion.unknownType
 import platform.test.motion.golden.DataPointType
 import platform.test.motion.testing.JsonSubject
-import platform.test.motion.view.ViewDataPointTypes.point
-import platform.test.motion.view.ViewDataPointTypes.rect
+import platform.test.motion.view.DataPointTypes.cornerRadii
+import platform.test.motion.view.DataPointTypes.point
+import platform.test.motion.view.DataPointTypes.rect
 
 @RunWith(AndroidJUnit4::class)
-class ViewDataPointTypesTest {
+class DataPointTypesTest {
 
     @get:Rule val expect: Expect = Expect.create()
     private fun <T> assertConversions(
@@ -77,5 +78,23 @@ class ViewDataPointTypesTest {
     fun rect_fromInvalidJson_returnsUnknown() {
         assertThat(rect.fromJson(JSONObject())).isEqualTo(unknownType<Rect>())
         assertThat(rect.fromJson(1)).isEqualTo(unknownType<Rect>())
+    }
+
+    @Test
+    fun cornerRadii_fromToJson() {
+        assertConversions(
+            cornerRadii,
+            CornerRadii(FloatArray(8) { (it + 1).toFloat() }),
+            """{
+                "top_left_x": 1,
+                "top_left_y": 2,
+                "top_right_x": 3,
+                "top_right_y": 4,
+                "bottom_right_x": 5,
+                "bottom_right_y": 6,
+                "bottom_left_x": 7,
+                "bottom_left_y": 8
+                }"""
+        )
     }
 }

@@ -18,7 +18,6 @@ package platform.test.motion.view
 
 import android.platform.uiautomator_helpers.DeviceHelpers.context
 import android.view.LayoutInflater
-import android.view.View
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
@@ -29,7 +28,6 @@ import org.junit.runner.RunWith
 import platform.test.motion.Sampling.Companion.evenlySampled
 import platform.test.motion.testing.SampleScene
 import platform.test.motion.tests.R
-import platform.test.motion.view.ViewMotionTestRuleTest.Companion.emulationSpec
 import platform.test.screenshot.DeviceEmulationRule
 import platform.test.screenshot.DeviceEmulationSpec
 import platform.test.screenshot.DisplaySpec
@@ -62,10 +60,27 @@ class ViewMotionTestRuleTest {
 
         val recordedMotion =
             motionRule.checkThat(animator).record(sceneRoot, evenlySampled(10)) {
-                onViewWithId<View>(R.id.test_box).apply { capture(ViewFeatureCaptures.x, "box_x") }
+                onViewWithId(R.id.test_box) { capture(ViewFeatureCaptures.x, "box_x") }
             }
 
-        motionRule.assertThat(recordedMotion).timeSeriesMatchesGolden()
+        motionRule.assertThat(recordedMotion).timeSeriesMatchesGolden("timeseries_simple_scene_box")
+    }
+
+    @Test
+    fun record_timeseries_noVisualCapture() {
+        val sceneRoot = createSampleScene()
+        val animator = sceneRoot.createSlideLeftAnimator()
+
+        val recordedMotion =
+            motionRule.checkThat(animator).record(
+                sceneRoot,
+                evenlySampled(10),
+                visualCapture = null
+            ) {
+                onViewWithId(R.id.test_box) { capture(ViewFeatureCaptures.x, "box_x") }
+            }
+
+        motionRule.assertThat(recordedMotion).timeSeriesMatchesGolden("timeseries_simple_scene_box")
     }
 
     @Test
@@ -75,7 +90,7 @@ class ViewMotionTestRuleTest {
 
         val recordedMotion =
             motionRule.checkThat(animator).record(sceneRoot, evenlySampled(10)) {
-                onViewWithId<View>(R.id.test_box).apply { capture(ViewFeatureCaptures.x, "box_x") }
+                onViewWithId(R.id.test_box) { capture(ViewFeatureCaptures.x, "box_x") }
             }
 
         motionRule.assertThat(recordedMotion).filmstripMatchesGolden()
