@@ -61,21 +61,9 @@ open class ViewScreenshotTestRule(
     protected fun takeScreenshot(
         mode: Mode = Mode.WrapContent,
         viewProvider: (ComponentActivity) -> View,
-        /**
-         * Don't set it true unless you have to control MainLooper for the view creation.
-         *
-         * TODO(b/314985107) : remove when looper dependency is removed
-         */
-        inflateViewsInTestScope: Boolean = false,
         beforeScreenshot: (ComponentActivity) -> Unit = {}
     ): Bitmap {
         var inflatedView: View? = null
-
-        if (inflateViewsInTestScope) {
-            lateinit var componentActivity: ComponentActivity
-            activityRule.scenario.onActivity { activity -> componentActivity = activity }
-            inflatedView = viewProvider(componentActivity)
-        }
 
         activityRule.scenario.onActivity { activity ->
             // Make sure that the activity draws full screen and fits the whole display instead of
@@ -84,13 +72,7 @@ open class ViewScreenshotTestRule(
             window.setDecorFitsSystemWindows(decorFitsSystemWindows)
 
             // Set the content.
-            if (inflateViewsInTestScope) {
-                checkNotNull(inflatedView) {
-                    "The inflated view shouldn't be null when inflateViewsInTestScope is enabled"
-                }
-            } else {
-                inflatedView = viewProvider(activity)
-            }
+            inflatedView = viewProvider(activity)
             activity.setContentView(inflatedView, mode.layoutParams)
 
             // Elevation/shadows is not deterministic when doing hardware rendering, so we disable
@@ -122,16 +104,10 @@ open class ViewScreenshotTestRule(
     fun screenshotTest(
         goldenIdentifier: String,
         mode: Mode = Mode.WrapContent,
-        /**
-         * Don't set it true unless you have to control MainLooper for the view creation.
-         *
-         * TODO(b/314985107) : remove when looper dependency is removed
-         */
-        inflateViewInTestScope: Boolean = false,
         beforeScreenshot: (ComponentActivity) -> Unit = {},
         viewProvider: (ComponentActivity) -> View,
     ) {
-        val bitmap = takeScreenshot(mode, viewProvider, inflateViewInTestScope, beforeScreenshot)
+        val bitmap = takeScreenshot(mode, viewProvider, beforeScreenshot)
         screenshotRule.assertBitmapAgainstGolden(
             bitmap,
             goldenIdentifier,
