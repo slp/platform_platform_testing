@@ -2,6 +2,7 @@ package android.platform.test.rule
 
 import android.platform.test.rule.Orientation.LANDSCAPE
 import android.platform.test.rule.Orientation.PORTRAIT
+import org.junit.AssumptionViolatedException
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -35,6 +36,12 @@ class PortraitLandscapeRule(
         RotationUtils.setOrientationOverride(orientation)
         try {
             evaluate()
+        } catch (e: AssumptionViolatedException) {
+            /**
+             * Pass [AssumptionViolatedException] through so that testing infra can properly ignore
+             * the failure. See b/330200243
+             */
+            throw e
         } catch (e: Throwable) {
             throw Exception("Test failed while in $orientation", e)
         }
