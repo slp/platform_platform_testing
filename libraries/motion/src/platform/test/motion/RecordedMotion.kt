@@ -21,19 +21,28 @@ import platform.test.motion.filmstrip.Filmstrip
 import platform.test.motion.filmstrip.MotionScreenshot
 import platform.test.motion.golden.TimeSeries
 
-/** The motion recorded while an animation is playing. */
+/**
+ * The motion recorded while an animation is playing.
+ *
+ * @param timeSeries recorded time series.
+ * @param screenshots screenshot of the animation per `frameId` in [timeSeries].
+ * @see MotionRecorder
+ */
 class RecordedMotion(
     internal val testClassName: String,
     internal val testMethodName: String,
-    /** Recorded time series. */
     val timeSeries: TimeSeries,
-    screenshots: List<Bitmap>,
+    screenshots: List<Bitmap>?,
 ) {
-    /** The filmstrip used for debugging. */
-    val filmstrip =
-        Filmstrip(
-            timeSeries.frameIds.zip(screenshots) { frameId, bitmap ->
-                MotionScreenshot(frameId, bitmap)
-            }
-        )
+    /**
+     * Visual filmstrip of the animation.
+     *
+     * Only available when a `visualCapture` was passed to [MotionRecorder.record].
+     */
+    val filmstrip: Filmstrip? =
+        screenshots?.let {
+            Filmstrip(
+                timeSeries.frameIds.zip(it) { frameId, bitmap -> MotionScreenshot(frameId, bitmap) }
+            )
+        }
 }

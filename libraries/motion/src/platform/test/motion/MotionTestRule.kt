@@ -135,6 +135,9 @@ open class MotionTestRule(
         goldenIdentifier: String,
         matches: Boolean
     ) {
+        if (recordedMotion.filmstrip == null) {
+            return
+        }
         requireValidGoldenIdentifier(goldenIdentifier)
         val filmstrip = recordedMotion.filmstrip.renderFilmstrip()
         val testIdentifier = "${recordedMotion.testClassName}_${recordedMotion.testMethodName}"

@@ -19,27 +19,14 @@ package platform.test.motion.view
 import android.graphics.Point
 import android.view.View
 import platform.test.motion.FeatureCapture
+import platform.test.motion.TimeSeriesCaptureScope
 import platform.test.motion.golden.asDataPoint
 
-/** A scope to allow recording properties on the view hierarchy. */
-interface ViewFeatureCaptureScope<T : View> {
-
-    /** Returns a [ViewFeatureCaptureScope] for the child view with the specified ID. */
-    fun <U : View> onViewWithId(viewId: Int): ViewFeatureCaptureScope<U>
-
-    /** Returns a [ViewFeatureCaptureScope] for the view . */
-    fun <U : View> onView(resolveView: (T) -> U?): ViewFeatureCaptureScope<U>
-
-    /**
-     * Records a property from this scope, extracted by [viewCapture] and stored in the golden as
-     * [name].
-     *
-     * Note that the [name] must be unique within a golden frame. If the view in this scope cannot
-     * be resolved during an animation frame, `ViewNotFound.VIEW_NOT_FOUND` is recorded in the
-     * golden.
-     */
-    fun capture(viewCapture: FeatureCapture<in T, *>, name: String)
-}
+/** Returns a [TimeSeriesCaptureScope] for the child view with the specified ID. */
+fun <U : View> TimeSeriesCaptureScope<out View>.onViewWithId(
+    viewId: Int,
+    nestedTimeSeriesCapture: TimeSeriesCaptureScope<U>.() -> Unit
+) = on({ it.findViewById(viewId) }, nestedTimeSeriesCapture)
 
 /** Common, generic [FeatureCapture] implementations for Views. */
 object ViewFeatureCaptures {
