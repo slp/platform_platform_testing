@@ -130,7 +130,9 @@ class NearbyShareStressTest(nc_base_test.NCBaseTestClass):
         self.advertiser.nearby,
         self.discoverer.nearby,
         advertising_discovery_medium=advertising_discovery_medium,
-        connection_medium=nc_constants.NearbyMedium.BT_ONLY,
+        connection_medium=nc_constants.NearbyMedium(
+            self.test_parameters.connection_medium
+        ),
         upgrade_medium=nc_constants.NearbyMedium(
             self.test_parameters.upgrade_medium
         ),

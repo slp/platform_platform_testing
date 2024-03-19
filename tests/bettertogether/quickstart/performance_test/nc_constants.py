@@ -99,6 +99,7 @@ class TestParameters:
   )
   payload_type: PayloadType = PayloadType.FILE
   advertising_discovery_medium: int = NearbyMedium.BLE_ONLY
+  connection_medium: int = NearbyMedium.BT_ONLY
   upgrade_medium: int = NearbyMedium.UPGRADE_TO_ALL_WIFI
   allow_unrooted_device: bool = False
   keep_alive_timeout_ms: int = KEEP_ALIVE_TIMEOUT_WIFI_MS

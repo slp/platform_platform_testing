@@ -2,6 +2,7 @@ x-test-params: &test-params
   wifi_country_code: "US"
   wifi_ssid: ""
   wifi_password: ""
+  connection_medium: 1 # BT_ONLY = 1, BLE_ONLY = 2, BLE_L2CAP_ONLY = 8
   upgrade_medium: 7 # WIFIAWARE_ONLY = 4, UPGRADE_TO_ALL_WIFI = 9, MEDIUM_UPGRADE_TO_WIFIDIRECT= 7
   allow_unrooted_device: True
 
