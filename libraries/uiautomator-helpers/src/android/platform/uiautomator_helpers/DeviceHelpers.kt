@@ -248,7 +248,10 @@ object DeviceHelpers {
             errorProvider = errorProvider
         )
     }
+
     /** Asserts that a this selector is invisible. Throws otherwise. */
+    @JvmStatic
+    @JvmOverloads
     fun BySelector.assertInvisible(
         timeout: Duration = LONG_WAIT,
         errorProvider: (() -> String)? = null
@@ -337,8 +340,8 @@ object DeviceHelpers {
     ) {
         trace("Swiping ($startX,$startY) -> ($endX,$endY)") {
             BetterSwipe.from(PointF(startX.toFloat(), startY.toFloat()))
-                .to(PointF(endX.toFloat(), endY.toFloat()), interpolator = interpolator)
-                .release()
+                    .to(PointF(endX.toFloat(), endY.toFloat()), interpolator = interpolator)
+                    .release()
         }
     }
 
