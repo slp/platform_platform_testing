@@ -33,7 +33,6 @@ import platform.test.motion.Sampling
 import platform.test.motion.TimeSeriesCaptureScope
 import platform.test.motion.golden.DataPoint
 import platform.test.motion.golden.DataPointType
-import platform.test.motion.golden.DataPointTypes
 import platform.test.motion.golden.Feature
 import platform.test.motion.golden.FrameId
 import platform.test.motion.golden.SupplementalFrameId
@@ -58,7 +57,7 @@ class ViewMotionTestRule<A : Activity>(
 ) :
     MotionTestRule(
         goldenPathManager,
-        defaultGoldenDataPointTypes + extraGoldenDataPointTypes,
+        defaultViewGoldenDataPointTypes + extraGoldenDataPointTypes,
         bitmapDiffer
     ) {
 
@@ -137,7 +136,7 @@ class ViewMotionTestRule<A : Activity>(
     }
 
     companion object {
-        val defaultGoldenDataPointTypes = DataPointTypes.allTypes + DataPointTypes.allTypes
+        val defaultViewGoldenDataPointTypes = DataPointTypes.allTypes
     }
 }
 
