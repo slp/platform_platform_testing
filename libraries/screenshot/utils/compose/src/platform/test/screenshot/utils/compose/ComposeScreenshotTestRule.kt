@@ -40,6 +40,7 @@ import platform.test.screenshot.DeviceEmulationRule
 import platform.test.screenshot.DeviceEmulationSpec
 import platform.test.screenshot.GoldenPathManager
 import platform.test.screenshot.MaterialYouColorsRule
+import platform.test.screenshot.MaterialYouColorsAndFontsRule
 import platform.test.screenshot.ScreenshotActivity
 import platform.test.screenshot.ScreenshotAsserterFactory
 import platform.test.screenshot.ScreenshotTestRule
@@ -54,6 +55,7 @@ class ComposeScreenshotTestRule(
     private val screenshotRule: ScreenshotTestRule = ScreenshotTestRule(pathManager)
 ) : TestRule, BitmapDiffer by screenshotRule, ScreenshotAsserterFactory by screenshotRule {
     private val colorsRule = MaterialYouColorsRule()
+    private val fontsRule = MaterialYouColorsAndFontsRule()
     private val deviceEmulationRule = DeviceEmulationRule(emulationSpec)
     val composeRule = createAndroidComposeRule<ScreenshotActivity>()
     private val delegateRule =
@@ -61,10 +63,13 @@ class ComposeScreenshotTestRule(
             .around(deviceEmulationRule)
             .around(screenshotRule)
             .around(composeRule)
+    private val roboRule = RuleChain.outerRule(fontsRule).around(delegateRule)
     private val matcher = UnitTestBitmapMatcher
+    private val isRobolectric = Build.FINGERPRINT.contains("robolectric")
 
     override fun apply(base: Statement, description: Description): Statement {
-        return delegateRule.apply(base, description)
+        val ruleToApply = if (isRobolectric) roboRule else delegateRule
+        return ruleToApply.apply(base, description)
     }
 
     /**
