@@ -96,6 +96,7 @@ platform_tests += \
     trace_config_experimental.textproto \
     trace_config_multi_user_cuj_tests.textproto \
     trace_config_post_boot.textproto \
+    trace_config_power.textproto \
     UbSystemUiJankTests \
     UbWebViewJankTests \
     UiBench \
