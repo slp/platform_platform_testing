@@ -41,7 +41,8 @@ object DataPointTypes {
                     put("x", it.x)
                     put("y", it.y)
                 }
-            }
+            },
+            ensureImmutable = { Point(it) }
         )
 
     val rect: DataPointType<Rect> =
@@ -59,7 +60,8 @@ object DataPointTypes {
                     put("right", it.right)
                     put("bottom", it.bottom)
                 }
-            }
+            },
+            ensureImmutable = { Rect(it) }
         )
 
     /** [GradientDrawable] corner radii */
@@ -83,7 +85,7 @@ object DataPointTypes {
                 }
             }
         )
-    // property name
+    // property names match order of val
     private val cornerRadiiPropertyNames =
         listOf(
             "top_left_x",

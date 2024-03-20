@@ -42,7 +42,8 @@ object DrawableFeatureCaptures {
  * TODO(b/322324387): This is temporary until figuring out how to best implement custom equality
  *   checks.
  */
-class CornerRadii(val rawValues: FloatArray) {
+class CornerRadii(rawValues: FloatArray) {
+    val rawValues = rawValues.clone()
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
 

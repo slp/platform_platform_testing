@@ -15,9 +15,15 @@
  */
 package android.platform.test.rule;
 
+import android.app.UiAutomation;
+import android.os.ParcelFileDescriptor;
+
 import androidx.annotation.VisibleForTesting;
+import androidx.test.InstrumentationRegistry;
 
 import org.junit.runner.Description;
+
+import java.io.IOException;
 
 /** This rule will start dittobench using the provided config. */
 public class DittoBenchRule extends TestWatcher {
@@ -25,13 +31,17 @@ public class DittoBenchRule extends TestWatcher {
     @VisibleForTesting static final String DITTO_CONFIG_PATH = "ditto-config-path";
     String mDittoBenchPath = "/data/local/tmp/dittobench";
     String mDittoConfigPath = "/data/local/tmp/config.ditto";
+    ParcelFileDescriptor mOutputFd;
 
     @Override
     protected void starting(Description description) {
         mDittoBenchPath = getArguments().getString(DITTOBENCH_PATH, "/data/local/tmp/dittobench");
         mDittoConfigPath =
                 getArguments().getString(DITTO_CONFIG_PATH, "/data/local/tmp/config.ditto");
-        executeShellCommand(mDittoBenchPath + " " + mDittoConfigPath);
+        String cmd = mDittoBenchPath + " " + mDittoConfigPath + " --log=logcat &";
+        UiAutomation uiAutomation = InstrumentationRegistry.getInstrumentation().getUiAutomation();
+        uiAutomation.adoptShellPermissionIdentity();
+        mOutputFd = uiAutomation.executeShellCommand(cmd);
     }
 
     @Override
@@ -41,6 +51,11 @@ public class DittoBenchRule extends TestWatcher {
         if (splitPath != null && splitPath.length != 0) {
             String dittoBinaryName = splitPath[splitPath.length - 1];
             executeShellCommand("pkill " + dittoBinaryName);
+        }
+        try {
+            mOutputFd.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
