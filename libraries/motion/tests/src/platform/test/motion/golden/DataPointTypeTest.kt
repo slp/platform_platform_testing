@@ -31,14 +31,15 @@ class DataPointTypeTest {
     private val subject =
         DataPointType(
             "native",
-            { jsonValue ->
+            jsonToValue = { jsonValue ->
                 jsonToValueInvocations++
                 if (jsonValue is String) Native(jsonValue) else throw UnknownTypeException()
+            },
+            valueToJson = {
+                valueToJsonInvocations++
+                it.id
             }
-        ) {
-            valueToJsonInvocations++
-            it.id
-        }
+        )
     private var jsonToValueInvocations = 0
     private var valueToJsonInvocations = 0
 

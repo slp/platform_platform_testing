@@ -18,17 +18,20 @@ package platform.test.motion.golden
 
 import org.json.JSONException
 
-/** Golden value type to convert to/from JSON. */
+/**
+ * Golden value type to convert to/from JSON.
+ *
+ * @param typeName identifier written to the JSON, to support de-serialization of the values.
+ * @param jsonToValue convert the [jsonValue] to a native [T], throws [JSONException] if conversion
+ *   fails.
+ * @param valueToJson converts the native [T] to a `org.json` supported type.
+ * @param ensureImmutable copies mutable objects, to avoid subsequent modification.
+ */
 class DataPointType<T>(
-    /** Type identifier written to the JSON, to support de-serialization of the values again. */
     val typeName: String,
-    /**
-     * Function to convert the [jsonValue] to a native [T].
-     *
-     * @throws JSONException if [jsonValue] cannot be converted to [T].
-     */
     private val jsonToValue: (jsonValue: Any) -> T,
-    private val valueToJson: (T) -> Any
+    private val valueToJson: (T) -> Any,
+    internal val ensureImmutable: (T & Any) -> T & Any = { it },
 ) {
     fun makeDataPoint(nativeValue: T?): DataPoint<T> {
         return DataPoint.of(nativeValue, this)
