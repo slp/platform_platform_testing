@@ -33,7 +33,11 @@ sealed interface DataPoint<in T> {
 
     companion object {
         fun <T> of(value: T?, type: DataPointType<T>): DataPoint<T> {
-            return if (value != null) ValueDataPoint(value, type) else nullValue()
+            return if (value != null) {
+                ValueDataPoint(type.ensureImmutable(value), type)
+            } else {
+                nullValue()
+            }
         }
 
         fun <T> notFound(): DataPoint<T> {
@@ -54,7 +58,8 @@ sealed interface DataPoint<in T> {
  *
  * @see DataPoint.of
  */
-data class ValueDataPoint<T>(val value: T & Any, val type: DataPointType<T>) : DataPoint<T> {
+data class ValueDataPoint<T> internal constructor(val value: T & Any, val type: DataPointType<T>) :
+    DataPoint<T> {
     override fun asJson() = type.toJson(this.value)
 
     override fun toString(): String = "$value (${type.typeName})"
