@@ -98,7 +98,7 @@ class MaterialYouColors(
  * Some green/blue colors, from system_neutral1_0 to system_accent3_1000, extracted using 0xB1EBFF
  * as seed color and "FRUIT_SALAD" as theme style.
  */
-private val GREEN_BLUE =
+internal val GREEN_BLUE =
     intArrayOf(
         -1,
         -393729,
