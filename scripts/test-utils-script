@@ -50,16 +50,21 @@ checkJavaVersion() {
       >&2 echo "Java command: $java_cmd"
       >&2 echo "PATH value:"
       >&2 echo "$PATH"
-      exit 8
+      if [ "${IGNORE_JAVA_VERSION_ERROR}" == "y" ]; then
+          >&2 echo "Ignoring the wrong java version error as \$IGNORE_JAVA_VERSION_ERROR is set to 'y'"
+      else
+          >&2 echo "If you want to ignore this error, set \$IGNORE_JAVA_VERSION_ERROR to 'y'"
+          exit 8
+      fi
   fi
 }
 
 getAddOpensFlag() {
-  # check if java is above 9 and supports add-opens
   local java_cmd=$1
   local java_version_string=$(${java_cmd} -version 2>&1 | grep -E "\<version\>")
-  local JAVA_VERSION=$(echo "$java_version_string" | grep -E 'version [ "](9|11|17|21).*[ "]')
-  if [ "${JAVA_VERSION}" != "" ]; then
+  # java versions below 1.8 are not supported, java versions above 1.8 need add-opens
+  local JAVA_VERSION=$(echo "$java_version_string" | grep -E 'version [ "]1\.8.*[ "]')
+  if [ "${JAVA_VERSION}" == "" ]; then
       echo "--add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/sun.reflect.annotation=ALL-UNNAMED"
   fi
 }
