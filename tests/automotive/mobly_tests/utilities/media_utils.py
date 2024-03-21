@@ -158,7 +158,7 @@ class MediaUtils:
     # Open Media app on HU
     def open_media_app_on_hu(self):
         logging.info("Open Media app on HU")
-        self.discoverer.mbs.openMediaApp()
+        self.discoverer.mbs.openBluetoothMediaApp()
 
     # Pause Media app on HU
     def pause_media_on_hu(self):
