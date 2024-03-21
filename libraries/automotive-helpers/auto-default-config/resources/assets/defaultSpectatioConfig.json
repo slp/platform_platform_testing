@@ -1331,6 +1331,10 @@
       "TYPE": "TEXT",
       "VALUE": "Sign in on car screen"
     },
+    "ACCOUNT_SETTINGS_TRY_ANOTHER_WAY": {
+      "TYPE": "TEXT_CONTAINS",
+      "VALUE": "Try another way"
+    },
     "ACCOUNT_SETTINGS_REMOVE_BUTTON": {
       "TYPE": "RESOURCE_ID",
       "VALUE": "car_ui_secondary_action"

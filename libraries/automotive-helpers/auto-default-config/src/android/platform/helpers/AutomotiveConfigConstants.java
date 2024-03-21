@@ -315,6 +315,8 @@ public class AutomotiveConfigConstants {
     public static final String TRACK_NAME = "TRACK_NAME";
     public static final String TRACK_NAME_MINIMIZED_CONTROL = "TRACK_NAME_MINIMIZED_CONTROL";
     public static final String BACK_BUTTON = "BACK_BUTTON";
+    public static final String ACCOUNT_SETTINGS_TRY_ANOTHER_WAY =
+            "ACCOUNT_SETTINGS_TRY_ANOTHER_WAY";
     // Media Center On Home Screen
     public static final String PLAY_PAUSE_BUTTON_HOME_SCREEN = "PLAY_PAUSE_BUTTON_HOME_SCREEN";
     public static final String PREVIOUS_BUTTON_HOME_SCREEN = "PREVIOUS_BUTTON_HOME_SCREEN";
