@@ -37,14 +37,11 @@ private const val PLACEHOLDER_GOOGLE_SANS_TEXT = "plh-go-sans-text"
 private const val FONT_GOOGLE_SANS = "google-sans"
 private const val FONT_GOOGLE_SANS_TEXT = "google-sans-text"
 
-/**
- * Creates and applies a resources provider for Material You Colors and Google fonts to a context.
- */
-fun createAndApplyResourcesProvider(context: Context, colorMapping: SparseIntArray) {
+/** Creates and applies a resources provider for Google fonts to a context. */
+fun createAndApplyResourcesProvider(context: Context) {
     try {
         val arscPath = System.getProperty("arsc.file.path")
-        val oldContents =
-            compiledResourcesContentForMaterialYouColors(context, arscPath, colorMapping)
+        val oldContents = File(arscPath).readBytes()
         val contentBytes = compiledResourcesContentForGoogleFonts(oldContents)
         if (contentBytes == null) {
             return
@@ -52,7 +49,7 @@ fun createAndApplyResourcesProvider(context: Context, colorMapping: SparseIntArr
 
         var arscFile: FileDescriptor? = null
         try {
-            arscFile = Os.memfd_create("color_and_font_resources.arsc", /* flags= */ 0)
+            arscFile = Os.memfd_create("font_resources.arsc", /* flags= */ 0)
             // Note: This must not be closed through the OutputStream.
             val pipeWriter = FileOutputStream(arscFile)
             pipeWriter.write(contentBytes);
@@ -68,37 +65,8 @@ fun createAndApplyResourcesProvider(context: Context, colorMapping: SparseIntArr
             }
         }
     } catch (ex: Exception) {
-        println("Failed to setup the context for theme colors: ${ex}")
+        println("Failed to setup the context for fonts: ${ex}")
     }
-}
-
-/** Creates the compiled resources content manipulated for Material You Colors. */
-private fun compiledResourcesContentForMaterialYouColors(
-    context: Context, arscPath: String, colorResources: SparseIntArray): ByteArray? {
-    val content = File(arscPath).readBytes()
-    if (content == null) {
-        return null
-    }
-
-    val valuesOffset: Int =
-        content.size - (LAST_RESOURCE_COLOR_ID and 0xffff) * ARSC_ENTRY_SIZE - 4
-    if (valuesOffset < 0) {
-        println("ARSC file for theme colors is invalid.")
-        return null
-    }
-
-    for (colorRes in FIRST_RESOURCE_COLOR_ID..LAST_RESOURCE_COLOR_ID) {
-        // The last 2 bytes are the index in the color array.
-        val index = colorRes and 0xffff
-        val offset = valuesOffset + index * ARSC_ENTRY_SIZE
-        var value = colorResources.get(colorRes, context.getColor(colorRes))
-        // Write the 32 bit integer in little endian
-        for (b in 0..3) {
-            content[offset + b] = (value and 0xff).toByte()
-            value = (value shr 8)
-        }
-    }
-    return content
 }
 
 /** Manipulates the compiled resources content manipulated for Google fonts. */
