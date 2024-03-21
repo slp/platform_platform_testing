@@ -26,19 +26,18 @@ import org.junit.runner.Description
 import org.junit.runners.model.Statement
 
 /**
- * A rule to overload the target context system colors by [colors], and to apply desired fonts.
+ * A rule to apply desired fonts.
  *
- * This is especially useful to apply the colors before you start an activity using an
- * [ActivityScenarioRule] or any other rule, given that the colors must be [applied]
- * [MaterialYouColors.apply] *before* doing any resource resolution.
+ * This is especially useful to apply the fonts before you start an activity using an
+ * [ActivityScenarioRule] or any other rule. The only exception is [MaterialYouColorsRule]: their
+ * orders are not critical.
  */
-class MaterialYouColorsAndFontsRule(private val colors: MaterialYouColors = MaterialYouColors.GreenBlue) :
-    TestRule {
+class FontsRule() : TestRule {
     override fun apply(base: Statement, description: Description): Statement {
         return object : Statement() {
             override fun evaluate() {
                 createAndApplyResourcesProvider(
-                    InstrumentationRegistry.getInstrumentation().targetContext, colors.colors)
+                    InstrumentationRegistry.getInstrumentation().targetContext)
                 base.evaluate()
             }
         }

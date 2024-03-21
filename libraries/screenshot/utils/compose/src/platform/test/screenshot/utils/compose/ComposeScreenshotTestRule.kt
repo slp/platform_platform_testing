@@ -40,7 +40,7 @@ import platform.test.screenshot.DeviceEmulationRule
 import platform.test.screenshot.DeviceEmulationSpec
 import platform.test.screenshot.GoldenPathManager
 import platform.test.screenshot.MaterialYouColorsRule
-import platform.test.screenshot.MaterialYouColorsAndFontsRule
+import platform.test.screenshot.FontsRule
 import platform.test.screenshot.ScreenshotActivity
 import platform.test.screenshot.ScreenshotAsserterFactory
 import platform.test.screenshot.ScreenshotTestRule
@@ -55,9 +55,12 @@ class ComposeScreenshotTestRule(
     private val screenshotRule: ScreenshotTestRule = ScreenshotTestRule(pathManager)
 ) : TestRule, BitmapDiffer by screenshotRule, ScreenshotAsserterFactory by screenshotRule {
     private val colorsRule = MaterialYouColorsRule()
-    private val fontsRule = MaterialYouColorsAndFontsRule()
+    private val fontsRule = FontsRule()
     private val deviceEmulationRule = DeviceEmulationRule(emulationSpec)
     val composeRule = createAndroidComposeRule<ScreenshotActivity>()
+
+    // As denoted in `MaterialYouColorsRule` and `FontsRule`, these two rules need to come first,
+    // though their relative orders are not critical.
     private val delegateRule =
         RuleChain.outerRule(colorsRule)
             .around(deviceEmulationRule)
