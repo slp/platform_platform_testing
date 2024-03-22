@@ -176,10 +176,17 @@ class ScreenshotTestRuleTest {
     @Test
     fun performDiff_differentSizes() {
         val first = loadBitmap("fullscreen_rect_gray")
-
         val goldenIdentifier = "round_rect_gray"
+        val compStatistics =
+            DiffResult.ComparisonStatistics.newBuilder()
+                .setNumberPixelsCompared(2304)
+                .setNumberPixelsDifferent(568)
+                .setNumberPixelsIdentical(1736)
+                .build()
 
-        expectErrorMessage("Sizes are different! Expected: [48, 48], Actual: [720, 1184]") {
+        expectErrorMessage(
+            "Sizes are different! Expected: [48, 48], Actual: [720, 1184]. Force aligned "
+                + "at (0, 0). Comparison stats: '${compStatistics}'") {
             first.assertAgainstGolden(rule, goldenIdentifier)
         }
 
@@ -189,7 +196,8 @@ class ScreenshotTestRuleTest {
                     goldenIdentifier,
                     DiffResult.Status.FAILED,
                     hasExpected = true,
-                    hasDiff = false
+                    hasDiff = true,
+                    comparisonStatistics = compStatistics
                 )
             )
     }

@@ -173,16 +173,34 @@ internal constructor(
         }
 
         if (actual.width != expected.width || actual.height != expected.height) {
+            val comparisonResult =
+                matcher.compareBitmaps(
+                    expected = expected.toIntArray(),
+                    given = actual.toIntArray(),
+                    expectedWidth = expected.width,
+                    expectedHeight = expected.height,
+                    actualWidth = actual.width,
+                    actualHeight = actual.height
+                )
             diffEscrowStrategy.reportResult(
                 testIdentifier = testIdentifier,
                 goldenIdentifier = goldenIdentifier,
                 status = ScreenshotResultProto.DiffResult.Status.FAILED,
                 actual = actual,
-                expected = expected
+                comparisonStatistics = comparisonResult.comparisonStatistics,
+                expected = expected,
+                diff = comparisonResult.diff
             )
+
+            val expectedWidth = expected.width
+            val expectedHeight = expected.height
+            expected.recycle()
+
             throw AssertionError(
-                "Sizes are different! Expected: [${expected.width}, ${expected
-                    .height}], Actual: [${actual.width}, ${actual.height}]"
+                "Sizes are different! Expected: [${expectedWidth}, ${expectedHeight}], Actual: [${
+                    actual.width}, ${actual.height}]. "
+                    + "Force aligned at (0, 0). Comparison stats: '${comparisonResult
+                        .comparisonStatistics}'"
             )
         }
 
