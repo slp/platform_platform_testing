@@ -65,6 +65,7 @@ java_library {
         "statsd-helper",
         "launcher-aosp-tapl",
         "health-testing-utils",
+        "uiautomator-helpers",
     ],
     srcs: ["src/**/*.java"],
     exclude_srcs: [
