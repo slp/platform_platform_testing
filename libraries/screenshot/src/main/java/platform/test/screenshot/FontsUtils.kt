@@ -48,13 +48,14 @@ fun createAndApplyResourcesProvider(context: Context) {
         }
 
         var arscFile: FileDescriptor? = null
+        var pfd: ParcelFileDescriptor? = null
         try {
             arscFile = Os.memfd_create("font_resources.arsc", /* flags= */ 0)
             // Note: This must not be closed through the OutputStream.
             val pipeWriter = FileOutputStream(arscFile)
             pipeWriter.write(contentBytes);
 
-            val pfd = ParcelFileDescriptor.dup(arscFile)
+            pfd = ParcelFileDescriptor.dup(arscFile)
             val colorsLoader = ResourcesLoader()
             colorsLoader.addProvider(
                 ResourcesProvider.loadFromTable(pfd, /* assetsProvider= */ null))
@@ -62,6 +63,9 @@ fun createAndApplyResourcesProvider(context: Context) {
         } finally {
             if (arscFile != null) {
                 Os.close(arscFile)
+            }
+            if (pfd != null && pfd.getFileDescriptor() != null && pfd.getFileDescriptor().valid()) {
+                pfd.close()
             }
         }
     } catch (ex: Exception) {
