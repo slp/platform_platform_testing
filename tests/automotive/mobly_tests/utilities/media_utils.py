@@ -116,9 +116,10 @@ class MediaUtils:
                      actual_dumpsys_metadata)
 
         # assign actual_song_metadata after '=' sign in actual_dumpsys_metadata
-        # if 'null' not in actual_dumpsys_metadata and length of String > 1
+        # if actual_dumpsys_metadata contains less than 3 'null',
+        # and split on '=' is an array with more than 1 element
         actual_song_metadata = [x.split('=', 1)[1] for x in actual_dumpsys_metadata if
-                                constants.NULL_VALUE not in x and len(x.split('=', 1)) > 1]
+                                x.count(constants.NULL_VALUE) < 3 and len(x.split('=', 1)) > 1]
         logging.info("Actual song metadata on phone device: %s", actual_song_metadata)
 
         # assign parsed_song_metadata
