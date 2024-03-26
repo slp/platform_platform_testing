@@ -16,6 +16,7 @@
 
 package platform.test.motion
 
+import android.content.Context
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.FailureMetadata
 import com.google.common.truth.Subject
@@ -49,6 +50,7 @@ import platform.test.screenshot.report.ExportToScubaStrategy
  */
 open class MotionTestRule(
     private val goldenPathManager: GoldenPathManager,
+    private val context: Context = InstrumentationRegistry.getInstrumentation().targetContext,
     extraGoldenDataPointTypes: List<DataPointType<*>> = emptyList(),
     internal val bitmapDiffer: BitmapDiffer? = null,
 ) : TestWatcher() {
@@ -90,19 +92,14 @@ open class MotionTestRule(
      */
     internal open fun readGoldenTimeSeries(goldenIdentifier: String): TimeSeries {
         val path = goldenPathManager.goldenIdentifierResolver(goldenIdentifier, JSON_EXTENSION)
-        val instrument = InstrumentationRegistry.getInstrumentation()
-        return listOf(instrument.targetContext.applicationContext, instrument.context)
-            .firstNotNullOfOrNull { context ->
-                try {
-                    context.assets.open(path).bufferedReader().use {
-                        val jsonObject = JSONObject(it.readText())
-                        goldenSerializer.fromJson(jsonObject)
-                    }
-                } catch (e: FileNotFoundException) {
-                    null
-                }
+        try {
+            return context.assets.open(path).bufferedReader().use {
+                val jsonObject = JSONObject(it.readText())
+                goldenSerializer.fromJson(jsonObject)
             }
-            ?: throw GoldenNotFoundException(path)
+        } catch (e: FileNotFoundException) {
+            throw GoldenNotFoundException(path)
+        }
     }
 
     /**
