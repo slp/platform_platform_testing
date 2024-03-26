@@ -43,11 +43,20 @@ public class DynamicRuleChainTest {
     // DynamicRuleChain.
     private static final List<String> sLogs = new ArrayList<String>();
 
-    private static final Statement mStatement =
+    private static final Statement PASSING_STATEMENT =
             new Statement() {
                 @Override
                 public void evaluate() {
                     sLogs.add("Test execution");
+                }
+            };
+
+    private static final Statement FAILING_STATEMENT =
+            new Statement() {
+                @Override
+                public void evaluate() {
+                    sLogs.add("Test execution");
+                    throw new RuntimeException("Test failed");
                 }
             };
 
@@ -62,16 +71,27 @@ public class DynamicRuleChainTest {
     @Test
     public void testAppliesRuleBySimpleClassNameForRulesInKnownPackage() throws Throwable {
         DynamicRuleChain chain = createWithRuleNames("DynamicRuleChainTest$Rule1");
-        Statement applied = chain.apply(mStatement, DESCRIPTION);
+        Statement applied = chain.apply(PASSING_STATEMENT, DESCRIPTION);
         applied.evaluate();
         assertThat(sLogs).containsExactly("Rule1 starting", "Test execution", "Rule1 finished");
+    }
+
+    @Test
+    public void testRuleCallbacks() throws Throwable {
+        DynamicRuleChain chain = createWithRuleNames("DynamicRuleChainTest$Rule1");
+        Statement applied = chain.apply(FAILING_STATEMENT, DESCRIPTION);
+        expectedException.expectMessage("Test failed");
+        applied.evaluate();
+        assertThat(sLogs)
+                .containsExactly(
+                        "Rule1 starting", "Test execution", "Rule1 on failure", "Rule1 finished");
     }
 
     @Test
     public void testAppliesRuleByFullyQualifiedClassName() throws Throwable {
         DynamicRuleChain chain =
                 createWithRuleNames("android.platform.test.rule.DynamicRuleChainTest$Rule1");
-        Statement applied = chain.apply(mStatement, DESCRIPTION);
+        Statement applied = chain.apply(PASSING_STATEMENT, DESCRIPTION);
         applied.evaluate();
         assertThat(sLogs).containsExactly("Rule1 starting", "Test execution", "Rule1 finished");
     }
@@ -83,7 +103,7 @@ public class DynamicRuleChainTest {
                 String.format(
                         "Failed to dynamically load rule with simple class name %s.", badName));
         DynamicRuleChain chain = createWithRuleNames(badName);
-        chain.apply(mStatement, DESCRIPTION);
+        chain.apply(PASSING_STATEMENT, DESCRIPTION);
     }
 
     @Test
@@ -93,7 +113,7 @@ public class DynamicRuleChainTest {
                 String.format(
                         "Failed to dynamically load rule with fully qualified name %s.", badName));
         DynamicRuleChain chain = createWithRuleNames(badName);
-        chain.apply(mStatement, DESCRIPTION);
+        chain.apply(PASSING_STATEMENT, DESCRIPTION);
     }
 
     @Test
@@ -102,7 +122,7 @@ public class DynamicRuleChainTest {
                 createWithRuleNames(
                         "DynamicRuleChainTest$Rule2",
                         "android.platform.test.rule.DynamicRuleChainTest$Rule1");
-        Statement applied = chain.apply(mStatement, DESCRIPTION);
+        Statement applied = chain.apply(PASSING_STATEMENT, DESCRIPTION);
         applied.evaluate();
         // Rule2's logs should be outside, and Rule1's logs should be inside.
         assertThat(sLogs)
@@ -123,7 +143,7 @@ public class DynamicRuleChainTest {
         DynamicRuleChain chain =
                 createWithRuleNames(
                         badName, "android.platform.test.rule.DynamicRuleChainTest$Rule1");
-        chain.apply(mStatement, DESCRIPTION);
+        chain.apply(PASSING_STATEMENT, DESCRIPTION);
     }
 
     @Test
@@ -133,7 +153,7 @@ public class DynamicRuleChainTest {
                         "DynamicRuleChainTest$Rule2",
                         "android.platform.test.rule.DynamicRuleChainTest$Rule1",
                         "DynamicRuleChainTest$Rule2");
-        Statement applied = chain.apply(mStatement, DESCRIPTION);
+        Statement applied = chain.apply(PASSING_STATEMENT, DESCRIPTION);
         applied.evaluate();
         // Rule2's logs should be outside, and Rule1's logs should be inside.
         assertThat(sLogs)
@@ -154,7 +174,7 @@ public class DynamicRuleChainTest {
                         "android.platform.test.rule.DynamicRuleChainTest$Rule1",
                         "DynamicRuleChainTest$Rule2",
                         "android.platform.test.rule.DynamicRuleChainTest$Rule1");
-        Statement applied = chain.apply(mStatement, DESCRIPTION);
+        Statement applied = chain.apply(PASSING_STATEMENT, DESCRIPTION);
         applied.evaluate();
         // Rule2's logs should be outside, and Rule1's logs should be inside.
         assertThat(sLogs)
@@ -175,7 +195,7 @@ public class DynamicRuleChainTest {
                         "override-rules",
                         "DynamicRuleChainTest$Rule2",
                         "android.platform.test.rule.DynamicRuleChainTest$Rule1");
-        Statement applied = chain.apply(mStatement, DESCRIPTION);
+        Statement applied = chain.apply(PASSING_STATEMENT, DESCRIPTION);
         applied.evaluate();
         assertThat(sLogs)
                 .containsExactly(
@@ -228,6 +248,11 @@ public class DynamicRuleChainTest {
         @Override
         public void finished(Description description) {
             sLogs.add("Rule1 finished");
+        }
+
+        @Override
+        public void failed(Throwable e, Description description) {
+            sLogs.add("Rule1 on failure");
         }
     }
 
