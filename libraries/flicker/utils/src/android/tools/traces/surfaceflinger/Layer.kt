@@ -103,6 +103,7 @@ private constructor(
             return when {
                 isHiddenByParent -> false
                 isHiddenByPolicy -> false
+                hasZeroAlpha -> false
                 isActiveBufferEmpty && !hasEffects -> false
                 occludedBy.isNotEmpty() -> false
                 else -> visibleRegion.isNotEmpty
