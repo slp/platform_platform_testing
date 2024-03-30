@@ -47,6 +47,14 @@ class YouTubeAppHelper(
         getPauseButton()
     }
 
+    fun enterFullscreen() {
+        displayControls()
+        val fullscreenButton = getFullscreenButton()
+        if (fullscreenButton != null) {
+            fullscreenButton.click()
+        }
+    }
+
     /**
      * This re-displays the controls if they are already displayed so that the timer until they're
      * off again, is reset giving the tests more time to target them. If the controls are already
@@ -75,11 +83,18 @@ class YouTubeAppHelper(
         return uiDevice.wait(Until.findObject(By.desc(UI_PAUSE_BUTTON_DESC)), WAIT_DELAY)
     }
 
+    protected fun getFullscreenButton(): UiObject2? {
+        return uiDevice.wait(Until.findObject(By.desc(UI_FULLSCREEN_BUTTON_DESC)), WAIT_DELAY)
+    }
+
     companion object {
         const val INTENT_WATCH_VIDEO_PATTERN = "vnd.youtube:%s"
         const val PACKAGE_NAME = "com.google.android.youtube"
         const val UI_WATCH_PLAYER_ID = "watch_player"
         const val UI_CONTROL_ID = "controls_layout"
+        // alternate ID: id/fullscreen_button
+        const val UI_FULLSCREEN_BUTTON_DESC = "Enter fullscreen"
+        // alternate ID: id/player_control_play_pause_replay_button
         const val UI_PAUSE_BUTTON_DESC = "Pause video"
         const val WAIT_DELAY: Long = 2000
 

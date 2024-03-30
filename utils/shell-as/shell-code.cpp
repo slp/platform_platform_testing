@@ -18,8 +18,7 @@
 
 #include <sys/mman.h>
 #include <sys/types.h>
-
-#define PAGE_START(addr) ((uintptr_t)addr & ~(PAGE_SIZE - 1))
+#include <unistd.h>
 
 // Shell code that sets the SELinux context of the current process.
 //
@@ -44,9 +43,13 @@ extern "C" int __trap_shell_code_signal;
 namespace shell_as {
 
 namespace {
+uintptr_t PageStart(void (*addr)()) {
+  return ((uintptr_t)addr & ~(getpagesize() - 1));
+}
+
 void EnsureShellcodeReadable(void (*start)(), void (*end)()) {
-  mprotect((void*)PAGE_START(start),
-           PAGE_START(end) - PAGE_START(start) + PAGE_SIZE,
+  mprotect((void*)PageStart(start),
+           PageStart(end) - PageStart(start) + getpagesize(),
            PROT_READ | PROT_EXEC);
 }
 }  // namespace

@@ -492,6 +492,13 @@ public final class SetFlagsRule implements TestRule {
                                     .invoke(fakeFeatureFlagsImpl, fullFlagName);
             return result;
         } catch (NoSuchMethodException e) {
+            // If the flag is generated under exported mode, then it doesn't have this method
+            if (fakeFeatureFlagsImpl
+                    .getClass()
+                    .getSimpleName()
+                    .equals(FAKE_FEATURE_FLAGS_IMPL_CLASS_NAME)) {
+                return false;
+            }
             throw new FlagSetException(
                     fullFlagName,
                     String.format(
