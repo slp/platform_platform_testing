@@ -29,4 +29,5 @@ android_library {
     static_libs: [
         "collector-device-lib",
     ],
+    sdk_version: "test_current",
 }
