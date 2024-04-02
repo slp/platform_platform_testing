@@ -36,6 +36,11 @@
 
     <style name="Theme.PlatformUi.Dialog.Screenshot" parent="Theme.PlatformUi.Dialog.DayAndNightScreenshot" />
 
+    <style name="Theme.PlatformUi.Dialog.Screenshot.MinWidth" parent="Theme.PlatformUi.Dialog.Screenshot">
+        <item name="android:windowMinWidthMajor">@android:dimen/dialog_min_width_major</item>
+        <item name="android:windowMinWidthMinor">@android:dimen/dialog_min_width_minor</item>
+    </style>
+
     <style name="Theme.PlatformUi.DayAndNightScreenshot" parent="Theme.SystemUI">
         <!-- Hardcode the material colors so that screenshot tests don't depend on colors that will
              change with the device wallpaper. These colors were frozen when using the same color
