@@ -15,6 +15,8 @@
  */
 package android.platform.test.rule;
 
+import static android.platform.uiautomator_helpers.DeviceHelpers.assertInvisible;
+
 import static com.android.systemui.Flags.keyguardBottomAreaRefactor;
 
 import android.os.RemoteException;
@@ -23,6 +25,8 @@ import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.BySelector;
 
 import org.junit.runner.Description;
+
+import java.time.Duration;
 
 /** This rule will unlock phone screen before a test case. */
 public class UnlockScreenRule extends TestWatcher {
@@ -51,6 +55,7 @@ public class UnlockScreenRule extends TestWatcher {
             if (getUiDevice().hasObject(screenLock)) {
                 getUiDevice().pressMenu();
                 getUiDevice().waitForIdle();
+                assertInvisible(screenLock, /* timeout= */ Duration.ofSeconds(20));
             }
         } catch (RemoteException e) {
             throw new RuntimeException("Could not unlock device.", e);
