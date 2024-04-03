@@ -58,7 +58,7 @@ abstract class BitmapMatcher {
      * @param actualWidth Width of the actual image.
      * @param actualHeight Height of the actual image.
      */
-    fun compareBitmaps(
+    open fun compareBitmaps(
         expected: IntArray,
         given: IntArray,
         expectedWidth: Int,
