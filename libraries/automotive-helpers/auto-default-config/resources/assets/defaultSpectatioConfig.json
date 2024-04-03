@@ -476,7 +476,7 @@
     },
     "STATUS_BAR_BRIGHTNESS_BUTTON": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "qc_display_status_icon",
+      "VALUE": "display_panel_button",
       "PACKAGE": "com.android.systemui"
     },
     "STATUS_BAR_DISPLAY_BRIGHTNESS_PALETTE": {
@@ -518,19 +518,9 @@
       "TYPE": "TEXT",
       "VALUE": "Phone"
     },
-    "HOME_BLUETOOTH_BUTTON": {
-      "TYPE": "RESOURCE_ID",
-      "VALUE": "qc_bluetooth_status_icon",
-      "PACKAGE": "com.android.systemui"
-    },
-    "HOME_DISPLAY_BRIGHTNESS_BUTTON": {
-      "TYPE": "RESOURCE_ID",
-      "VALUE": "qc_display_status_icon",
-      "PACKAGE": "com.android.systemui"
-    },
     "HOME_NETWORK_BUTTON": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "qc_signal_status_icon",
+      "VALUE": "connectivity_panel_button",
       "PACKAGE": "com.android.systemui"
     },
     "HOME_PROFILE_GUEST_ICON": {
@@ -908,7 +898,7 @@
     },
     "STATUS_BAR_BLUETOOTH_BUTTON": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "qc_bluetooth_status_icon",
+      "VALUE": "bluetooth_panel_button",
       "PACKAGE": "com.android.systemui"
     },
     "STATUS_BAR_BLUETOOTH_TOGGLE_ON": {
@@ -2029,7 +2019,7 @@
     },
     "NETWORK_PALETTE": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "qc_signal_status_icon",
+      "VALUE": "connectivity_panel_button",
       "PACKAGE": "com.android.systemui"
     },
     "NETWORK_PALETTE_HOTSPOT": {

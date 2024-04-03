@@ -130,7 +130,7 @@ class LayerTest {
             activeBuffer,
             flags,
             bounds,
-            Color.EMPTY,
+            Color.DEFAULT,
             false,
             -1f,
             -1f,

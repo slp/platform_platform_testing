@@ -125,6 +125,15 @@ interface ILayerProperties {
         get() {
             return fillsColor || drawsShadows
         }
+    /**
+     * Checks if the [Layer] has zero requested or inherited alpha
+     *
+     * @return
+     */
+    val hasZeroAlpha: Boolean
+        get() {
+            return color.a == 0f
+        }
 
     fun isAnimating(prevLayerState: ILayerProperties?): Boolean =
         when (prevLayerState) {

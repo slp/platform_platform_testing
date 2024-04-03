@@ -156,6 +156,7 @@ public class StatusBarHelperImpl extends AbstractStandardAppHelper implements IA
                     .validateUiObject(
                             enableOption, AutomotiveConfigConstants.STATUS_BAR_BLUETOOTH_TOGGLE_ON);
             getSpectatioUiUtil().clickAndWait(enableOption);
+            getSpectatioUiUtil().wait5Seconds();
         }
     }
 
