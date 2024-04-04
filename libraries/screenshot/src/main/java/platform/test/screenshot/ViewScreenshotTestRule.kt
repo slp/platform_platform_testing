@@ -126,6 +126,7 @@ open class ViewScreenshotTestRule(
      */
     fun dialogScreenshotTest(
         goldenIdentifier: String,
+        waitForIdle: () -> Unit = {},
         dialogProvider: (Activity) -> Dialog,
     ) {
         dialogScreenshotTest(
@@ -133,7 +134,8 @@ open class ViewScreenshotTestRule(
             screenshotRule,
             matcher,
             goldenIdentifier,
-            dialogProvider = dialogProvider,
+            waitForIdle,
+            dialogProvider,
         )
     }
 
