@@ -76,8 +76,8 @@ class Scc5gWifiLanStaTest(d2d_performance_test_base.D2dPerformanceTestBase):
   def _get_throughput_low_tip(self) -> str:
     return (
         f'{self._throughput_low_string}. This is 5G WLAN test case. Check with'
-        ' the wifi chip vendor if TDLS issupported correctly. Also check if'
-        ' the AP has the firewall which could blockthe mDNS traffic.'
+        ' the wifi chip vendor if TDLS is supported correctly. Also check if'
+        ' the AP has the firewall which could block the mDNS traffic.'
     )
 
   def _is_wifi_ap_ready(self) -> bool:
