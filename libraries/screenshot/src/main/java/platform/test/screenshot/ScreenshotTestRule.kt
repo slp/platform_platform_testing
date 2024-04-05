@@ -53,12 +53,19 @@ open class ScreenshotTestRule
 internal constructor(
     val goldenPathManager: GoldenPathManager,
     /** Strategy to report diffs to external systems. */
-    private val diffEscrowStrategy: DiffResultExportStrategy
+    private val diffEscrowStrategy: DiffResultExportStrategy,
+    private val disableIconPool: Boolean = true
 ) : TestRule, BitmapDiffer, ScreenshotAsserterFactory {
 
+    @JvmOverloads
     constructor(
-        goldenPathManager: GoldenPathManager
-    ) : this(goldenPathManager, DiffResultExportStrategy.createDefaultStrategy(goldenPathManager))
+        goldenPathManager: GoldenPathManager,
+        disableIconPool: Boolean = true,
+    ) : this(
+        goldenPathManager,
+        DiffResultExportStrategy.createDefaultStrategy(goldenPathManager),
+        disableIconPool
+    )
 
     private lateinit var testIdentifier: String
 
@@ -67,10 +74,17 @@ internal constructor(
             override fun evaluate() {
                 try {
                     testIdentifier = getTestIdentifier(description)
-                    SimpleIconFactory.setPoolEnabled(false)
+                    if (disableIconPool) {
+                        // Disables pooling of SimpleIconFactory objects as it caches
+                        // density, which when updating the screen configuration in runtime
+                        // sometimes it does not get updated in the icon renderer.
+                        SimpleIconFactory.setPoolEnabled(false)
+                    }
                     base.evaluate()
                 } finally {
-                    SimpleIconFactory.setPoolEnabled(true)
+                    if (disableIconPool) {
+                        SimpleIconFactory.setPoolEnabled(true)
+                    }
                 }
             }
         }
@@ -197,9 +211,9 @@ internal constructor(
             expected.recycle()
 
             throw AssertionError(
-                "Sizes are different! Expected: [${expectedWidth}, ${expectedHeight}], Actual: [${
-                    actual.width}, ${actual.height}]. "
-                    + "Force aligned at (0, 0). Comparison stats: '${comparisonResult
+                "Sizes are different! Expected: [$expectedWidth, $expectedHeight], Actual: [${
+                    actual.width}, ${actual.height}]. " +
+                    "Force aligned at (0, 0). Comparison stats: '${comparisonResult
                         .comparisonStatistics}'"
             )
         }
