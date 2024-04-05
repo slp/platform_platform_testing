@@ -26,12 +26,14 @@ import android.tools.flicker.subject.exceptions.InvalidElementException
 import android.tools.flicker.subject.exceptions.InvalidPropertyException
 import android.tools.flicker.subject.region.RegionSubject
 import android.tools.io.Reader
+import android.tools.traces.component.ComponentNameMatcher
 import android.tools.traces.component.ComponentSplashScreenMatcher
 import android.tools.traces.component.IComponentMatcher
 import android.tools.traces.component.IComponentNameMatcher
 import android.tools.traces.surfaceflinger.Layer
 import android.tools.traces.surfaceflinger.LayerTraceEntry
 import android.tools.traces.surfaceflinger.LayersTrace
+import android.util.Log
 
 /**
  * Subject for [LayerTraceEntry] objects, used to make assertions over behaviors that occur on a
@@ -96,8 +98,10 @@ class LayerTraceEntrySubject(
     ): RegionSubject {
         val selectedLayers =
             if (componentMatcher == null) {
-                // No filters so use all subjects
-                subjects
+                // No filters so use all non screen recording subjects
+                subjects.filterNot {
+                    ComponentNameMatcher.SCREEN_RECORDING_OVERLAYS.layerMatchesAnyOf(it.layer)
+                }
             } else {
                 subjects.filter { componentMatcher.layerMatchesAnyOf(it.layer) }
             }
