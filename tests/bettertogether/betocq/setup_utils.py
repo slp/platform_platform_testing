@@ -353,6 +353,16 @@ def enable_wifi_aware(ad: android_device.AndroidDevice) -> None:
   check_and_try_to_write_ph_flag(ad, pname, flag_name, flag_type, flag_value)
 
 
+def enable_dfs_scc(ad: android_device.AndroidDevice) -> None:
+  """Enable WFD/WIFI_HOTSPOT in a STA-associated DFS channel."""
+  pname = 'com.google.android.gms.nearby'
+  flag_name = 'mediums_lower_dfs_channel_priority'
+  flag_type = 'boolean'
+  flag_value = 'false'
+
+  check_and_try_to_write_ph_flag(ad, pname, flag_name, flag_type, flag_value)
+
+
 def disable_redaction(ad: android_device.AndroidDevice) -> None:
   """Disable info log redaction on the given device."""
   pname = 'com.google.android.gms'

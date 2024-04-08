@@ -45,6 +45,7 @@ CONNECTION_BANDWIDTH_CHANGED_TIMEOUT = datetime.timedelta(seconds=25)
 WIFI_1K_PAYLOAD_TRANSFER_TIMEOUT = datetime.timedelta(seconds=20)
 WIFI_2G_20M_PAYLOAD_TRANSFER_TIMEOUT = datetime.timedelta(seconds=20)
 WIFI_200M_PAYLOAD_TRANSFER_TIMEOUT = datetime.timedelta(seconds=100)
+WIFI_500M_PAYLOAD_TRANSFER_TIMEOUT = datetime.timedelta(seconds=250)
 WIFI_STA_CONNECTING_TIME_OUT = datetime.timedelta(seconds=25)
 DISCONNECTION_TIMEOUT = datetime.timedelta(seconds=15)
 
@@ -53,9 +54,10 @@ MAX_PHY_RATE_PER_STREAM_AC_40_MBPS = 200
 MAX_PHY_RATE_PER_STREAM_N_20_MBPS = 72
 
 MCC_THROUGHPUT_MULTIPLIER = 0.25
-MAX_PHY_RATE_TO_MIN_THROUGHPUT_RATIO_5G = 0.37
-MAX_PHY_RATE_TO_MIN_THROUGHPUT_RATIO_2G = 0.4
-WIFI_HOTSPOT_THROUGHPUT_MULTIPLIER = 0.7
+MAX_PHY_RATE_TO_MIN_THROUGHPUT_RATIO_5G = 0.20
+MAX_PHY_RATE_TO_MIN_THROUGHPUT_RATIO_2G = 0.2
+WIFI_HOTSPOT_THROUGHPUT_MULTIPLIER = 0.8
+WIFI_LAN_THROUGHPUT_MAX_MBPS = 20  # due to ukey2 encryption cpu overhead
 
 CLASSIC_BT_MEDIUM_THROUGHPUT_BENCHMARK = 20  # 20KBps
 BLE_MEDIUM_THROUGHPUT_BENCHMARK = 20  # 20KBps
@@ -73,6 +75,7 @@ UNSET_LATENCY = datetime.timedelta.max
 UNSET_THROUGHPUT_KBPS = -1.0
 MAX_NUM_BUG_REPORT = 5
 
+TRANSFER_FILE_SIZE_500MB = 500 * 1024  # kB
 TRANSFER_FILE_SIZE_200MB = 200 * 1024  # kB
 TRANSFER_FILE_SIZE_20MB = 20 * 1024  # kB
 TRANSFER_FILE_SIZE_1MB = 1024  # kB
@@ -140,12 +143,18 @@ class TestParameters:
       user_params: dict[str, Any]) -> 'TestParameters':
     """convert the parameters from the testbed to the test parameter."""
 
-    # Convert user int parameter in str format to int.
+    # Convert G3 user int parameter in str format to int.
     for key, value in user_params.items():
       if key == 'mh_files':
         continue
       logging.info('[Test Parameters] %s: %s', key, value)
-      if isinstance(value, str) and value.isdigit():
+      if value in ('true', 'True'):
+        user_params[key] = True
+      elif value in ('false', 'False'):
+        user_params[key] = False
+      elif isinstance(value, bool):
+        user_params[key] = value
+      elif isinstance(value, str) and value.isdigit():
         user_params[key] = ast.literal_eval(value)
 
     test_parameters_names = {
@@ -265,20 +274,29 @@ COMMON_TRIAGE_TIP: dict[SingleTestFailureReason, str] = {
 
 
 MEDIUM_UPGRADE_FAIL_TRIAGE_TIPS: dict[NearbyMedium, str] = {
-    NearbyMedium.WIFILAN_ONLY: (
-        ' WLAN, check if AP blocks mDNS traffic'
-    ),
+    NearbyMedium.WIFILAN_ONLY: ' WLAN, check if AP blocks the mDNS traffic',
     NearbyMedium.UPGRADE_TO_WIFIHOTSPOT: (
-        ' HOTSPOT, check if the WFD group owner fails to start on'
-        ' the target side or the legacy STA fails to connect on the source side'
+        ' HOTSPOT, check the related wifip2p and NearbyConnections logs to see'
+        ' if the WFD group owner'
+        ' fails to start on'
+        ' the target side or the legacy STA fails to connect on the source'
+        ' side.'
+        ' If WFD GO fails to start, check if wpa_supplicant already has the'
+        ' patch to avoid scan before starting GO'
+        ' https://w1.fi/cgit/hostap/commit/?id=b18d95759375834b6ca6f864c898f27d161b14ca'
     ),
     NearbyMedium.UPGRADE_TO_WIFIDIRECT: (
-        ' WFD, check if the WFD group owner fails to start on the'
-        ' target side or WFD group client fails to connect on the source side'
+        ' WFD, check the related wifip2p and NearbyConnections logs if the WFD'
+        ' group owner fails to start on the'
+        ' target side or WFD group client fails to connect on the source side.'
+        ' If WFD GO fails to start, check if wpa_supplicant already has the'
+        ' patch to avoid scan before starting GO'
+        ' https://w1.fi/cgit/hostap/commit/?id=b18d95759375834b6ca6f864c898f27d161b14ca'
     ),
     NearbyMedium.UPGRADE_TO_ALL_WIFI: (
-        ' all WiFI mediums, check if WFD, WLAN and HOTSPOT mediums are tried'
-        ' and if the failure is on the target or source side'
+        ' all WiFI mediums, check NearbyConnections logs to see if WFD, WLAN'
+        ' and HOTSPOT mediums are tried and if the failure is on the target or'
+        ' source side. Check directed test results to see which medium fails.'
     ),
 }
 
@@ -364,3 +382,12 @@ class NcPerformanceTestMetrics:
       default_factory=list[float])
   upgraded_wifi_transfer_mediums: list[NearbyConnectionMedium] = (
       dataclasses.field(default_factory=list[NearbyConnectionMedium]))
+
+
+@dataclasses.dataclass(frozen=True)
+class TestResultStats:
+  """The test result stats."""
+  success_count: int | None = None
+  min_val: float | None = None
+  median_val: float | None = None
+  max_val: float | None = None

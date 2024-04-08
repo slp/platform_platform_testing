@@ -33,6 +33,36 @@ class BaseBetocqSuite(base_suite.BaseSuite):
     self._summary_path = None
     self._summary_writer = None
 
+  def teardown_suite(self):
+    """Collects test class results and reports them as suite properties."""
+    user_data = self._retrieve_user_data_from_summary()
+    class_data = [
+        entry
+        for entry in user_data
+        if records.TestResultEnums.RECORD_CLASS in entry
+        and records.TestResultEnums.RECORD_NAME not in entry
+    ]
+    class_results = {}
+    for entry in class_data:
+      properties = entry.get('sponge_properties', entry.get('properties', {}))
+      for key, value in properties.items():
+        # prepend '0'/'1' so the properties appear first in lexicographic order
+        if key.endswith('source_device'):
+          if '0_source_device' not in class_results:
+            class_results['0_source_device'] = value
+        if key.endswith('target_device'):
+          if '0_target_device' not in class_results:
+            class_results['0_target_device'] = value
+        if key.endswith('test_result'):
+          class_results[f'1_{entry[records.TestResultEnums.RECORD_CLASS]}'] = (
+              value
+          )
+        if key.endswith('detailed_stats'):
+          class_results[
+              f'1_{entry[records.TestResultEnums.RECORD_CLASS]}_detailed_stats'
+          ] = value
+    self._record_suite_properties(class_results)
+
   @property
   def summary_path(self):
     """Returns the path to the summary file.
