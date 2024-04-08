@@ -79,8 +79,8 @@ class Scc5gWfdDbs2gStaTest(d2d_performance_test_base.D2dPerformanceTestBase):
   def _get_throughput_low_tip(self) -> str:
     return (
         f'{self._throughput_low_string}. This is a SCC 5G test case with WFD'
-        ' medium operating at 5G and STA operatingat 2G. In the configuration'
-        ' file, DBS support is set to true. Check if thedevice does support'
+        ' medium operating at 5G and STA operating at 2G. In the configuration'
+        ' file, DBS support is set to true. Check if the device does support'
         ' DBS with STA + WFD concurrency. Check with the wifi chipvendor about'
         ' the possible firmware Tx/Rx issues in this mode.'
     )
@@ -88,11 +88,17 @@ class Scc5gWfdDbs2gStaTest(d2d_performance_test_base.D2dPerformanceTestBase):
   def _is_wifi_ap_ready(self) -> bool:
     return True if self.test_parameters.wifi_2g_ssid else False
 
-  def _are_devices_capabilities_ok(self) -> bool:
-    return (
-        self.discoverer.supports_5g and self.advertiser.supports_5g
-        and self.advertiser.supports_dbs_sta_wfd
-    )
+  @property
+  def _devices_capabilities_definition(self) -> dict[str, dict[str, bool]]:
+    return {
+        'discoverer': {
+            'supports_5g': True,
+        },
+        'advertiser': {
+            'supports_5g': True,
+            'supports_dbs_sta_wfd': True,
+        },
+    }
 
 
 if __name__ == '__main__':

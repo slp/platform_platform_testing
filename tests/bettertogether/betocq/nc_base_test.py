@@ -37,6 +37,7 @@ from betocq import setup_utils
 NEARBY_SNIPPET_PACKAGE_NAME = 'com.google.android.nearby.mobly.snippet'
 NEARBY_SNIPPET_2_PACKAGE_NAME = 'com.google.android.nearby.mobly.snippet.second'
 
+# TODO(b/330803934): Need to design external path for OEM.
 _CONFIG_EXTERNAL_PATH = 'TBD'
 
 
@@ -118,14 +119,37 @@ class NCBaseTestClass(base_test.BaseTestClass):
     if not self.user_params.get('use_auto_controlled_wifi_ap', False):
       return
 
-    # TODO(xianyuanjia): Add OpenWRT setup logic here
-    return
+    self.openwrt = self.register_controller(openwrt_device)[0]
+    if 'wifi_channel' in self.user_params:
+      wifi_channel = self.user_params['wifi_channel']
+      self.wifi_info = self.openwrt.start_wifi(
+          config=wifi_configs.WiFiConfig(channel=wifi_channel)
+      )
+    else:
+      wifi_channel = None
+      self.wifi_info = self.openwrt.start_wifi(config=wifi_configs.WiFiConfig())
+
+    if wifi_channel is None:
+      self.test_parameters.wifi_ssid = self.wifi_info.ssid
+      self.test_parameters.wifi_password = self.wifi_info.password
+    elif wifi_channel == 6:
+      self.test_parameters.wifi_2g_ssid = self.wifi_info.ssid
+      self.test_parameters.wifi_2g_password = self.wifi_info.password
+    elif wifi_channel == 36:
+      self.test_parameters.wifi_5g_ssid = self.wifi_info.ssid
+      self.test_parameters.wifi_5g_password = self.wifi_info.password
+    elif wifi_channel == 52:
+      self.test_parameters.wifi_dfs_5g_ssid = self.wifi_info.ssid
+      self.test_parameters.wifi_dfs_5g_password = self.wifi_info.password
+    else:
+      raise ValueError('Unknown Wi-Fi channel: %s' % wifi_channel)
 
   def _setup_android_hw_capability(
       self, ad: android_device.AndroidDevice
   ) -> None:
     ad.android_version = int(ad.adb.getprop('ro.build.version.release'))
 
+    # TODO(b/330803934): Need to design external path for OEM.
     if not os.path.isfile(_CONFIG_EXTERNAL_PATH):
       return
 
@@ -136,6 +160,7 @@ class NCBaseTestClass(base_test.BaseTestClass):
           rule, f'{ad} Model {ad.model} is not supported in config file'
       )
       for key, value in rule.items():
+        ad.log.debug('Setting capability %s to %s', repr(key), repr(value))
         setattr(ad, key, value)
 
   def _get_country_code(self) -> str:
@@ -186,8 +211,9 @@ class NCBaseTestClass(base_test.BaseTestClass):
       ad.nearby.wifiEnable()
     setup_utils.disconnect_from_wifi(ad)
     setup_utils.enable_logs(ad)
-
     setup_utils.disable_redaction(ad)
+    setup_utils.enable_wifi_aware(ad)
+    setup_utils.enable_dfs_scc(ad)
 
     setup_utils.set_country_code(ad, self._get_country_code())
 
