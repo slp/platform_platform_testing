@@ -83,21 +83,38 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
     super().teardown_test()
     time.sleep(_DELAY_BETWEEN_EACH_TEST_CYCLE.total_seconds())
 
+  @property
+  def _devices_capabilities_definition(self) -> dict[str, dict[str, bool]]:
+    """Returns the definition of devices capabilities."""
+    return {}
+
   # @typing.override
   def _get_skipped_test_class_reason(self) -> str | None:
     if not self._is_wifi_ap_ready():
       return 'Wifi AP is not ready for this test.'
-    if not self._are_devices_capabilities_ok():
-      return 'The test is not required per the device capabilities.'
+    skip_reason = self._check_devices_capabilities()
+    if skip_reason is not None:
+      return (
+          f'The test is not required per the device capabilities. {skip_reason}'
+      )
     return None
 
   @abc.abstractmethod
   def _is_wifi_ap_ready(self) -> bool:
     pass
 
-  @abc.abstractmethod
-  def _are_devices_capabilities_ok(self) -> bool:
-    pass
+  def _check_devices_capabilities(self) -> str | None:
+    """Checks if all devices capabilities meet requirements."""
+    for ad_role, capabilities in self._devices_capabilities_definition.items():
+      for key, value in capabilities.items():
+        ad = getattr(self, ad_role)
+        capability = getattr(ad, key)
+        if capability != value:
+          return (
+              f'{ad} {ad_role}.{key} is'
+              f' {"enabled" if capability else "disabled"}'
+          )
+    return None
 
   def _get_throughout_benchmark(self) -> int:
     """Gets the throughout benchmark as KBps."""
@@ -147,10 +164,11 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
 
       # if STA is connected to 5G AP with channel BW < 80,
       # limit the max phy rate to AC 40.
-      if (sta_frequency > 5000
+      if (
+          sta_frequency > 5000
           and sta_max_link_speed_mbps > 0
           and sta_max_link_speed_mbps < max_phy_rate_ac80
-          ):
+      ):
         max_phy_rate_mbps = min(
             max_phy_rate_mbps,
             max_num_streams * nc_constants.MAX_PHY_RATE_PER_STREAM_AC_40_MBPS,
@@ -173,6 +191,14 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
         min_throughput_mbyte_per_sec = int(
             min_throughput_mbyte_per_sec
             * nc_constants.WIFI_HOTSPOT_THROUGHPUT_MULTIPLIER
+        )
+      if (
+          self._current_test_result.file_transfer_nc_setup_quality_info.upgrade_medium
+          == nc_constants.NearbyConnectionMedium.WIFI_LAN
+      ):
+        min_throughput_mbyte_per_sec = min(
+            min_throughput_mbyte_per_sec,
+            nc_constants.WIFI_LAN_THROUGHPUT_MAX_MBPS
         )
 
     self.advertiser.log.info(
@@ -250,9 +276,7 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
             medium_upgrade_type=nc_constants.MediumUpgradeType.NON_DISRUPTIVE,
         )
       finally:
-        self._prior_bt_nc_fail_reason = (
-            prior_bt_snippet.test_failure_reason
-        )
+        self._prior_bt_nc_fail_reason = prior_bt_snippet.test_failure_reason
         self._current_test_result.prior_nc_setup_quality_info = (
             prior_bt_snippet.connection_quality_info
         )
@@ -354,10 +378,10 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
     active_snippet.disconnect_endpoint()
 
   def _get_transfer_file_size(self) -> int:
-    return nc_constants.TRANSFER_FILE_SIZE_200MB
+    return nc_constants.TRANSFER_FILE_SIZE_500MB
 
   def _get_file_transfer_timeout(self) -> datetime.timedelta:
-    return nc_constants.WIFI_200M_PAYLOAD_TRANSFER_TIMEOUT
+    return nc_constants.WIFI_500M_PAYLOAD_TRANSFER_TIMEOUT
 
   def _write_current_test_report(self) -> None:
     """Writes test report for each iteration."""
@@ -427,20 +451,18 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
     ):
       return ''.join([
           f'FAIL: {self._active_nc_fail_reason.name} - ',
-          nc_constants.COMMON_TRIAGE_TIP.get(
-              self._active_nc_fail_reason
-          ),
+          nc_constants.COMMON_TRIAGE_TIP.get(self._active_nc_fail_reason),
       ])
 
-    if (self._use_prior_bt and
-        self._prior_bt_nc_fail_reason
-        is not nc_constants.SingleTestFailureReason.SUCCESS):
+    if (
+        self._use_prior_bt
+        and self._prior_bt_nc_fail_reason
+        is not nc_constants.SingleTestFailureReason.SUCCESS
+    ):
       return ''.join([
           'FAIL (The prior BT connection): ',
           f'{self._prior_bt_nc_fail_reason.name} - ',
-          nc_constants.COMMON_TRIAGE_TIP.get(
-              self._prior_bt_nc_fail_reason
-          ),
+          nc_constants.COMMON_TRIAGE_TIP.get(self._prior_bt_nc_fail_reason),
       ])
 
     if (
@@ -476,7 +498,8 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
   def _get_medium_upgrade_failure_tip(self) -> str:
     return nc_constants.MEDIUM_UPGRADE_FAIL_TRIAGE_TIPS.get(
         self._upgrade_medium_under_test,
-        f'unexpected upgrade medium - {self._upgrade_medium_under_test}')
+        f'unexpected upgrade medium - {self._upgrade_medium_under_test}',
+    )
 
   @abc.abstractmethod
   def _get_file_transfer_failure_tip(self) -> str:
@@ -514,16 +537,23 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
     self._performance_test_metrics.advertiser_wifi_sta_latencies.append(
         self._current_test_result.advertiser_sta_latency
     )
-    if self._current_test_result.file_transfer_nc_setup_quality_info.medium_upgrade_expected:
+    if (
+        self._current_test_result.file_transfer_nc_setup_quality_info.medium_upgrade_expected
+    ):
       self._performance_test_metrics.medium_upgrade_latencies.append(
           self._current_test_result.file_transfer_nc_setup_quality_info.medium_upgrade_latency
       )
 
-  def __get_median_throughput(
+  def __convert_kbps_to_mbps(self, throughput_kbps: float) -> float:
+    """Convert throughput from kbyte/s to mbyte/s."""
+    return round(throughput_kbps / 1024, 1)
+
+  def __get_transfer_stats(
       self,
       throughput_indicators: list[float],
-  ) -> tuple[int, int]:
-    """get the median throughput from iterations which finished file transfer."""
+  ) -> nc_constants.TestResultStats:
+
+    """get the min, median and max throughput from iterations which finished file transfer."""
     filtered = [
         x
         for x in throughput_indicators
@@ -531,16 +561,21 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
     ]
     if not filtered:
       # all test cases are failed
-      return (0, 0)
+      return nc_constants.TestResultStats(0, 0, 0, 0)
     # use the descenting order of the throughput
     filtered.sort(reverse=True)
-    return (len(filtered),
-            int(filtered[int(len(filtered) * nc_constants.PERCENTILE_50_FACTOR)]
-                ))
+    return nc_constants.TestResultStats(
+        len(filtered),
+        self.__convert_kbps_to_mbps(filtered[len(filtered) - 1]),
+        self.__convert_kbps_to_mbps(
+            filtered[int(len(filtered) * nc_constants.PERCENTILE_50_FACTOR)]
+        ),
+        self.__convert_kbps_to_mbps(filtered[0]),
+    )
 
-  def __get_median_latency(
+  def __get_latency_stats(
       self, latency_indicators: list[datetime.timedelta]
-  ) -> tuple[int, float]:
+  ) -> nc_constants.TestResultStats:
     filtered = [
         latency.total_seconds()
         for latency in latency_indicators
@@ -548,7 +583,7 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
     ]
     if not filtered:
       # All test cases are failed.
-      return (0, 0.0)
+      return nc_constants.TestResultStats(0, 0, 0, 0)
 
     filtered.sort()
 
@@ -556,7 +591,14 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
         filtered[int(len(filtered) * nc_constants.PERCENTILE_50_FACTOR)],
         nc_constants.LATENCY_PRECISION_DIGITS,
     )
-    return (len(filtered), percentile_50)
+    return nc_constants.TestResultStats(
+        len(filtered),
+        round(filtered[0], nc_constants.LATENCY_PRECISION_DIGITS),
+        percentile_50,
+        round(
+            filtered[len(filtered) - 1], nc_constants.LATENCY_PRECISION_DIGITS
+        ),
+    )
 
   # @typing.override
   def _summary_test_results(self) -> None:
@@ -575,7 +617,8 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
     )
     detailed_stats = [
         f'Required Iterations: {self.performance_test_iterations}',
-        f'Finished Iterations: {len(self._test_results)}']
+        f'Finished Iterations: {len(self._test_results)}',
+    ]
     detailed_stats.append('Failed Iterations:')
     detailed_stats.extend(self.__get_failed_iteration_messages())
     detailed_stats.append('File Transfer Connection Stats:')
@@ -608,8 +651,9 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
           test_result.failure_reason
           is not nc_constants.SingleTestFailureReason.SUCCESS
       ):
-        stats.append(f'  - {test_result.test_iteration}: '
-                     f'{test_result.result_message}')
+        stats.append(
+            f'  - {test_result.test_iteration}: {test_result.result_message}'
+        )
 
     if stats:
       return stats
@@ -619,53 +663,84 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
   def __get_prior_bt_connection_stats(self) -> list[str]:
     if not self._use_prior_bt:
       return []
-    (prior_bt_discovery_successes, prior_bt_discovery_median_latency) = (
-        self.__get_median_latency(
+    discovery_latency_stats = (
+        self.__get_latency_stats(
             self._performance_test_metrics.prior_bt_discovery_latencies
         )
     )
-    (prior_bt_connection_successes, prior_bt_connection_median_latency) = (
-        self.__get_median_latency(
+    connection_latency_stats = (
+        self.__get_latency_stats(
             self._performance_test_metrics.prior_bt_connection_latencies
         )
     )
     return [
-        f'  - Median Discovery Latency ({prior_bt_discovery_successes}): '
-        f'{prior_bt_discovery_median_latency}s',
-        f'  - Median Connection Latency ({prior_bt_connection_successes}): '
-        f'{prior_bt_connection_median_latency}s',
+        (
+            '  - Min / Median / Max Discovery Latency'
+            f' ({discovery_latency_stats.success_count} discovery):'
+            f' {discovery_latency_stats.min_val} /'
+            f' {discovery_latency_stats.median_val} /'
+            f' {discovery_latency_stats.max_val}s '
+        ),
+        (
+            '  - Min / Median / Max Connection Latency'
+            f' ({connection_latency_stats.success_count} connections):'
+            f' {connection_latency_stats.min_val} /'
+            f' {connection_latency_stats.median_val} /'
+            f' {connection_latency_stats.max_val}s '
+        ),
     ]
 
   def __get_file_transfer_connection_stats(self) -> list[str]:
-    (active_discovery_successes, active_discovery_median_latency) = (
-        self.__get_median_latency(
-            self._performance_test_metrics.file_transfer_discovery_latencies)
-    )
-    (active_connection_successes, active_connection_median_latency) = (
-        self.__get_median_latency(
-            self._performance_test_metrics.file_transfer_connection_latencies)
-    )
-    (file_transfer_successes, file_transfer_median_throughput) = (
-        self.__get_median_throughput(
-            self._performance_test_metrics.file_transfer_throughputs_kbps)
+    discovery_latency_stats = (
+        self.__get_latency_stats(
+            self._performance_test_metrics.file_transfer_discovery_latencies
         )
+    )
+    connection_latency_stats = (
+        self.__get_latency_stats(
+            self._performance_test_metrics.file_transfer_connection_latencies
+        )
+    )
+    transfer_stats = self.__get_transfer_stats(
+        self._performance_test_metrics.file_transfer_throughputs_kbps
+    )
     stats = [
-        f'  - Median Discovery Latency ({active_discovery_successes}): '
-        f'{active_discovery_median_latency}s',
-        f'  - Median Connection Latency ({active_connection_successes}): '
-        f'{active_connection_median_latency}s',
-        f'  - Median File Transfer Speed ({file_transfer_successes}): '
-        f'{round(file_transfer_median_throughput/1024, 1)}MBps',
+        (
+            '  - Min / Median / Max Discovery Latency'
+            f' ({discovery_latency_stats.success_count} discovery):'
+            f' {discovery_latency_stats.min_val} /'
+            f' {discovery_latency_stats.median_val} /'
+            f' {discovery_latency_stats.max_val}s '
+        ),
+        (
+            '  - Min / Median / Max Connection Latency'
+            f' ({connection_latency_stats.success_count} connections):'
+            f' {connection_latency_stats.min_val} /'
+            f' {connection_latency_stats.median_val} /'
+            f' {connection_latency_stats.max_val}s '
+        ),
+        (
+            '  - Min / Median / Max Speed'
+            f' ({transfer_stats.success_count} transfer):'
+            f' {transfer_stats.min_val} / {transfer_stats.median_val} /'
+            f' {transfer_stats.max_val} MBps'
+        ),
     ]
     if nc_constants.is_high_quality_medium(self._upgrade_medium_under_test):
-      (medium_upgrade_successes, medium_upgrade_median_latency) = (
-          self.__get_median_latency(
-              self._performance_test_metrics.medium_upgrade_latencies)
+      medium_upgrade_latency_stats = (
+          self.__get_latency_stats(
+              self._performance_test_metrics.medium_upgrade_latencies
+          )
       )
       stats.extend([
-          f'  - Median Upgrade Latency ({medium_upgrade_successes}): '
-          f'{medium_upgrade_median_latency}s',
-          '  - Upgrade Medium Stats:'
+          (
+              '  - Min / Median / Max Upgrade Latency '
+              f' ({medium_upgrade_latency_stats. success_count} upgrade):'
+              f' {medium_upgrade_latency_stats.min_val} /'
+              f' {medium_upgrade_latency_stats.median_val} /'
+              f' {medium_upgrade_latency_stats.max_val}s '
+          ),
+          '  - Upgrade Medium Stats:',
       ])
       stats.extend(self._summary_upgraded_wifi_transfer_mediums())
 

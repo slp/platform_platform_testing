@@ -87,10 +87,6 @@ class BlePerformanceTest(d2d_performance_test_base.D2dPerformanceTestBase):
     # don't require wifi STA.
     return True
 
-  def _are_devices_capabilities_ok(self) -> bool:
-    # no special capabilities is required.
-    return True
-
 
 if __name__ == '__main__':
   test_runner.main()

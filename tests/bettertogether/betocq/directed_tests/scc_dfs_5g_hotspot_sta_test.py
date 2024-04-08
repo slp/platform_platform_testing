@@ -81,22 +81,30 @@ class SccDfs5gHotspotStaTest(d2d_performance_test_base.D2dPerformanceTestBase):
   def _get_throughput_low_tip(self) -> str:
     return (
         f'{self._throughput_low_string}. This is 5G SCC DFS hotspot test case.'
-        ' In the configuration fileenable_sta_dfs_channel_for_peer_network is'
-        ' set to true.Check if the target device does support WFD group owner'
-        ' in the STA-associatedDFS channel. Check if'
-        ' config_wifiEnableStaDfsChannelForPeerNetworkhttps://cs.android.com/android/platform/superproject/main/+/main:packages/modules/Wifi/service/ServiceWifiResources/res/values/config.xml;l=1151)is'
+        ' Check STA and WFD GO frequencies in the target logs (dumpsys'
+        ' wifip2p) and ensure they have the same value. In the configuration'
+        ' file, enable_sta_dfs_channel_for_peer_network is set to true. Check'
+        ' if the target device does support WFD group owner in the'
+        ' STA-associated DFS channel. Check if'
+        ' config_wifiEnableStaDfsChannelForPeerNetworkhttps://cs.android.com/android/platform/superproject/main/+/main:packages/modules/Wifi/service/ServiceWifiResources/res/values/config.xml)is'
         ' set to true and has the correct driver/FW implementation.'
     )
 
   def _is_wifi_ap_ready(self) -> bool:
     return True if self.test_parameters.wifi_5g_ssid else False
 
-  def _are_devices_capabilities_ok(self) -> bool:
-    return (
-        self.discoverer.supports_5g
-        and self.advertiser.supports_5g
-        and self.advertiser.enable_sta_dfs_channel_for_peer_network
-    )
+  @property
+  def _devices_capabilities_definition(self) -> dict[str, dict[str, bool]]:
+    return {
+        'discoverer': {
+            'supports_5g': True,
+        },
+        'advertiser': {
+            'supports_5g': True,
+            'enable_sta_dfs_channel_for_peer_network': True,
+        },
+    }
+
 
 
 if __name__ == '__main__':

@@ -93,9 +93,6 @@ class Bt2gWifiCoexTest(d2d_performance_test_base.D2dPerformanceTestBase):
   def _is_wifi_ap_ready(self) -> bool:
     return True if self.test_parameters.wifi_2g_ssid else False
 
-  def _are_devices_capabilities_ok(self) -> bool:
-    return True
-
 
 if __name__ == '__main__':
   test_runner.main()

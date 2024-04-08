@@ -101,11 +101,17 @@ class Scc5gAllWifiDbs2gStaTest(
   def _is_wifi_ap_ready(self) -> bool:
     return True if self.test_parameters.wifi_2g_ssid else False
 
-  def _are_devices_capabilities_ok(self) -> bool:
-    return (
-        self.discoverer.supports_5g and self.advertiser.supports_5g
-        and self.advertiser.supports_dbs_sta_wfd
-    )
+  @property
+  def _devices_capabilities_definition(self) -> dict[str, dict[str, bool]]:
+    return {
+        'discoverer': {
+            'supports_5g': True,
+        },
+        'advertiser': {
+            'supports_5g': True,
+            'supports_dbs_sta_wfd': True,
+        },
+    }
 
 
 if __name__ == '__main__':
