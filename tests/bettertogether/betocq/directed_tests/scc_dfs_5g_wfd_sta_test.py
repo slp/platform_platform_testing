@@ -79,7 +79,7 @@ class SccDfs5gWfdStaTest(d2d_performance_test_base.D2dPerformanceTestBase):
 
   def _get_throughput_low_tip(self) -> str:
     return (
-        'f{self._throughput_low_string}. This is 5G SCC DFS WFD test case. In'
+        f'{self._throughput_low_string}. This is 5G SCC DFS WFD test case. In'
         ' the configuration file,enable_sta_dfs_channel_for_peer_network is set'
         ' to true for both src/target.Check if both device do support WFD group'
         ' owner in the STA-associatedDFS channel. Check if'

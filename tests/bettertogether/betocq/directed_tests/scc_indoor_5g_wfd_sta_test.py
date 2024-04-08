@@ -80,7 +80,7 @@ class SccIndoor5gWfdStaTest(d2d_performance_test_base.D2dPerformanceTestBase):
 
   def _get_throughput_low_tip(self) -> str:
     return (
-        'f{self._throughput_low_string}. This is 5G SCC indoor WFD test case.'
+        f'{self._throughput_low_string}. This is 5G SCC indoor WFD test case.'
         ' In the configuration file,enable_sta_indoor_channel_for_peer_network'
         ' is set to true.Check if the target device does support WFD group'
         ' owner in the STA-associatedindoor channel. Check if'

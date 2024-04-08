@@ -74,7 +74,7 @@ class Scc5gWfdStaTest(d2d_performance_test_base.D2dPerformanceTestBase):
 
   def _get_throughput_low_tip(self) -> str:
     return (
-        'f{self._throughput_low_string}. This is a SCC 5G test case with WFD'
+        f'{self._throughput_low_string}. This is a SCC 5G test case with WFD'
         ' and STA operating at the same 5G channel.Check with the wifi chip'
         ' vendor about the possible firmware Tx/Rx issues inthis mode. Also'
         ' check if the AP channel is set correctly and is supported bythe used'
