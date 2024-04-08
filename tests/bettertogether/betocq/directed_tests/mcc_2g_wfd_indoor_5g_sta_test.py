@@ -99,12 +99,17 @@ class Mcc2gWfdIndoor5gStaTest(d2d_performance_test_base.D2dPerformanceTestBase):
   def _is_wifi_ap_ready(self) -> bool:
     return True if self.test_parameters.wifi_5g_ssid else False
 
-  def _are_devices_capabilities_ok(self) -> bool:
-    return (
-        self.discoverer.supports_5g
-        and self.advertiser.supports_5g
-        and not self.advertiser.enable_sta_indoor_channel_for_peer_network
-    )
+  @property
+  def _devices_capabilities_definition(self) -> dict[str, dict[str, bool]]:
+    return {
+        'discoverer': {
+            'supports_5g': True,
+        },
+        'advertiser': {
+            'supports_5g': True,
+            'enable_sta_indoor_channel_for_peer_network': False,
+        },
+    }
 
 
 if __name__ == '__main__':
