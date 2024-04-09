@@ -251,9 +251,12 @@ COMMON_TRIAGE_TIP: dict[SingleTestFailureReason, str] = {
         'The target device can not start BLE advertising.'
     ),
     SingleTestFailureReason.SOURCE_REQUEST_CONNECTION: (
-        'The source device can not connect to the target device.'),
+        'The source device can not request connection to the target device'
+        ' through BLE.'
+    ),
     SingleTestFailureReason.TARGET_ACCEPT_CONNECTION: (
-        'The target device can not accept the connection.'),
+        'The target device can not accept the connection through BLE.'
+    ),
     SingleTestFailureReason.SOURCE_WIFI_CONNECTION: (
         'The source device can not connect to the wifi network. '
         '1) Check if the wifi ssid or password is correct;'
