@@ -441,6 +441,17 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
 
   def _get_current_test_result_message(self) -> str:
     if (
+        self._use_prior_bt
+        and self._prior_bt_nc_fail_reason
+        is not nc_constants.SingleTestFailureReason.SUCCESS
+    ):
+      return ''.join([
+          'FAIL (The prior BT connection): ',
+          f'{self._prior_bt_nc_fail_reason.name} - ',
+          nc_constants.COMMON_TRIAGE_TIP.get(self._prior_bt_nc_fail_reason),
+      ])
+
+    if (
         self._active_nc_fail_reason
         == nc_constants.SingleTestFailureReason.SUCCESS
     ):
@@ -452,17 +463,6 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
       return ''.join([
           f'FAIL: {self._active_nc_fail_reason.name} - ',
           nc_constants.COMMON_TRIAGE_TIP.get(self._active_nc_fail_reason),
-      ])
-
-    if (
-        self._use_prior_bt
-        and self._prior_bt_nc_fail_reason
-        is not nc_constants.SingleTestFailureReason.SUCCESS
-    ):
-      return ''.join([
-          'FAIL (The prior BT connection): ',
-          f'{self._prior_bt_nc_fail_reason.name} - ',
-          nc_constants.COMMON_TRIAGE_TIP.get(self._prior_bt_nc_fail_reason),
       ])
 
     if (
