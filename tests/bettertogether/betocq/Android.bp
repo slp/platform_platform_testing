@@ -88,9 +88,9 @@ python_library_host {
 }
 
 python_library_host {
-    name: "betocq_cuj_tests",
+    name: "betocq_compound_tests",
     defaults: ["betocq_lib_defaults"],
-    srcs: ["cuj_tests/*.py"],
+    srcs: ["compound_tests/*.py"],
     libs: [
         "betocq_lib",
         "d2d_performance_test_base",
@@ -124,20 +124,20 @@ python_library_host {
 // Test suites
 
 python_test_host {
-    name: "batch_all_performance_test_suite",
-    main: "batch_all_performance_test_suite.py",
-    srcs: ["batch_all_performance_test_suite.py"],
+    name: "betocq_test_suite",
+    main: "betocq_test_suite.py",
+    srcs: ["betocq_test_suite.py"],
     libs: [
         "base_betocq_suite",
-        "betocq_cuj_tests",
+        "betocq_compound_tests",
         "betocq_directed_tests",
         "betocq_function_tests",
         "betocq_lib",
         "mobly",
     ],
     data: [
-        "local_dev_testbed.yml",
-        // package the snippes for atest
+        "cuj_and_test_config_testbed.yml",
+        // package the snippets for atest
         ":nearby_snippet",
         ":nearby_snippet_2",
     ],
@@ -150,20 +150,20 @@ python_test_host {
 }
 
 python_test_host {
-    name: "batch_performance_testing_with_2g_ap_test_suite",
-    main: "batch_performance_testing_with_2g_ap_test_suite.py",
-    srcs: ["batch_performance_testing_with_2g_ap_test_suite.py"],
+    name: "betocq_2g_ap_test_suite",
+    main: "betocq_2g_ap_test_suite.py",
+    srcs: ["betocq_2g_ap_test_suite.py"],
     defaults: ["betocq_test_defaults"],
     libs: [
         "base_betocq_suite",
-        "betocq_cuj_tests",
+        "betocq_compound_tests",
         "betocq_directed_tests",
         "betocq_function_tests",
         "betocq_lib",
         "mobly",
     ],
     data: [
-        "local_dev_testbed.yml",
+        "cuj_and_test_config_testbed.yml",
         // package the snippes for atest
         ":nearby_snippet",
         ":nearby_snippet_2",
@@ -177,9 +177,9 @@ python_test_host {
 }
 
 python_test_host {
-    name: "batch_performance_testing_with_5g_ap_test_suite",
-    main: "batch_performance_testing_with_5g_ap_test_suite.py",
-    srcs: ["batch_performance_testing_with_5g_ap_test_suite.py"],
+    name: "betocq_5g_ap_test_suite",
+    main: "betocq_5g_ap_test_suite.py",
+    srcs: ["betocq_5g_ap_test_suite.py"],
     defaults: ["betocq_test_defaults"],
     libs: [
         "base_betocq_suite",
@@ -188,7 +188,7 @@ python_test_host {
         "mobly",
     ],
     data: [
-        "local_dev_testbed.yml",
+        "cuj_and_test_config_testbed.yml",
         // package the snippes for atest
         ":nearby_snippet",
         ":nearby_snippet_2",
@@ -202,19 +202,19 @@ python_test_host {
 }
 
 python_test_host {
-    name: "batch_performance_testing_with_dfs_5g_ap_test_suite",
-    main: "batch_performance_testing_with_dfs_5g_ap_test_suite.py",
-    srcs: ["batch_performance_testing_with_dfs_5g_ap_test_suite.py"],
+    name: "betocq_dfs_5g_ap_test_suite",
+    main: "betocq_dfs_5g_ap_test_suite.py",
+    srcs: ["betocq_dfs_5g_ap_test_suite.py"],
     defaults: ["betocq_test_defaults"],
     libs: [
         "base_betocq_suite",
-        "betocq_cuj_tests",
+        "betocq_compound_tests",
         "betocq_directed_tests",
         "betocq_lib",
         "mobly",
     ],
     data: [
-        "local_dev_testbed.yml",
+        "cuj_and_test_config_testbed.yml",
         // package the snippes for atest
         ":nearby_snippet",
         ":nearby_snippet_2",
