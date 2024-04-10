@@ -25,6 +25,7 @@ import com.android.tradefed.device.ITestDevice;
 import com.google.common.collect.ImmutableMap;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -50,31 +51,16 @@ public class GhidraFunctionOffsets {
     /**
      * Converts the output of {@code getFunctionOffsets} to a string with space separated offsets.
      *
-     * @param device The ITestDevice to pull the binary from.
-     * @param binaryName The name of the binary file present in device.
-     * @param binaryPath The path to the binary file in device .
-     * @param callingClass The name of the calling class.
+     * @param ghidra An instance of Ghidra.
+     * @param binaryFile The binary file in device.
      * @param functions The list of function names.
      * @return A string containing space separated function offsets.
      */
     public static String getFunctionOffsetsAsCmdLineArgs(
-            ITestDevice device,
-            String binaryName,
-            String binaryPath,
-            String callingClass,
-            List<String> functions,
-            String analyzeHeadlessPath)
-            throws Exception {
+            Ghidra ghidra, File binaryFile, List<String> functions) throws Exception {
         return String.join(
                 " ",
-                getFunctionOffsets(
-                                device,
-                                binaryName,
-                                binaryPath,
-                                callingClass,
-                                functions,
-                                analyzeHeadlessPath)
-                        .stream()
+                getFunctionOffsets(ghidra, binaryFile, functions).stream()
                         .map(BigInteger::toString)
                         .toArray(String[]::new));
     }
@@ -82,22 +68,18 @@ public class GhidraFunctionOffsets {
     /**
      * Retrieves the function offsets from the given binary.
      *
-     * @param device The ITestDevice to pull the binary from.
-     * @param binaryName The name of the binary file present in device.
-     * @param binaryPath The path to the binary file in device .
-     * @param callingClass The name of the calling class.
+     * @param ghidra An instance of Ghidra.
+     * @param binaryFile The binary file in device.
      * @param functions The list of function names.
      * @return A list of BigIntegers containing function offsets in the same order as @param
      *     functions.
      */
     public static List<BigInteger> getFunctionOffsets(
-            ITestDevice device,
-            String binaryName,
-            String binaryPath,
-            String callingClass,
-            List<String> functions,
-            String analyzeHeadlessPath)
-            throws Exception {
+            Ghidra ghidra, File binaryFile, List<String> functions) throws Exception {
+        final String ghidraPath = ghidra.getGhidraPath();
+        final String callingClass = ghidra.getCallingClassName();
+        final ITestDevice device = ghidra.getDevice();
+
         // Set up a server socket to listen for output from post script
         final Map<String, List<BigInteger>> mapOfResults = new HashMap<String, List<BigInteger>>();
         final Semaphore outputReceived = new Semaphore(0);
@@ -125,13 +107,12 @@ public class GhidraFunctionOffsets {
         GhidraScriptRunner ghidraScriptRunner =
                 new GhidraScriptRunner(
                                 device,
-                                binaryName,
-                                binaryPath,
+                                binaryFile,
                                 callingClass,
                                 POST_SCRIPT_CLASS_NAME + ".properties",
                                 null,
                                 POST_SCRIPT_CLASS_NAME + ".java",
-                                analyzeHeadlessPath)
+                                ghidraPath)
                         .postScript(
                                 readResource(POST_SCRIPT_CONTENT_RESOURCE_PATH),
                                 new HashMap<String, String>(
