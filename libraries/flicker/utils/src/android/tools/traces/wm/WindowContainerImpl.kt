@@ -16,7 +16,7 @@
 
 package android.tools.traces.wm
 
-import android.tools.datatypes.Rect
+import android.graphics.Rect
 
 /**
  * Represents WindowContainer classes such as DisplayContent.WindowContainers and
@@ -52,7 +52,7 @@ class WindowContainerImpl(
     override val stableId: String
         get() = "${this::class.simpleName} $token $title"
     override val isFullscreen: Boolean = false
-    override val bounds: Rect = Rect.EMPTY
+    override val bounds: Rect = Rect()
 
     override fun toString(): String {
         if (

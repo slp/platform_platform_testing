@@ -17,8 +17,8 @@
 package android.tools.helpers
 
 import android.graphics.Insets
+import android.graphics.Rect
 import android.tools.Rotation
-import android.tools.datatypes.Rect
 
 /**
  * A class containing utility methods related to rotation.
@@ -72,25 +72,25 @@ object RotationUtils {
         return when (rotation) {
             Rotation.ROTATION_0 -> inBounds
             Rotation.ROTATION_90 ->
-                Rect.from(
-                    left = inBounds.top,
-                    top = parentWidth - inBounds.right,
-                    right = inBounds.bottom,
-                    bottom = parentWidth - origLeft
+                Rect(
+                    /* left */ inBounds.top,
+                    /* top */ parentWidth - inBounds.right,
+                    /* right */ inBounds.bottom,
+                    /* bottom */ parentWidth - origLeft
                 )
             Rotation.ROTATION_180 ->
-                Rect.from(
-                    left = parentWidth - inBounds.right,
-                    right = parentWidth - origLeft,
-                    top = parentHeight - inBounds.bottom,
-                    bottom = parentHeight - origTop
+                Rect(
+                    /* left */ parentWidth - inBounds.right,
+                    /* right */ parentWidth - origLeft,
+                    /* top */ parentHeight - inBounds.bottom,
+                    /* bottom */ parentHeight - origTop
                 )
             Rotation.ROTATION_270 ->
-                Rect.from(
-                    left = parentHeight - inBounds.bottom,
-                    bottom = inBounds.right,
-                    right = parentHeight - inBounds.top,
-                    top = origLeft
+                Rect(
+                    /* left */ parentHeight - inBounds.bottom,
+                    /* bottom */ inBounds.right,
+                    /* right */ parentHeight - inBounds.top,
+                    /* top */ origLeft
                 )
         }
     }

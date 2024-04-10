@@ -16,9 +16,9 @@
 
 package android.tools.traces.region
 
+import android.graphics.Region
 import android.tools.Timestamp
 import android.tools.TraceEntry
-import android.tools.datatypes.Region
 
 /**
  * Represents a single Region trace entry.

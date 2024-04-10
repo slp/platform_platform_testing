@@ -16,10 +16,10 @@
 
 package android.tools.traces.parsers.view
 
+import android.graphics.Point
+import android.graphics.PointF
+import android.graphics.Rect
 import android.tools.Timestamps
-import android.tools.datatypes.Point
-import android.tools.datatypes.PointF
-import android.tools.datatypes.Rect
 import android.tools.traces.view.ViewFrame
 import android.tools.traces.view.ViewNode
 
@@ -39,15 +39,15 @@ class ViewFrameBuilder {
             hashCode = node.hashcode,
             id = node.id,
             bounds =
-                Rect.from(
+                Rect(
                     node.left,
                     node.top,
-                    right = node.left + node.width,
-                    bottom = node.top + node.height
+                    /* right */ node.left + node.width,
+                    /* bottom */ node.top + node.height
                 ),
-            scroll = Point.from(node.scrollX, node.scrollY),
-            translation = PointF.from(node.translationX, node.translationY),
-            scale = PointF.from(node.scaleX, node.scaleY),
+            scroll = Point(node.scrollX, node.scrollY),
+            translation = PointF(node.translationX, node.translationY),
+            scale = PointF(node.scaleX, node.scaleY),
             alpha = node.alpha.toDouble(),
             willNotDraw = node.willNotDraw,
             clipChildren = node.clipChildren,

@@ -67,7 +67,7 @@ object ConditionsFactory {
     fun isNavOrTaskBarLayerOpaque(): Condition<DeviceStateDump> =
         Condition("isNavOrTaskBarLayerOpaque") {
             val component = getNavBarComponent(it.wmState)
-            it.layerState.getLayerWithBuffer(component)?.color?.isOpaque ?: false
+            it.layerState.getLayerWithBuffer(component)?.color?.alpha() == 1.0f
         }
 
     /** Condition to check if the [ComponentNameMatcher.NAV_BAR] window is visible */
@@ -89,7 +89,7 @@ object ConditionsFactory {
     /** Condition to check if the [ComponentNameMatcher.NAV_BAR] layer is opaque */
     fun isNavBarLayerOpaque(): Condition<DeviceStateDump> =
         Condition("isNavBarLayerOpaque") {
-            it.layerState.getLayerWithBuffer(ComponentNameMatcher.NAV_BAR)?.color?.isOpaque ?: false
+            it.layerState.getLayerWithBuffer(ComponentNameMatcher.NAV_BAR)?.color?.alpha() == 1.0f
         }
 
     /** Condition to check if the [ComponentNameMatcher.TASK_BAR] window is visible */
@@ -111,8 +111,7 @@ object ConditionsFactory {
     /** Condition to check if the [ComponentNameMatcher.TASK_BAR] layer is opaque */
     fun isTaskBarLayerOpaque(): Condition<DeviceStateDump> =
         Condition("isTaskBarLayerOpaque") {
-            it.layerState.getLayerWithBuffer(ComponentNameMatcher.TASK_BAR)?.color?.isOpaque
-                ?: false
+            it.layerState.getLayerWithBuffer(ComponentNameMatcher.TASK_BAR)?.color?.alpha() == 1.0f
         }
 
     /** Condition to check if the [ComponentNameMatcher.STATUS_BAR] window is visible */
@@ -134,8 +133,8 @@ object ConditionsFactory {
     /** Condition to check if the [ComponentNameMatcher.STATUS_BAR] layer is opaque */
     fun isStatusBarLayerOpaque(): Condition<DeviceStateDump> =
         Condition("isStatusBarLayerOpaque") {
-            it.layerState.getLayerWithBuffer(ComponentNameMatcher.STATUS_BAR)?.color?.isOpaque
-                ?: false
+            it.layerState.getLayerWithBuffer(ComponentNameMatcher.STATUS_BAR)?.color?.alpha() ==
+                1.0f
         }
 
     fun isHomeActivityVisible(): Condition<DeviceStateDump> =
@@ -230,20 +229,20 @@ object ConditionsFactory {
     /** Condition to check if the given layer is opaque */
     fun isLayerOpaque(componentMatcher: IComponentMatcher): Condition<DeviceStateDump> =
         Condition("isLayerOpaque[${componentMatcher.toLayerIdentifier()}]") {
-            it.layerState.getLayerWithBuffer(componentMatcher)?.color?.isOpaque ?: false
+            it.layerState.getLayerWithBuffer(componentMatcher)?.color?.alpha() == 1.0f
         }
 
     fun isLayerColorAlphaOne(componentMatcher: IComponentMatcher): Condition<DeviceStateDump> =
         Condition("isLayerColorAlphaOne[${componentMatcher.toLayerIdentifier()}]") {
             it.layerState.visibleLayers
                 .filter { layer -> componentMatcher.layerMatchesAnyOf(layer) }
-                .any { layer -> layer.color.isOpaque }
+                .any { layer -> layer.color.alpha() == 1.0f }
         }
 
     fun isLayerColorAlphaOne(layerId: Int): Condition<DeviceStateDump> =
         Condition("isLayerColorAlphaOne[$layerId]") {
             val layer = it.layerState.getLayerById(layerId)
-            layer?.color?.a == 1.0f
+            layer?.color?.alpha() == 1.0f
         }
 
     fun isLayerTransformFlagSet(
@@ -298,13 +297,13 @@ object ConditionsFactory {
                     pinnedWindow.layerId == layerId
                 }
                     ?: error("Unable to find window with layerId $layerId")
-            val windowHeight = pipWindow.frame.height.toFloat()
-            val windowWidth = pipWindow.frame.width.toFloat()
+            val windowHeight = pipWindow.frame.height().toFloat()
+            val windowWidth = pipWindow.frame.width().toFloat()
 
             val pipLayer = it.layerState.getLayerById(layerId)
             val layerHeight =
-                pipLayer?.screenBounds?.height ?: error("Unable to find layer with id $layerId")
-            val layerWidth = pipLayer.screenBounds.width
+                pipLayer?.screenBounds?.height() ?: error("Unable to find layer with id $layerId")
+            val layerWidth = pipLayer.screenBounds.width()
 
             windowHeight == layerHeight && windowWidth == layerWidth
         }

@@ -19,10 +19,10 @@ package android.tools.traces.parsers
 import android.app.ActivityTaskManager
 import android.app.Instrumentation
 import android.app.WindowConfiguration
+import android.graphics.Region
 import android.os.SystemClock
 import android.os.Trace
 import android.tools.Rotation
-import android.tools.datatypes.Region
 import android.tools.traces.Condition
 import android.tools.traces.ConditionsFactory
 import android.tools.traces.DeviceStateDump
@@ -96,7 +96,7 @@ constructor(
      * @return The frame [Region] a [WindowState] matching [componentMatcher]
      */
     fun getWindowRegion(componentMatcher: IComponentMatcher): Region =
-        getWindow(componentMatcher)?.frameRegion ?: Region.EMPTY
+        getWindow(componentMatcher)?.frameRegion ?: Region()
 
     /**
      * Class to build conditions for waiting on specific [WindowManagerTrace] and [LayersTrace]
