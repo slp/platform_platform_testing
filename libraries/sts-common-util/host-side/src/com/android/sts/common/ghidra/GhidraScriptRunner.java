@@ -41,7 +41,7 @@ public class GhidraScriptRunner {
     private ByteArrayOutputStream mOutputOfGhidra;
     private ITestDevice mDevice;
     private String mBinaryName;
-    private String mBinaryPath;
+    private String mBinaryFile;
     private String mAnalyzeHeadlessPath;
     private Optional<String> mPropertiesFileName = Optional.empty();
     private Optional<String> mPreScriptFileName = Optional.empty();
@@ -59,8 +59,7 @@ public class GhidraScriptRunner {
      * avoid conflicts.
      *
      * @param device The ITestDevice to pull the binary from.
-     * @param binaryName The name of the binary file present in device.
-     * @param binaryPath The path to the binary file in device .
+     * @param binaryFile The binary file in device.
      * @param callingClass The name of the calling class.
      * @param propertiesFileName The file name of properties file associated with post script. eg.
      *     function_offset_post_script.properties
@@ -70,16 +69,15 @@ public class GhidraScriptRunner {
      */
     public GhidraScriptRunner(
             ITestDevice device,
-            String binaryName,
-            String binaryPath,
+            File binaryFile,
             String callingClass,
             String propertiesFileName,
             String preScriptFileName,
             String postScriptFileName,
             String analyzeHeadlessPath) {
         mDevice = device;
-        mBinaryName = binaryName;
-        mBinaryPath = binaryPath;
+        mBinaryName = binaryFile.getName();
+        mBinaryFile = binaryFile.toString();
         mCallingClass = callingClass;
         mAnalyzeHeadlessPath = analyzeHeadlessPath;
         mPropertiesFileName = Optional.ofNullable(propertiesFileName);
@@ -153,7 +151,7 @@ public class GhidraScriptRunner {
             // Get the language using readelf
             String deviceSerial = mDevice.getSerialNumber().replace(":", "");
             String pulledLibSaveFolderString = mCallingClass + "_" + deviceSerial + "_files";
-            String language = getLanguage(mDevice, mBinaryPath, mBinaryName);
+            String language = getLanguage(mDevice, mBinaryFile);
             mPulledLibSaveFolder =
                     createNamedTempDir(
                             Paths.get(mAnalyzeHeadlessPath).getParent().toFile(),
@@ -161,10 +159,8 @@ public class GhidraScriptRunner {
 
             // Pull binary from the device to the folder
             if (!mDevice.pullFile(
-                    mBinaryPath + "/" + mBinaryName,
-                    new File(mPulledLibSaveFolder + "/" + mBinaryName))) {
-                throw new Exception(
-                        "Pulling " + mBinaryPath + "/" + mBinaryName + " was not successful");
+                    mBinaryFile, new File(mPulledLibSaveFolder + "/" + mBinaryName))) {
+                throw new Exception("Pulling " + mBinaryFile + " was not successful");
             }
 
             // Create script related files and chmod rwx them
@@ -291,16 +287,12 @@ public class GhidraScriptRunner {
      * <p>TODO: Utilize ghidra pre script for setting language automatically.
      *
      * @param device The ITestDevice representing the testing device.
-     * @param binaryPath The path to the directory containing the binary file.
-     * @param binaryName The name of the binary file.
+     * @param binaryFile The path to the binary file.
      * @return The language of the binary in the format "ARCH:ENDIAN:BITS:VARIANT"
      */
-    private static String getLanguage(ITestDevice device, String binaryPath, String binaryName)
-            throws Exception {
+    private static String getLanguage(ITestDevice device, String binaryFile) throws Exception {
         String language =
-                runAndCheck(
-                                device,
-                                "readelf -h " + binaryPath + "/" + binaryName + " | grep Machine")
+                runAndCheck(device, "readelf -h " + binaryFile + " | grep Machine")
                         .getStdout()
                         .trim()
                         .split(":\\s*")[1]
