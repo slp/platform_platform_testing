@@ -33,6 +33,7 @@ import yaml
 from betocq import android_wifi_utils
 from betocq import nc_constants
 from betocq import setup_utils
+from betocq import version
 
 NEARBY_SNIPPET_PACKAGE_NAME = 'com.google.android.nearby.mobly.snippet'
 NEARBY_SNIPPET_2_PACKAGE_NAME = 'com.google.android.nearby.mobly.snippet.second'
@@ -43,6 +44,8 @@ _CONFIG_EXTERNAL_PATH = 'TBD'
 
 class NCBaseTestClass(base_test.BaseTestClass):
   """The Base of Nearby Connection E2E tests."""
+
+  _run_identifier_is_set = False
 
   def __init__(self, configs):
     super().__init__(configs)
@@ -64,6 +67,7 @@ class NCBaseTestClass(base_test.BaseTestClass):
     return None
 
   def setup_class(self) -> None:
+    self._set_run_identifier()
     self._setup_openwrt_wifi()
     self.ads = self.register_controller(android_device, min_number=2)
     try:
@@ -113,6 +117,24 @@ class NCBaseTestClass(base_test.BaseTestClass):
         param_list=[[ad] for ad in self.ads],
         raise_on_exception=True,
     )
+
+  def _set_run_identifier(self) -> None:
+    """Set a run_identifier property describing the test run context.
+
+    This property is only set once, even if multiple test classes are run as
+    part of a test suite.
+    """
+    if NCBaseTestClass._run_identifier_is_set:
+      return
+    run_identifier = {}
+    run_identifier['test_version'] = version.TEST_SCRIPT_VERSION
+    run_identifier['target_cuj'] = self.test_parameters.target_cuj_name
+    run_identifier_str = ', '.join(
+        [f'{key}:{value}' for key, value in run_identifier.items()]
+    )
+    run_identifier_str = f'{{{run_identifier_str}}}'
+    self.record_data({'properties': {'run_identifier': run_identifier_str}})
+    NCBaseTestClass._run_identifier_is_set = True
 
   def _setup_openwrt_wifi(self):
     """Sets up the wifi connection with OpenWRT."""
