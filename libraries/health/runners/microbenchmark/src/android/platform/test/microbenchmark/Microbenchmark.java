@@ -44,6 +44,7 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -295,8 +296,12 @@ public class Microbenchmark extends BlockJUnit4ClassRunner {
             return original;
         }
         return Description.createTestDescription(
-                String.join(mIterationSep, original.getClassName(),
-                        String.valueOf(mIterations.get(original))), original.getMethodName());
+                original.getTestClass(),
+                String.join(
+                        mIterationSep,
+                        original.getMethodName(),
+                        String.valueOf(mIterations.get(original))),
+                original.getAnnotations().toArray(Annotation[]::new));
     }
 
     /** Re-implement the private rules wrapper from {@link BlockJUnit4ClassRunner} in JUnit 4.12. */

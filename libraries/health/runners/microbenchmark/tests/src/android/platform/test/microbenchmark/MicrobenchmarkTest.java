@@ -16,6 +16,7 @@
 package android.platform.test.microbenchmark;
 
 import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -28,6 +29,9 @@ import android.platform.test.microbenchmark.Microbenchmark.TerminateEarlyExcepti
 import android.platform.test.rule.TestWatcher;
 import android.platform.test.rule.TracePointRule;
 
+import androidx.test.InstrumentationRegistry;
+import androidx.test.internal.runner.TestRequestBuilder;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -36,6 +40,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
+import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
@@ -46,6 +51,10 @@ import org.junit.runners.model.Statement;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,13 +63,24 @@ import java.util.List;
  */
 @RunWith(JUnit4.class)
 public final class MicrobenchmarkTest {
-    // Static logs are needed to validate dynamic rules, which are instantiated reflectively and
-    // cannot access non-static variables.
+    // Static logs are needed to validate dynamic rules and tests that use TestRequestBuilder, where
+    // objects are instantiated with reflection and not directly accessible.
     private static List<String> sLogs = new ArrayList<>();
+    // Holds the state of the instrumentation args before each test for restoring after. Some tests
+    // need to manipulate the arguments directly, as the underlying object is instantiated through
+    // reflection and thus not directly manipulate-able.
+    private Bundle mArgumentsBeforeTest;
 
     @Before
     public void setUp() {
         sLogs.clear();
+        mArgumentsBeforeTest = InstrumentationRegistry.getArguments();
+    }
+
+    @After
+    public void restoreArguments() {
+        InstrumentationRegistry.registerInstance(
+                InstrumentationRegistry.getInstrumentation(), mArgumentsBeforeTest);
     }
 
     /**
@@ -87,19 +107,20 @@ public final class MicrobenchmarkTest {
     @Test
     public void testFeatureExecutionOrder() throws InitializationError {
         LoggingMicrobenchmark loggingRunner = new LoggingMicrobenchmark(LoggingTest.class);
-        loggingRunner.setOperationLog(new ArrayList<String>());
         Result result = new JUnitCore().run(loggingRunner);
         assertThat(result.wasSuccessful()).isTrue();
-        assertThat(loggingRunner.getOperationLog()).containsExactly(
-                "before",
-                "tight before",
-                "begin: testMethod("
-                    + "android.platform.test.microbenchmark.MicrobenchmarkTest$LoggingTest)",
-                "test",
-                "end",
-                "tight after",
-                "after")
-            .inOrder();
+        assertThat(sLogs)
+                .containsExactly(
+                        "before",
+                        "tight before",
+                        "begin: testMethod("
+                                + "android.platform.test.microbenchmark.MicrobenchmarkTest$"
+                                + "LoggingTest)",
+                        "test",
+                        "end",
+                        "tight after",
+                        "after")
+                .inOrder();
     }
 
     /**
@@ -115,27 +136,29 @@ public final class MicrobenchmarkTest {
         args.putString("iterations", "2");
         args.putString("rename-iterations", "true");
         LoggingMicrobenchmark loggingRunner = new LoggingMicrobenchmark(LoggingTest.class, args);
-        loggingRunner.setOperationLog(new ArrayList<String>());
         Result result = new JUnitCore().run(loggingRunner);
         assertThat(result.wasSuccessful()).isTrue();
-        assertThat(loggingRunner.getOperationLog()).containsExactly(
-                "before",
-                "tight before",
-                "begin: testMethod("
-                    + "android.platform.test.microbenchmark.MicrobenchmarkTest$LoggingTest$1)",
-                "test",
-                "end",
-                "tight after",
-                "after",
-                "before",
-                "tight before",
-                "begin: testMethod("
-                    + "android.platform.test.microbenchmark.MicrobenchmarkTest$LoggingTest$2)",
-                "test",
-                "end",
-                "tight after",
-                "after")
-            .inOrder();
+        assertThat(sLogs)
+                .containsExactly(
+                        "before",
+                        "tight before",
+                        "begin: testMethod$1("
+                                + "android.platform.test.microbenchmark.MicrobenchmarkTest$"
+                                + "LoggingTest)",
+                        "test",
+                        "end",
+                        "tight after",
+                        "after",
+                        "before",
+                        "tight before",
+                        "begin: testMethod$2("
+                                + "android.platform.test.microbenchmark.MicrobenchmarkTest$"
+                                + "LoggingTest)",
+                        "test",
+                        "end",
+                        "tight after",
+                        "after")
+                .inOrder();
     }
 
     /**
@@ -152,27 +175,29 @@ public final class MicrobenchmarkTest {
         args.putString("rename-iterations", "true");
         args.putString("iteration-separator", "--");
         LoggingMicrobenchmark loggingRunner = new LoggingMicrobenchmark(LoggingTest.class, args);
-        loggingRunner.setOperationLog(new ArrayList<String>());
         Result result = new JUnitCore().run(loggingRunner);
         assertThat(result.wasSuccessful()).isTrue();
-        assertThat(loggingRunner.getOperationLog()).containsExactly(
-                "before",
-                "tight before",
-                "begin: testMethod("
-                    + "android.platform.test.microbenchmark.MicrobenchmarkTest$LoggingTest--1)",
-                "test",
-                "end",
-                "tight after",
-                "after",
-                "before",
-                "tight before",
-                "begin: testMethod("
-                    + "android.platform.test.microbenchmark.MicrobenchmarkTest$LoggingTest--2)",
-                "test",
-                "end",
-                "tight after",
-                "after")
-            .inOrder();
+        assertThat(sLogs)
+                .containsExactly(
+                        "before",
+                        "tight before",
+                        "begin: testMethod--1("
+                                + "android.platform.test.microbenchmark.MicrobenchmarkTest$"
+                                + "LoggingTest)",
+                        "test",
+                        "end",
+                        "tight after",
+                        "after",
+                        "before",
+                        "tight before",
+                        "begin: testMethod--2("
+                                + "android.platform.test.microbenchmark.MicrobenchmarkTest$"
+                                + "LoggingTest)",
+                        "test",
+                        "end",
+                        "tight after",
+                        "after")
+                .inOrder();
     }
 
     /**
@@ -187,10 +212,9 @@ public final class MicrobenchmarkTest {
         args.putString("iterations", "1");
         args.putString("rename-iterations", "false");
         LoggingMicrobenchmark loggingRunner = new LoggingMicrobenchmark(LoggingTest.class, args);
-        loggingRunner.setOperationLog(new ArrayList<String>());
         Result result = new JUnitCore().run(loggingRunner);
         assertThat(result.wasSuccessful()).isTrue();
-        assertThat(loggingRunner.getOperationLog())
+        assertThat(sLogs)
                 .containsExactly(
                         "before",
                         "tight before",
@@ -217,10 +241,9 @@ public final class MicrobenchmarkTest {
         args.putString("method-iterations", "10");
         args.putString("rename-iterations", "false");
         LoggingMicrobenchmark loggingRunner = new LoggingMicrobenchmark(LoggingTest.class, args);
-        loggingRunner.setOperationLog(new ArrayList<String>());
         Result result = new JUnitCore().run(loggingRunner);
         assertThat(result.wasSuccessful()).isTrue();
-        assertThat(loggingRunner.getOperationLog())
+        assertThat(sLogs)
                 .containsExactly(
                         "before",
                         "tight before",
@@ -370,10 +393,9 @@ public final class MicrobenchmarkTest {
         args.putString("terminate-on-test-fail", "true");
         LoggingMicrobenchmark loggingRunner = new LoggingMicrobenchmark(
                 LoggingFailedTest.class, args);
-        loggingRunner.setOperationLog(new ArrayList<String>());
         Result result = new JUnitCore().run(loggingRunner);
         assertThat(result.wasSuccessful()).isFalse();
-        assertThat(loggingRunner.getOperationLog())
+        assertThat(sLogs)
                 .containsExactly(
                         "before",
                         "tight before",
@@ -397,10 +419,9 @@ public final class MicrobenchmarkTest {
         args.putString("terminate-on-test-fail", "false");
         LoggingMicrobenchmark loggingRunner = new LoggingMicrobenchmark(
                 LoggingFailedTest.class, args);
-        loggingRunner.setOperationLog(new ArrayList<String>());
         Result result = new JUnitCore().run(loggingRunner);
         assertThat(result.wasSuccessful()).isFalse();
-        assertThat(loggingRunner.getOperationLog())
+        assertThat(sLogs)
                 .containsExactly(
                         "before",
                         "tight before",
@@ -432,7 +453,6 @@ public final class MicrobenchmarkTest {
                 Microbenchmark.DYNAMIC_OUTER_TEST_RULES_OPTION, LoggingRule2.class.getName());
         LoggingMicrobenchmark loggingRunner =
                 new LoggingMicrobenchmark(LoggingTestWithRules.class, args);
-        loggingRunner.setOperationLog(sLogs);
         new JUnitCore().run(loggingRunner);
         assertThat(sLogs)
                 .containsExactly(
@@ -484,7 +504,6 @@ public final class MicrobenchmarkTest {
                 Microbenchmark.DYNAMIC_OUTER_CLASS_RULES_OPTION, LoggingRule2.class.getName());
         LoggingMicrobenchmark loggingRunner =
                 new LoggingMicrobenchmark(LoggingTestWithRules.class, args);
-        loggingRunner.setOperationLog(sLogs);
         new JUnitCore().run(loggingRunner);
         assertThat(sLogs)
                 .containsExactly(
@@ -519,6 +538,80 @@ public final class MicrobenchmarkTest {
                 .inOrder();
     }
 
+    @Test
+    public void testSupportsIterationRenamingWithAndroidXClassAnnotationInclusion()
+            throws Exception {
+        Bundle args = new Bundle();
+        args.putString("iterations", "2");
+        args.putString("rename-iterations", "true");
+        injectArguments(args);
+        Request request =
+                new TestRequestBuilder()
+                        // Should run because it has the annotation.
+                        .addTestClass(
+                                "android.platform.test.microbenchmark.MicrobenchmarkTest$"
+                                        + "AnnotatedLoggingTest")
+                        // Should not run because it does not have the annotation.
+                        .addTestClass(
+                                "android.platform.test.microbenchmark.MicrobenchmarkTest$"
+                                        + "LoggingTest")
+                        .addAnnotationInclusionFilter(
+                                "android.platform.test.microbenchmark.MicrobenchmarkTest$"
+                                        + "TestAnnotation")
+                        .build();
+        Result result = new JUnitCore().run(request);
+        assertThat(result.wasSuccessful()).isTrue();
+        assertThat(sLogs)
+                .containsExactly(
+                        "before",
+                        "tight before",
+                        "begin: testMethod$1("
+                                + "android.platform.test.microbenchmark.MicrobenchmarkTest$"
+                                + "AnnotatedLoggingTest)",
+                        "test",
+                        "end",
+                        "tight after",
+                        "after",
+                        "before",
+                        "tight before",
+                        "begin: testMethod$2("
+                                + "android.platform.test.microbenchmark.MicrobenchmarkTest$"
+                                + "AnnotatedLoggingTest)",
+                        "test",
+                        "end",
+                        "tight after",
+                        "after")
+                .inOrder();
+    }
+
+    @Test
+    public void testSupportsIterationRenamingWithAndroidXClassAnnotationExclusion()
+            throws Exception {
+        Bundle args = new Bundle();
+        args.putString("iterations", "2");
+        args.putString("rename-iterations", "true");
+        injectArguments(args);
+        Request request =
+                new TestRequestBuilder()
+                        .addTestClass(
+                                "android.platform.test.microbenchmark.MicrobenchmarkTest$"
+                                        + "AnnotatedLoggingTest")
+                        .addAnnotationExclusionFilter(
+                                "android.platform.test.microbenchmark.MicrobenchmarkTest$"
+                                        + "TestAnnotation")
+                        .build();
+        Result result = new JUnitCore().run(request);
+        assertThat(result.wasSuccessful()).isTrue();
+        assertThat(sLogs).isEmpty();
+    }
+
+    private void injectArguments(Bundle extra) {
+        Bundle args = mArgumentsBeforeTest.deepCopy();
+        args.putAll(extra);
+        InstrumentationRegistry.registerInstance(
+                InstrumentationRegistry.getInstrumentation(), args);
+    }
+
     /**
      * An extensions of the {@link Microbenchmark} runner that logs the start and end of collecting
      * traces. It also passes the operation log to the provided test {@code Class}, if it is a
@@ -526,30 +619,12 @@ public final class MicrobenchmarkTest {
      * Statement}s.
      */
     public static class LoggingMicrobenchmark extends Microbenchmark {
-        private List<String> mOperationLog;
-
         public LoggingMicrobenchmark(Class<?> klass) throws InitializationError {
             super(klass);
         }
 
         LoggingMicrobenchmark(Class<?> klass, Bundle arguments) throws InitializationError {
             super(klass, arguments);
-        }
-
-        protected Object createTest() throws Exception {
-            Object test = super.createTest();
-            if (test instanceof LoggingTest) {
-                ((LoggingTest)test).setOperationLog(mOperationLog);
-            }
-            return test;
-        }
-
-        void setOperationLog(List<String> log) {
-            mOperationLog = log;
-        }
-
-        List<String> getOperationLog() {
-            return mOperationLog;
         }
 
         @Override
@@ -560,12 +635,12 @@ public final class MicrobenchmarkTest {
         class LoggingTracePointRule extends TracePointRule {
             @Override
             protected void beginSection(String sectionTag) {
-                mOperationLog.add(String.format("begin: %s", sectionTag));
+                sLogs.add(String.format("begin: %s", sectionTag));
             }
 
             @Override
             protected void endSection() {
-                mOperationLog.add("end");
+                sLogs.add("end");
             }
         }
     }
@@ -575,29 +650,24 @@ public final class MicrobenchmarkTest {
      * TightMethodRule} included, used in conjunction with {@link LoggingMicrobenchmark} to
      * determine all {@link Statement}s are evaluated in the proper order.
      */
+    @RunWith(LoggingMicrobenchmark.class)
     public static class LoggingTest {
         @Microbenchmark.TightMethodRule
         public TightRule orderRule = new TightRule();
 
-        private List<String> mOperationLog;
-
-        void setOperationLog(List<String> log) {
-            mOperationLog = log;
-        }
-
         @Before
         public void beforeMethod() {
-            mOperationLog.add("before");
+            sLogs.add("before");
         }
 
         @Test
         public void testMethod() {
-            mOperationLog.add("test");
+            sLogs.add("test");
         }
 
         @After
         public void afterMethod() {
-            mOperationLog.add("after");
+            sLogs.add("after");
         }
 
         class TightRule implements TestRule {
@@ -606,14 +676,22 @@ public final class MicrobenchmarkTest {
                 return new Statement() {
                     @Override
                     public void evaluate() throws Throwable {
-                        mOperationLog.add("tight before");
+                        sLogs.add("tight before");
                         base.evaluate();
-                        mOperationLog.add("tight after");
+                        sLogs.add("tight after");
                     }
                 };
             }
         }
     }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    public @interface TestAnnotation {}
+
+    @TestAnnotation
+    @RunWith(LoggingMicrobenchmark.class)
+    public static class AnnotatedLoggingTest extends LoggingTest {}
 
     public static class LoggingTestWithRules extends LoggingTest {
         @ClassRule
