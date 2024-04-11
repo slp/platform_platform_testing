@@ -16,7 +16,7 @@
 
 package android.tools.utils
 
-import android.tools.datatypes.Rect
+import android.graphics.Rect
 import com.google.common.truth.Truth
 import org.junit.ClassRule
 import org.junit.Test
@@ -30,7 +30,7 @@ class MockLayerTraceBuilderTest {
     fun containerLayerIsInvisible() {
         val mockLayer =
             MockLayerBuilder("Mock Layer")
-                .setAbsoluteBounds(Rect.from(0, 0, 200, 200))
+                .setAbsoluteBounds(Rect(0, 0, 200, 200))
                 .setContainerLayer()
                 .build()
 
@@ -42,7 +42,7 @@ class MockLayerTraceBuilderTest {
         val mockLayer =
             MockLayerBuilder("Parent Mock Layer")
                 .setContainerLayer()
-                .setAbsoluteBounds(Rect.from(0, 0, 200, 200))
+                .setAbsoluteBounds(Rect(0, 0, 200, 200))
                 .addChild(MockLayerBuilder("Child Mock Layer"))
                 .build()
 
@@ -54,7 +54,7 @@ class MockLayerTraceBuilderTest {
     fun canAddChildLayer() {
         val mockLayer =
             MockLayerBuilder("Parent Mock Layer")
-                .setAbsoluteBounds(Rect.from(0, 0, 200, 200))
+                .setAbsoluteBounds(Rect(0, 0, 200, 200))
                 .addChild(MockLayerBuilder("Child Mock Layer"))
                 .build()
 
@@ -65,7 +65,7 @@ class MockLayerTraceBuilderTest {
     fun canSetLayerVisibility() {
         val mockLayer =
             MockLayerBuilder("Mock Layer")
-                .setAbsoluteBounds(Rect.from(0, 0, 200, 200))
+                .setAbsoluteBounds(Rect(0, 0, 200, 200))
                 .setInvisible()
                 .build()
 
@@ -76,7 +76,7 @@ class MockLayerTraceBuilderTest {
     fun invisibleLayerHasNoVisibleBounds() {
         val mockLayer =
             MockLayerBuilder("Mock Layer")
-                .setAbsoluteBounds(Rect.from(0, 0, 200, 200))
+                .setAbsoluteBounds(Rect(0, 0, 200, 200))
                 .setInvisible()
                 .build()
 

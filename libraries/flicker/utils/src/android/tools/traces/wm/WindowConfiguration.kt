@@ -16,7 +16,7 @@
 
 package android.tools.traces.wm
 
-import android.tools.datatypes.Rect
+import android.graphics.Rect
 import android.tools.withCache
 
 /**
@@ -26,9 +26,9 @@ import android.tools.withCache
  * Java/Android functionality
  */
 open class WindowConfiguration(
-    val appBounds: Rect = Rect.EMPTY,
-    val bounds: Rect = Rect.EMPTY,
-    val maxBounds: Rect = Rect.EMPTY,
+    val appBounds: Rect = Rect(),
+    val bounds: Rect = Rect(),
+    val maxBounds: Rect = Rect(),
     val windowingMode: Int = 0,
     val activityType: Int = 0
 ) {
@@ -74,9 +74,9 @@ open class WindowConfiguration(
             activityType: Int
         ): WindowConfiguration = withCache {
             WindowConfiguration(
-                appBounds ?: Rect.EMPTY,
-                bounds ?: Rect.EMPTY,
-                maxBounds ?: Rect.EMPTY,
+                appBounds ?: Rect(),
+                bounds ?: Rect(),
+                maxBounds ?: Rect(),
                 windowingMode,
                 activityType
             )

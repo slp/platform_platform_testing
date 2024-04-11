@@ -76,12 +76,17 @@ class TransitionRunner(
         val errorRule = ArtifactSaverRule()
         return RuleChain.outerRule(errorRule)
             .around(StopAllTracesRule())
+            .around(errorRule)
             .around(UnlockScreenRule())
+            .around(errorRule)
             .around(NavigationModeRule(scenario.navBarMode.value, false))
+            .around(errorRule)
             .around(
                 LaunchAppRule(MessagingAppHelper(instrumentation), clearCacheAfterParsing = false)
             )
+            .around(errorRule)
             .around(RemoveAllTasksButHomeRule())
+            .around(errorRule)
             .around(
                 ChangeDisplayOrientationRule(
                     scenario.startRotation,
@@ -89,7 +94,9 @@ class TransitionRunner(
                     clearCacheAfterParsing = false
                 )
             )
+            .around(errorRule)
             .around(PressHomeRule())
+            .around(errorRule)
             .around(
                 TraceMonitorRule(
                     flicker.traceMonitors,

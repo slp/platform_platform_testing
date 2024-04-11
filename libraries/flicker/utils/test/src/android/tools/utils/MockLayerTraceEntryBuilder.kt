@@ -16,7 +16,7 @@
 
 package android.tools.utils
 
-import android.tools.datatypes.Rect
+import android.graphics.Rect
 import android.tools.datatypes.Size
 import android.tools.traces.surfaceflinger.Display
 import android.tools.traces.surfaceflinger.Layer
@@ -26,7 +26,7 @@ import android.tools.traces.surfaceflinger.Transform
 class MockLayerTraceEntryBuilder() {
     private val displays = mutableListOf<Display>()
     private val layers = mutableListOf<Layer>()
-    private val bounds = Rect.from(0, 0, 1080, 1920)
+    private val bounds = Rect(0, 0, 1080, 1920)
     var timestamp = -1L
         private set
 
@@ -50,7 +50,7 @@ class MockLayerTraceEntryBuilder() {
                 id = displayId,
                 name = "Display",
                 layerStackId = stackId,
-                size = Size.from(bounds.width, bounds.height),
+                size = Size.from(bounds.width(), bounds.height()),
                 layerStackSpace = bounds,
                 transform = Transform.EMPTY,
                 isVirtual = false,

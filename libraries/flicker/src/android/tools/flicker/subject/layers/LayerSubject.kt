@@ -90,7 +90,7 @@ class LayerSubject(
      */
     fun hasLayerSize(expected: Size): LayerSubject = apply {
         val layerSize =
-            Size.from(layer.screenBounds.width.toInt(), layer.screenBounds.height.toInt())
+            Size.from(layer.screenBounds.width().toInt(), layer.screenBounds.height().toInt())
         check { "Number of layers" }.that(layerSize).isEqual(expected)
     }
 

@@ -31,9 +31,9 @@ from mobly import suite_runner
 
 from betocq import base_betocq_suite
 from betocq import nc_constants
-from betocq.cuj_tests import mcc_5g_all_wifi_non_dbs_2g_sta_test
-from betocq.cuj_tests import scc_2g_all_wifi_sta_test
-from betocq.cuj_tests import scc_5g_all_wifi_dbs_2g_sta_test
+from betocq.compound_tests import mcc_5g_all_wifi_non_dbs_2g_sta_test
+from betocq.compound_tests import scc_2g_all_wifi_sta_test
+from betocq.compound_tests import scc_5g_all_wifi_dbs_2g_sta_test
 from betocq.directed_tests import ble_performance_test
 from betocq.directed_tests import bt_performance_test
 from betocq.directed_tests import mcc_5g_wfd_non_dbs_2g_sta_test

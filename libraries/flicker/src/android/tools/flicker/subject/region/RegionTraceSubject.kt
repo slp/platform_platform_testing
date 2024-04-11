@@ -16,8 +16,8 @@
 
 package android.tools.flicker.subject.region
 
-import android.tools.datatypes.Rect
-import android.tools.datatypes.Region
+import android.graphics.Rect
+import android.graphics.Region
 import android.tools.flicker.subject.FlickerTraceSubject
 import android.tools.io.Reader
 import android.tools.traces.region.RegionTrace
@@ -44,8 +44,7 @@ class RegionTraceSubject(val trace: RegionTrace, override val reader: Reader? = 
     }
 
     /** {@inheritDoc} */
-    override fun isHigherOrEqual(other: Rect): RegionTraceSubject =
-        isHigherOrEqual(Region.from(other))
+    override fun isHigherOrEqual(other: Rect): RegionTraceSubject = isHigherOrEqual(Region(other))
 
     /** {@inheritDoc} */
     override fun isHigherOrEqual(other: Region): RegionTraceSubject = apply {
@@ -53,8 +52,7 @@ class RegionTraceSubject(val trace: RegionTrace, override val reader: Reader? = 
     }
 
     /** {@inheritDoc} */
-    override fun isLowerOrEqual(other: Rect): RegionTraceSubject =
-        isLowerOrEqual(Region.from(other))
+    override fun isLowerOrEqual(other: Rect): RegionTraceSubject = isLowerOrEqual(Region(other))
 
     /** {@inheritDoc} */
     override fun isLowerOrEqual(other: Region): RegionTraceSubject = apply {
@@ -67,7 +65,7 @@ class RegionTraceSubject(val trace: RegionTrace, override val reader: Reader? = 
     }
 
     /** {@inheritDoc} */
-    override fun isHigher(other: Rect): RegionTraceSubject = isHigher(Region.from(other))
+    override fun isHigher(other: Rect): RegionTraceSubject = isHigher(Region(other))
 
     /** {@inheritDoc} */
     override fun isHigher(other: Region): RegionTraceSubject = apply {
@@ -75,7 +73,7 @@ class RegionTraceSubject(val trace: RegionTrace, override val reader: Reader? = 
     }
 
     /** {@inheritDoc} */
-    override fun isLower(other: Rect): RegionTraceSubject = isLower(Region.from(other))
+    override fun isLower(other: Rect): RegionTraceSubject = isLower(Region(other))
 
     /** {@inheritDoc} */
     override fun isLower(other: Region): RegionTraceSubject = apply {
@@ -88,8 +86,7 @@ class RegionTraceSubject(val trace: RegionTrace, override val reader: Reader? = 
     }
 
     /** {@inheritDoc} */
-    override fun coversAtMost(other: Rect): RegionTraceSubject =
-        this.coversAtMost(Region.from(other))
+    override fun coversAtMost(other: Rect): RegionTraceSubject = this.coversAtMost(Region(other))
 
     /** {@inheritDoc} */
     override fun notBiggerThan(other: Region): RegionTraceSubject = apply {
@@ -104,7 +101,7 @@ class RegionTraceSubject(val trace: RegionTrace, override val reader: Reader? = 
     }
 
     /** {@inheritDoc} */
-    override fun regionsCenterPointInside(other: Region): RegionTraceSubject = apply {
+    override fun regionsCenterPointInside(other: Rect): RegionTraceSubject = apply {
         addAssertion("regionsCenterPointInside($other, $componentsAsString") {
             it.regionsCenterPointInside(other)
         }
@@ -116,8 +113,7 @@ class RegionTraceSubject(val trace: RegionTrace, override val reader: Reader? = 
     }
 
     /** {@inheritDoc} */
-    override fun coversAtLeast(other: Rect): RegionTraceSubject =
-        this.coversAtLeast(Region.from(other))
+    override fun coversAtLeast(other: Rect): RegionTraceSubject = this.coversAtLeast(Region(other))
 
     /** {@inheritDoc} */
     override fun coversExactly(other: Region): RegionTraceSubject = apply {
@@ -135,7 +131,7 @@ class RegionTraceSubject(val trace: RegionTrace, override val reader: Reader? = 
     }
 
     /** {@inheritDoc} */
-    override fun overlaps(other: Rect): RegionTraceSubject = overlaps(Region.from(other))
+    override fun overlaps(other: Rect): RegionTraceSubject = overlaps(Region(other))
 
     /** {@inheritDoc} */
     override fun notOverlaps(other: Region): RegionTraceSubject = apply {
@@ -143,7 +139,7 @@ class RegionTraceSubject(val trace: RegionTrace, override val reader: Reader? = 
     }
 
     /** {@inheritDoc} */
-    override fun notOverlaps(other: Rect): RegionTraceSubject = notOverlaps(Region.from(other))
+    override fun notOverlaps(other: Rect): RegionTraceSubject = notOverlaps(Region(other))
 
     fun isSameAspectRatio(other: Region): RegionTraceSubject =
         isSameAspectRatio(other, threshold = 0.1)

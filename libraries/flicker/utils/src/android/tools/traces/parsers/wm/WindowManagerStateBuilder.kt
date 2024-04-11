@@ -18,11 +18,11 @@ package android.tools.traces.parsers.wm
 
 import android.app.nano.WindowConfigurationProto
 import android.content.nano.ConfigurationProto
+import android.graphics.Insets
+import android.graphics.Rect
 import android.graphics.nano.RectProto
 import android.tools.PlatformConsts
 import android.tools.Rotation
-import android.tools.datatypes.Insets
-import android.tools.datatypes.Rect
 import android.tools.datatypes.Size
 import android.tools.traces.wm.Activity
 import android.tools.traces.wm.Configuration
@@ -179,26 +179,21 @@ class WindowManagerStateBuilder {
                 resumedActivity = proto.resumedActivity?.title ?: "",
                 singleTaskInstance = proto.singleTaskInstance,
                 defaultPinnedStackBounds = proto.pinnedTaskController?.defaultBounds?.toRect()
-                        ?: Rect.EMPTY,
+                        ?: Rect(),
                 pinnedStackMovementBounds = proto.pinnedTaskController?.movementBounds?.toRect()
-                        ?: Rect.EMPTY,
+                        ?: Rect(),
                 displayRect =
-                    Rect.from(
+                    Rect(
                         0,
                         0,
                         proto.displayInfo?.logicalWidth ?: 0,
                         proto.displayInfo?.logicalHeight ?: 0
                     ),
                 appRect =
-                    Rect.from(
-                        0,
-                        0,
-                        proto.displayInfo?.appWidth ?: 0,
-                        proto.displayInfo?.appHeight ?: 0
-                    ),
+                    Rect(0, 0, proto.displayInfo?.appWidth ?: 0, proto.displayInfo?.appHeight ?: 0),
                 dpi = proto.dpi,
                 flags = proto.displayInfo?.flags ?: 0,
-                stableBounds = proto.displayFrames?.stableBounds?.toRect() ?: Rect.EMPTY,
+                stableBounds = proto.displayFrames?.stableBounds?.toRect() ?: Rect(),
                 surfaceSize = proto.surfaceSize,
                 focusedApp = proto.focusedApp,
                 lastTransition =
@@ -253,7 +248,7 @@ class WindowManagerStateBuilder {
                 taskId = proto.id,
                 rootTaskId = proto.rootTaskId,
                 displayId = proto.taskFragment?.displayId ?: proto.displayId,
-                lastNonFullscreenBounds = proto.lastNonFullscreenBounds?.toRect() ?: Rect.EMPTY,
+                lastNonFullscreenBounds = proto.lastNonFullscreenBounds?.toRect() ?: Rect(),
                 realActivity = proto.realActivity,
                 origActivity = proto.origActivity,
                 resizeMode = proto.resizeMode,
@@ -372,14 +367,14 @@ class WindowManagerStateBuilder {
                     },
                 requestedSize = Size.from(proto.requestedWidth, proto.requestedHeight),
                 surfacePosition = proto.surfacePosition?.toRect(),
-                frame = proto.windowFrames?.frame?.toRect() ?: Rect.EMPTY,
-                containingFrame = proto.windowFrames?.containingFrame?.toRect() ?: Rect.EMPTY,
-                parentFrame = proto.windowFrames?.parentFrame?.toRect() ?: Rect.EMPTY,
-                contentFrame = proto.windowFrames?.contentFrame?.toRect() ?: Rect.EMPTY,
-                contentInsets = proto.windowFrames?.contentInsets?.toRect() ?: Rect.EMPTY,
-                surfaceInsets = proto.surfaceInsets?.toRect() ?: Rect.EMPTY,
-                givenContentInsets = proto.givenContentInsets?.toRect() ?: Rect.EMPTY,
-                crop = proto.animator?.lastClipRect?.toRect() ?: Rect.EMPTY,
+                frame = proto.windowFrames?.frame?.toRect() ?: Rect(),
+                containingFrame = proto.windowFrames?.containingFrame?.toRect() ?: Rect(),
+                parentFrame = proto.windowFrames?.parentFrame?.toRect() ?: Rect(),
+                contentFrame = proto.windowFrames?.contentFrame?.toRect() ?: Rect(),
+                contentInsets = proto.windowFrames?.contentInsets?.toRect() ?: Rect(),
+                surfaceInsets = proto.surfaceInsets?.toRect() ?: Rect(),
+                givenContentInsets = proto.givenContentInsets?.toRect() ?: Rect(),
+                crop = proto.animator?.lastClipRect?.toRect() ?: Rect(),
                 windowContainer =
                     createWindowContainer(
                         proto.windowContainer,
@@ -516,12 +511,12 @@ class WindowManagerStateBuilder {
             null
         } else {
             DisplayCutout.from(
-                proto.insets?.toInsets() ?: Insets.EMPTY,
-                proto.boundLeft?.toRect() ?: Rect.EMPTY,
-                proto.boundTop?.toRect() ?: Rect.EMPTY,
-                proto.boundRight?.toRect() ?: Rect.EMPTY,
-                proto.boundBottom?.toRect() ?: Rect.EMPTY,
-                proto.waterfallInsets?.toInsets() ?: Insets.EMPTY
+                proto.insets?.toInsets() ?: Insets.NONE,
+                proto.boundLeft?.toRect() ?: Rect(),
+                proto.boundTop?.toRect() ?: Rect(),
+                proto.boundRight?.toRect() ?: Rect(),
+                proto.boundBottom?.toRect() ?: Rect(),
+                proto.waterfallInsets?.toInsets() ?: Insets.NONE
             )
         }
     }
@@ -565,9 +560,9 @@ class WindowManagerStateBuilder {
         }
     }
 
-    private fun RectProto.toRect() = Rect.from(this.left, this.top, this.right, this.bottom)
+    private fun RectProto.toRect() = Rect(this.left, this.top, this.right, this.bottom)
 
-    private fun RectProto.toInsets() = Insets.from(this.left, this.top, this.right, this.bottom)
+    private fun RectProto.toInsets() = Insets.of(this.left, this.top, this.right, this.bottom)
 
     companion object {
         private const val TRANSIT_ACTIVITY_OPEN = "TRANSIT_ACTIVITY_OPEN"

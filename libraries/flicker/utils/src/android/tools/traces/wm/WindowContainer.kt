@@ -16,7 +16,7 @@
 
 package android.tools.traces.wm
 
-import android.tools.datatypes.Rect
+import android.graphics.Rect
 
 interface WindowContainer : ConfigurationContainer {
     val title: String

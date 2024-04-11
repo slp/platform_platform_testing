@@ -32,7 +32,7 @@ from mobly import suite_runner
 from betocq import base_betocq_suite
 from betocq import nc_constants
 
-from betocq.cuj_tests import scc_5g_all_wifi_sta_test
+from betocq.compound_tests import scc_5g_all_wifi_sta_test
 from betocq.directed_tests import mcc_5g_hotspot_dfs_5g_sta_test
 from betocq.directed_tests import mcc_5g_wfd_dfs_5g_sta_test
 from betocq.directed_tests import scc_dfs_5g_hotspot_sta_test
