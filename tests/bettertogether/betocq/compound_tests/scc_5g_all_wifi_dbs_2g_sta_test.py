@@ -16,7 +16,7 @@
 
 In this case, even though the expected wifi medium is the WFD, but the wifi D2D
 could be any mediums, such as WFD, HOTSPOT, STA; Once the WFD is failed, other
-meidums will be tried. Also, though the WLAN is connected with 2G channel,
+mediums will be tried. Also, though the WLAN is connected with 2G channel,
 as the devices support DBS, which don't need to switch between 5G and 2G, it is
 still a SCC case.
 
@@ -93,7 +93,7 @@ class Scc5gAllWifiDbs2gStaTest(
       )
     return (
         f'{self._throughput_low_string}. The upgraded medium is'
-        f' {upgraded_medium_name}. This is a 2G SCC DBS case, In the'
+        f' {upgraded_medium_name}. This is a 5G SCC DBS case, In the'
         ' configuration file, DBS support is set to true on the target side.'
         ' Check if the device does support DBS with STA + WFD concurrency.'
     )
