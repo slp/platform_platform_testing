@@ -51,6 +51,10 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
 
         FileOutputStream(configFile).use { config.writeTo(it) }
         IoUtils.moveFile(configFile, requireNotNull(configFileInPerfettoDir))
+        // Experiment for sporadic failures like b/333220956.
+        // The perfetto command below sometimes fails to find the config file on disk,
+        // so let's try to wait till the file exists on disk.
+        IoUtils.waitFileExists(requireNotNull(configFileInPerfettoDir), 2000)
 
         val command =
             "perfetto --background-wait" +
