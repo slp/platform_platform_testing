@@ -125,16 +125,18 @@ class FixedWifiMediumFunctionTestActor(
         self._test_failure_reason
         == nc_constants.SingleTestFailureReason.WIFI_MEDIUM_UPGRADE
     ):
-      return f'{self._test_failure_reason.name} - '.join(
+      return ''.join([
+          f'{self._test_failure_reason.name} - ',
           self._get_medium_upgrade_failure_tip()
-      )
+      ])
     if (
         self._test_failure_reason
         == nc_constants.SingleTestFailureReason.FILE_TRANSFER_FAIL
     ):
-      return f'{self._test_failure_reason.name} - '.join(
+      return ''.join([
+          f'{self._test_failure_reason.name} - ',
           self._get_file_transfer_failure_tip()
-      )
+      ])
     return ''.join([
         f'{self._test_failure_reason.name} - ',
         nc_constants.COMMON_TRIAGE_TIP.get(self._test_failure_reason),
