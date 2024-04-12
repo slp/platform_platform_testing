@@ -63,7 +63,12 @@ class BetoCq2gApPerformanceTestSuite(base_betocq_suite.BaseBetocqSuite):
     self.add_test_class(
         bt_performance_test.BtPerformanceTest, config=config
     )
-    # TODO(kaishi): enable BLE test when it is ready
+
+    if (
+        test_parameters.target_cuj_name
+        is not nc_constants.TARGET_CUJ_QUICK_START
+    ):  # BLE is not used by Quick Start
+      self.add_test_class(ble_performance_test.BlePerformanceTest)
 
     # add directed/cuj tests which requires 2G wlan AP - channel 6
     if (

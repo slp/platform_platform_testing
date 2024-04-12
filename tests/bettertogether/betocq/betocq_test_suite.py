@@ -37,6 +37,7 @@ from betocq.compound_tests import mcc_5g_all_wifi_non_dbs_2g_sta_test
 from betocq.compound_tests import scc_2g_all_wifi_sta_test
 from betocq.compound_tests import scc_5g_all_wifi_dbs_2g_sta_test
 from betocq.compound_tests import scc_5g_all_wifi_sta_test
+from betocq.directed_tests import ble_performance_test
 from betocq.directed_tests import bt_performance_test
 from betocq.directed_tests import mcc_2g_wfd_indoor_5g_sta_test
 from betocq.directed_tests import mcc_5g_hotspot_dfs_5g_sta_test
@@ -78,7 +79,12 @@ class BetoCqPerformanceTestSuite(base_betocq_suite.BaseBetocqSuite):
     # add bt and ble test
     self.add_test_class(bt_performance_test.BtPerformanceTest)
 
-    # TODO(kaishi): enable BLE test when it is ready
+
+    if (
+        test_parameters.target_cuj_name
+        is not nc_constants.TARGET_CUJ_QUICK_START
+    ):  # BLE is not used by Quick Start
+      self.add_test_class(ble_performance_test.BlePerformanceTest)
 
     # add directed/cuj tests which requires 2G wlan AP - channel 6
     if (
