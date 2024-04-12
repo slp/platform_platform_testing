@@ -58,12 +58,12 @@ x-controllers: &controllers
         android_version: 14
 
 TestBeds:
-- Name: LocalPerformanceDefaultTestbed
+- Name: Default
   <<: *controllers
   TestParams:
       <<: *test-params
 
-- Name: LocalQuickstartPerformanceTestbed
+- Name: Quickstart
   <<: *controllers
   TestParams:
       <<: *test-params
@@ -73,32 +73,30 @@ TestBeds:
       # if the function tests is failed, abort the performance test
       abort_all_tests_on_function_tests_fail: True
 
-- Name: LocalQuicksharePerformanceTestbed
+- Name: Quickshare
   <<: *controllers
   TestParams:
       <<: *test-params
       target_cuj_name: "quick_share"
-    # before the performance test, run the function tests first
+      # before the performance test, run the function tests first
       run_function_tests_with_performance_tests: True
-    # if the function tests is failed, abort the performance test
+      # if the function tests is failed, abort the performance test
       abort_all_tests_on_function_tests_fail: True
 
-- Name: LocalEsimTransferPerformanceTestbed
+- Name: EsimTransfer
   <<: *controllers
   TestParams:
       <<: *test-params
       target_cuj_name: "setting_based_esim_transfer"
 
-# used only for function test
-- Name: LocalQuickstartFunctionTestbed
+- Name: QuickstartFunction
   Controllers:
     <<: *controllers
   TestParams:
       <<: *test-params
       target_cuj_name: "quick_start"
 
-# used only for function test
-- Name: LocalQuickshareFunctionTestbed
+- Name: QuickshareFunctionTest
   Controllers:
     <<: *controllers
   TestParams:
