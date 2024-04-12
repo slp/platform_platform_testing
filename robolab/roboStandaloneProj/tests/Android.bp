@@ -27,6 +27,10 @@ android_robolectric_test {
         "src/**/*.java",
     ],
 
+    exclude_srcs: [
+        "src/com/android/myroboapplication/WelcomeActivityStrictTest.java",
+    ],
+
     java_resource_dirs: ["config"],
 
     libs: [
@@ -37,4 +41,28 @@ android_robolectric_test {
     instrumentation_for: "MyRoboApplication",
 
     upstream: true,
+}
+
+android_robolectric_test {
+    enabled: true,
+
+    name: "MyRoboStrictTests",
+
+    srcs: [
+        "src/com/android/myroboapplication/WelcomeActivityStrictTest.java",
+    ],
+
+    java_resource_dirs: ["config"],
+
+    libs: [
+        "androidx.test.core",
+        "androidx.test.runner",
+        "androidx.test.ext.junit",
+    ],
+
+    instrumentation_for: "MyRoboApplication",
+
+    upstream: true,
+
+    strict_mode: true,
 }
