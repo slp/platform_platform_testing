@@ -27,7 +27,6 @@ The device requirements:
   using DFS channels for peer network (target device): false
 The AP requirements:
   wifi channel: 52 (5260)
-  TODO(kaishi): verify DFS channel.
 """
 
 import logging

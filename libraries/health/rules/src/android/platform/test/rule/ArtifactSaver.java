@@ -119,6 +119,10 @@ public class ArtifactSaver {
                 "cmd statusbar flag | tail +11", // Flags info starts at line 11
                 artifactFile("Flags-OnFailure-" + getClassAndMethodName(description) + ".txt"));
 
+        dumpCommandOutput(
+                "dumpsys activity service SystemUI",
+                artifactFile("SystemUI-OnFailure-" + getClassAndMethodName(description) + ".txt"));
+
         Trace.endSection();
     }
 
