@@ -1680,6 +1680,10 @@
       "TYPE": "TEXT",
       "VALUE": "Recently opened"
     },
+    "SOUND_SETTING_INCALL": {
+      "TYPE": "TEXT",
+      "VALUE": "In-call volume"
+    },
     "NOTIFICATIONS_UI_ELEMENT": {
       "TYPE": "TEXT",
       "VALUE": "Notifications"
