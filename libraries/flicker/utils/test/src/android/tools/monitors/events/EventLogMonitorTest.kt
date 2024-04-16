@@ -355,7 +355,7 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
         val monitor = EventLogMonitor()
         val writer = newTestResultWriter()
         monitor.start()
-        var now = now()
+        val now = now()
         EventLogTags.writeJankCujEventsBeginRequest(
             CujType.CUJ_LAUNCHER_QUICK_SWITCH.id,
             now.unixNanos,
@@ -363,19 +363,17 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
             now.systemUptimeNanos,
             ""
         )
-        now = now()
         EventLogTags.writeJankCujEventsEndRequest(
             CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL.id,
-            now.unixNanos,
-            now.elapsedNanos,
-            now.systemUptimeNanos
+            now.unixNanos + 1,
+            now.elapsedNanos + 1,
+            now.systemUptimeNanos + 1
         )
-        now = now()
         EventLogTags.writeJankCujEventsCancelRequest(
             CujType.CUJ_LOCKSCREEN_LAUNCH_CAMERA.id,
-            now.unixNanos,
-            now.elapsedNanos,
-            now.systemUptimeNanos
+            now.unixNanos + 2,
+            now.elapsedNanos + 2,
+            now.systemUptimeNanos + 2
         )
         monitor.stop(writer)
         val result = writer.write()
@@ -383,20 +381,24 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
         val reader = ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)
         val eventLog = reader.readEventLogTrace() ?: error("EventLog should have been created")
 
-        assertEquals(3, eventLog.cujEvents.size)
+        // There maybe be some random CUJ events triggered in the background
+        val cujEvents =
+            eventLog.cujEvents.filter {
+                now.unixNanos <= it.timestamp.unixNanos &&
+                    it.timestamp.unixNanos <= (now.unixNanos + 2)
+            }
 
-        Truth.assertThat(eventLog.cujEvents.first().type).isEqualTo(CujEvent.Companion.Type.START)
-        Truth.assertThat(eventLog.cujEvents.first().cuj)
-            .isEqualTo(CujType.CUJ_LAUNCHER_QUICK_SWITCH)
+        Truth.assertThat(cujEvents).hasSize(3)
 
-        Truth.assertThat(eventLog.cujEvents.drop(1).first().type)
-            .isEqualTo(CujEvent.Companion.Type.END)
-        Truth.assertThat(eventLog.cujEvents.drop(1).first().cuj)
+        Truth.assertThat(cujEvents.first().type).isEqualTo(CujEvent.Companion.Type.START)
+        Truth.assertThat(cujEvents.first().cuj).isEqualTo(CujType.CUJ_LAUNCHER_QUICK_SWITCH)
+
+        Truth.assertThat(cujEvents.drop(1).first().type).isEqualTo(CujEvent.Companion.Type.END)
+        Truth.assertThat(cujEvents.drop(1).first().cuj)
             .isEqualTo(CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL)
 
-        Truth.assertThat(eventLog.cujEvents.drop(2).first().type)
-            .isEqualTo(CujEvent.Companion.Type.CANCEL)
-        Truth.assertThat(eventLog.cujEvents.drop(2).first().cuj)
+        Truth.assertThat(cujEvents.drop(2).first().type).isEqualTo(CujEvent.Companion.Type.CANCEL)
+        Truth.assertThat(cujEvents.drop(2).first().cuj)
             .isEqualTo(CujType.CUJ_LOCKSCREEN_LAUNCH_CAMERA)
     }
 
