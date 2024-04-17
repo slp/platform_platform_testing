@@ -79,6 +79,9 @@ class BetoCqPerformanceTestSuite(base_betocq_suite.BaseBetocqSuite):
     # add bt and ble test
     self.add_test_class(bt_performance_test.BtPerformanceTest)
 
+    if test_parameters.target_cuj_name is nc_constants.TARGET_CUJ_QUICK_SHARE:
+      self.add_test_class(ble_performance_test.BlePerformanceTest)
+
 
     if (
         test_parameters.target_cuj_name
