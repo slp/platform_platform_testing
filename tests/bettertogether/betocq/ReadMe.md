@@ -1,14 +1,12 @@
 # Better Together Connectivity Quality (BeToCQ) Test Suite
 
-## Introduction
-
 Better Together Connectivity Quality (BeToCQ) is a new test tool built by
 Android to test the cross-device connectivity performance that isn't covered
 by the existing Android tests.
 
-This tool is built on the top of Nearby Connections API. Under Nearby
+This tool is built on the top of the Nearby Connections API. Under Nearby
 Connections, it has Android connectivity stack including Bluetooth, Wi-Fi, NFC,
-and  UWB technologies.
+and UWB technologies.
 
 BeToCQ is designed to catch connectivity software and hardware performance
 issues by measuring detailed quality signals including the discovery, connection
@@ -43,34 +41,34 @@ BeToCQ consists of three parts:
   debugging is typically more difficult in CUJ tests. That's why CUJ tests run as
   the last step when the other tests have already passed.
 
-  CUJ test is implemented as the test cases defined in the `compound_test`
-  directory which are dynamically configured based on the CUJ requirements. The
-  term of `compound_test` refers to the fact that it uses multiple radios in a
+  CUJ test are implemented as the test cases defined in the `compound_test`
+  directory, and are dynamically configured based on the CUJ requirements. The
+  term `compound_test` refers to the fact that it uses multiple radios in a
   dynamic way.
 
   The test suite currently supports three CUJs: Quick Start, Quick Share, and eSIM
   transfer. We plan to add more CUJs in later releases.
 
-## Device Capabilities {:#device-capabilities}
+## Device capabilities {:#device-capabilities}
 
 The exact connectivity performance depends on the device capability.
-For example, the low-cost 2&nbsp;GHz-only Wi-Fi device achieves lower speed than
-dual-band Wi-Fi device. On the other hand, the dual-band-simultaneous (DBS)
-capable device can support a 2G infrastructure-STA connection and 5G
+For example, the low-cost 2&nbsp;GHz-only Wi-Fi device achieves a lower speed
+than the dual-band Wi-Fi device. On the other hand, the dual-band-simultaneous
+(DBS) capable device can support a 2G infrastructure-STA connection and 5G
 device-to-device connection in parallel and thus can support higher
 device-to-device transfer speed.
 
-Therefore this test suite uses the wireless capabilities of test devices as
+As a result, this test suite uses the wireless capabilities of test devices as
 inputs to customize the test case and set the right performance expectations.
 
-## Test Cases {:#test-cases}
+## Test cases {:#test-cases}
 
 In the directed and CUJ tests, depending on the device capabilities,
 test cases are defined to cover:
 
 - Different Wi-Fi concurrencies: single-channel concurrency (SCC) versus
   multi-channel concurrency (MCC)
-- Different wireless channels: 2G, 5G, 5G DFS, and 5G Indoor
+- Different wireless channels: 2G, 5G, 5G DFS, and 5G indoor
 
 The test cases uses the following naming convention:
 
@@ -85,6 +83,7 @@ For example, `scc_indoor_5g_wfd_sta_test` means:
 - Both STA and WFD are connected to 5G indoor channel (for example, 5180 in JP).
 
 Similarly, `mcc_5g_all_wifi_non_dbs_2g_sta_test` means:
+outmod betocq_test_suite
 
 - Transfer medium can be any 5G Wi-Fi medium.
 - STA is connected to the 2G band and the transfer medium is connected to the 5G band.
@@ -110,11 +109,11 @@ Each test case runs multiple iterations to collect the following stats:
 MCC test cases run more iterations than SCC test cases.
 5G test cases transfer larger files than 2G test cases.
 
-The test cases execution  depends on the device capability, so it's
+The test cases execution depends on the device capability, so it's
 important to fill in the device capabilities section correctly in the test
 configuration file. We'll discuss this in more detail in the following sections.
 
-## Actionable Test results {:#actional-test-results}
+## Actionable test results {:#actional-test-results}
 
 Running the test is straightforward, but it can be difficult to get insights out
 of the test results and determine further action to take.
@@ -162,60 +161,16 @@ BetoCQ takes three steps to address this issue:
 
 ## Test steps {:#test-steps}
 
-Follow these steps to prepare, execute tests and review test results.
+Follow these steps to prepare and execute tests and review test results.
 
 ### Prepare the test {:#test-prep}
 
 Prepare the following materials to be used for the tests.
 
-#### Linux release instructions {:#test-codes}
-
-Skip this unless you want to release the test binary from AOSP.
-
-  - Get AOSP codes from
-  [Android Code Search](https://cs.android.com/android/platform/superproject/+/master:platform_testing/tests/bettertogether/betocq/;l=1).
-
-  - Build the test binary:
-
-    ```
-    croot
-    set -a
-    source build/envsetup.sh
-    set +a
-    lunch aosp_arm-trunk_staging-eng
-    make betocq_test_suite && refreshmod && outmod betocq_test_suite
-    ```
-
-  - Upload these files to a shared drive:
-
-    ```
-    tools/test/mobly_extensions/scripts/local_mobly_runner.py
-    out/host/linux-x86/nativetest64/betocq_test_suite/betocq_test_suite
-    out/host/linux-x86/nativetest64/betocq_test_suite/cuj_and_test_config.yml
-    ```
-
-  - Generate the zip file for Windows execution:
-
-    ```
-    mkdir ~/betocq_windows
-    cp platform_testing/tests/bettertogether/betocq/betocq_test_suite.py ~/betocq_windows/__main__.py
-    echo mobly > ~/betocq_windows/requirements.txt
-    cp -r platform_testing/tests/bettertogether/betocq/* ~/betocq_windows
-    cp out/host/linux-x86/nativetest64/betocq_test_suite/*.apk ~/betocq_windows
-    cd ~/betocq_windows
-    zip -r ~/betocq_test_suite_windows.zip ./
-    ```
-
-  - Upload these files to a shared drive:
-
-    ```
-    tools/test/mobly_extensions/scripts/local_mobly_runner.py
-    ~/betocq_windows/betocq_test_suite_windows.zip
-    ```
-
 #### Get the test codes, tools, and configure build {:#test-codes}
 
-1.  Download the test binary files and save them in a local directory:
+1.  Download the release test binary files (see release instructions) and save them
+in a local directory:
   - `betocq_test_suite` (Linux and macOS)
   - `betocq_test_suite_windows.zip` (Windows only)
   - `local_mobly_runner.py`
@@ -228,20 +183,22 @@ Skip this unless you want to release the test binary from AOSP.
   chmod +x local_mobly_runner.py
   ```
 
-3.  Check and install Python version 3.10 or later:
+3.  Check and install Python version 3.11 or later:
     -   Check your Python 3 version number:
 
       ```
       python3 --version
       ```
 
-    -   If your version is lower than Python 3.10, install Python 3.10 or later:
+    -   If your version is lower than Python 3.11, install Python 3.11 or later:
 
       ```
       sudo apt install python3
       ```
+      Or install the latest version from
+      [python.org](https://www.python.org/downloads/windows) for Windows.
 
-4. Windows only: Download [adb](https://developer.android.com/tools/releases/platform-tools){:.external}
+4. Windows only: Download [adb](https://developer.android.com/tools/releases/platform-tools)
    and add its path to the [`Path` environment variable](https://stackoverflow.com/questions/44272416/how-to-add-a-folder-to-path-environment-variable-in-windows-10-with-screensho).
 
 #### Configure Wi-Fi AP and test {:#config}
@@ -307,8 +264,8 @@ Skip this unless you want to release the test binary from AOSP.
 3. Configure device capabilities for both source and target devices.
 
       For example, the following configuration means the device supports two
-      spatial streams with the aximum PHY rate of 2402&nbsp;Mbps (2x2, 11AX,
-      160MHz) at 5G and 287&nbsp;Mbps (2x2, 11AX, 20&nbsp;MHz) at 2G.
+      spatial streams with the maximum PHY rate of 2402&nbsp;Mbps (2x2, 11AX,
+      160&nbsp;MHz) at 5G and 287&nbsp;Mbps (2x2, 11AX, 20&nbsp;MHz) at 2G.
       This device doesn't support STA + WFD concurrency in DBS mode.
       It doesn't support starting WFD group owner mode at an STA-associated DFS or
       indoor channel.
@@ -355,7 +312,7 @@ If there are more than two devices connected to USB ports, specify the device
 serial number explicitly:
 
   ```
-  python3 local_mobly_runner.py -p ./betocq_test_suite -tb Quickstart -i --novenv -s 17011FDEE0002N,R3CN90YNAR -c cuj_and_test_config.yml
+  python3 local_mobly_runner.py -p ./betocq_test_suite -tb Quickstart -i --novenv -s <serial1>,<serial2> -c cuj_and_test_config.yml
   ```
 
 Note that no space is allowed between
@@ -381,7 +338,7 @@ To run the test on Windows:
 
 2.  Use Result Uploader to upload the artifact folder to Google's result storage
   service. The latest version of the tool and instructions are provided in the
-  [results_uploader](https://cs.android.com/android/platform/superproject/main/+/main:tools/test/mobly_extensions/tools/results_uploader/).
+ [results_uploader](https://cs.android.com/android/platform/superproject/main/+/main:tools/test/mobly_extensions/tools/results_uploader/).
     -   If this is your first time using the tool, file an issue with Google to
         get onboarded.
     -   Once you upload the artifacts, a link is displayed in the console
@@ -482,14 +439,58 @@ To run the test on Windows:
     are any known bug fixes for MCC mode.
 
 7. To rule out the test setup issue or device issue, repeat the test with a pair
-of known good devices (or a pair of new devices).
+  of known good devices (or a pair of new devices).
     - If the failure persists, check the test setup because it likely has the
-issue. If possible, move the test to a clean environment to rule out the
-interference issue.
+  issue. If possible, move the test to a clean environment to rule out the
+  interference issue.
     - If the failure disappears, DUT likely has the issue. Work with the Wi-Fi/BT
     engineering team to resolve the device issue. This might require getting
     help from the Wi-Fi/BT chip vendor.
 
 8. If the issue can't be resolved by the internal engineering team and there is
-strong evidence that there might be an issue on the Google side, create an issue
- for Google. Be sure to include all test artifacts.
+  strong evidence that there might be an issue on the Google side, create an issue
+  for Google. Be sure to include all test artifacts.
+
+## Linux and Windows release instructions {:#test-codes}
+
+Skip this unless you want to release the test binary from AOSP.
+
+- Get AOSP codes from
+  [AOSP](https://cs.android.com/android/platform/superproject/+/master:platform_testing/tests/bettertogether/betocq/;l=1).
+
+- Build the test binary for Linux and macOS:
+
+  ```
+  source build/envsetup.sh
+  lunch aosp_arm-trunk_staging-eng
+  make betocq_test_suite
+  outmod betocq_test_suite
+  ```
+
+- Upload these files to a shared drive:
+
+  ```
+  tools/test/mobly_extensions/scripts/local_mobly_runner.py
+  out/host/linux-x86/nativetest64/betocq_test_suite/betocq_test_suite
+  out/host/linux-x86/nativetest64/betocq_test_suite/cuj_and_test_config.yml
+  ```
+
+- Generate the zip file for Windows execution:
+
+  ```
+  mkdir ~/betocq_windows
+  cp platform_testing/tests/bettertogether/betocq/betocq_test_suite.py ~/betocq_windows/__main__.py
+  echo mobly > ~/betocq_windows/requirements.txt
+  cp -r platform_testing/tests/bettertogether/betocq ~/betocq_windows
+  cp out/host/linux-x86/nativetest64/betocq_test_suite/*.apk ~/betocq_windows
+  cd ~/betocq_windows
+  zip -r ~/betocq_test_suite_windows.zip ./
+  ```
+
+- Upload these files to a shared drive:
+
+  ```
+  tools/test/mobly_extensions/scripts/local_mobly_runner.py
+  out/host/linux-x86/nativetest64/betocq_test_suite/cuj_and_test_config.yml
+  ~/betocq_test_suite_windows.zip
+  ```
