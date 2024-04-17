@@ -48,7 +48,8 @@ abstract class TraceMonitor : ITransitionMonitor {
     open fun validateStart() {
         if (this.isEnabled) {
             throw UnsupportedOperationException(
-                "Trace already running. This is likely due to chained 'withTracing' calls."
+                "${traceType.name} trace already running. " +
+                    "This is likely due to chained 'withTracing' calls."
             )
         }
     }
