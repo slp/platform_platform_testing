@@ -114,6 +114,13 @@ class FlickerServiceResultsCollector(
         }
     }
 
+    override fun testAssumptionFailure(failure: Failure?) {
+        errorReportingBlock {
+            Log.i(LOG_TAG, "testAssumptionFailure")
+            testSkipped = true
+        }
+    }
+
     override fun testSkipped(description: Description) {
         errorReportingBlock {
             Log.i(LOG_TAG, "testSkipped")
