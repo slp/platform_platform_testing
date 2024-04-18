@@ -45,6 +45,7 @@ from betocq.directed_tests import mcc_5g_wfd_dfs_5g_sta_test
 from betocq.directed_tests import mcc_5g_wfd_non_dbs_2g_sta_test
 from betocq.directed_tests import scc_2g_wfd_sta_test
 from betocq.directed_tests import scc_2g_wlan_sta_test
+from betocq.directed_tests import scc_5g_aware_sta_test
 from betocq.directed_tests import scc_5g_wfd_dbs_2g_sta_test
 from betocq.directed_tests import scc_5g_wfd_sta_test
 from betocq.directed_tests import scc_5g_wlan_sta_test
@@ -78,6 +79,9 @@ class BetoCqPerformanceTestSuite(base_betocq_suite.BaseBetocqSuite):
 
     # add bt and ble test
     self.add_test_class(bt_performance_test.BtPerformanceTest)
+
+    if test_parameters.target_cuj_name is nc_constants.TARGET_CUJ_QUICK_SHARE:
+      self.add_test_class(ble_performance_test.BlePerformanceTest)
 
 
     if (
@@ -138,6 +142,11 @@ class BetoCqPerformanceTestSuite(base_betocq_suite.BaseBetocqSuite):
       self.add_test_class(
           clazz=scc_5g_wfd_sta_test.Scc5gWfdStaTest,
           config=config,
+      )
+      if test_parameters.target_cuj_name is nc_constants.TARGET_CUJ_QUICK_SHARE:
+        self.add_test_class(
+            clazz=scc_5g_aware_sta_test.Scc5gAwareStaTest,
+            config=config,
       )
       self.add_test_class(
           clazz=scc_5g_wlan_sta_test.Scc5gWifiLanStaTest,

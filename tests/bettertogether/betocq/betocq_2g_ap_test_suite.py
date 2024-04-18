@@ -64,11 +64,8 @@ class BetoCq2gApPerformanceTestSuite(base_betocq_suite.BaseBetocqSuite):
         bt_performance_test.BtPerformanceTest, config=config
     )
 
-    if (
-        test_parameters.target_cuj_name
-        is not nc_constants.TARGET_CUJ_QUICK_START
-    ):  # BLE is not used by Quick Start
-      self.add_test_class(ble_performance_test.BlePerformanceTest)
+    if test_parameters.target_cuj_name is nc_constants.TARGET_CUJ_QUICK_SHARE:
+      self.add_test_class(ble_performance_test.BlePerformanceTest, config=config)
 
     # add directed/cuj tests which requires 2G wlan AP - channel 6
     if (
