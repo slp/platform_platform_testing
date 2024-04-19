@@ -110,7 +110,7 @@ class ViewMotionTestRuleTest {
     }
 
     companion object {
-        private const val ASSETS_PATH = "platform_testing/libraries/motion/androidTest/assets"
+        private const val ASSETS_PATH = "platform_testing/libraries/motion/tests/assets"
 
         private val emulationSpec =
             DeviceEmulationSpec(
