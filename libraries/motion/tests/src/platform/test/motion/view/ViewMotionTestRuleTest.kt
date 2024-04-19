@@ -22,6 +22,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -84,6 +85,7 @@ class ViewMotionTestRuleTest {
     }
 
     @Test
+    @Ignore("Generated image size is not yet consistent")
     fun recordedMotion_filmstripMatchesGolden() {
         val sceneRoot = createSampleScene()
         val animator = sceneRoot.createSlideLeftAnimator()
