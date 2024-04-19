@@ -196,6 +196,22 @@ constructor(
                 .add(ConditionsFactory.isLayerVisible(componentMatcher))
 
         /**
+         * Waits for an app matching [componentMatcher] to be visible, in freeform, and for nothing
+         * to be animating
+         *
+         * @param componentMatcher Components to search
+         * @param displayId of the target display
+         */
+        @JvmOverloads
+        fun withFreeformApp(
+            componentMatcher: IComponentMatcher,
+            displayId: Int = Display.DEFAULT_DISPLAY
+        ) =
+            withFreeformAppCondition(componentMatcher)
+                .withAppTransitionIdle(displayId)
+                .add(ConditionsFactory.isLayerVisible(componentMatcher))
+
+        /**
          * Waits until the home activity is visible and nothing to be animating
          *
          * @param displayId of the target display
@@ -433,6 +449,13 @@ constructor(
             waitForValidStateCondition(
                 WaitForValidActivityState.Builder(componentMatcher)
                     .setWindowingMode(WindowConfiguration.WINDOWING_MODE_FULLSCREEN)
+                    .setActivityType(WindowConfiguration.ACTIVITY_TYPE_STANDARD)
+                    .build()
+            )
+        fun withFreeformAppCondition(componentMatcher: IComponentMatcher) =
+            waitForValidStateCondition(
+                WaitForValidActivityState.Builder(componentMatcher)
+                    .setWindowingMode(WindowConfiguration.WINDOWING_MODE_FREEFORM)
                     .setActivityType(WindowConfiguration.ACTIVITY_TYPE_STANDARD)
                     .build()
             )
