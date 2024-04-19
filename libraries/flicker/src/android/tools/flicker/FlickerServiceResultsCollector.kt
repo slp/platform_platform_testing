@@ -195,10 +195,10 @@ class FlickerServiceResultsCollector(
                 assertionResults.addAll(results)
                 if (description != null) {
                     require(assertionResultsByTest[description] == null) {
-                        "Test description already contains flicker assertion results."
+                        "Test description ($description) already contains flicker assertion results"
                     }
                     require(detectedScenariosByTest[description] == null) {
-                        "Test description already contains detected scenarios."
+                        "Test description ($description) already contains detected scenarios"
                     }
                     assertionResultsByTest[description] = results
                     detectedScenariosByTest[description] = scenarios.map { it.type }.distinct()
