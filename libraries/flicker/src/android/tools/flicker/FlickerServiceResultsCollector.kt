@@ -25,6 +25,7 @@ import android.tools.ScenarioBuilder
 import android.tools.flicker.assertions.AssertionResult
 import android.tools.flicker.config.FlickerServiceConfig
 import android.tools.flicker.config.ScenarioId
+import android.tools.io.Reader
 import android.tools.io.RunStatus
 import android.tools.traces.getDefaultFlickerOutputDir
 import android.util.Log
@@ -113,6 +114,13 @@ class FlickerServiceResultsCollector(
         }
     }
 
+    override fun testAssumptionFailure(failure: Failure?) {
+        errorReportingBlock {
+            Log.i(LOG_TAG, "testAssumptionFailure")
+            testSkipped = true
+        }
+    }
+
     override fun testSkipped(description: Description) {
         errorReportingBlock {
             Log.i(LOG_TAG, "testSkipped")
@@ -122,12 +130,21 @@ class FlickerServiceResultsCollector(
 
     override fun onTestEnd(testData: DataRecord, description: Description) {
         Log.i(LOG_TAG, "onTestEnd :: collectMetricsPerTest = $collectMetricsPerTest")
-        if (collectMetricsPerTest && !testSkipped) {
+        if (collectMetricsPerTest) {
             val results = errorReportingBlock {
-                return@errorReportingBlock stopTracingAndCollectFlickerMetrics(
-                    testData,
-                    description
-                )
+                Log.i(LOG_TAG, "Stopping trace collection")
+                val reader = tracesCollector.stop()
+                Log.i(LOG_TAG, "Stopped trace collection")
+
+                if (reportOnlyForPassingTests && hasFailedTest) {
+                    return@errorReportingBlock null
+                }
+
+                if (testSkipped) {
+                    return@errorReportingBlock null
+                }
+
+                return@errorReportingBlock collectFlickerMetrics(testData, reader, description)
             }
 
             reportFlickerServiceStatus(
@@ -143,7 +160,15 @@ class FlickerServiceResultsCollector(
         Log.i(LOG_TAG, "onTestRunEnd :: collectMetricsPerTest = $collectMetricsPerTest")
         if (!collectMetricsPerTest) {
             val results = errorReportingBlock {
-                return@errorReportingBlock stopTracingAndCollectFlickerMetrics(runData)
+                Log.i(LOG_TAG, "Stopping trace collection")
+                val reader = tracesCollector.stop()
+                Log.i(LOG_TAG, "Stopped trace collection")
+
+                if (reportOnlyForPassingTests && hasFailedTest) {
+                    return@errorReportingBlock null
+                }
+
+                return@errorReportingBlock collectFlickerMetrics(runData, reader)
             }
 
             reportFlickerServiceStatus(
@@ -155,18 +180,12 @@ class FlickerServiceResultsCollector(
         }
     }
 
-    private fun stopTracingAndCollectFlickerMetrics(
+    private fun collectFlickerMetrics(
         dataRecord: DataRecord,
+        reader: Reader,
         description: Description? = null
     ): Collection<AssertionResult>? {
         return errorReportingBlock {
-            Log.i(LOG_TAG, "Stopping trace collection")
-            val reader = tracesCollector.stop()
-            Log.i(LOG_TAG, "Stopped trace collection")
-            if (reportOnlyForPassingTests && hasFailedTest) {
-                return@errorReportingBlock null
-            }
-
             return@errorReportingBlock try {
                 Log.i(LOG_TAG, "Processing traces")
                 val scenarios = flickerService.detectScenarios(reader)
@@ -176,10 +195,10 @@ class FlickerServiceResultsCollector(
                 assertionResults.addAll(results)
                 if (description != null) {
                     require(assertionResultsByTest[description] == null) {
-                        "Test description already contains flicker assertion results."
+                        "Test description ($description) already contains flicker assertion results"
                     }
                     require(detectedScenariosByTest[description] == null) {
-                        "Test description already contains detected scenarios."
+                        "Test description ($description) already contains detected scenarios"
                     }
                     assertionResultsByTest[description] = results
                     detectedScenariosByTest[description] = scenarios.map { it.type }.distinct()
