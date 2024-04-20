@@ -88,7 +88,7 @@ class NearbyConnectionWrapper:
         self.upgrade_medium.value,
     )
     self.advertiser.log.info(
-        f'Start advertising {self.advertising_discovery_medium.value}'
+        f'Start advertising {self.advertising_discovery_medium.name}'
     )
     self._advertiser_connection_lifecycle_callback = advertiser_callback
     self._advertiser_endpoint_id = self.advertiser_nearby.getLocalEndpointId()
@@ -96,7 +96,7 @@ class NearbyConnectionWrapper:
   def start_discovery(self, timeout: datetime.timedelta) -> None:
     """Starts Nearby Connection discovery."""
     self.discoverer.log.info(
-        f'Start discovery {self.advertising_discovery_medium.value}'
+        f'Start discovery {self.advertising_discovery_medium.name}'
     )
     self._discoverer_endpoint_discovery_callback = (
         self.discoverer_nearby.startDiscovery(

@@ -14,6 +14,8 @@
 
 """Android Nearby device setup."""
 
+import base64
+import dataclasses
 import datetime
 import time
 from typing import Mapping
@@ -30,6 +32,9 @@ WIFI_DISCONNECTION_DELAY_SEC = 3
 ADB_RETRY_WAIT_TIME_SEC = 2
 
 _DISABLE_ENABLE_GMS_UPDATE_WAIT_TIME_SEC = 2
+
+
+read_ph_flag_failed = False
 
 LOG_TAGS = [
     'Nearby',
@@ -278,15 +283,35 @@ def check_if_ph_flag_committed(
     pname: str,
     flag_name: str,
 ) -> bool:
-  """Check if P/H flag is committed."""
+  """Check if P/H flag is committed.
+
+  Some devices don't support to check the flag with sqlite3. After the flag
+  check fails for the first time, it won't try it again.
+
+  Args:
+    ad: AndroidDevice, Mobly Android Device.
+    pname: The package name of the P/H flag.
+    flag_name: The name of the P/H flag.
+
+  Returns:
+    True if the P/H flag is committed.
+  """
+  global read_ph_flag_failed
+  if read_ph_flag_failed:
+    return False
   sql_str = (
       'sqlite3 /data/data/com.google.android.gms/databases/phenotype.db'
       ' "select name, quote(coalesce(intVal, boolVal, floatVal, stringVal,'
       ' extensionVal)) from FlagOverrides where committed=1 AND'
       f' packageName=\'{pname}\';"'
   )
-  flag_result = ad.adb.shell(sql_str).decode('utf-8').strip()
-  return flag_name in flag_result
+  try:
+    flag_result = ad.adb.shell(sql_str).decode('utf-8').strip()
+    return flag_name in flag_result
+  except adb.AdbError:
+    read_ph_flag_failed = True
+    ad.log.exception('Failed to check PH flag')
+  return False
 
 
 def write_ph_flag(
@@ -398,3 +423,18 @@ def enable_gms_auto_updates(ad: android_device.AndroidDevice) -> None:
   ad.log.info('try to enable GMS Auto Updates.')
   gms_auto_updates_util.GmsAutoUpdatesUtil(ad).enable_gms_auto_updates()
   time.sleep(_DISABLE_ENABLE_GMS_UPDATE_WAIT_TIME_SEC)
+
+
+def dump_wifi_sta_status(
+    ad: android_device.AndroidDevice,
+) -> None:
+  """Dumps wifi STA status on the given device."""
+  wifi_sta_status = (
+      ad.adb.shell('cmd wifi status | grep WifiInfo').decode('utf-8').strip()
+  )
+  ad.log.info(f'Wifi Score Report: {wifi_sta_status}')
+
+
+def get_hardware(ad: android_device.AndroidDevice) -> str:
+  """Gets hardware information on the given device."""
+  return ad.adb.getprop('ro.hardware')
