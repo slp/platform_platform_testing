@@ -124,6 +124,7 @@ class UInputStylus(
 
     /** Sends the events contained within the specified file. */
     fun sendEventsFromInputFile(eventInjector: EventInjector, assetsFilePath: String) {
+        eventInjector.updateTimeBase(inputDeviceId)
         eventInjector.sendEventsFromInputFile(inputDeviceId, assetsFilePath)
     }
 

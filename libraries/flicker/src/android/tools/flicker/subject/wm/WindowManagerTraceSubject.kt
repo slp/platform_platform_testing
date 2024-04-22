@@ -568,6 +568,7 @@ class WindowManagerTraceSubject(
                 ComponentNameMatcher.SPLASH_SCREEN,
                 ComponentNameMatcher.SNAPSHOT,
                 ComponentNameMatcher.SECONDARY_HOME_HANDLE,
+                ComponentNameMatcher.EDGE_BACK_GESTURE_HANDLER,
             )
     ): WindowManagerTraceSubject = apply {
         visibleEntriesShownMoreThanOneConsecutiveTime { subject ->

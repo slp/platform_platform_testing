@@ -58,5 +58,6 @@ abstract class UInputDevice {
         fun sendKeyEvent(deviceId: Int, keycode: Int)
         fun sendEventsFromInputFile(deviceId: Int, inputFile: String)
         fun sendEventWithValues(deviceId: Int, eventType: Int, keycode: Int, value: Int)
+        fun updateTimeBase(deviceId: Int)
     }
 }
