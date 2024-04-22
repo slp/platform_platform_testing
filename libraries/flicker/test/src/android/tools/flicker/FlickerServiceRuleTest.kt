@@ -212,6 +212,24 @@ class FlickerServiceRuleTest {
         testRule.finished(mockDescription)
     }
 
+    // Test for b/336261568
+    @Test
+    fun dontCrashIfTestClassIsNull() {
+        val mockFlickerServiceResultsCollector =
+            Mockito.mock(IFlickerServiceResultsCollector::class.java)
+        val testRule =
+            FlickerServiceRule(
+                metricsCollector = mockFlickerServiceResultsCollector,
+                failTestOnFlicker = true
+            )
+        val mockDescription = Description.createTestDescription(null as String?, "mockTest")
+        testRule.starting(mockDescription)
+        testRule.succeeded(mockDescription)
+        testRule.finished(mockDescription)
+        testRule.failed(Throwable(), mockDescription)
+        testRule.skipped(Mockito.mock(AssumptionViolatedException::class.java), mockDescription)
+    }
+
     companion object {
         fun mockFailureAssertionResult(error: FlickerAssertionError) =
             object : AssertionResult {

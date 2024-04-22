@@ -134,7 +134,7 @@ constructor(
         return when {
             !enabled -> false
             // Nullable description case is only handled because of b/302018924.
-            description != null ->
+            description != null && description.testClass != null ->
                 (testClassHasFlickerTestAnnotations(description.testClass) ||
                     description.annotations.none { it is FlickerTest })
             else -> true
