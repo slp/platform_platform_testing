@@ -37,12 +37,13 @@ import java.io.File
 import kotlin.io.path.createTempDirectory
 
 object Utils {
+    // Order matters since this is used to start traces in the order the monitors are defined here
+    // and stop them in reverse order.
     val ALL_MONITORS: List<TraceMonitor> =
         mutableListOf(
+                ScreenRecorder(InstrumentationRegistry.getInstrumentation().targetContext),
                 WindowManagerTraceMonitor(),
-                EventLogMonitor(),
                 ViewTraceMonitor(),
-                ScreenRecorder(InstrumentationRegistry.getInstrumentation().targetContext)
             )
             .apply {
                 val perfettoMonitorBuilder = PerfettoTraceMonitor.newBuilder()
@@ -60,6 +61,11 @@ object Utils {
                 }
 
                 this.add(perfettoMonitorBuilder.build())
+            }
+            .apply {
+                // Start this trace last, since we get our CUJ tags from it and don't want to
+                // extract CUJ slices of the trace that are missing data from the other traces.
+                this.add(EventLogMonitor())
             }
 
     fun captureTrace(
