@@ -38,6 +38,14 @@ object Components {
                     val change = associatedTransition.changes.last()
                     FullComponentIdMatcher(change.windowId, change.layerId)
                 }
+                ScenarioId("CLOSE_APP") -> {
+                    val change = associatedTransition.changes.last()
+                    FullComponentIdMatcher(change.windowId, change.layerId)
+                }
+                ScenarioId("CLOSE_LAST_APP") -> {
+                    val change = associatedTransition.changes.last()
+                    FullComponentIdMatcher(change.windowId, change.layerId)
+                }
                 else -> error("Unsupported transition type")
             }
         }
