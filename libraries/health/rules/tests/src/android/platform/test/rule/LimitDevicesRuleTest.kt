@@ -17,9 +17,11 @@ package android.platform.test.rule
 
 import android.platform.test.rule.DeviceProduct.CF_PHONE
 import android.platform.test.rule.DeviceProduct.CF_TABLET
+import com.google.common.truth.Truth.assertThat
 import org.junit.Assert.assertEquals
 import org.junit.AssumptionViolatedException
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.Description
 import org.junit.runner.RunWith
@@ -89,6 +91,31 @@ class LimitDevicesRuleTest {
         object : Statement() {
             override fun evaluate() {}
         }
+
+    @Test
+    fun flakyDevices() {
+        fun checkResults(vararg lines: String) =
+            assertThat(StringingListener.run(FlakyOnPhone::class)).containsExactly(*lines)
+
+        FlakyOnPhone.device = CF_PHONE
+        FlakyOnPhone.isFlakyConfig = false
+        checkResults(
+            "runAndPass: SKIPPED: Skipping test as cf_x86_64_phone is flaky " +
+                "and this config excludes fakes"
+        )
+
+        FlakyOnPhone.device = CF_PHONE
+        FlakyOnPhone.isFlakyConfig = true
+        checkResults("runAndPass: PASSED")
+
+        FlakyOnPhone.device = CF_TABLET
+        FlakyOnPhone.isFlakyConfig = false
+        checkResults("runAndPass: PASSED")
+
+        FlakyOnPhone.device = CF_TABLET
+        FlakyOnPhone.isFlakyConfig = true
+        checkResults("runAndPass: PASSED")
+    }
 }
 
 @AllowedDevices(CF_PHONE) private class AllowedOnPhonesOnly
@@ -96,3 +123,18 @@ class LimitDevicesRuleTest {
 @DeniedDevices(CF_PHONE) private class DeniedOnPhonesOnly
 
 @AllowedDevices(CF_PHONE, CF_TABLET) private class AllowedOnPhonesAndTablets
+
+@FlakyDevices(CF_PHONE)
+class FlakyOnPhone {
+    @JvmField
+    @Rule
+    val limitDevicesRule =
+        LimitDevicesRule(thisDevice = device.product, runningFlakyTests = isFlakyConfig)
+
+    @Test fun runAndPass() {}
+
+    companion object {
+        var device = CF_PHONE
+        var isFlakyConfig = false
+    }
+}
