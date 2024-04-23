@@ -23,8 +23,8 @@ BT_DEFAULT_TIMEOUT = 15
 WAIT_ONE_SEC = 1
 WAIT_TWO_SECONDS = 2
 WAIT_THIRTY_SECONDS = 30
-SYNC_WAIT_TIME = 15 # Sometimes syncing between devices can take a while
-DEVICE_CONNECT_WAIT_TIME = 20 # Waiting for device pairing to complete.
+SYNC_WAIT_TIME = 15  # Sometimes syncing between devices can take a while
+DEVICE_CONNECT_WAIT_TIME = 20  # Waiting for device pairing to complete.
 MOBILE_DEVICE_NAME = 'target'
 AUTOMOTIVE_DEVICE_NAME = 'discoverer'
 REBOOT = 'reboot'
@@ -54,9 +54,9 @@ PHONE_CONTACTS_DESTINATION_PATH = (
     '/data/data/com.google.android.contacts/cache/contacts.vcf'
 )
 IMPOST_CONTACTS_SHELL_COMAND = (
-        'am start-activity -W -t "text/x-vcard" -d file://'
-        + PHONE_CONTACTS_DESTINATION_PATH
-        + ' -a android.intent.action.VIEW com.google.android.contacts'
+    'am start-activity -W -t "text/x-vcard" -d file://'
+    + PHONE_CONTACTS_DESTINATION_PATH
+    + ' -a android.intent.action.VIEW com.google.android.contacts'
 )
 
 # Should be kept in sync with BluetoothProfile.java
@@ -100,6 +100,14 @@ IMPOST_CONTACTS_SHELL_COMAND = (
     + ' -a android.intent.action.VIEW com.google.android.contacts'
 )
 
+# Screen recording
+SCREEN_RECORDING_COMMAND = 'screenrecord'
+RECORDED_VIDEO_FILE_PATH = '/sdcard/screenrecord_output.mp4'
+ENABLE_SCREEN_RECORDING = (
+    f'{SCREEN_RECORDING_COMMAND} {RECORDED_VIDEO_FILE_PATH}')
+STOP_VIDEO_RECORDING = f'pkill -SIGINT {SCREEN_RECORDING_COMMAND}'
+DELETE_SCREEN_RECORDING_FILE = f'rm -f {RECORDED_VIDEO_FILE_PATH}'
+
 ONE_SEC = 1
 
 # KeyEvents
@@ -131,9 +139,9 @@ NULL_VALUE = 'null'
 
 # SMS
 SMS_TEXT = "sms_test"
-REPLY_SMS= "Okay"
+REPLY_SMS = "Okay"
 SMS_REPLY_TEXT = "SMS Reply"
-SMS_TEXT_DRIVE_MODE="Tap to read aloud"
+SMS_TEXT_DRIVE_MODE = "Tap to read aloud"
 TIMEZONE_DICT = {
     "PST": "Pacific Standard Time",
     "PDT": "Pacific Daylight Time",
