@@ -143,11 +143,6 @@ class TransitionsTraceParser :
                 Timestamps.from(elapsedNanos = this)
             }
 
-        private fun Int.toTransitionType() =
-            if (this == 0) {
-                null
-            } else {
-                TransitionType.fromInt(this)
-            }
+        private fun Int.toTransitionType() = TransitionType.fromInt(this)
     }
 }
