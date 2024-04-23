@@ -16,6 +16,7 @@
 
 // Android Unit Test target
 package {
+    default_team: "trendy_team_windowing_infra_",
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 

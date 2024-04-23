@@ -22,6 +22,7 @@
 // java_library_host and manually copy the JAR with the Android.mk file.
 
 package {
+    default_team: "trendy_team_android_video_image_codecs",
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 
