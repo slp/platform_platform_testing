@@ -33,20 +33,21 @@ object Components {
                 scenarioInstance.associatedTransition
                     ?: error("Can only extract DESKTOP_MODE_APP from scenario with transition")
 
-            when (scenarioInstance.type) {
-                ScenarioId("END_DRAG_TO_DESKTOP") -> {
-                    val change = associatedTransition.changes.last()
-                    FullComponentIdMatcher(change.windowId, change.layerId)
-                }
-                ScenarioId("CLOSE_APP") -> {
-                    val change = associatedTransition.changes.last()
-                    FullComponentIdMatcher(change.windowId, change.layerId)
-                }
-                ScenarioId("CLOSE_LAST_APP") -> {
-                    val change = associatedTransition.changes.last()
-                    FullComponentIdMatcher(change.windowId, change.layerId)
-                }
-                else -> error("Unsupported transition type")
+            if (isSupported(scenarioInstance.type)) {
+                val change = associatedTransition.changes.last()
+                FullComponentIdMatcher(change.windowId, change.layerId)
+            } else {
+                error("Unsupported transition type")
             }
         }
+
+    private fun isSupported(type: ScenarioId): Boolean {
+        return when (type) {
+            ScenarioId("END_DRAG_TO_DESKTOP") -> true
+            ScenarioId("CLOSE_APP") -> true
+            ScenarioId("CLOSE_LAST_APP") -> true
+            ScenarioId("CORNER_RESIZE") -> true
+            else -> false
+        }
+    }
 }
