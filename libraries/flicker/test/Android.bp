@@ -14,8 +14,8 @@
 // limitations under the License.
 //
 
-
 package {
+    default_team: "trendy_team_windowing_tools",
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 
@@ -29,14 +29,14 @@ java_defaults {
     test_suites: ["device-tests"],
     libs: ["android.test.runner"],
     optimize: {
-        enabled: false
+        enabled: false,
     },
     static_libs: [
         "flickerlib",
         "flickerlib-trace_processor_shell",
         "FlickerLibTest-Utils",
         "launcher-aosp-tapl",
-        "mockito-target-extended-minus-junit4"
+        "mockito-target-extended-minus-junit4",
     ],
     data: [
         "trace_config/*",
