@@ -53,12 +53,23 @@ internal class DevicelessDevMachineExportStrategy(
         val diffDir = localDir.resolve("diff")
         val reportDir = localDir.resolve("report")
 
+        val androidBuildTopDir = System.getenv("ANDROID_BUILD_TOP")
+        val androidBuildTop =
+            if (androidBuildTopDir != null) {
+                Paths.get(androidBuildTopDir)
+            } else {
+                null
+            }
+        val assetsDir = androidBuildTop?.resolve(goldenPathManager.assetsPathRelativeToBuildRoot)
         val imagePath = goldenPathManager.goldenImageIdentifierResolver(goldenIdentifier)
         val actualImagePath = actualDir.resolve(imagePath)
         val expectedImagePath = expectedDir.resolve(imagePath)
         val diffImagePath = diffDir.resolve(imagePath)
 
         actual.writeTo(actualImagePath)
+        if (assetsDir != null) {
+            actual.writeTo(assetsDir.resolve(imagePath))
+        }
         expected?.writeTo(expectedImagePath)
         diff?.writeTo(diffImagePath)
 
