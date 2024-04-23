@@ -19,37 +19,45 @@ package platform.test.motion.filmstrip
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Rect
 import kotlin.math.ceil
 import kotlin.math.max
+import kotlin.math.min
 import platform.test.motion.golden.FrameId
 
-/**
- * Concatenates animation screenshots into a filmstrip image.
- *
- * All screenshots must be of the same size and config.
- */
-class Filmstrip(
-    private val screenshots: List<MotionScreenshot>,
-) {
+/** Concatenates animation screenshots into a filmstrip image. */
+class Filmstrip(private val screenshots: List<MotionScreenshot>) {
     init {
         require(screenshots.isNotEmpty()) { "Filmstrip must have at least one screenshot" }
-        val width = screenshots.first().bitmap.width
-        val height = screenshots.first().bitmap.height
-        val config = screenshots.first().bitmap.config
-
-        require(
-            screenshots.all {
-                it.bitmap.width == width && it.bitmap.height == height && it.bitmap.config == config
-            }
-        ) {
-            "Screenshots differ in width, height or config"
-        }
     }
 
     /** Direction in which to concatenate the frames. */
     var orientation: FilmstripOrientation = FilmstripOrientation.AUTOMATIC
+
+    private var screenshotWidth = screenshots.maxOf { it.bitmap.width }
+    private var screenshotHeight = screenshots.maxOf { it.bitmap.height }
+
+    /**
+     * Scales down the screenshots, so that to the longer side will be at most [sizePx].
+     *
+     * All screenshots are scaled uniformly, the scale factor is determined by the largest
+     * width/height of all screenshots.
+     *
+     * Aspect ratio of each screenshot is retained. Has no effect is [sizePx] is equal or larger
+     * than the largest screenshot.
+     */
+    fun limitLongestSide(sizePx: Int) {
+        val aspectRatio = screenshotWidth / screenshotHeight.toFloat()
+        if (aspectRatio >= 1 && sizePx < screenshotWidth) {
+            screenshotHeight = (screenshotHeight * (sizePx.toFloat() / screenshotWidth)).toInt()
+            screenshotWidth = sizePx
+        } else if (aspectRatio < 1 && sizePx < screenshotHeight) {
+            screenshotWidth = (screenshotWidth * (sizePx.toFloat() / screenshotHeight)).toInt()
+            screenshotHeight = sizePx
+        }
+    }
 
     /** Draws the screenshots into a new filmstrip [Bitmap]. */
     fun renderFilmstrip(): Bitmap {
@@ -63,14 +71,17 @@ class Filmstrip(
                 when (orientation) {
                     FilmstripOrientation.HORIZONTAL -> true
                     FilmstripOrientation.VERTICAL -> false
-                    FilmstripOrientation.AUTOMATIC ->
-                        screenshots.first().bitmap.width <= screenshots.first().bitmap.height
+                    FilmstripOrientation.AUTOMATIC -> screenshotWidth <= screenshotHeight
                 }
 
+            val scaleX = screenshotWidth.toFloat() / screenshots.maxOf { it.bitmap.width }
+            val scaleY = screenshotHeight.toFloat() / screenshots.maxOf { it.bitmap.height }
+            val scale = min(scaleX, scaleY).coerceAtMost(1f)
+
             return if (isHorizontal) {
-                HorizontalFilmstripRenderer(screenshots)
+                HorizontalFilmstripRenderer(screenshots, screenshotWidth, screenshotHeight, scale)
             } else {
-                VerticalFilmstripRenderer(screenshots)
+                VerticalFilmstripRenderer(screenshots, screenshotWidth, screenshotHeight, scale)
             }
         }
 }
@@ -86,9 +97,12 @@ enum class FilmstripOrientation {
 /** An animation screenshot annotated with the frame its originating from. */
 data class MotionScreenshot(val frameId: FrameId, val bitmap: Bitmap)
 
-private sealed class FilmstripRenderer(val screenshots: List<MotionScreenshot>) {
-    val screenshotWidth = screenshots.first().bitmap.width
-    val screenshotHeight = screenshots.first().bitmap.height
+private sealed class FilmstripRenderer(
+    val screenshots: List<MotionScreenshot>,
+    val screenshotWidth: Int,
+    val screenshotHeight: Int,
+    val scale: Float
+) {
     val bitmapConfig = checkNotNull(screenshots.first().bitmap.config)
 
     val labels = screenshots.map { it.frameId.label }
@@ -113,8 +127,12 @@ private sealed class FilmstripRenderer(val screenshots: List<MotionScreenshot>) 
     abstract fun render(): Bitmap
 }
 
-private class HorizontalFilmstripRenderer(screenshots: List<MotionScreenshot>) :
-    FilmstripRenderer(screenshots) {
+private class HorizontalFilmstripRenderer(
+    screenshots: List<MotionScreenshot>,
+    screenshotWidth: Int,
+    screenshotHeight: Int,
+    scale: Float
+) : FilmstripRenderer(screenshots, screenshotWidth, screenshotHeight, scale) {
 
     init {
         textPaint.textAlign = Paint.Align.CENTER
@@ -138,14 +156,21 @@ private class HorizontalFilmstripRenderer(screenshots: List<MotionScreenshot>) :
             /* paint = */ backgroundPaint,
         )
 
+        val transform = Matrix()
         var x = 0f
         for ((screenshot, label) in screenshots.zip(labels)) {
+            val left = x + (tileWidth - screenshotWidth) / 2
+
+            transform.reset()
+            transform.setTranslate(left, 0f)
+            transform.postScale(scale, scale, left, 0f)
+
             canvas.drawBitmap(
                 /* bitmap = */ screenshot.bitmap,
-                /* left = */ x + (tileWidth - screenshotWidth) / 2,
-                /* top = */ 0f,
+                /* matrix = */ transform,
                 /* paint = */ backgroundPaint
             )
+
             canvas.drawText(
                 /* text = */ label,
                 /* x = */ x + tileWidth / 2,
@@ -159,8 +184,12 @@ private class HorizontalFilmstripRenderer(screenshots: List<MotionScreenshot>) :
     }
 }
 
-private class VerticalFilmstripRenderer(screenshots: List<MotionScreenshot>) :
-    FilmstripRenderer(screenshots) {
+private class VerticalFilmstripRenderer(
+    screenshots: List<MotionScreenshot>,
+    screenshotWidth: Int,
+    screenshotHeight: Int,
+    scale: Float
+) : FilmstripRenderer(screenshots, screenshotWidth, screenshotHeight, scale) {
     override fun render(): Bitmap {
         val tileHeight = max(screenshotHeight, labelHeight + 2 * labelMargin)
 
@@ -178,12 +207,17 @@ private class VerticalFilmstripRenderer(screenshots: List<MotionScreenshot>) :
             /* paint = */ backgroundPaint,
         )
 
+        val transform = Matrix()
         var y = 0f
         for ((screenshot, label) in screenshots.zip(labels)) {
+            val top = y + (tileHeight - screenshotHeight) / 2
+            transform.reset()
+            transform.setTranslate(0f, top)
+            transform.postScale(scale, scale, 0f, top)
+
             canvas.drawBitmap(
                 /* bitmap = */ screenshot.bitmap,
-                /* left = */ 0f,
-                /* top = */ y + (tileHeight - screenshotHeight) / 2,
+                /* matrix = */ transform,
                 /* paint = */ backgroundPaint
             )
 
