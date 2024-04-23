@@ -128,17 +128,19 @@ constructor(
         testSkipped = true
     }
 
-    private fun shouldRun(description: Description?): Boolean {
+    private fun shouldRun(description: Description): Boolean {
         // Only run FaaS if test rule is enabled and on tests with FlickerTest annotation if it's
         // used within the class, otherwise run on all tests
-        return when {
-            !enabled -> false
-            // Nullable description case is only handled because of b/302018924.
-            description != null && description.testClass != null ->
-                (testClassHasFlickerTestAnnotations(description.testClass) ||
-                    description.annotations.none { it is FlickerTest })
-            else -> true
+        if (!enabled) {
+            return false
         }
+
+        if (description.annotations.none { it is FlickerTest }) {
+            // FlickerTest annotation is not used within the test class, so run on all tests
+            return true
+        }
+
+        return testClassHasFlickerTestAnnotations(description.testClass)
     }
 
     private fun testClassHasFlickerTestAnnotations(testClass: Class<*>): Boolean {
