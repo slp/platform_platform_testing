@@ -53,7 +53,7 @@ class FlickerServiceTracesCollector(
 
             Log.v(LOG_TAG, "Stopping trace monitors")
             val writer = ResultWriter().forScenario(scenario).withOutputDir(outputDir)
-            traceMonitors.forEach { it.stop(writer) }
+            traceMonitors.reversed().forEach { it.stop(writer) }
             this.scenario = null
             val result = writer.write()
 
