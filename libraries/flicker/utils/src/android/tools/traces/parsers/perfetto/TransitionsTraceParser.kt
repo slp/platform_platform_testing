@@ -112,11 +112,13 @@ class TransitionsTraceParser :
                                 ?.map {
                                     TransitionChange(
                                         it.getChild("mode")?.getInt()?.toTransitionType()
-                                            ?: error("Missing mode"),
+                                            ?: error("Missing mode (${it.getChild("mode")})"),
                                         it.getChild("layer_id")?.getInt()
-                                            ?: error("Missing layer id"),
+                                            ?: error("Missing layer id ${it.getChild("layer_id")}"),
                                         it.getChild("window_id")?.getInt()
-                                            ?: error("Missing window id")
+                                            ?: error(
+                                                "Missing window id ${it.getChild("window_id")}"
+                                            )
                                     )
                                 }
                                 ?.ifEmpty { null },
