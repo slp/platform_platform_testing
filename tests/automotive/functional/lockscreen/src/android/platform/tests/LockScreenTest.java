@@ -18,13 +18,16 @@ package android.platform.tests;
 
 import static junit.framework.Assert.assertTrue;
 
+import android.content.Context;
 import android.platform.helpers.HelperAccessor;
 import android.platform.helpers.IAutoLockScreenHelper;
 import android.platform.helpers.IAutoLockScreenHelper.LockType;
 import android.platform.helpers.IAutoSecuritySettingsHelper;
 import android.platform.helpers.IAutoSettingHelper;
 import android.platform.helpers.SettingsConstants;
+import android.provider.Settings;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.runner.AndroidJUnit4;
 
 import org.junit.After;
@@ -41,15 +44,27 @@ public class LockScreenTest {
     private HelperAccessor<IAutoLockScreenHelper> mLockScreenHelper;
     private HelperAccessor<IAutoSecuritySettingsHelper> mSecuritySettingsHelper;
     private HelperAccessor<IAutoSettingHelper> mSettingHelper;
+    private final Context mContext;
+    private int mShareProtection;
 
     public LockScreenTest() throws Exception {
         mSecuritySettingsHelper = new HelperAccessor<>(IAutoSecuritySettingsHelper.class);
         mLockScreenHelper = new HelperAccessor<>(IAutoLockScreenHelper.class);
         mSettingHelper = new HelperAccessor<>(IAutoSettingHelper.class);
+        mContext = ApplicationProvider.getApplicationContext();
     }
 
     @Before
     public void openSecuritySettingFacet() {
+        mShareProtection =
+                Settings.Global.getInt(
+                        mContext.getContentResolver(),
+                        Settings.Global.DISABLE_SCREEN_SHARE_PROTECTIONS_FOR_APPS_AND_NOTIFICATIONS,
+                        0);
+        Settings.Global.putInt(
+                mContext.getContentResolver(),
+                Settings.Global.DISABLE_SCREEN_SHARE_PROTECTIONS_FOR_APPS_AND_NOTIFICATIONS,
+                0);
         mSettingHelper.get().openSetting(SettingsConstants.SECURITY_SETTINGS);
         assertTrue(
                 "Security settings did not open",
@@ -59,6 +74,10 @@ public class LockScreenTest {
     @After
     public void goBackToSettingsScreen() {
         mSettingHelper.get().goBackToSettingsScreen();
+        Settings.Global.putInt(
+                mContext.getContentResolver(),
+                Settings.Global.DISABLE_SCREEN_SHARE_PROTECTIONS_FOR_APPS_AND_NOTIFICATIONS,
+                mShareProtection);
     }
 
     @Test

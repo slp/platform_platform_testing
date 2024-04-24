@@ -103,13 +103,17 @@ class TaplUiObject constructor(val uiObject: UiObject2, private val name: String
     }
 
     /**
-     * Performs a fling gesture on this object.
+     * Performs a scroll gesture on this object via flinging.
      *
-     * @param direction The direction in which to scroll.
+     * @param scrollDirection The direction in which to scroll.
      * @param percent The distance to scroll as a percentage of this object's visible size.
      * @param verifyIsScrollable Whether to verify that the object is scrollable.
      */
-    fun fling(direction: Direction, percent: Float, verifyIsScrollable: Boolean = false) {
+    fun scrollWithFling(
+        scrollDirection: Direction,
+        percent: Float,
+        verifyIsScrollable: Boolean = false
+    ) {
         if (verifyIsScrollable) {
             Gestures.waitForObjectEnabled(uiObject, name)
             Gestures.waitForObjectScrollable(uiObject, name)
@@ -119,7 +123,7 @@ class TaplUiObject constructor(val uiObject: UiObject2, private val name: String
         require(percent <= 1.0f) { "Percent must be less than 1.0f" }
 
         // To fling, we swipe in the opposite direction
-        val swipeDirection: Direction = Direction.reverse(direction)
+        val swipeDirection: Direction = Direction.reverse(scrollDirection)
 
         val bounds: Rect = getVisibleBoundsForGestures()
         val segment = Math.min(percent, 1.0f)

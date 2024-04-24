@@ -48,10 +48,11 @@ interface DiffResultExportStrategy {
             val exportStrategy = ExportToScubaStrategy(goldenPathManager)
 
             val isRobolectric = Build.FINGERPRINT.contains("robolectric")
-            val isGradle =
-                System.getProperty("java.class.path")?.contains("gradle-worker.jar") == true
+            val doesWriteScreenshotToLocal =
+                "yes".equals(
+                    System.getProperty("screenshot.writeScreenshotToLocal"), ignoreCase = true)
 
-            return if (isRobolectric && isGradle) {
+            return if (isRobolectric && doesWriteScreenshotToLocal) {
                 MultiplexedStrategy(
                     listOf(exportStrategy, DevicelessDevMachineExportStrategy(goldenPathManager))
                 )
