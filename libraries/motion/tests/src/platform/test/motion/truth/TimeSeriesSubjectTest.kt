@@ -157,8 +157,8 @@ class TimeSeriesSubjectTest {
                 )
                 .inOrder()
 
-            factValue("|    expected").isEqualTo("3 (int)")
-            factValue("|    but was").isEqualTo("2 (int)")
+            factValue("|    expected").isEqualTo("2 (int)")
+            factValue("|    but was").isEqualTo("3 (int)")
         }
     }
 

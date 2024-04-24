@@ -103,8 +103,8 @@ private constructor(failureMetadata: FailureMetadata, private val actual: TimeSe
 
                     mismatchingDataPointIndices.forEach { (actualIndex, expectedIndex) ->
                         add(simpleFact("|  @${actual.frameIds[actualIndex].label}"))
-                        add(fact("|    expected", actualFeature.dataPoints[actualIndex]))
-                        add(fact("|    but was", expectedFeature.dataPoints[expectedIndex]))
+                        add(fact("|    expected", expectedFeature.dataPoints[expectedIndex]))
+                        add(fact("|    but was", actualFeature.dataPoints[actualIndex]))
                     }
                 }
             }
