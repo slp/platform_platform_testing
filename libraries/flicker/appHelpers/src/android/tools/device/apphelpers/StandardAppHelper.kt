@@ -23,7 +23,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.tools.PlatformConsts
-import android.tools.traces.ConditionsFactory
 import android.tools.traces.component.ComponentNameMatcher
 import android.tools.traces.component.IComponentMatcher
 import android.tools.traces.component.IComponentNameMatcher
@@ -43,7 +42,7 @@ open class StandardAppHelper(
     val instrumentation: Instrumentation,
     val appName: String,
     val componentMatcher: ComponentNameMatcher,
-) : IComponentNameMatcher by componentMatcher {
+) : IStandardAppHelper, IComponentNameMatcher by componentMatcher {
     constructor(
         instr: Instrumentation,
         appName: String,
@@ -74,7 +73,7 @@ open class StandardAppHelper(
         return By.pkg(expected).depth(0)
     }
 
-    open fun open() {
+    override fun open() {
         open(packageName)
     }
 
@@ -93,15 +92,15 @@ open class StandardAppHelper(
         }
 
     /** {@inheritDoc} */
-    open fun exit() {
+    override fun exit() {
         withTracing("${this::class.simpleName}#exit") {
             // Ensure all testing components end up being closed.
             activityManager?.forceStopPackage(packageName)
         }
     }
 
-    /** Exits the activity and wait for activity destroyed */
-    fun exit(wmHelper: WindowManagerStateHelper) {
+    /** {@inheritDoc} */
+    override fun exit(wmHelper: WindowManagerStateHelper) {
         withTracing("${this::class.simpleName}#exitAndWait") {
             exit()
             waitForActivityDestroyed(wmHelper)
@@ -135,56 +134,35 @@ open class StandardAppHelper(
         }
     }
 
-    /**
-     * Launches the app through an intent instead of interacting with the launcher.
-     *
-     * Uses UiAutomation to detect when the app is open
-     */
-    @JvmOverloads
-    open fun launchViaIntent(
-        expectedPackageName: String = "",
-        action: String? = null,
-        stringExtras: Map<String, String> = mapOf()
+    /** {@inheritDoc} */
+    override fun launchViaIntent(
+        expectedPackageName: String,
+        action: String?,
+        stringExtras: Map<String, String>
     ) {
         launchAppViaIntent(action, stringExtras)
         val appSelector = getAppSelector(expectedPackageName)
         uiDevice.wait(Until.hasObject(appSelector), APP_LAUNCH_WAIT_TIME_MS)
     }
 
-    /**
-     * Launches the app through an intent instead of interacting with the launcher and waits until
-     * the app window is visible
-     */
-    @JvmOverloads
-    open fun launchViaIntent(
+    /** {@inheritDoc} */
+    override fun launchViaIntent(
         wmHelper: WindowManagerStateHelper,
-        launchedAppComponentMatcherOverride: IComponentMatcher? = null,
-        action: String? = null,
-        stringExtras: Map<String, String> = mapOf(),
-        waitConditionsBuilder: WindowManagerStateHelper.StateSyncBuilder =
-            wmHelper
-                .StateSyncBuilder()
-                .add(ConditionsFactory.isWMStateComplete())
-                .withAppTransitionIdle()
+        launchedAppComponentMatcherOverride: IComponentMatcher?,
+        action: String?,
+        stringExtras: Map<String, String>,
+        waitConditionsBuilder: WindowManagerStateHelper.StateSyncBuilder
     ) {
         launchAppViaIntent(action, stringExtras)
         doWaitShown(launchedAppComponentMatcherOverride, waitConditionsBuilder)
     }
 
-    /**
-     * Launches the app through an intent instead of interacting with the launcher and waits until
-     * the app window is visible
-     */
-    @JvmOverloads
-    open fun launchViaIntent(
+    /** {@inheritDoc} */
+    override fun launchViaIntent(
         wmHelper: WindowManagerStateHelper,
         intent: Intent,
-        launchedAppComponentMatcherOverride: IComponentMatcher? = null,
-        waitConditionsBuilder: WindowManagerStateHelper.StateSyncBuilder =
-            wmHelper
-                .StateSyncBuilder()
-                .add(ConditionsFactory.isWMStateComplete())
-                .withAppTransitionIdle()
+        launchedAppComponentMatcherOverride: IComponentMatcher?,
+        waitConditionsBuilder: WindowManagerStateHelper.StateSyncBuilder
     ) {
         withTracing("${this::class.simpleName}#launchViaIntent") {
             context.startActivity(intent)
@@ -203,7 +181,7 @@ open class StandardAppHelper(
         }
     }
 
-    fun isAvailable(): Boolean {
+    override fun isAvailable(): Boolean {
         return try {
             pkgManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
             true
