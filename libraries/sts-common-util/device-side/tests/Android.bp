@@ -23,6 +23,7 @@ android_test {
         "androidx.test.runner",
         "sts-device-util",
         "junit",
+        "compatibility-device-util-axt",
     ],
 
     // tag this module as a test artifact
