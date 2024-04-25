@@ -56,11 +56,12 @@ MAX_PHY_RATE_PER_STREAM_N_20_MBPS = 72
 MCC_THROUGHPUT_MULTIPLIER = 0.25
 MAX_PHY_RATE_TO_MIN_THROUGHPUT_RATIO_5G = 0.37
 MAX_PHY_RATE_TO_MIN_THROUGHPUT_RATIO_2G = 0.2
-WIFI_HOTSPOT_THROUGHPUT_MULTIPLIER = 0.8
-WIFI_LAN_THROUGHPUT_MAX_MBPS = 20  # due to ukey2 encryption cpu overhead
+# Add a temporary cap for NC speed check until nearby connections layer overhead
+# issue is fixed. Note that this cap is not applied to iperf speed check
+NC_THROUGHPUT_MIN_CAP_MBPS = 20
 
-CLASSIC_BT_MEDIUM_THROUGHPUT_BENCHMARK = 20  # 20KBps
-BLE_MEDIUM_THROUGHPUT_BENCHMARK = 20  # 20KBps
+CLASSIC_BT_MEDIUM_THROUGHPUT_BENCHMARK_MBPS = 0.02  # 20KBps
+BLE_MEDIUM_THROUGHPUT_BENCHMARK_MBPS = 0.02  # 20KBps
 
 KEEP_ALIVE_TIMEOUT_BT_MS = 30000
 KEEP_ALIVE_INTERVAL_BT_MS = 5000
@@ -115,7 +116,6 @@ class TestParameters:
 
   target_cuj_name: str = 'unspecified'
   requires_bt_multiplex: bool = False
-  run_function_tests_with_performance_tests: bool = False
   abort_all_tests_on_function_tests_fail: bool = True
   fast_fail_on_any_error: bool = False
   use_auto_controlled_wifi_ap: bool = False
@@ -136,6 +136,15 @@ class TestParameters:
   allow_unrooted_device: bool = False
   keep_alive_timeout_ms: int = KEEP_ALIVE_TIMEOUT_WIFI_MS
   keep_alive_interval_ms: int = KEEP_ALIVE_INTERVAL_WIFI_MS
+
+  run_function_tests_with_performance_tests: bool = True
+  run_bt_performance_test: bool = True
+  run_ble_performance_test: bool = False
+  run_directed_test: bool = True
+  run_compound_test: bool = True
+  run_iperf_test: bool = True
+
+  skip_bug_report: bool = False
 
   @classmethod
   def from_user_params(
@@ -353,6 +362,7 @@ class SingleTestResult:
       dataclasses.field(default_factory=ConnectionSetupQualityInfo)
   )
   file_transfer_throughput_kbps: float = UNSET_THROUGHPUT_KBPS
+  iperf_throughput_kbps: float = UNSET_THROUGHPUT_KBPS
   advertiser_sta_latency: datetime.timedelta = UNSET_LATENCY
   discoverer_sta_expected: bool = False
   advertiser_wifi_expected: bool = False
@@ -382,6 +392,8 @@ class NcPerformanceTestMetrics:
   advertiser_wifi_sta_latencies: list[datetime.timedelta] = dataclasses.field(
       default_factory=list[datetime.timedelta])
   file_transfer_throughputs_kbps: list[float] = dataclasses.field(
+      default_factory=list[float])
+  iperf_throughputs_kbps: list[float] = dataclasses.field(
       default_factory=list[float])
   upgraded_wifi_transfer_mediums: list[NearbyConnectionMedium] = (
       dataclasses.field(default_factory=list[NearbyConnectionMedium]))

@@ -263,14 +263,15 @@ in a local directory:
 
 3. Configure device capabilities for both source and target devices.
 
-      For example, the following configuration means the device supports two
-      spatial streams with the maximum PHY rate of 2402&nbsp;Mbps (2x2, 11AX,
-      160&nbsp;MHz) at 5G and 287&nbsp;Mbps (2x2, 11AX, 20&nbsp;MHz) at 2G.
-      This device doesn't support STA + WFD concurrency in DBS mode.
+      For example, the following configuration means the device uses Wi-Fi
+      chipset WCN6710, and supports two spatial streams with the maximum PHY rate of
+      2402&nbsp;Mbps (2x2, 11AX, 160&nbsp;MHz) at 5G and 287&nbsp;Mbps (2x2, 11AX,
+      20&nbsp;MHz) at 2G. This device doesn't support STA + WFD concurrency in DBS mode.
       It doesn't support starting WFD group owner mode at an STA-associated DFS or
       indoor channel.
 
       ```
+        wifi_chipset: "wcn6710"
         # The max number of spatial streams
         max_num_streams: 2
         # The max PHY rate at 5G, in Mbps
