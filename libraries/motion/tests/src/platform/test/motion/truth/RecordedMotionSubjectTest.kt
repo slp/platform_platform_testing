@@ -32,6 +32,8 @@ import org.junit.runner.RunWith
 import platform.test.motion.GoldenNotFoundException
 import platform.test.motion.MotionTestRule
 import platform.test.motion.RecordedMotion
+import platform.test.motion.TimeSeriesVerificationResult
+import platform.test.motion.golden.DataPointType
 import platform.test.motion.golden.TimeSeries
 import platform.test.motion.golden.TimestampFrameId
 import platform.test.screenshot.BitmapDiffer
@@ -60,7 +62,9 @@ class RecordedMotionSubjectTest {
 
         assertWithMessage("exports actual data")
             .that(rule.writeGeneratedTimeInvocations)
-            .containsExactly("foo" to recordedMotion.timeSeries)
+            .containsExactly(
+                Triple("foo", recordedMotion, TimeSeriesVerificationResult.MISSING_REFERENCE)
+            )
 
         assertWithMessage("exports debug filmstrip as failed")
             .that(rule.writeDebugFilmstripInvocations)
@@ -79,7 +83,7 @@ class RecordedMotionSubjectTest {
 
         assertWithMessage("exports actual data")
             .that(rule.writeGeneratedTimeInvocations)
-            .containsExactly("foo" to recordedMotion.timeSeries)
+            .containsExactly(Triple("foo", recordedMotion, TimeSeriesVerificationResult.PASSED))
 
         assertWithMessage("exports debug filmstrip as failed")
             .that(rule.writeDebugFilmstripInvocations)
@@ -105,7 +109,7 @@ class RecordedMotionSubjectTest {
 
         assertWithMessage("exports actual data")
             .that(rule.writeGeneratedTimeInvocations)
-            .containsExactly("foo" to recordedMotion.timeSeries)
+            .containsExactly(Triple("foo", recordedMotion, TimeSeriesVerificationResult.FAILED))
 
         assertWithMessage("exports debug filmstrip as failed")
             .that(rule.writeDebugFilmstripInvocations)
@@ -207,16 +211,24 @@ class RecordedMotionSubjectTest {
             bitmapDiffer = bitmapDiffer
         ) {
         var readGoldenTimeSeriesInvocations = mutableListOf<String>()
-        var writeGeneratedTimeInvocations = mutableListOf<Pair<String, TimeSeries>>()
+        var writeGeneratedTimeInvocations =
+            mutableListOf<Triple<String, RecordedMotion, TimeSeriesVerificationResult>>()
         var writeDebugFilmstripInvocations = mutableListOf<Pair<String, Boolean>>()
 
-        override fun readGoldenTimeSeries(goldenIdentifier: String): TimeSeries {
+        override fun readGoldenTimeSeries(
+            goldenIdentifier: String,
+            typeRegistry: Map<String, DataPointType<*>>
+        ): TimeSeries {
             readGoldenTimeSeriesInvocations.add(goldenIdentifier)
             return golden ?: throw GoldenNotFoundException(goldenIdentifier)
         }
 
-        override fun writeGeneratedTimeSeries(goldenIdentifier: String, timeSeries: TimeSeries) {
-            writeGeneratedTimeInvocations.add(goldenIdentifier to timeSeries)
+        override fun writeGeneratedTimeSeries(
+            goldenIdentifier: String,
+            recordedMotion: RecordedMotion,
+            result: TimeSeriesVerificationResult
+        ) {
+            writeGeneratedTimeInvocations.add(Triple(goldenIdentifier, recordedMotion, result))
         }
 
         override fun writeDebugFilmstrip(

@@ -24,6 +24,8 @@ import org.json.JSONException
 import platform.test.motion.GoldenNotFoundException
 import platform.test.motion.MotionTestRule
 import platform.test.motion.RecordedMotion
+import platform.test.motion.TimeSeriesVerificationResult
+import platform.test.motion.golden.createTypeRegistry
 import platform.test.motion.truth.TimeSeriesSubject.Companion.timeSeries
 import platform.test.screenshot.matchers.BitmapMatcher
 import platform.test.screenshot.matchers.PixelPerfectMatcher
@@ -52,27 +54,35 @@ internal constructor(
         val goldenIdentifier = getGoldenIdentifier(recordedMotion, goldenName)
         val actualTimeSeries = recordedMotion.timeSeries
 
-        // Export the actual values, so that they can later be downloaded to update the golden.
-        motionTestRule.writeGeneratedTimeSeries(goldenIdentifier, actualTimeSeries)
-
-        var matchesGolden = false
+        var result = TimeSeriesVerificationResult.FAILED
         try {
             try {
-                val goldenTimeSeries = motionTestRule.readGoldenTimeSeries(goldenIdentifier)
+                // when de-serializing goldens, only types that are in the actual data are relevant
+                val typeRegistry = actualTimeSeries.createTypeRegistry()
+                val goldenTimeSeries =
+                    motionTestRule.readGoldenTimeSeries(goldenIdentifier, typeRegistry)
 
                 check("Motion time-series $goldenIdentifier")
                     .about(timeSeries())
                     .that(actualTimeSeries)
                     .isEqualTo(goldenTimeSeries)
 
-                matchesGolden = true
+                result = TimeSeriesVerificationResult.PASSED
             } catch (e: GoldenNotFoundException) {
+                result = TimeSeriesVerificationResult.MISSING_REFERENCE
                 failWithoutActual(simpleFact("Golden [${e.missingGoldenFile}] not found"))
             } catch (e: JSONException) {
+                result = TimeSeriesVerificationResult.MISSING_REFERENCE
                 failWithoutActual(fact("Golden [$goldenIdentifier] file is invalid", e))
             }
         } finally {
-            motionTestRule.writeDebugFilmstrip(recordedMotion, goldenIdentifier, matchesGolden)
+            // Export the actual values, so that they can later be downloaded to update the golden.
+            motionTestRule.writeGeneratedTimeSeries(goldenIdentifier, recordedMotion, result)
+            motionTestRule.writeDebugFilmstrip(
+                recordedMotion,
+                goldenIdentifier,
+                result == TimeSeriesVerificationResult.PASSED
+            )
         }
     }
 

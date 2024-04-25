@@ -27,6 +27,7 @@ import org.junit.Assert.assertThrows
 import org.junit.Test
 import org.junit.runner.RunWith
 import platform.test.motion.golden.TimeSeries
+import platform.test.motion.testing.JsonSubject.Companion.assertThat
 import platform.test.screenshot.GoldenPathManager
 import platform.test.screenshot.PathConfig
 
@@ -41,9 +42,17 @@ class MotionTestRuleTest {
 
     private val subject = MotionTestRule(goldenPathManager)
 
+    private val emptyRecordedMotion =
+        RecordedMotion(
+            "FooClass",
+            "bar_test",
+            TimeSeries(listOf(), emptyList()),
+            screenshots = null
+        )
+
     @Test
     fun readGoldenTimeSeries_withExistingGolden_returnsParsedJson() {
-        assertThat(subject.readGoldenTimeSeries("empty_timeseries"))
+        assertThat(subject.readGoldenTimeSeries("empty_timeseries", emptyMap()))
             .isEqualTo(TimeSeries(listOf(), emptyList()))
     }
 
@@ -51,7 +60,7 @@ class MotionTestRuleTest {
     fun readGoldenTimeSeries_withUnavailableGolden_throwsGoldenNotFoundException() {
         val exception =
             assertThrows(GoldenNotFoundException::class.java) {
-                subject.readGoldenTimeSeries("no_golden")
+                subject.readGoldenTimeSeries("no_golden", emptyMap())
             }
         assertThat(exception.missingGoldenFile).endsWith("no_golden.json")
     }
@@ -59,23 +68,66 @@ class MotionTestRuleTest {
     @Test
     fun readGoldenTimeSeries_withInvalidJsonFile_throwsJSONException() {
         assertThrows(JSONException::class.java) {
-            subject.readGoldenTimeSeries("invalid_json_data")
+            subject.readGoldenTimeSeries("invalid_json_data", emptyMap())
         }
     }
 
     @Test
     fun writeGeneratedTimeSeries_createsFile() {
-        val emptyTimeSeries =
-            JSONObject().apply {
-                put("frame_ids", JSONArray())
-                put("features", JSONArray())
-            }
-        subject.writeGeneratedTimeSeries("updated_golden", TimeSeries(listOf(), emptyList()))
-
-        val expectedFile = File(goldenPathManager.deviceLocalPath).resolve("updated_golden.json")
+        subject.writeGeneratedTimeSeries(
+            "updated_golden",
+            emptyRecordedMotion,
+            TimeSeriesVerificationResult.PASSED
+        )
+        val expectedFile =
+            File(goldenPathManager.deviceLocalPath).resolve("FooClass/updated_golden.json")
 
         assertThat(expectedFile.exists()).isTrue()
-        assertThat(expectedFile.readText()).isEqualTo(emptyTimeSeries.toString(2))
+    }
+
+    @Test
+    fun writeGeneratedTimeSeries_writesTimeSeries() {
+        subject.writeGeneratedTimeSeries(
+            "updated_golden",
+            emptyRecordedMotion,
+            TimeSeriesVerificationResult.PASSED
+        )
+        val expectedFile =
+            File(goldenPathManager.deviceLocalPath).resolve("FooClass/updated_golden.json")
+
+        val fileContentsWithoutMetadata =
+            JSONObject(expectedFile.readText()).apply { remove("//metadata") }
+
+        assertThat(fileContentsWithoutMetadata)
+            .isEqualTo(
+                JSONObject().apply {
+                    put("frame_ids", JSONArray())
+                    put("features", JSONArray())
+                }
+            )
+    }
+
+    @Test
+    fun writeGeneratedTimeSeries_includesMetadata() {
+        subject.writeGeneratedTimeSeries(
+            "updated_golden",
+            emptyRecordedMotion,
+            TimeSeriesVerificationResult.MISSING_REFERENCE
+        )
+        val expectedFile =
+            File(goldenPathManager.deviceLocalPath).resolve("FooClass/updated_golden.json")
+
+        val fileContents = JSONObject(expectedFile.readText())
+
+        assertThat(fileContents.get("//metadata") as JSONObject)
+            .isEqualTo(
+                JSONObject().apply {
+                    put("goldenRepoPath", "assets/updated_golden.json")
+                    put("filmstripTestIdentifier", "motion_debug_filmstrip_FooClass")
+                    put("goldenIdentifier", "updated_golden")
+                    put("result", "MISSING_REFERENCE")
+                }
+            )
     }
 
     @Test
@@ -83,7 +135,8 @@ class MotionTestRuleTest {
         assertThrows(IllegalArgumentException::class.java) {
             subject.writeGeneratedTimeSeries(
                 "invalid identifier!",
-                TimeSeries(listOf(), emptyList())
+                emptyRecordedMotion,
+                TimeSeriesVerificationResult.PASSED
             )
         }
     }

@@ -16,8 +16,6 @@
 
 package platform.test.motion
 
-import android.content.Context
-import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.FailureMetadata
 import com.google.common.truth.Subject
 import com.google.common.truth.Truth.assertAbout
@@ -30,7 +28,6 @@ import org.json.JSONObject
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 import platform.test.motion.golden.DataPointType
-import platform.test.motion.golden.DataPointTypes
 import platform.test.motion.golden.JsonGoldenSerializer
 import platform.test.motion.golden.TimeSeries
 import platform.test.motion.truth.RecordedMotionSubject
@@ -50,12 +47,8 @@ import platform.test.screenshot.report.ExportToScubaStrategy
  */
 open class MotionTestRule(
     private val goldenPathManager: GoldenPathManager,
-    private val context: Context = InstrumentationRegistry.getInstrumentation().targetContext,
-    extraGoldenDataPointTypes: List<DataPointType<*>> = emptyList(),
     internal val bitmapDiffer: BitmapDiffer? = null,
 ) : TestWatcher() {
-    private val goldenSerializer =
-        JsonGoldenSerializer(DataPointTypes.allTypes + extraGoldenDataPointTypes)
     private val scubaExportStrategy = ExportToScubaStrategy(goldenPathManager)
 
     @Volatile protected var testClassName: String? = null
@@ -73,7 +66,7 @@ open class MotionTestRule(
         assertAbout(motion()).that(recordedMotion)
 
     override fun starting(description: Description) {
-        testClassName = description.className
+        testClassName = description.testClass.simpleName
         testMethodName = description.methodName
     }
 
@@ -85,17 +78,25 @@ open class MotionTestRule(
     /**
      * Reads and parses the golden [TimeSeries].
      *
-     * This method is only `open` to be overridden for tests.
+     * Golden data types not included in the `typeRegistry` will produce an [UnknownType].
      *
+     * NOTE: This method is only `open` to be overridden for tests.
+     *
+     * @param typeRegistry [DataPointType] implementations used to de-serialize structured JSON
+     *   values to golden values. See [TimeSeries.dataPointTypes] for creating the registry based on
+     *   the currently produced timeseries.
      * @throws GoldenNotFoundException if the golden does not exist.
      * @throws JSONException if the golden file fails to parse.
      */
-    internal open fun readGoldenTimeSeries(goldenIdentifier: String): TimeSeries {
+    internal open fun readGoldenTimeSeries(
+        goldenIdentifier: String,
+        typeRegistry: Map<String, DataPointType<*>>
+    ): TimeSeries {
         val path = goldenPathManager.goldenIdentifierResolver(goldenIdentifier, JSON_EXTENSION)
         try {
-            return context.assets.open(path).bufferedReader().use {
+            return goldenPathManager.appContext.assets.open(path).bufferedReader().use {
                 val jsonObject = JSONObject(it.readText())
-                goldenSerializer.fromJson(jsonObject)
+                JsonGoldenSerializer.fromJson(jsonObject, typeRegistry)
             }
         } catch (e: FileNotFoundException) {
             throw GoldenNotFoundException(path)
@@ -107,20 +108,38 @@ open class MotionTestRule(
      *
      * This method is only `open` to be overridden for tests.
      */
-    internal open fun writeGeneratedTimeSeries(goldenIdentifier: String, timeSeries: TimeSeries) {
+    internal open fun writeGeneratedTimeSeries(
+        goldenIdentifier: String,
+        recordedMotion: RecordedMotion,
+        result: TimeSeriesVerificationResult,
+    ) {
         requireValidGoldenIdentifier(goldenIdentifier)
 
         val relativeGoldenPath =
             goldenPathManager.goldenIdentifierResolver(goldenIdentifier, JSON_EXTENSION)
-        val goldenFile = File(goldenPathManager.deviceLocalPath).resolve(relativeGoldenPath)
+        val goldenFile =
+            File(goldenPathManager.deviceLocalPath)
+                .resolve(recordedMotion.testClassName)
+                .resolve(relativeGoldenPath)
 
         val goldenFileDirectory = checkNotNull(goldenFile.parentFile)
         if (!goldenFileDirectory.exists()) {
             goldenFileDirectory.mkdirs()
         }
+
+        val metadata = JSONObject()
+        metadata.put(
+            "goldenRepoPath",
+            "${goldenPathManager.assetsPathRelativeToBuildRoot}/$relativeGoldenPath"
+        )
+        metadata.put("filmstripTestIdentifier", debugFilmstripTestIdentifier(recordedMotion))
+        metadata.put("goldenIdentifier", goldenIdentifier)
+        metadata.put("result", result.name)
+
         try {
             FileOutputStream(goldenFile).bufferedWriter().use {
-                val jsonObject = goldenSerializer.toJson(timeSeries)
+                val jsonObject = JsonGoldenSerializer.toJson(recordedMotion.timeSeries)
+                jsonObject.put("//metadata", metadata)
                 it.write(jsonObject.toString(JSON_INDENTATION))
             }
         } catch (e: Exception) {
@@ -138,9 +157,8 @@ open class MotionTestRule(
         }
         requireValidGoldenIdentifier(goldenIdentifier)
         val filmstrip = recordedMotion.filmstrip.renderFilmstrip()
-        val testIdentifier = "${recordedMotion.testClassName}_${recordedMotion.testMethodName}"
         scubaExportStrategy.reportResult(
-            testIdentifier,
+            debugFilmstripTestIdentifier(recordedMotion),
             goldenIdentifier,
             actual = filmstrip,
             status =
@@ -161,11 +179,31 @@ open class MotionTestRule(
         }
     }
 
+    /**
+     * The golden screenshot identifier used by []writeDebugFilmstrip]
+     *
+     * Allows tooling to recognize the debug filmstrip related to a motion test
+     */
+    private fun debugFilmstripTestIdentifier(
+        recordedMotion: RecordedMotion,
+    ) = "motion_debug_filmstrip_${recordedMotion.testClassName}"
+
     companion object {
         private const val JSON_EXTENSION = "json"
         private const val JSON_INDENTATION = 2
         private val GOLDEN_IDENTIFIER_REGEX = "^[A-Za-z0-9_-]+$".toRegex()
     }
+}
+
+/**
+ * Time-series golden verification result.
+ *
+ * Note that downstream golden-update tooling relies on the exact naming of these enum values.
+ */
+internal enum class TimeSeriesVerificationResult {
+    PASSED,
+    FAILED,
+    MISSING_REFERENCE
 }
 
 class GoldenNotFoundException(val missingGoldenFile: String) : Exception()

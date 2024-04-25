@@ -19,13 +19,11 @@ package platform.test.motion.view
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.app.Activity
-import android.content.Context
 import android.graphics.Bitmap
 import android.view.View
 import androidx.annotation.OptIn
 import androidx.test.annotation.ExperimentalTestApi
 import androidx.test.core.app.ActivityScenario
-import androidx.test.platform.app.InstrumentationRegistry
 import com.google.errorprone.annotations.CheckReturnValue
 import java.util.concurrent.TimeUnit
 import platform.test.motion.MotionRecorder
@@ -34,7 +32,6 @@ import platform.test.motion.RecordedMotion
 import platform.test.motion.Sampling
 import platform.test.motion.TimeSeriesCaptureScope
 import platform.test.motion.golden.DataPoint
-import platform.test.motion.golden.DataPointType
 import platform.test.motion.golden.Feature
 import platform.test.motion.golden.FrameId
 import platform.test.motion.golden.SupplementalFrameId
@@ -54,16 +51,8 @@ import platform.test.screenshot.captureToBitmapAsync
 class ViewMotionTestRule<A : Activity>(
     goldenPathManager: GoldenPathManager,
     private val currentActivityScenario: () -> ActivityScenario<A>,
-    context: Context = InstrumentationRegistry.getInstrumentation().targetContext,
-    extraGoldenDataPointTypes: List<DataPointType<*>> = emptyList(),
     bitmapDiffer: BitmapDiffer? = null,
-) :
-    MotionTestRule(
-        goldenPathManager,
-        context,
-        defaultViewGoldenDataPointTypes + extraGoldenDataPointTypes,
-        bitmapDiffer
-    ) {
+) : MotionTestRule(goldenPathManager, bitmapDiffer) {
 
     @CheckReturnValue
     fun checkThat(animator: AnimatorSet): MotionRecorder {
@@ -137,10 +126,6 @@ class ViewMotionTestRule<A : Activity>(
             timeSeries,
             screenshotCollector,
         )
-    }
-
-    companion object {
-        val defaultViewGoldenDataPointTypes = DataPointTypes.allTypes
     }
 }
 
