@@ -43,7 +43,7 @@ class MotionTestRuleTest {
 
     @Test
     fun readGoldenTimeSeries_withExistingGolden_returnsParsedJson() {
-        assertThat(subject.readGoldenTimeSeries("empty_timeseries"))
+        assertThat(subject.readGoldenTimeSeries("empty_timeseries", emptyMap()))
             .isEqualTo(TimeSeries(listOf(), emptyList()))
     }
 
@@ -51,7 +51,7 @@ class MotionTestRuleTest {
     fun readGoldenTimeSeries_withUnavailableGolden_throwsGoldenNotFoundException() {
         val exception =
             assertThrows(GoldenNotFoundException::class.java) {
-                subject.readGoldenTimeSeries("no_golden")
+                subject.readGoldenTimeSeries("no_golden", emptyMap())
             }
         assertThat(exception.missingGoldenFile).endsWith("no_golden.json")
     }
@@ -59,7 +59,7 @@ class MotionTestRuleTest {
     @Test
     fun readGoldenTimeSeries_withInvalidJsonFile_throwsJSONException() {
         assertThrows(JSONException::class.java) {
-            subject.readGoldenTimeSeries("invalid_json_data")
+            subject.readGoldenTimeSeries("invalid_json_data", emptyMap())
         }
     }
 

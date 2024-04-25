@@ -16,8 +16,6 @@
 
 package platform.test.motion
 
-import android.content.Context
-import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.FailureMetadata
 import com.google.common.truth.Subject
 import com.google.common.truth.Truth.assertAbout
@@ -30,7 +28,6 @@ import org.json.JSONObject
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 import platform.test.motion.golden.DataPointType
-import platform.test.motion.golden.DataPointTypes
 import platform.test.motion.golden.JsonGoldenSerializer
 import platform.test.motion.golden.TimeSeries
 import platform.test.motion.truth.RecordedMotionSubject
@@ -50,12 +47,8 @@ import platform.test.screenshot.report.ExportToScubaStrategy
  */
 open class MotionTestRule(
     private val goldenPathManager: GoldenPathManager,
-    private val context: Context = InstrumentationRegistry.getInstrumentation().targetContext,
-    extraGoldenDataPointTypes: List<DataPointType<*>> = emptyList(),
     internal val bitmapDiffer: BitmapDiffer? = null,
 ) : TestWatcher() {
-    private val goldenSerializer =
-        JsonGoldenSerializer(DataPointTypes.allTypes + extraGoldenDataPointTypes)
     private val scubaExportStrategy = ExportToScubaStrategy(goldenPathManager)
 
     @Volatile protected var testClassName: String? = null
@@ -85,17 +78,25 @@ open class MotionTestRule(
     /**
      * Reads and parses the golden [TimeSeries].
      *
-     * This method is only `open` to be overridden for tests.
+     * Golden data types not included in the `typeRegistry` will produce an [UnknownType].
      *
+     * NOTE: This method is only `open` to be overridden for tests.
+     *
+     * @param typeRegistry [DataPointType] implementations used to de-serialize structured JSON
+     *   values to golden values. See [TimeSeries.dataPointTypes] for creating the registry based on
+     *   the currently produced timeseries.
      * @throws GoldenNotFoundException if the golden does not exist.
      * @throws JSONException if the golden file fails to parse.
      */
-    internal open fun readGoldenTimeSeries(goldenIdentifier: String): TimeSeries {
+    internal open fun readGoldenTimeSeries(
+        goldenIdentifier: String,
+        typeRegistry: Map<String, DataPointType<*>>
+    ): TimeSeries {
         val path = goldenPathManager.goldenIdentifierResolver(goldenIdentifier, JSON_EXTENSION)
         try {
-            return context.assets.open(path).bufferedReader().use {
+            return goldenPathManager.appContext.assets.open(path).bufferedReader().use {
                 val jsonObject = JSONObject(it.readText())
-                goldenSerializer.fromJson(jsonObject)
+                JsonGoldenSerializer.fromJson(jsonObject, typeRegistry)
             }
         } catch (e: FileNotFoundException) {
             throw GoldenNotFoundException(path)
@@ -120,7 +121,7 @@ open class MotionTestRule(
         }
         try {
             FileOutputStream(goldenFile).bufferedWriter().use {
-                val jsonObject = goldenSerializer.toJson(timeSeries)
+                val jsonObject = JsonGoldenSerializer.toJson(timeSeries)
                 it.write(jsonObject.toString(JSON_INDENTATION))
             }
         } catch (e: Exception) {

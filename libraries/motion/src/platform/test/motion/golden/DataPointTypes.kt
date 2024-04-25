@@ -81,6 +81,4 @@ object DataPointTypes {
 
     val string: DataPointType<String> =
         DataPointType("string", jsonToValue = { it.toString() }, valueToJson = { it })
-
-    val allTypes = listOf(boolean, float, int, string)
 }

@@ -24,6 +24,7 @@ import org.json.JSONException
 import platform.test.motion.GoldenNotFoundException
 import platform.test.motion.MotionTestRule
 import platform.test.motion.RecordedMotion
+import platform.test.motion.golden.createTypeRegistry
 import platform.test.motion.truth.TimeSeriesSubject.Companion.timeSeries
 import platform.test.screenshot.matchers.BitmapMatcher
 import platform.test.screenshot.matchers.PixelPerfectMatcher
@@ -58,7 +59,10 @@ internal constructor(
         var matchesGolden = false
         try {
             try {
-                val goldenTimeSeries = motionTestRule.readGoldenTimeSeries(goldenIdentifier)
+                // when de-serializing goldens, only types that are in the actual data are relevant
+                val typeRegistry = actualTimeSeries.createTypeRegistry()
+                val goldenTimeSeries =
+                    motionTestRule.readGoldenTimeSeries(goldenIdentifier, typeRegistry)
 
                 check("Motion time-series $goldenIdentifier")
                     .about(timeSeries())

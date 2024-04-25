@@ -32,6 +32,7 @@ import org.junit.runner.RunWith
 import platform.test.motion.GoldenNotFoundException
 import platform.test.motion.MotionTestRule
 import platform.test.motion.RecordedMotion
+import platform.test.motion.golden.DataPointType
 import platform.test.motion.golden.TimeSeries
 import platform.test.motion.golden.TimestampFrameId
 import platform.test.screenshot.BitmapDiffer
@@ -210,7 +211,7 @@ class RecordedMotionSubjectTest {
         var writeGeneratedTimeInvocations = mutableListOf<Pair<String, TimeSeries>>()
         var writeDebugFilmstripInvocations = mutableListOf<Pair<String, Boolean>>()
 
-        override fun readGoldenTimeSeries(goldenIdentifier: String): TimeSeries {
+        override fun readGoldenTimeSeries(goldenIdentifier: String, typeRegistry: Map<String, DataPointType<*>>): TimeSeries {
             readGoldenTimeSeriesInvocations.add(goldenIdentifier)
             return golden ?: throw GoldenNotFoundException(goldenIdentifier)
         }
