@@ -178,9 +178,9 @@ class NCBaseTestClass(base_test.BaseTestClass):
     config_path = _CONFIG_EXTERNAL_PATH
     with open(config_path, 'r') as f:
       rule = yaml.safe_load(f).get(ad.model, None)
-      asserts.assert_is_not_none(
-          rule, f'{ad} Model {ad.model} is not supported in config file'
-      )
+      if rule is None:
+        ad.log.warning(f'{ad} Model {ad.model} is not supported in config file')
+        return
       for key, value in rule.items():
         ad.log.debug('Setting capability %s to %s', repr(key), repr(value))
         setattr(ad, key, value)
@@ -309,6 +309,9 @@ class NCBaseTestClass(base_test.BaseTestClass):
   def on_fail(self, record: records.TestResultRecord) -> None:
     if self.__skipped_test_class:
       logging.info('Skipping on_fail.')
+      return
+    if self.test_parameters.skip_bug_report:
+      logging.info('Skipping bug report.')
       return
     self.num_bug_reports = self.num_bug_reports + 1
     if self.num_bug_reports <= nc_constants.MAX_NUM_BUG_REPORT:

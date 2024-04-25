@@ -79,9 +79,9 @@ class Bt2gWifiCoexTest(d2d_performance_test_base.D2dPerformanceTestBase):
         'The Wifi Direct connection might be broken, check related log.'
     )
 
-  def _get_throughout_benchmark(self) -> int:
+  def _get_throughout_benchmark(self) -> tuple[float, float]:
     # no requirement for throughput.
-    return 0
+    return (0.0, 0.0)
 
   def _get_throughput_low_tip(self) -> str:
     return (
