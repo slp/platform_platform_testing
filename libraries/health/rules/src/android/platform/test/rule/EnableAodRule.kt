@@ -54,6 +54,6 @@ class EnableAodRule : TestWatcher() {
 
     private fun isAodSupported(): Boolean {
         val config = AmbientDisplayConfiguration(context)
-        return config.alwaysOnAvailable() || uiDevice.productName.startsWith("cf_x86")
+        return config.alwaysOnAvailable()
     }
 }
