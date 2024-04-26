@@ -25,6 +25,7 @@ import android.tools.Timestamps
 import android.tools.datatypes.ActiveBuffer
 import android.tools.datatypes.Matrix33
 import android.tools.datatypes.defaultColor
+import android.tools.traces.ConditionsFactory
 import android.tools.traces.DeviceStateDump
 import android.tools.traces.component.ComponentNameMatcher
 import android.tools.traces.component.IComponentName
@@ -144,6 +145,10 @@ class WindowManagerStateHelperTest {
         return layers
     }
 
+    fun getNavBarComponent(wmState: WindowManagerState) =
+        if (wmState.isTablet || !ConditionsFactory.isPhoneNavBar()) ComponentNameMatcher.TASK_BAR
+        else ComponentNameMatcher.NAV_BAR
+
     /**
      * Creates a device state dump provider based on the WM trace
      *
@@ -157,35 +162,20 @@ class WindowManagerStateHelperTest {
             if (iterator.hasNext()) {
                 val wmState = iterator.next()
                 val layerList: MutableList<IComponentName> =
-                    mutableListOf(
-                        android.tools.traces.component.ComponentNameMatcher.STATUS_BAR,
-                        android.tools.traces.component.ComponentNameMatcher.NAV_BAR
-                    )
-                if (
-                    wmState.isWindowSurfaceShown(
-                        android.tools.traces.component.ComponentNameMatcher.SPLASH_SCREEN
-                    )
-                ) {
-                    layerList.add(android.tools.traces.component.ComponentNameMatcher.SPLASH_SCREEN)
+                    mutableListOf(ComponentNameMatcher.STATUS_BAR, getNavBarComponent(wmState))
+                if (wmState.isWindowSurfaceShown(ComponentNameMatcher.SPLASH_SCREEN)) {
+                    layerList.add(ComponentNameMatcher.SPLASH_SCREEN)
                 }
-                if (
-                    wmState.isWindowSurfaceShown(
-                        android.tools.traces.component.ComponentNameMatcher.SNAPSHOT
-                    )
-                ) {
-                    layerList.add(android.tools.traces.component.ComponentNameMatcher.SNAPSHOT)
+                if (wmState.isWindowSurfaceShown(ComponentNameMatcher.SNAPSHOT)) {
+                    layerList.add(ComponentNameMatcher.SNAPSHOT)
                 }
                 layerList.addAll(
                     wmState.visibleWindows
                         .filter { it.name.contains("/") }
-                        .map {
-                            android.tools.traces.component.ComponentNameMatcher.unflattenFromString(
-                                it.name
-                            )
-                        }
+                        .map { ComponentNameMatcher.unflattenFromString(it.name) }
                 )
                 if (wmState.inputMethodWindowState?.isSurfaceShown == true) {
-                    layerList.add(android.tools.traces.component.ComponentNameMatcher.IME)
+                    layerList.add(ComponentNameMatcher.IME)
                 }
                 val layerTraceEntry =
                     LayerTraceEntryBuilder()
