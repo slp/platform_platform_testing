@@ -21,16 +21,8 @@ public class Flags {
 
     public static final String FLAG_FLAG_NAME3 = "android.platform.test.flag.junit.flag_name3";
     public static final String FLAG_FLAG_NAME4 = "android.platform.test.flag.junit.flag_name4";
-
-    /** Returns the flag value. */
-    public static boolean flagName1() {
-        return true;
-    }
-
-    /** Returns a non-boolean flag value. */
-    public static int flagName2() {
-        return 1;
-    }
+    public static final String FLAG_RO_ENABLED = "android.platform.test.flag.junit.ro_enabled";
+    public static final String FLAG_RO_DISABLED = "android.platform.test.flag.junit.ro_disabled";
 
     /** Returns the flag value. */
     public static boolean flagName3() {
@@ -40,6 +32,14 @@ public class Flags {
     /** Another flag. */
     public static boolean flagName4() {
         return FEATURE_FLAGS.flagName4();
+    }
+
+    public static boolean roEnabled() {
+        return true;
+    }
+
+    public static boolean roDisabled() {
+        return false;
     }
 
     public static void setFeatureFlags(FeatureFlags featureFlagsImpl) {
@@ -56,6 +56,16 @@ public class Flags {
                 @Override
                 public boolean flagName4() {
                     return true;
+                }
+
+                @Override
+                public boolean roEnabled() {
+                    return true;
+                }
+
+                @Override
+                public boolean roDisabled() {
+                    return false;
                 }
             };
 }

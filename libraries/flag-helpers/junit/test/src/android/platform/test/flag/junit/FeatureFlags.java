@@ -24,4 +24,8 @@ public interface FeatureFlags {
 
     /** another flag */
     boolean flagName4();
+
+    boolean roEnabled();
+
+    boolean roDisabled();
 }

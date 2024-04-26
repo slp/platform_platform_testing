@@ -22,12 +22,14 @@ import java.util.HashSet;
 /** A Fake FakeFeatureFlagsImpl to test the {@code MockFlagsRule}. */
 public class FakeFeatureFlagsImpl implements FeatureFlags {
 
-    public HashSet<String> readOnlyFlagSet = new HashSet<>();
+    private HashSet<String> mReadOnlyFlagSet = new HashSet<>();
     private HashMap<String, Boolean> mFlagMap = new HashMap<>();
 
     public FakeFeatureFlagsImpl() {
         this.mFlagMap.put(Flags.FLAG_FLAG_NAME3, null);
         this.mFlagMap.put(Flags.FLAG_FLAG_NAME4, null);
+        this.mReadOnlyFlagSet.add(Flags.FLAG_RO_ENABLED);
+        this.mReadOnlyFlagSet.add(Flags.FLAG_RO_DISABLED);
     }
 
     /** Returns the flag value. */
@@ -42,6 +44,16 @@ public class FakeFeatureFlagsImpl implements FeatureFlags {
         return this.mFlagMap.get(Flags.FLAG_FLAG_NAME4);
     }
 
+    @Override
+    public boolean roEnabled() {
+        return this.mFlagMap.get(Flags.FLAG_RO_ENABLED);
+    }
+
+    @Override
+    public boolean roDisabled() {
+        return this.mFlagMap.get(Flags.FLAG_RO_DISABLED);
+    }
+
     public void setFlag(String flag, boolean value) {
         this.mFlagMap.put(flag, value);
     }
@@ -52,6 +64,6 @@ public class FakeFeatureFlagsImpl implements FeatureFlags {
 
     /** Verify if the given flag is read_only and optimized */
     public boolean isFlagReadOnlyOptimized(String flagName) {
-        return readOnlyFlagSet.contains(flagName);
+        return mReadOnlyFlagSet.contains(flagName);
     }
 }
