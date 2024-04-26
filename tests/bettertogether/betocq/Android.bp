@@ -126,6 +126,7 @@ python_library_host {
 
 python_test_host {
     name: "betocq_test_suite",
+    defaults: ["betocq_test_defaults"],
     main: "betocq_test_suite.py",
     srcs: ["betocq_test_suite.py"],
     libs: [
@@ -149,4 +150,3 @@ python_test_host {
         tags: ["mobly"],
     },
 }
-
