@@ -67,28 +67,9 @@ public final class SetFlagsRule implements TestRule {
             };
     private final Map<String, Set<String>> mPackageToRepackage = new HashMap<>();
 
-    private boolean mIsInitWithDefault = false;
+    private final boolean mIsInitWithDefault;
     private FlagsParameterization mFlagsParameterization;
     private boolean mIsRuleEvaluating = false;
-
-    /**
-     * Enable default value for flags
-     *
-     * <p>Once this method is called the flag value in the same Flag class will be set as the same
-     * value of current release configuration.
-     *
-     * <p>This methods should be called before calling enable/disableFlags
-     *
-     * @deprecated Prefer {@link #SetFlagsRule(SetFlagsRule.DefaultInitValueType.DEVICE_DEFAULT)}
-     */
-    @Deprecated
-    public void initAllFlagsToReleaseConfigDefault() {
-        if (!mIsInitWithDefault) {
-            // If you've already set any flags, it's too late to change the defaults.
-            ensureFlagsAreUnset();
-        }
-        mIsInitWithDefault = true;
-    }
 
     public enum DefaultInitValueType {
         /**
@@ -118,13 +99,7 @@ public final class SetFlagsRule implements TestRule {
     public SetFlagsRule(
             DefaultInitValueType defaultType,
             @Nullable FlagsParameterization flagsParameterization) {
-        switch (defaultType) {
-            case DEVICE_DEFAULT:
-                mIsInitWithDefault = true;
-                break;
-            default:
-                break;
-        }
+        mIsInitWithDefault = defaultType == DefaultInitValueType.DEVICE_DEFAULT;
         mFlagsParameterization = flagsParameterization;
         if (flagsParameterization != null) {
             mLockedFlagNames.addAll(flagsParameterization.mOverrides.keySet());
