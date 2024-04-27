@@ -42,6 +42,7 @@ python_library_host {
         "nc_constants.py",
         "nearby_connection_wrapper.py",
         "setup_utils.py",
+        "iperf_utils.py",
         "version.py",
     ],
     libs: [
@@ -125,6 +126,7 @@ python_library_host {
 
 python_test_host {
     name: "betocq_test_suite",
+    defaults: ["betocq_test_defaults"],
     main: "betocq_test_suite.py",
     srcs: ["betocq_test_suite.py"],
     libs: [
@@ -138,84 +140,6 @@ python_test_host {
     data: [
         "cuj_and_test_config.yml",
         // package the snippets for atest
-        ":nearby_snippet",
-        ":nearby_snippet_2",
-    ],
-    test_suites: [],
-    test_options: {
-        unit_test: false, // as Mobly tests require device(s)
-        // This tag is used to enable the ATest Mobly runner
-        tags: ["mobly"],
-    },
-}
-
-python_test_host {
-    name: "betocq_2g_ap_test_suite",
-    main: "betocq_2g_ap_test_suite.py",
-    srcs: ["betocq_2g_ap_test_suite.py"],
-    defaults: ["betocq_test_defaults"],
-    libs: [
-        "base_betocq_suite",
-        "betocq_compound_tests",
-        "betocq_directed_tests",
-        "betocq_function_tests",
-        "betocq_lib",
-        "mobly",
-    ],
-    data: [
-        "cuj_and_test_config.yml",
-        // package the snippes for atest
-        ":nearby_snippet",
-        ":nearby_snippet_2",
-    ],
-    test_suites: [],
-    test_options: {
-        unit_test: false, // as Mobly tests require device(s)
-        // This tag is used to enable the ATest Mobly runner
-        tags: ["mobly"],
-    },
-}
-
-python_test_host {
-    name: "betocq_5g_ap_test_suite",
-    main: "betocq_5g_ap_test_suite.py",
-    srcs: ["betocq_5g_ap_test_suite.py"],
-    defaults: ["betocq_test_defaults"],
-    libs: [
-        "base_betocq_suite",
-        "betocq_directed_tests",
-        "betocq_lib",
-        "mobly",
-    ],
-    data: [
-        "cuj_and_test_config.yml",
-        // package the snippes for atest
-        ":nearby_snippet",
-        ":nearby_snippet_2",
-    ],
-    test_suites: [],
-    test_options: {
-        unit_test: false, // as Mobly tests require device(s)
-        // This tag is used to enable the ATest Mobly runner
-        tags: ["mobly"],
-    },
-}
-
-python_test_host {
-    name: "betocq_dfs_5g_ap_test_suite",
-    main: "betocq_dfs_5g_ap_test_suite.py",
-    srcs: ["betocq_dfs_5g_ap_test_suite.py"],
-    defaults: ["betocq_test_defaults"],
-    libs: [
-        "base_betocq_suite",
-        "betocq_compound_tests",
-        "betocq_directed_tests",
-        "betocq_lib",
-        "mobly",
-    ],
-    data: [
-        "cuj_and_test_config.yml",
-        // package the snippes for atest
         ":nearby_snippet",
         ":nearby_snippet_2",
     ],

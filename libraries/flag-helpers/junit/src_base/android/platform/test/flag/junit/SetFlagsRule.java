@@ -184,37 +184,6 @@ public final class SetFlagsRule implements TestRule {
         }
     }
 
-    /**
-     * Returns a FeatureFlags used by SetFlagsRule of given FeatureFlags
-     *
-     * @param featureFlagsClass The class of FeatureFlags. The interface of FakeFeatureFlagsImpl
-     * @return A FakeFeatureFlagsImpl in type of FeatureFlags
-     */
-    public <T> T getFakeFeatureFlags(Class<T> featureFlagsClass) {
-        if (!featureFlagsClass.isInterface()
-                || !featureFlagsClass.getSimpleName().equals(FEATURE_FLAGS_CLASS_NAME)) {
-            throw new IllegalArgumentException(
-                    String.format(
-                            "%s is not a FeatureFlags. " + "Please pass in FeatureFlags interface",
-                            featureFlagsClass));
-        }
-
-        String packageName = featureFlagsClass.getPackageName();
-        String flagsClassName = String.format("%s.%s", packageName, FLAGS_CLASS_NAME);
-        Class<?> flagsClass = null;
-
-        try {
-            flagsClass = Class.forName(flagsClassName);
-        } catch (ClassNotFoundException e) {
-            throw new UnsupportedOperationException(
-                    String.format("Failed to load class %s.", flagsClassName));
-        }
-
-        Object fakeFlagsImplInstance = getOrCreateFakeFlagsImp(flagsClass);
-
-        return featureFlagsClass.cast(fakeFlagsImplInstance);
-    }
-
     private void ensureFlagsAreUnset() {
         if (!mFlagsClassToFakeFlagsImpl.isEmpty()) {
             throw new IllegalStateException("Some flags were set before the rule was initialized");

@@ -64,8 +64,11 @@ class BtPerformanceTest(d2d_performance_test_base.D2dPerformanceTestBase):
   def _get_file_transfer_timeout(self) -> datetime.timedelta:
     return nc_constants.BT_1M_PAYLOAD_TRANSFER_TIMEOUT
 
-  def _get_throughout_benchmark(self) -> int:
-    return nc_constants.CLASSIC_BT_MEDIUM_THROUGHPUT_BENCHMARK
+  def _get_throughout_benchmark(self) -> tuple[float, float]:
+    return (
+        nc_constants.CLASSIC_BT_MEDIUM_THROUGHPUT_BENCHMARK_MBPS,
+        nc_constants.CLASSIC_BT_MEDIUM_THROUGHPUT_BENCHMARK_MBPS,
+    )
 
   def _get_medium_upgrade_failure_tip(self) -> str:
     return 'Not Applied'  # No medium upgrade required for BT.

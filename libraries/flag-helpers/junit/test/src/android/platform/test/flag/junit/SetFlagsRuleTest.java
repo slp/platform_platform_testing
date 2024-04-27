@@ -105,118 +105,26 @@ public final class SetFlagsRuleTest {
     }
 
     @Test
-    public void getFakeFeatureFlags_afterSet() {
-        mSetFlagsRule.enableFlags(Flags.FLAG_FLAG_NAME3, Flags.FLAG_FLAG_NAME4);
-        FeatureFlags fakeFlagsImpl = mSetFlagsRule.getFakeFeatureFlags(FeatureFlags.class);
-        assertTrue(fakeFlagsImpl.flagName3());
-        assertTrue(fakeFlagsImpl.flagName4());
-
-        mSetFlagsRule.disableFlags(Flags.FLAG_FLAG_NAME3, Flags.FLAG_FLAG_NAME4);
-        assertFalse(fakeFlagsImpl.flagName3());
-        assertFalse(fakeFlagsImpl.flagName4());
-    }
-
-    @Test
-    public void getFakeFeatureFlags_thenSet() {
-        FeatureFlags fakeFlagsImpl = mSetFlagsRule.getFakeFeatureFlags(FeatureFlags.class);
-        if (this.mIsInitWithDefault) {
-            assertFalse(Flags.flagName3());
-            assertFalse(fakeFlagsImpl.flagName3());
-            assertTrue(Flags.flagName4());
-            assertTrue(fakeFlagsImpl.flagName4());
-
-            mSetFlagsRule.enableFlags(Flags.FLAG_FLAG_NAME3);
-            mSetFlagsRule.disableFlags(Flags.FLAG_FLAG_NAME4);
-
-            assertTrue(Flags.flagName3());
-            assertTrue(fakeFlagsImpl.flagName3());
-            assertFalse(Flags.flagName4());
-            assertFalse(fakeFlagsImpl.flagName4());
-        } else {
-            assertThrows(
-                    NullPointerException.class,
-                    () -> {
-                        fakeFlagsImpl.flagName3();
-                    });
-            assertFalse(Flags.flagName3());
-
-            mSetFlagsRule.enableFlags(Flags.FLAG_FLAG_NAME3);
-
-            assertTrue(Flags.flagName3());
-            assertTrue(fakeFlagsImpl.flagName3());
-            assertThrows(
-                    NullPointerException.class,
-                    () -> {
-                        fakeFlagsImpl.flagName4();
-                    });
-            assertThrows(
-                    NullPointerException.class,
-                    () -> {
-                        Flags.flagName4();
-                    });
-
-            mSetFlagsRule.disableFlags(Flags.FLAG_FLAG_NAME4);
-
-            assertFalse(Flags.flagName4());
-            assertFalse(fakeFlagsImpl.flagName4());
-        }
-    }
-
-    @Test
-    public void getFakeFeatureFlags_castToWrongType() {
-        mSetFlagsRule.enableFlags(Flags.FLAG_FLAG_NAME3, Flags.FLAG_FLAG_NAME4);
-
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> {
-                    FakeFeatureFlagsImpl fakeFlagsImpl =
-                            mSetFlagsRule.getFakeFeatureFlags(FakeFeatureFlagsImpl.class);
-                });
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> {
-                    Flags fakeFlagsImpl = mSetFlagsRule.getFakeFeatureFlags(Flags.class);
-                });
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> {
-                    FeatureFlagsImpl fakeFlagsImpl =
-                            mSetFlagsRule.getFakeFeatureFlags(FeatureFlagsImpl.class);
-                });
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> {
-                    FakeFeatureFlags fakeFlagsImpl =
-                            mSetFlagsRule.getFakeFeatureFlags(FakeFeatureFlags.class);
-                });
-    }
-
-    @Test
     public void skipReadOnlyOptimizedFlag() {
-        FakeFeatureFlagsImpl fakeFlagsImpl =
-                (FakeFeatureFlagsImpl) mSetFlagsRule.getFakeFeatureFlags(FeatureFlags.class);
-        fakeFlagsImpl.readOnlyFlagSet.add(Flags.FLAG_FLAG_NAME3);
         assertThrows(
                 AssumptionViolatedException.class,
                 () -> {
-                    mSetFlagsRule.enableFlags(Flags.FLAG_FLAG_NAME3);
+                    mSetFlagsRule.enableFlags(Flags.FLAG_RO_ENABLED);
                 });
-    }
-
-    private class FeatureFlagsImpl implements FeatureFlags {
-        @Override
-        public boolean flagName3() {
-            return false;
-        }
-
-        @Override
-        public boolean flagName4() {
-            return true;
-        }
-    }
-
-    private interface FakeFeatureFlags {
-        /** Returns the flag value. */
-        boolean flagName3();
+        assertThrows(
+                AssumptionViolatedException.class,
+                () -> {
+                    mSetFlagsRule.disableFlags(Flags.FLAG_RO_ENABLED);
+                });
+        assertThrows(
+                AssumptionViolatedException.class,
+                () -> {
+                    mSetFlagsRule.enableFlags(Flags.FLAG_RO_DISABLED);
+                });
+        assertThrows(
+                AssumptionViolatedException.class,
+                () -> {
+                    mSetFlagsRule.disableFlags(Flags.FLAG_RO_DISABLED);
+                });
     }
 }
