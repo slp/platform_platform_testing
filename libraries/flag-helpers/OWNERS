@@ -4,3 +4,4 @@ per-file *SetFlagsRule* = wenshan@google.com, opg@google.com, tedbauer@google.co
 per-file junit/test/src/android/platform/test/flag/junit/Flags.java = wenshan@google.com, opg@google.com, tedbauer@google.com, zhidou@google.com
 per-file junit/test/src/android/platform/test/flag/junit/FeatureFlags.java = wenshan@google.com, opg@google.com, tedbauer@google.com, zhidou@google.com
 per-file junit/test/src/android/platform/test/flag/junit/FakeFeatureFlagsImpl.java = wenshan@google.com, opg@google.com, tedbauer@google.com, zhidou@google.com
+per-file junit/test/src/android/platform/test/flag/junit/CustomFeatureFlags.java = wenshan@google.com, opg@google.com, tedbauer@google.com, zhidou@google.com

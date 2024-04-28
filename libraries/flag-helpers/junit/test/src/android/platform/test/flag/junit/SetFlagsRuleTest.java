@@ -43,11 +43,9 @@ public final class SetFlagsRuleTest {
 
     public SetFlagsRuleTest(boolean isInitWithDefault) {
         this.mIsInitWithDefault = isInitWithDefault;
-        if (isInitWithDefault) {
-            mSetFlagsRule = new SetFlagsRule(SetFlagsRule.DefaultInitValueType.DEVICE_DEFAULT);
-        } else {
-            mSetFlagsRule = new SetFlagsRule(SetFlagsRule.DefaultInitValueType.NULL_DEFAULT);
-        }
+        mSetFlagsRule = new SetFlagsRule(isInitWithDefault
+                ? SetFlagsRule.DefaultInitValueType.DEVICE_DEFAULT
+                : SetFlagsRule.DefaultInitValueType.NULL_DEFAULT);
     }
 
     @Test

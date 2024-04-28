@@ -102,7 +102,7 @@ public final class SetFlagsRuleAnnotationsTest {
                             Flags.flagName3();
                         })
                 .prepareTest()
-                .assertFailsWithType(NullPointerException.class);
+                .assertFailsWithType(IllegalArgumentException.class);
     }
 
     @Test
