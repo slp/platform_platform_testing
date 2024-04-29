@@ -43,7 +43,7 @@ object IoUtils {
     }
 
     fun waitFileExists(file: File, timeoutMs: Long) {
-        val sleepIncrementMs = 10L
+        val sleepIncrementMs = 50L
         var elapsedMs = 0L
 
         while (elapsedMs < timeoutMs) {
