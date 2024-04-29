@@ -17,53 +17,49 @@
 package android.platform.test.flag.junit;
 
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Map;
+import java.util.function.Predicate;
 
-/** A Fake FakeFeatureFlagsImpl to test the {@code MockFlagsRule}. */
-public class FakeFeatureFlagsImpl implements FeatureFlags {
-
-    private HashSet<String> mReadOnlyFlagSet = new HashSet<>();
-    private HashMap<String, Boolean> mFlagMap = new HashMap<>();
+/** @hide */
+public class FakeFeatureFlagsImpl extends CustomFeatureFlags {
+    private final Map<String, Boolean> mFlagMap = new HashMap<>();
+    private final FeatureFlags mDefaults;
 
     public FakeFeatureFlagsImpl() {
-        this.mFlagMap.put(Flags.FLAG_FLAG_NAME3, null);
-        this.mFlagMap.put(Flags.FLAG_FLAG_NAME4, null);
-        this.mReadOnlyFlagSet.add(Flags.FLAG_RO_ENABLED);
-        this.mReadOnlyFlagSet.add(Flags.FLAG_RO_DISABLED);
+        this(null);
     }
 
-    /** Returns the flag value. */
-    @Override
-    public boolean flagName3() {
-        return this.mFlagMap.get(Flags.FLAG_FLAG_NAME3);
-    }
-
-    /** another flag */
-    @Override
-    public boolean flagName4() {
-        return this.mFlagMap.get(Flags.FLAG_FLAG_NAME4);
+    public FakeFeatureFlagsImpl(FeatureFlags defaults) {
+        super(null);
+        mDefaults = defaults;
+        // Initialize the map with null values
+        for (String flagName : getFlagNames()) {
+            mFlagMap.put(flagName, null);
+        }
     }
 
     @Override
-    public boolean roEnabled() {
-        return this.mFlagMap.get(Flags.FLAG_RO_ENABLED);
+    protected boolean getValue(String flagName, Predicate<FeatureFlags> getter) {
+        Boolean value = this.mFlagMap.get(flagName);
+        if (value != null) {
+            return value;
+        }
+        if (mDefaults != null) {
+            return getter.test(mDefaults);
+        }
+        throw new IllegalArgumentException(flagName + " is not set");
     }
 
-    @Override
-    public boolean roDisabled() {
-        return this.mFlagMap.get(Flags.FLAG_RO_DISABLED);
-    }
-
-    public void setFlag(String flag, boolean value) {
-        this.mFlagMap.put(flag, value);
+    public void setFlag(String flagName, boolean value) {
+        if (!this.mFlagMap.containsKey(flagName)) {
+            throw new IllegalArgumentException("no such flag " + flagName);
+        }
+        this.mFlagMap.put(flagName, value);
     }
 
     public void resetAll() {
-        this.mFlagMap.clear();
-    }
-
-    /** Verify if the given flag is read_only and optimized */
-    public boolean isFlagReadOnlyOptimized(String flagName) {
-        return mReadOnlyFlagSet.contains(flagName);
+        for (Map.Entry entry : mFlagMap.entrySet()) {
+            entry.setValue(null);
+        }
     }
 }

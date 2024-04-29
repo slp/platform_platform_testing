@@ -18,7 +18,6 @@ from mobly import asserts
 from utilities.media_utils import MediaUtils
 from utilities.common_utils import CommonUtils
 from utilities.main_utils import common_main
-from utilities.video_utils_service import VideoRecording
 
 
 class IsSongPlayingTest(bluetooth_base_test.BluetoothBaseTest):
@@ -27,7 +26,6 @@ class IsSongPlayingTest(bluetooth_base_test.BluetoothBaseTest):
         super().setup_class()
         self.media_utils = MediaUtils(self.target, self.discoverer)
         self.common_utils = CommonUtils(self.target, self.discoverer)
-        self.video_utils_service = VideoRecording(self.discoverer)
 
     def setup_test(self):
         self.common_utils.grant_local_mac_address_permission()
@@ -36,7 +34,6 @@ class IsSongPlayingTest(bluetooth_base_test.BluetoothBaseTest):
 
     def test_media_is_song_playing(self):
         """Tests validating is song playing on HU, and song title"""
-        self.video_utils_service.enable_screen_recording()
         self.media_utils.open_media_app_on_hu()
         self.media_utils.open_youtube_music_app()
         current_phone_song_title = self.media_utils.get_song_title_from_phone()
@@ -57,9 +54,6 @@ class IsSongPlayingTest(bluetooth_base_test.BluetoothBaseTest):
         # Close YouTube Music app
         self.media_utils.close_youtube_music_app()
         super().teardown_test()
-        self.video_utils_service.stop_screen_recording()
-        self.video_utils_service.pull_recording_file(self.log_path)
-        self.video_utils_service.delete_screen_recording_from_device()
 
 
 if __name__ == '__main__':

@@ -14,6 +14,7 @@ from mobly.controllers import android_device
 from utilities import spectatio_utils
 from utilities import bt_utils
 from utilities.main_utils import common_main
+from utilities.video_utils_service import VideoRecording
 
 
 class BluetoothBaseTest(base_test.BaseTestClass):
@@ -38,6 +39,10 @@ class BluetoothBaseTest(base_test.BaseTestClass):
         logging.info("\tInitializing Utilities")
         self.call_utils = (spectatio_utils.CallUtils(self.discoverer))
         self.bt_utils = (bt_utils.BTUtils(self.discoverer, self.target))
+        logging.info("\tInitializing video services")
+        self.video_utils_service = VideoRecording(self.discoverer)
+        logging.info("Enabling video recording for seahawk devices")
+        self.video_utils_service.enable_screen_recording()
 
     def setup_test(self):
         # Make sure bluetooth is on.
@@ -54,6 +59,12 @@ class BluetoothBaseTest(base_test.BaseTestClass):
         self.discoverer.mbs.btDisable()
         logging.info("Disable Bluetooth on Target device")
         self.target.mbs.btDisable()
+        logging.info("Stopping the screen recording")
+        self.video_utils_service.stop_screen_recording()
+        logging.info("Pull the screen recording")
+        self.video_utils_service.pull_recording_file(self.log_path)
+        logging.info("delete the screen recording from the device")
+        self.video_utils_service.delete_screen_recording_from_device()
 
 
 if __name__ == '__main__':
