@@ -19,10 +19,8 @@ package android.platform.test.flag.junit;
 /** A Fake FeatureFlags to test the {@code MockFlagsRule}. */
 public interface FeatureFlags {
 
-    /** Returns the flag value. */
     boolean flagName3();
 
-    /** another flag */
     boolean flagName4();
 
     boolean roEnabled();

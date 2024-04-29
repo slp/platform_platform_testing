@@ -54,8 +54,8 @@ public final class SetFlagsRule implements TestRule {
     private final Map<Class<?>, Object> mFlagsClassToFakeFlagsImpl = new HashMap<>();
     private final Map<Class<?>, Object> mFlagsClassToRealFlagsImpl = new HashMap<>();
 
-    // Store value for the scope of each test method
-    private final Map<Class<?>, Map<Flag, Boolean>> mFlagsClassToFlagDefaultMap = new HashMap<>();
+    // Store classes that are currently mutated by this rule
+    private final Set<Class<?>> mMutatedFlagsClasses = new HashSet<>();
 
     // Any flags added to this list cannot be set imperatively (i.e. with enableFlags/disableFlags)
     private final Set<String> mLockedFlagNames = new HashSet<>();
@@ -302,18 +302,10 @@ public final class SetFlagsRule implements TestRule {
         Class<?> flagsClass = getFlagClassFromFlag(flag);
         fakeFlagsImplInstance = getOrCreateFakeFlagsImp(flagsClass);
 
-        Map<Flag, Boolean> flagToValue =
-                mFlagsClassToFlagDefaultMap.getOrDefault(flagsClass, new HashMap<>());
-        if (flagToValue.isEmpty()) {
+        if (!mMutatedFlagsClasses.contains(flagsClass)) {
             // Replace FeatureFlags in Flags class with FakeFeatureFlagsImpl
             replaceFlagsImpl(flagsClass, fakeFlagsImplInstance);
-            mFlagsClassToFlagDefaultMap.put(flagsClass, flagToValue);
-        }
-
-        // Store a copy of the original value so that it can be restored later
-        if (!flagToValue.containsKey(flag)) {
-            flagToValue.put(
-                    flag, mIsInitWithDefault ? getFlagValue(fakeFlagsImplInstance, flag) : null);
+            mMutatedFlagsClasses.add(flagsClass);
         }
 
         // If the test is trying to set the flag value on a read_only flag in an optimized build
@@ -332,46 +324,6 @@ public final class SetFlagsRule implements TestRule {
 
         // Set desired flag value in the FakeFeatureFlagsImpl
         setFlagValueInFakeFeatureFlagsImpl(fakeFlagsImplInstance, flag, value);
-    }
-
-    private void populateFakeFlagsImplWithDefault(Class<?> flagClass) {
-        Object fakeFlagsImpl = mFlagsClassToFakeFlagsImpl.get(flagClass);
-        Object realFlagsImpl = mFlagsClassToRealFlagsImpl.get(flagClass);
-        if (fakeFlagsImpl == null || realFlagsImpl == null) {
-            throw new FlagSetException(
-                    flagClass.getName(),
-                    String.format(
-                            "Failed populate %s with default value from %s",
-                            fakeFlagsImpl.getClass().getName(),
-                            realFlagsImpl.getClass().getName()));
-        }
-
-        Set<String> methodSet = new HashSet<>();
-        for (Method method : flagClass.getMethods()) {
-            methodSet.add(method.getName());
-        }
-        try {
-            for (Field field : flagClass.getFields()) {
-                if (!field.getName().startsWith(FLAG_CONSTANT_PREFIX)
-                        || !field.getType().isAssignableFrom(String.class)) {
-                    continue; // Only take the flag constants
-                }
-                String fullFlagName = (String) field.get(null);
-                Flag flag = Flag.createFlag(fullFlagName);
-                String methodName = getFlagMethodName(flag);
-                // Flag constants may be more than flag methods since the flag
-                // methods may be stripped if they are not used while all the constants
-                // are kept
-                if (!methodSet.contains(methodName)) {
-                    continue;
-                }
-                boolean value = getFlagValue(realFlagsImpl, flag);
-                setFlagValueInFakeFeatureFlagsImpl(fakeFlagsImpl, flag, value);
-            }
-        } catch (ReflectiveOperationException e) {
-            throw new UnsupportedOperationException(
-                    String.format("Failed to get field in class %s", flagClass.getName()), e);
-        }
     }
 
     private Class<?> getFlagClassFromFlag(Flag flag) {
@@ -488,11 +440,29 @@ public final class SetFlagsRule implements TestRule {
         }
 
         String packageName = flagsClass.getPackageName();
-        String className = String.format("%s.%s", packageName, FAKE_FEATURE_FLAGS_IMPL_CLASS_NAME);
+        String fakeClassName = String.format("%s.%s", packageName, FAKE_FEATURE_FLAGS_IMPL_CLASS_NAME);
+        String interfaceName = String.format("%s.%s", packageName, FEATURE_FLAGS_CLASS_NAME);
+
+        Field featureFlagsField = getFeatureFlagsField(flagsClass);
+        featureFlagsField.setAccessible(true);
+        Object realFlagsImplInstance = null;
+        try {
+            realFlagsImplInstance = featureFlagsField.get(null);
+        } catch (IllegalAccessException e) {
+            throw new UnsupportedOperationException(
+                    String.format(
+                            "Cannot get FeatureFlagsImpl from Flags class %s.",
+                            flagsClass.getName()),
+                    e);
+        }
+        mFlagsClassToRealFlagsImpl.put(flagsClass, realFlagsImplInstance);
 
         try {
-            Class<?> flagImplClass = Class.forName(className);
-            fakeFlagsImplInstance = flagImplClass.getConstructor().newInstance();
+            Class<?> flagImplClass = Class.forName(fakeClassName);
+            Class<?> flagInterface = Class.forName(interfaceName);
+            fakeFlagsImplInstance = flagImplClass
+                .getConstructor(flagInterface)
+                .newInstance(mIsInitWithDefault ? realFlagsImplInstance : null);
         } catch (ReflectiveOperationException e) {
             throw new UnsupportedOperationException(
                     String.format(
@@ -502,23 +472,6 @@ public final class SetFlagsRule implements TestRule {
         }
 
         mFlagsClassToFakeFlagsImpl.put(flagsClass, fakeFlagsImplInstance);
-
-        // Store the real FeatureFlagsImpl instance
-        Field featureFlagsField = getFeatureFlagsField(flagsClass);
-        featureFlagsField.setAccessible(true);
-        try {
-            mFlagsClassToRealFlagsImpl.put(flagsClass, featureFlagsField.get(null));
-        } catch (IllegalAccessException e) {
-            throw new UnsupportedOperationException(
-                    String.format(
-                            "Cannot set FakeFeatureFlagsImpl in Flags class %s.",
-                            flagsClass.getName()),
-                    e);
-        }
-
-        if (mIsInitWithDefault) {
-            populateFakeFlagsImplWithDefault(flagsClass);
-        }
 
         return fakeFlagsImplInstance;
     }
@@ -553,26 +506,18 @@ public final class SetFlagsRule implements TestRule {
     private void resetFlags() {
         String flagsClassName = null;
         try {
-            for (Class<?> flagsClass : mFlagsClassToFlagDefaultMap.keySet()) {
-                Map<Flag, Boolean> flagToValue = mFlagsClassToFlagDefaultMap.get(flagsClass);
+            for (Class<?> flagsClass : mMutatedFlagsClasses) {
                 flagsClassName = flagsClass.getName();
                 Object fakeFlagsImplInstance = mFlagsClassToFakeFlagsImpl.get(flagsClass);
                 Object flagsImplInstance = mFlagsClassToRealFlagsImpl.get(flagsClass);
                 // Replace FeatureFlags in Flags class with real FeatureFlagsImpl
                 replaceFlagsImpl(flagsClass, flagsImplInstance);
-                if (mIsInitWithDefault) {
-                    for (Map.Entry<Flag, Boolean> entry : flagToValue.entrySet()) {
-                        setFlagValueInFakeFeatureFlagsImpl(
-                                fakeFlagsImplInstance, entry.getKey(), entry.getValue());
-                    }
-                } else {
-                    fakeFlagsImplInstance
-                            .getClass()
-                            .getMethod(RESET_ALL_METHOD_NAME)
-                            .invoke(fakeFlagsImplInstance);
-                }
+                fakeFlagsImplInstance
+                        .getClass()
+                        .getMethod(RESET_ALL_METHOD_NAME)
+                        .invoke(fakeFlagsImplInstance);
             }
-            mFlagsClassToFlagDefaultMap.clear();
+            mMutatedFlagsClasses.clear();
         } catch (Exception e) {
             throw new FlagSetException(flagsClassName, e);
         }
