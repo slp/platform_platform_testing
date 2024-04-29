@@ -30,7 +30,8 @@ class AppWindowHasDesktopModeInitialBoundsAtTheEnd(private val component: Compon
             val displayBounds =
                 entry.physicalDisplayBounds ?: error("Missing physical display bounds")
             val scale =
-                SystemProperties.getInt("persist.wm.debug.freeform_initial_bounds_scale", 75) / 100f
+                SystemProperties.getInt("persist.wm.debug.desktop_mode_initial_bounds_scale", 75) /
+                    100f
 
             val desiredWidth = displayBounds.width().times(scale).toInt()
             val desiredHeight = displayBounds.height().times(scale).toInt()
