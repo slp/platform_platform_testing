@@ -108,7 +108,7 @@ class BetoCqFunctionGroupTest(nc_base_test.NCBaseTestClass):
     )
     self.record_data({
         'Test Name': self.current_test_info.name,
-        'sponge_properties': {
+        'properties': {
             'result': self._current_test_actor.get_test_result_message(),
         },
     })
@@ -120,7 +120,7 @@ class BetoCqFunctionGroupTest(nc_base_test.NCBaseTestClass):
 
     self.record_data({
         'Test Class': self.TAG,
-        'sponge_properties': {
+        'properties': {
             '00_test_script_verion': version.TEST_SCRIPT_VERSION,
             '01_source_device_serial': self.discoverer.serial,
             '02_target_device_serial': self.advertiser.serial,
