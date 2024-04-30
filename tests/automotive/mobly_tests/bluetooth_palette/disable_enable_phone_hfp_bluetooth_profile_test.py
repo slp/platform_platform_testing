@@ -29,7 +29,7 @@ class DisableEnableHFPBluetoothProfile(bluetooth_base_test.BluetoothBaseTest):
   def test_disable_enable_phone_hfp_bluetooth_profile(self):
     """Disable - Enable Phone-HFP Bluetooth profile"""
     self.call_utils.open_bluetooth_palette()
-    self.call_utils.wait_with_log(60)
+    self.call_utils.wait_with_log(10)
     self.call_utils.click_phone_button()
     self.call_utils.wait_with_log(10)
     asserts.assert_false(self.call_utils.verify_disabled_phone_profile(),'Phone is disabled')
@@ -44,6 +44,11 @@ class DisableEnableHFPBluetoothProfile(bluetooth_base_test.BluetoothBaseTest):
     asserts.assert_true(self.call_utils.verify_dialer_contacts_tab(),'Dialer contacts tab is displayed')
     asserts.assert_true(self.call_utils.verify_dialer_favorites_tab(),'Dialer favorites tab is displayed')
     asserts.assert_true(self.call_utils.verify_dialer_dialpad_tab(),'Dialer dialpad tab is displayed')
+
+  def teardown_test(self):
+    self.call_utils.press_home()
+    super().teardown_test()
+
 
 if __name__ == '__main__':
   common_main()
