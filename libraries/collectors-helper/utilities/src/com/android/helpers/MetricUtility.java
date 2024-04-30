@@ -5,8 +5,11 @@ import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -137,4 +140,23 @@ public class MetricUtility {
         }
     }
 
+    /**
+     * Read contents from the file into string.
+     *
+     * @param processIdFile to read the contents from.
+     * @return String output of the contents.
+     */
+    public static String readStringFromFile(File processIdFile)
+            throws FileNotFoundException, IOException {
+        FileInputStream stream = new FileInputStream(processIdFile);
+        byte[] buffer = new byte[10];
+        StringBuilder builder = new StringBuilder();
+        while (stream.read(buffer) != -1) {
+            builder.append(new String(buffer));
+            buffer = new byte[10];
+        }
+        stream.close();
+
+        return builder.toString();
+    }
 }
