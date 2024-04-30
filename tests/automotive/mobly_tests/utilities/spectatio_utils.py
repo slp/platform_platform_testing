@@ -296,7 +296,7 @@ class CallUtils:
 
     def verify_disabled_phone_profile(self):
         logging.info("Checks if phone profile is disabled")
-        return self.device.mbs.verifyDisabledPhoneProfile()
+        return self.device.mbs.isBluetoothPhoneButtonEnabled()
 
     def verify_bluetooth_hfp_error_displayed(self):
         logging.info("Checks if bluetooth hfp error")
