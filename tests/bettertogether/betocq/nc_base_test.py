@@ -242,7 +242,7 @@ class NCBaseTestClass(base_test.BaseTestClass):
   def setup_test(self):
     self.record_data({
         'Test Name': self.current_test_info.name,
-        'sponge_properties': {
+        'properties': {
             'beto_team': 'Nearby Connections',
             'beto_feature': 'Nearby Connections',
         },
