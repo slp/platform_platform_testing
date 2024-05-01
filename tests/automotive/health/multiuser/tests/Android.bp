@@ -42,4 +42,5 @@ android_test {
     certificate: "platform",
     test_suites: ["catbox", "ats"],
     privileged: true,
+    data: [":perfetto_artifacts"],
 }
