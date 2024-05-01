@@ -44,7 +44,7 @@ class BaseBetocqSuite(base_suite.BaseSuite):
     ]
     class_results = {}
     for entry in class_data:
-      properties = entry.get('sponge_properties', entry.get('properties', {}))
+      properties = entry.get('properties', {})
       for key, value in properties.items():
         # prepend '0'/'1' so the properties appear first in lexicographic order
         if key.endswith('source_device'):

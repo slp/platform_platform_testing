@@ -448,7 +448,7 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
     self.record_data({
         'Test Class': self.TAG,
         'Test Name': self.current_test_info.name,
-        'sponge_properties': test_report,
+        'properties': test_report,
     })
 
   def _get_current_test_result_message(self) -> str:
@@ -644,7 +644,7 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
 
     self.record_data({
         'Test Class': self.TAG,
-        'sponge_properties': {
+        'properties': {
             '01_test_result': final_result_message,
             '02_source_device': '\n'.join(
                 self.__get_device_attributes(self.discoverer)
