@@ -132,12 +132,16 @@ internal constructor(
         goldenIdentifier: String,
         matcher: BitmapMatcher
     ) {
-        assertBitmapAgainstGolden(
-            actual = actual,
-            goldenIdentifier = goldenIdentifier,
-            matcher = matcher,
-            regions = emptyList<Rect>()
-        )
+        try {
+            assertBitmapAgainstGolden(
+                actual = actual,
+                goldenIdentifier = goldenIdentifier,
+                matcher = matcher,
+                regions = emptyList<Rect>()
+            )
+        } finally {
+            actual.recycle()
+        }
     }
 
     /**
