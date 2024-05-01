@@ -74,10 +74,10 @@ class Mcc5gAllWifiNonDbs2gStaTest(
 
   def _get_file_transfer_failure_tip(self) -> str:
     upgraded_medium_name = None
-    if (self._current_test_result.file_transfer_nc_setup_quality_info.upgrade_medium
+    if (self._current_test_result.quality_info.upgrade_medium
         is not None):
       upgraded_medium_name = (
-          self._current_test_result.file_transfer_nc_setup_quality_info.upgrade_medium.name
+          self._current_test_result.quality_info.upgrade_medium.name
       )
 
     return (
@@ -87,10 +87,10 @@ class Mcc5gAllWifiNonDbs2gStaTest(
 
   def _get_throughput_low_tip(self) -> str:
     upgraded_medium_name = None
-    if (self._current_test_result.file_transfer_nc_setup_quality_info.upgrade_medium
+    if (self._current_test_result.quality_info.upgrade_medium
         is not None):
       upgraded_medium_name = (
-          self._current_test_result.file_transfer_nc_setup_quality_info.upgrade_medium.name
+          self._current_test_result.quality_info.upgrade_medium.name
       )
     return (
         f'{self._throughput_low_string}. The upgraded medium is'

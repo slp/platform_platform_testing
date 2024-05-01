@@ -91,7 +91,7 @@ class SccDfs5gHotspotStaTest(d2d_performance_test_base.D2dPerformanceTestBase):
     )
 
   def _is_wifi_ap_ready(self) -> bool:
-    return True if self.test_parameters.wifi_5g_ssid else False
+    return True if self.test_parameters.wifi_dfs_5g_ssid else False
 
   @property
   def _devices_capabilities_definition(self) -> dict[str, dict[str, bool]]:
@@ -104,7 +104,6 @@ class SccDfs5gHotspotStaTest(d2d_performance_test_base.D2dPerformanceTestBase):
             'enable_sta_dfs_channel_for_peer_network': True,
         },
     }
-
 
 
 if __name__ == '__main__':

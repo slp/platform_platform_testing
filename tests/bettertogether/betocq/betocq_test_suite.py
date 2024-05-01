@@ -33,6 +33,7 @@ from mobly import suite_runner
 
 from betocq import base_betocq_suite
 from betocq import nc_constants
+from betocq.compound_tests import bt_2g_wifi_coex_test
 from betocq.compound_tests import mcc_5g_all_wifi_non_dbs_2g_sta_test
 from betocq.compound_tests import scc_2g_all_wifi_sta_test
 from betocq.compound_tests import scc_5g_all_wifi_dbs_2g_sta_test
@@ -76,6 +77,9 @@ class BetoCqPerformanceTestSuite(base_betocq_suite.BaseBetocqSuite):
       self.add_test_class(
           beto_cq_function_group_test.BetoCqFunctionGroupTest
       )
+
+    if test_parameters.run_bt_coex_test:
+      self.add_test_class(bt_2g_wifi_coex_test.Bt2gWifiCoexTest)
 
     # add bt and ble test
     if test_parameters.run_bt_performance_test:
