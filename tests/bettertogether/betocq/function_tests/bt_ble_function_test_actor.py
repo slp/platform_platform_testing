@@ -51,7 +51,7 @@ class BtBleFunctionTestActor(function_test_actor_base.FunctionTestActorBase):
           medium_upgrade_type=nc_constants.MediumUpgradeType.NON_DISRUPTIVE)
     finally:
       self._test_failure_reason = nearby_snippet.test_failure_reason
-      self._test_result.file_transfer_nc_setup_quality_info = (
+      self._test_result.quality_info = (
           nearby_snippet.connection_quality_info
       )
 

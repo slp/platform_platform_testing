@@ -14,6 +14,7 @@ x-test-params: &test-params
   run_bt_performance_test: True
   run_directed_test: True
   run_compound_test: True
+  run_bt_coex_test: True
   run_iperf_test: True
   allow_unrooted_device: False
   skip_bug_report: False
