@@ -52,8 +52,12 @@ import org.junit.runners.model.Statement
  *   instrument -w -e <key> true <test>`).
  *
  * Important note: After the file is created, in order to see it in artifacts, it needs to be pulled
- * from the device. Typically, this is done using [FilePullerLogCollector] at module level, changing
+ * from the device. Typically, this is done using `FilePullerLogCollector` at module level, changing
  * AndroidTest.xml.
+ *
+ * This rule requires that the device is rooted to be able to write data to the test app's data
+ * directory. You can use `RootTargetPreparer` in your test's AndroidTest.xml to ensure root is
+ * available.
  *
  * Note that when this rule is set as:
  * - `@ClassRule`, it will check only if the class has the [ScreenRecord] annotation, and will
@@ -89,17 +93,27 @@ constructor(
     }
 
     private fun shouldRecordScreen(description: Description): Boolean {
+        if (!isRooted()) {
+            Log.w(TAG, "Device is not rooted. Skipping screen recording.")
+            return false
+        }
+        val screenRecordBinaryAvailable = File("/system/bin/screenrecord").exists()
+        log("screenRecordBinaryAvailable: $screenRecordBinaryAvailable")
+        if (!screenRecordBinaryAvailable) {
+            return false
+        }
         return if (description.isTest) {
-            val screenRecordBinaryAvailable = File("/system/bin/screenrecord").exists()
-            log("screenRecordBinaryAvailable: $screenRecordBinaryAvailable")
-            screenRecordBinaryAvailable &&
-                (description.getAnnotation(ScreenRecord::class.java) != null ||
-                    description.testClass.hasAnnotation(ScreenRecord::class.java) ||
-                    testLevelOverrideEnabled())
+            description.getAnnotation(ScreenRecord::class.java) != null ||
+                description.testClass.hasAnnotation(ScreenRecord::class.java) ||
+                testLevelOverrideEnabled()
         } else { // class level annotation is set
             description.testClass.hasAnnotation(ScreenRecord::class.java) ||
                 classLevelOverrideEnabled()
         }
+    }
+
+    private fun isRooted(): Boolean {
+        return "root".equals(shell("whoami").trim())
     }
 
     private fun classLevelOverrideEnabled() =
@@ -134,8 +148,7 @@ constructor(
         val screenRecordingFileDescriptor =
             automation.executeShellCommand("screenrecord --verbose --bugreport $outputFile")
         // Getting latest PID as there might be multiple screenrecording in progress.
-        val screenRecordPid =
-            waitFor("screenrecording pid") { screenrecordPids.maxOrNull() }
+        val screenRecordPid = waitFor("screenrecording pid") { screenrecordPids.maxOrNull() }
         var success = false
         try {
             runnable()
