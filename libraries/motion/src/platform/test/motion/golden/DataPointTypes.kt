@@ -48,12 +48,7 @@ object DataPointTypes {
                 when (it) {
                     is Float -> it
                     is Number -> it.toFloat()
-                    is String ->
-                        try {
-                            it.toFloat()
-                        } catch (ignored: NumberFormatException) {
-                            throw UnknownTypeException()
-                        }
+                    is String -> it.toFloatOrNull() ?: throw UnknownTypeException()
                     else -> throw UnknownTypeException()
                 }
             },
@@ -67,12 +62,7 @@ object DataPointTypes {
                 when (it) {
                     is Int -> it
                     is Number -> it.toInt()
-                    is String ->
-                        try {
-                            it.toInt()
-                        } catch (ignored: NumberFormatException) {
-                            throw UnknownTypeException()
-                        }
+                    is String -> it.toIntOrNull() ?: throw UnknownTypeException()
                     else -> throw UnknownTypeException()
                 }
             },

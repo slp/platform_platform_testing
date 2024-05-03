@@ -37,7 +37,7 @@ class DataPointType<T>(
         return DataPoint.of(nativeValue, this)
     }
 
-    internal fun fromJson(jsonValue: Any): DataPoint<T> {
+    fun fromJson(jsonValue: Any): DataPoint<T> {
         return when {
             NullDataPoint.isNullValue(jsonValue) -> DataPoint.nullValue()
             NotFoundDataPoint.isNotFoundValue(jsonValue) -> DataPoint.notFound()
