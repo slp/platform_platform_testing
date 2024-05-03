@@ -135,7 +135,7 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
   def _get_throughput_benchmark(
       self, sta_frequency: int, sta_max_link_speed_mbps: int
   ) -> tuple[float, float]:
-    """Gets the throughput benchmark as KBps."""
+    """Gets the throughput benchmark as MBps."""
     max_num_streams = min(
         self.discoverer.max_num_streams, self.advertiser.max_num_streams
     )
@@ -571,7 +571,9 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
 
     return ''.join([
         f'{self._active_nc_fail_reason.name} - ',
-        nc_constants.COMMON_TRIAGE_TIP.get(self._active_nc_fail_reason),
+        nc_constants.COMMON_TRIAGE_TIP.get(
+            self._active_nc_fail_reason, 'UNKNOWN'
+        ),
     ])
 
   def _get_medium_upgrade_failure_tip(self) -> str:

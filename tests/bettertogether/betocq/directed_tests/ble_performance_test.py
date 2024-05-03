@@ -65,6 +65,7 @@ class BlePerformanceTest(d2d_performance_test_base.D2dPerformanceTestBase):
   def _get_file_transfer_timeout(self) -> datetime.timedelta:
     return nc_constants.BLE_500K_PAYLOAD_TRANSFER_TIMEOUT
 
+  # @typing.override
   def _get_throughput_benchmark(
       self, sta_frequency: int, sta_max_link_speed_mbps: int
   ) -> tuple[float, float]:
