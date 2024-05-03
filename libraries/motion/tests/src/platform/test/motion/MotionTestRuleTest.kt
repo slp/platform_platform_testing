@@ -40,7 +40,7 @@ class MotionTestRuleTest {
             pathConfig = PathConfig()
         )
 
-    private val subject = MotionTestRule(goldenPathManager)
+    private val subject = MotionTestRule(Unit, goldenPathManager)
 
     private val emptyRecordedMotion =
         RecordedMotion(

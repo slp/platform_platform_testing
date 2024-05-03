@@ -26,23 +26,29 @@ import platform.test.motion.golden.TimeSeries
  *
  * @param timeSeries recorded time series.
  * @param screenshots screenshot of the animation per `frameId` in [timeSeries].
- * @see MotionRecorder
  */
-class RecordedMotion(
+class RecordedMotion
+internal constructor(
     internal val testClassName: String,
     internal val testMethodName: String,
     val timeSeries: TimeSeries,
     screenshots: List<Bitmap>?,
 ) {
-    /**
-     * Visual filmstrip of the animation.
-     *
-     * Only available when a `visualCapture` was passed to [MotionRecorder.record].
-     */
+    /** Visual filmstrip of the animation. */
     val filmstrip: Filmstrip? =
         screenshots?.let {
             Filmstrip(
                 timeSeries.frameIds.zip(it) { frameId, bitmap -> MotionScreenshot(frameId, bitmap) }
             )
         }
+
+    companion object {
+        fun MotionTestRule<*>.create(timeSeries: TimeSeries, screenshots: List<Bitmap>?) =
+            RecordedMotion(
+                checkNotNull(testClassName),
+                checkNotNull(testMethodName),
+                timeSeries,
+                screenshots,
+            )
+    }
 }

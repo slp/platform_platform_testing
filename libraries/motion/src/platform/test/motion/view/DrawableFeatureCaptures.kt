@@ -19,16 +19,16 @@ package platform.test.motion.view
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
-import platform.test.motion.FeatureCapture
 import platform.test.motion.golden.DataPoint
+import platform.test.motion.golden.FeatureCapture
 import platform.test.motion.golden.asDataPoint
 
 /** Common, generic [FeatureCapture] implementations for [Drawable]s. */
 object DrawableFeatureCaptures {
-    val bounds = FeatureCapture<Drawable, Rect> { it.bounds.asDataPoint() }
-    val alpha = FeatureCapture<Drawable, Int> { it.alpha.asDataPoint() }
+    val bounds = FeatureCapture<Drawable, Rect>("bounds") { it.bounds.asDataPoint() }
+    val alpha = FeatureCapture<Drawable, Int>("alpha") { it.alpha.asDataPoint() }
     val cornerRadii =
-        FeatureCapture<GradientDrawable, CornerRadii> {
+        FeatureCapture<GradientDrawable, CornerRadii>("cornerRadii") {
             DataPoint.of(
                 it.cornerRadii?.let { rawValues -> CornerRadii(rawValues) },
                 DataPointTypes.cornerRadii
