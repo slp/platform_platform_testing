@@ -25,16 +25,6 @@ public class Flags {
     public static final String FLAG_RO_DISABLED = "android.platform.test.flag.junit.ro_disabled";
 
     /** Returns the flag value. */
-    public static boolean flagName1() {
-        return true;
-    }
-
-    /** Returns a non-boolean flag value. */
-    public static int flagName2() {
-        return 1;
-    }
-
-    /** Returns the flag value. */
     public static boolean flagName3() {
         return FEATURE_FLAGS.flagName3();
     }
