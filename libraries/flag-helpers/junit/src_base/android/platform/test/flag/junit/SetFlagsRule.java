@@ -29,6 +29,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -254,7 +255,6 @@ public final class SetFlagsRule implements TestRule {
             try {
                 Class.forName(flagClassName, false, this.getClass().getClassLoader());
                 packageSet.add(repackagedName);
-                break;
             } catch (ClassNotFoundException e) {
                 // Skip if the class is not found
                 // An error will be thrown if no package containing flags referencing
@@ -415,8 +415,7 @@ public final class SetFlagsRule implements TestRule {
         }
 
         String packageName = flagsClass.getPackageName();
-        String fakeClassName =
-                String.format("%s.%s", packageName, FAKE_FEATURE_FLAGS_IMPL_CLASS_NAME);
+        String fakeClassName = String.format("%s.%s", packageName, FAKE_FEATURE_FLAGS_IMPL_CLASS_NAME);
         String interfaceName = String.format("%s.%s", packageName, FEATURE_FLAGS_CLASS_NAME);
 
         Field featureFlagsField = getFeatureFlagsField(flagsClass);
