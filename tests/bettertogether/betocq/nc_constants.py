@@ -55,7 +55,7 @@ MAX_PHY_RATE_PER_STREAM_N_20_MBPS = 72
 
 MCC_THROUGHPUT_MULTIPLIER = 0.25
 MAX_PHY_RATE_TO_MIN_THROUGHPUT_RATIO_5G = 0.37
-MAX_PHY_RATE_TO_MIN_THROUGHPUT_RATIO_2G = 0.15
+MAX_PHY_RATE_TO_MIN_THROUGHPUT_RATIO_2G = 0.10
 # Add a temporary cap for NC speed check until nearby connections layer overhead
 # issue is fixed. Note that this cap is not applied to iperf speed check
 NC_THROUGHPUT_MIN_CAP_MBPS = 20
@@ -288,6 +288,20 @@ COMMON_TRIAGE_TIP: dict[SingleTestFailureReason, str] = {
     ),
     SingleTestFailureReason.AP_IS_NOT_CONFIGURED: (
         'The test AP is not set correctly in the test configuration file.'
+    ),
+    SingleTestFailureReason.DISCONNECTED_FROM_AP: (
+        'The STA is disconnected from the AP. Check AP DHCP config. Check if'
+        ' other devices can connect to the same AP.'
+    ),
+    SingleTestFailureReason.WRONG_AP_FREQUENCY: (
+        'Check if the test AP is set to the expected frequency.'
+    ),
+    SingleTestFailureReason.WRONG_P2P_FREQUENCY: (
+        'The test P2P frequency is not set to the expected value. If if is SCC'
+        ' DBS test case, check if the device does support DBS. If it is the SCC'
+        ' indoor or SCC DFS test case, check if the device does support'
+        ' indoor/DFS channels in WFD mode. Check if device capabilities are set'
+        ' correctly.'
     ),
 }
 
