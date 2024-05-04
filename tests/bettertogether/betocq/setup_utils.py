@@ -24,6 +24,7 @@ from mobly.controllers import android_device
 from mobly.controllers.android_device_lib import adb
 
 from betocq import gms_auto_updates_util
+from betocq import nc_constants
 
 WIFI_COUNTRYCODE_CONFIG_TIME_SEC = 3
 TOGGLE_AIRPLANE_MODE_WAIT_TIME_SEC = 2
@@ -388,6 +389,31 @@ def enable_dfs_scc(ad: android_device.AndroidDevice) -> None:
   check_and_try_to_write_ph_flag(ad, pname, flag_name, flag_type, flag_value)
 
 
+def enable_ble_scan_throttling_during_2g_transfer(
+    ad: android_device.AndroidDevice, enable_ble_scan_throttling: bool = False
+) -> None:
+  """Enable BLE scan throttling during 2G transfer.
+  """
+
+  # The default values for the following parameters are 3 mins which are long
+  # enough for the performance test.
+  # mediums_ble_client_wifi_24_ghz_warming_up_duration
+  # fast_pair_wifi_24_ghz_warming_up_duration
+  # sharing_wifi_24_ghz_warming_up_duration
+
+  pname = 'com.google.android.gms.nearby'
+  flag_name = 'fast_pair_enable_connection_state_changed_listener'
+  flag_type = 'boolean'
+  flag_value = 'true' if enable_ble_scan_throttling else 'false'
+  check_and_try_to_write_ph_flag(ad, pname, flag_name, flag_type, flag_value)
+
+  flag_name = 'sharing_enable_connection_state_changed_listener'
+  check_and_try_to_write_ph_flag(ad, pname, flag_name, flag_type, flag_value)
+
+  flag_name = 'mediums_ble_client_enable_connection_state_changed_listener'
+  check_and_try_to_write_ph_flag(ad, pname, flag_name, flag_type, flag_value)
+
+
 def disable_redaction(ad: android_device.AndroidDevice) -> None:
   """Disable info log redaction on the given device."""
   pname = 'com.google.android.gms'
@@ -425,14 +451,67 @@ def enable_gms_auto_updates(ad: android_device.AndroidDevice) -> None:
   time.sleep(_DISABLE_ENABLE_GMS_UPDATE_WAIT_TIME_SEC)
 
 
-def dump_wifi_sta_status(
-    ad: android_device.AndroidDevice,
-) -> None:
+def get_wifi_sta_frequency(ad: android_device.AndroidDevice) -> int:
+  """Get wifi STA frequency on the given device."""
+  wifi_sta_status = dump_wifi_sta_status(ad)
+  if not wifi_sta_status:
+    return nc_constants.INVALID_INT
+  prefix = 'Frequency:'
+  postfix = 'MHz'
+  return get_int_between_prefix_postfix(wifi_sta_status, prefix, postfix)
+
+
+def get_wifi_p2p_frequency(ad: android_device.AndroidDevice) -> int:
+  """Get wifi p2p frequency on the given device."""
+  wifi_p2p_status = dump_wifi_p2p_status(ad)
+  if not wifi_p2p_status:
+    return nc_constants.INVALID_INT
+  prefix = 'channelFrequency='
+  postfix = ', groupRole=GroupOwner'
+  return get_int_between_prefix_postfix(wifi_p2p_status, prefix, postfix)
+
+
+def get_wifi_sta_max_link_speed(ad: android_device.AndroidDevice) -> int:
+  """Get wifi STA max supported Tx link speed on the given device."""
+  wifi_sta_status = dump_wifi_sta_status(ad)
+  if not wifi_sta_status:
+    return nc_constants.INVALID_INT
+  prefix = 'Max Supported Tx Link speed:'
+  postfix = 'Mbps'
+  return get_int_between_prefix_postfix(wifi_sta_status, prefix, postfix)
+
+
+def get_int_between_prefix_postfix(
+    string: str, prefix: str, postfix: str
+) -> int:
+  left_index = string.rfind(prefix)
+  right_index = string.rfind(postfix)
+  if left_index > 0 and right_index > left_index:
+    try:
+      return int(string[left_index + len(prefix): right_index].strip())
+    except ValueError:
+      return nc_constants.INVALID_INT
+  return nc_constants.INVALID_INT
+
+
+def dump_wifi_sta_status(ad: android_device.AndroidDevice) -> str:
   """Dumps wifi STA status on the given device."""
-  wifi_sta_status = (
-      ad.adb.shell('cmd wifi status | grep WifiInfo').decode('utf-8').strip()
-  )
-  ad.log.info(f'Wifi Score Report: {wifi_sta_status}')
+  try:
+    return (
+        ad.adb.shell('cmd wifi status | grep WifiInfo').decode('utf-8').strip()
+    )
+  except adb.AdbError:
+    return ''
+
+
+def dump_wifi_p2p_status(ad: android_device.AndroidDevice) -> str:
+  """Dumps wifi p2p status on the given device."""
+  try:
+    return (
+        ad.adb.shell('dumpsys wifip2p').decode('utf-8').strip()
+    )
+  except adb.AdbError:
+    return ''
 
 
 def get_hardware(ad: android_device.AndroidDevice) -> str:

@@ -31,9 +31,10 @@ from betocq import setup_utils
 
 
 _DELAY_BETWEEN_EACH_TEST_CYCLE = datetime.timedelta(seconds=5)
-_INVALID_FREQ = -1
-_INVALID_LINK_SPEED = -1
 _BITS_PER_BYTE = 8
+_MAX_FREQ_2G_MHZ = 2500
+_MIN_FREQ_5G_DFS_MHZ = 5260
+_MAX_FREQ_5G_DFS_MHZ = 5720
 
 
 class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
@@ -117,22 +118,26 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
           )
     return None
 
-  def _get_throughout_benchmark(self) -> tuple[float, float]:
-    """Gets the throughout benchmark as KBps."""
-    max_num_streams = min(
-        self.discoverer.max_num_streams, self.advertiser.max_num_streams
-    )
-
+  def _get_target_sta_frequency_and_max_link_speed(self) -> tuple[int, int]:
+    """Gets the STA frequency and max link speed."""
+    connection_info = self.advertiser.nearby.wifiGetConnectionInfo()
     sta_frequency = int(
-        self.advertiser.nearby.wifiGetConnectionInfo().get(
-            'mFrequency', _INVALID_FREQ
-        )
+        connection_info.get('mFrequency', nc_constants.INVALID_INT)
     )
 
     sta_max_link_speed_mbps = int(
-        self.advertiser.nearby.wifiGetConnectionInfo().get(
-            'mMaxSupportedTxLinkSpeed', _INVALID_LINK_SPEED
+        connection_info.get(
+            'mMaxSupportedTxLinkSpeed', nc_constants.INVALID_INT
         )
+    )
+    return (sta_frequency, sta_max_link_speed_mbps)
+
+  def _get_throughput_benchmark(
+      self, sta_frequency: int, sta_max_link_speed_mbps: int
+  ) -> tuple[float, float]:
+    """Gets the throughput benchmark as MBps."""
+    max_num_streams = min(
+        self.discoverer.max_num_streams, self.advertiser.max_num_streams
     )
 
     if self._is_2g_d2d_wifi_medium:
@@ -267,7 +272,7 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
         )
       finally:
         self._prior_bt_nc_fail_reason = prior_bt_snippet.test_failure_reason
-        self._current_test_result.prior_nc_setup_quality_info = (
+        self._current_test_result.prior_nc_quality_info = (
             prior_bt_snippet.connection_quality_info
         )
 
@@ -320,7 +325,7 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
       )
     finally:
       self._active_nc_fail_reason = active_snippet.test_failure_reason
-      self._current_test_result.file_transfer_nc_setup_quality_info = (
+      self._current_test_result.quality_info = (
           active_snippet.connection_quality_info
       )
 
@@ -335,53 +340,115 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
       )
       if (
           self.test_parameters.run_iperf_test
-          and self._current_test_result.file_transfer_nc_setup_quality_info.upgrade_medium
+          and self._current_test_result.quality_info.upgrade_medium
           == nc_constants.NearbyConnectionMedium.WIFI_DIRECT
       ):
+        # TODO: b/338094399 - update this part for the connection over WFD.
         self._current_test_result.iperf_throughput_kbps = (
             iperf_utils.run_iperf_test(self.discoverer, self.advertiser)
         )
 
     finally:
       self._active_nc_fail_reason = active_snippet.test_failure_reason
-
-      if (
-          self._active_nc_fail_reason
-          is nc_constants.SingleTestFailureReason.SUCCESS
-      ):
-        iperf_speed_mbps = int(
-            self._current_test_result.iperf_throughput_kbps / 1024
-        )
-        nc_speed_mbps = round(
-            self._current_test_result.file_transfer_throughput_kbps / 1024, 1
-        )
-        iperf_speed_min_mbps, nc_speed_min_mbps = (
-            self._get_throughout_benchmark()
-        )
-        if (nc_speed_mbps < nc_speed_min_mbps) or (
-            iperf_speed_mbps > 0 and iperf_speed_mbps < iperf_speed_min_mbps
-        ):
-          self._active_nc_fail_reason = (
-              nc_constants.SingleTestFailureReason.FILE_TRANSFER_THROUGHPUT_LOW
-          )
-          result_str = ''
-          if iperf_speed_mbps > 0 and iperf_speed_mbps < iperf_speed_min_mbps:
-            result_str = result_str + (
-                f'iperf speed {iperf_speed_mbps} < target'
-                f' {iperf_speed_min_mbps}'
-            )
-          if nc_speed_mbps < nc_speed_min_mbps:
-            result_str = result_str + (
-                f' file speed {nc_speed_mbps} < target {nc_speed_min_mbps}'
-            )
-          self._throughput_low_string = result_str + ' MB/s'
-          asserts.fail(self._throughput_low_string)
+      self._check_ap_connection_and_speed(wifi_ssid)
 
     # 6. disconnect prior BT connection if required
     if prior_bt_snippet:
       prior_bt_snippet.disconnect_endpoint()
     # 7. disconnect D2D active connection
     active_snippet.disconnect_endpoint()
+
+  def _check_ap_connection_and_speed(self, wifi_ssid: str) -> None:
+    (sta_frequency, max_link_speed_mbps) = (
+        self._get_target_sta_frequency_and_max_link_speed()
+    )
+    if wifi_ssid and(
+        sta_frequency == nc_constants.INVALID_INT
+        or max_link_speed_mbps == nc_constants.INVALID_INT
+    ):
+      self._active_nc_fail_reason = (
+          nc_constants.SingleTestFailureReason.DISCONNECTED_FROM_AP
+      )
+      asserts.fail(
+          'Target device is disconnected from AP. Check AP DHCP config.'
+      )
+
+    iperf_speed_min_mbps, nc_speed_min_mbps = self._get_throughput_benchmark(
+        sta_frequency, max_link_speed_mbps
+    )
+
+    if wifi_ssid and not self._is_valid_sta_frequency(wifi_ssid, sta_frequency):
+      self._active_nc_fail_reason = (
+          nc_constants.SingleTestFailureReason.WRONG_AP_FREQUENCY
+      )
+      asserts.fail(f'AP is set to a wrong frequency {sta_frequency}')
+
+    if (
+        self._current_test_result.quality_info.upgrade_medium
+        in [
+            nc_constants.NearbyConnectionMedium.WIFI_DIRECT,
+            nc_constants.NearbyConnectionMedium.WIFI_HOTSPOT,
+        ]
+    ):
+      p2p_frequency = setup_utils.get_wifi_p2p_frequency(self.advertiser)
+      if all([
+          p2p_frequency != nc_constants.INVALID_INT,
+          p2p_frequency != sta_frequency,
+          not self._is_mcc,
+          not self._is_dbs_mode,
+          nc_speed_min_mbps > 0,
+      ]):
+        self._active_nc_fail_reason = (
+            nc_constants.SingleTestFailureReason.WRONG_P2P_FREQUENCY
+        )
+        asserts.fail(
+            f'P2P frequeny ({p2p_frequency}) is different from STA frequency'
+            f' ({sta_frequency}) in SCC test case. Check the device capability'
+            ' configuration especially for DBS, DFS, indoor capabilities.'
+        )
+
+    if (
+        self._active_nc_fail_reason
+        is nc_constants.SingleTestFailureReason.SUCCESS
+    ):
+      iperf_speed_mbps = int(
+          self._current_test_result.iperf_throughput_kbps / 1024
+      )
+      nc_speed_mbps = round(
+          self._current_test_result.file_transfer_throughput_kbps / 1024, 2
+      )
+
+      if (nc_speed_mbps < nc_speed_min_mbps) or (
+          iperf_speed_mbps > 0 and iperf_speed_mbps < iperf_speed_min_mbps
+      ):
+        self._active_nc_fail_reason = (
+            nc_constants.SingleTestFailureReason.FILE_TRANSFER_THROUGHPUT_LOW
+        )
+        result_str = ''
+        if iperf_speed_mbps > 0 and iperf_speed_mbps < iperf_speed_min_mbps:
+          result_str = result_str + (
+              f'iperf speed {iperf_speed_mbps} < target {iperf_speed_min_mbps}'
+          )
+        if nc_speed_mbps < nc_speed_min_mbps:
+          result_str = result_str + (
+              f' file speed {nc_speed_mbps} < target {nc_speed_min_mbps}'
+          )
+        self._throughput_low_string = result_str + ' MB/s'
+        asserts.fail(self._throughput_low_string)
+
+  def _is_valid_sta_frequency(self, wifi_ssid: str, sta_frequency: int) -> bool:
+    if wifi_ssid == self.test_parameters.wifi_2g_ssid:
+      return sta_frequency <= _MAX_FREQ_2G_MHZ
+    elif wifi_ssid == self.test_parameters.wifi_5g_ssid:
+      return sta_frequency > _MAX_FREQ_2G_MHZ and (
+          sta_frequency < _MIN_FREQ_5G_DFS_MHZ
+          or sta_frequency > _MAX_FREQ_5G_DFS_MHZ
+      )
+    else:  # 5G DFS band
+      return (
+          sta_frequency >= _MIN_FREQ_5G_DFS_MHZ
+          and sta_frequency <= _MAX_FREQ_5G_DFS_MHZ
+      )
 
   def _get_transfer_file_size(self) -> int:
     return nc_constants.TRANSFER_FILE_SIZE_500MB
@@ -410,11 +477,11 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
     if self._use_prior_bt:
       quality_info.append(
           'prior_bt:'
-          f'{self._current_test_result.prior_nc_setup_quality_info.get_dict()}'
+          f'{self._current_test_result.prior_nc_quality_info.get_dict()}'
       )
     quality_info.append(
         'file_transfer:'
-        f'{self._current_test_result.file_transfer_nc_setup_quality_info.get_dict()}'
+        f'{self._current_test_result.quality_info.get_dict()}'
     )
     quality_info.append(
         'speed: '
@@ -504,7 +571,9 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
 
     return ''.join([
         f'{self._active_nc_fail_reason.name} - ',
-        nc_constants.COMMON_TRIAGE_TIP.get(self._active_nc_fail_reason),
+        nc_constants.COMMON_TRIAGE_TIP.get(
+            self._active_nc_fail_reason, 'UNKNOWN'
+        ),
     ])
 
   def _get_medium_upgrade_failure_tip(self) -> str:
@@ -525,20 +594,20 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
     """Collects test result metrics for each iteration."""
     if self._use_prior_bt:
       self._performance_test_metrics.prior_bt_discovery_latencies.append(
-          self._current_test_result.prior_nc_setup_quality_info.discovery_latency
+          self._current_test_result.prior_nc_quality_info.discovery_latency
       )
       self._performance_test_metrics.prior_bt_connection_latencies.append(
-          self._current_test_result.prior_nc_setup_quality_info.connection_latency
+          self._current_test_result.prior_nc_quality_info.connection_latency
       )
 
     self._performance_test_metrics.file_transfer_discovery_latencies.append(
-        self._current_test_result.file_transfer_nc_setup_quality_info.discovery_latency
+        self._current_test_result.quality_info.discovery_latency
     )
     self._performance_test_metrics.file_transfer_connection_latencies.append(
-        self._current_test_result.file_transfer_nc_setup_quality_info.connection_latency
+        self._current_test_result.quality_info.connection_latency
     )
     self._performance_test_metrics.upgraded_wifi_transfer_mediums.append(
-        self._current_test_result.file_transfer_nc_setup_quality_info.upgrade_medium
+        self._current_test_result.quality_info.upgrade_medium
     )
     self._performance_test_metrics.file_transfer_throughputs_kbps.append(
         self._current_test_result.file_transfer_throughput_kbps
@@ -553,10 +622,10 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
         self._current_test_result.advertiser_sta_latency
     )
     if (
-        self._current_test_result.file_transfer_nc_setup_quality_info.medium_upgrade_expected
+        self._current_test_result.quality_info.medium_upgrade_expected
     ):
       self._performance_test_metrics.medium_upgrade_latencies.append(
-          self._current_test_result.file_transfer_nc_setup_quality_info.medium_upgrade_latency
+          self._current_test_result.quality_info.medium_upgrade_latency
       )
 
   def __convert_kbps_to_mbps(self, throughput_kbps: float) -> float:
@@ -622,12 +691,17 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
         == nc_constants.SingleTestFailureReason.SUCCESS
         for test_result in self._test_results
     )
-    # round down the passing test iterations
-    passed = success_count >= int(
+    passed = success_count >= round(
         self.performance_test_iterations * nc_constants.SUCCESS_RATE_TARGET
     )
     final_result_message = (
-        'PASS' if passed else f'FAIL: low successes - {success_count}'
+        'PASS'
+        if passed
+        else (
+            'FAIL: low successe rate: '
+            f' {success_count / self.performance_test_iterations:.2%} is lower'
+            f' than the target {nc_constants.SUCCESS_RATE_TARGET:.2%}'
+        )
     )
     detailed_stats = [
         f'Required Iterations: {self.performance_test_iterations}',
@@ -794,4 +868,3 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
         f'Android Version: {ad.android_version}',
         f'GMS_version: {setup_utils.dump_gms_version(ad)}',
     ]
-

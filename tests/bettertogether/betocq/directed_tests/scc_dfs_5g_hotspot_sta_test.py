@@ -86,12 +86,13 @@ class SccDfs5gHotspotStaTest(d2d_performance_test_base.D2dPerformanceTestBase):
         ' file, enable_sta_dfs_channel_for_peer_network is set to true. Check'
         ' if the target device does support WFD group owner in the'
         ' STA-associated DFS channel. Check if'
-        ' config_wifiEnableStaDfsChannelForPeerNetworkhttps://cs.android.com/android/platform/superproject/main/+/main:packages/modules/Wifi/service/ServiceWifiResources/res/values/config.xml)is'
-        ' set to true and has the correct driver/FW implementation.'
+        ' config_wifiEnableStaDfsChannelForPeerNetwork'
+        ' https://cs.android.com/android/platform/superproject/main/+/main:packages/modules/Wifi/service/ServiceWifiResources/res/values/config.xml'
+        ' is set to true and has the correct driver/FW implementation.'
     )
 
   def _is_wifi_ap_ready(self) -> bool:
-    return True if self.test_parameters.wifi_5g_ssid else False
+    return True if self.test_parameters.wifi_dfs_5g_ssid else False
 
   @property
   def _devices_capabilities_definition(self) -> dict[str, dict[str, bool]]:
@@ -104,7 +105,6 @@ class SccDfs5gHotspotStaTest(d2d_performance_test_base.D2dPerformanceTestBase):
             'enable_sta_dfs_channel_for_peer_network': True,
         },
     }
-
 
 
 if __name__ == '__main__':

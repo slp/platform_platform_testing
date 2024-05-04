@@ -59,12 +59,15 @@ class BtPerformanceTest(d2d_performance_test_base.D2dPerformanceTestBase):
     )
 
   def _get_transfer_file_size(self) -> int:
-    return nc_constants.TRANSFER_FILE_SIZE_1MB
+    return nc_constants.TRANSFER_FILE_SIZE_500KB
 
   def _get_file_transfer_timeout(self) -> datetime.timedelta:
-    return nc_constants.BT_1M_PAYLOAD_TRANSFER_TIMEOUT
+    return nc_constants.BT_500K_PAYLOAD_TRANSFER_TIMEOUT
 
-  def _get_throughout_benchmark(self) -> tuple[float, float]:
+  # @typing.override
+  def _get_throughput_benchmark(
+      self, sta_frequency: int, sta_max_link_speed_mbps: int
+  ) -> tuple[float, float]:
     return (
         nc_constants.CLASSIC_BT_MEDIUM_THROUGHPUT_BENCHMARK_MBPS,
         nc_constants.CLASSIC_BT_MEDIUM_THROUGHPUT_BENCHMARK_MBPS,
@@ -76,7 +79,7 @@ class BtPerformanceTest(d2d_performance_test_base.D2dPerformanceTestBase):
   def _get_file_transfer_failure_tip(self) -> str:
     return (
         'The classic Bluetooth connection might be broken, check related log, '
-        f' {self._get_throughput_low_tip()}'
+        f'{self._get_throughput_low_tip()}'
     )
 
   def _get_throughput_low_tip(self) -> str:

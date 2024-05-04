@@ -226,7 +226,6 @@ class NCBaseTestClass(base_test.BaseTestClass):
       setup_utils.grant_manage_external_storage_permission(
           ad, NEARBY_SNIPPET_2_PACKAGE_NAME
       )
-      setup_utils.enable_bluetooth_multiplex(ad)
       ad.load_snippet('nearby2', NEARBY_SNIPPET_2_PACKAGE_NAME)
       self.__loaded_2_nearby_snippets = True
     if not ad.nearby.wifiIsEnabled():
@@ -235,7 +234,10 @@ class NCBaseTestClass(base_test.BaseTestClass):
     setup_utils.enable_logs(ad)
     setup_utils.disable_redaction(ad)
     setup_utils.enable_wifi_aware(ad)
-    setup_utils.enable_dfs_scc(ad)
+
+    setup_utils.enable_ble_scan_throttling_during_2g_transfer(
+        ad, self.test_parameters.enable_2g_ble_scan_throttling
+    )
 
     setup_utils.set_country_code(ad, self._get_country_code())
 

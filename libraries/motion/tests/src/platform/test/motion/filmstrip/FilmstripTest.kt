@@ -39,6 +39,7 @@ class FilmstripTest {
     private val goldenPathManager =
         GoldenPathManager(
             InstrumentationRegistry.getInstrumentation().context,
+            "platform_testing/libraries/motion/tests/assets",
             pathConfig = PathConfig()
         )
 
@@ -109,6 +110,20 @@ class FilmstripTest {
     }
 
     @Test
+    fun horizontalFilmstrip_variableSize_tileMatchesLargestDimensions() {
+        val screenshots =
+            listOf(
+                MotionScreenshot(TimestampFrameId(1), mockScreenshot(Color.RED, 100, 200)),
+                MotionScreenshot(TimestampFrameId(2), mockScreenshot(Color.GREEN, 150, 75)),
+                MotionScreenshot(TimestampFrameId(3), mockScreenshot(Color.BLUE, 50, 50)),
+            )
+
+        assertFilmstripRendering(
+            Filmstrip(screenshots).apply { orientation = FilmstripOrientation.HORIZONTAL }
+        )
+    }
+
+    @Test
     fun verticalFilmstrip() {
         val w = 200
         val h = 100
@@ -134,6 +149,20 @@ class FilmstripTest {
             listOf(
                 MotionScreenshot(SupplementalFrameId("before"), mockScreenshot(Color.RED, w, h)),
                 MotionScreenshot(SupplementalFrameId("after"), mockScreenshot(Color.BLUE, w, h)),
+            )
+
+        assertFilmstripRendering(
+            Filmstrip(screenshots).apply { orientation = FilmstripOrientation.VERTICAL }
+        )
+    }
+
+    @Test
+    fun verticalFilmstrip_variableSize_tileMatchesLargestDimensions() {
+        val screenshots =
+            listOf(
+                MotionScreenshot(TimestampFrameId(1), mockScreenshot(Color.RED, 100, 200)),
+                MotionScreenshot(TimestampFrameId(2), mockScreenshot(Color.GREEN, 150, 75)),
+                MotionScreenshot(TimestampFrameId(3), mockScreenshot(Color.BLUE, 50, 50)),
             )
 
         assertFilmstripRendering(
@@ -181,6 +210,57 @@ class FilmstripTest {
 
         assertThat(bitmap.width).isLessThan(w * 3)
         assertThat(bitmap.height).isEqualTo(h * 3)
+    }
+
+    @Test
+    fun limitLongestSide_scalesBasedOnLongerHeight() {
+        val screenshots =
+            listOf(
+                MotionScreenshot(TimestampFrameId(1), mockScreenshot(Color.RED, 100, 200)),
+                MotionScreenshot(TimestampFrameId(2), mockScreenshot(Color.GREEN, 150, 75)),
+                MotionScreenshot(TimestampFrameId(3), mockScreenshot(Color.BLUE, 50, 50)),
+            )
+
+        assertFilmstripRendering(
+            Filmstrip(screenshots).apply {
+                limitLongestSide(100)
+                orientation = FilmstripOrientation.HORIZONTAL
+            }
+        )
+    }
+
+    @Test
+    fun limitLongestSide_scalesBasedOnLongerWidth() {
+        val screenshots =
+            listOf(
+                MotionScreenshot(TimestampFrameId(1), mockScreenshot(Color.RED, 200, 100)),
+                MotionScreenshot(TimestampFrameId(2), mockScreenshot(Color.GREEN, 150, 75)),
+                MotionScreenshot(TimestampFrameId(3), mockScreenshot(Color.BLUE, 50, 50)),
+            )
+
+        assertFilmstripRendering(
+            Filmstrip(screenshots).apply {
+                limitLongestSide(100)
+                orientation = FilmstripOrientation.HORIZONTAL
+            }
+        )
+    }
+
+    @Test
+    fun limitLongestSide_doesNotScaleUp() {
+        val screenshots =
+            listOf(
+                MotionScreenshot(TimestampFrameId(1), mockScreenshot(Color.RED, 200, 100)),
+                MotionScreenshot(TimestampFrameId(2), mockScreenshot(Color.GREEN, 150, 75)),
+                MotionScreenshot(TimestampFrameId(3), mockScreenshot(Color.BLUE, 50, 50)),
+            )
+
+        assertFilmstripRendering(
+            Filmstrip(screenshots).apply {
+                limitLongestSide(300)
+                orientation = FilmstripOrientation.HORIZONTAL
+            }
+        )
     }
 
     private fun mockScreenshot(

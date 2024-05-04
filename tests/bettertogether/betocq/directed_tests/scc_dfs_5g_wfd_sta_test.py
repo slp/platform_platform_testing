@@ -91,7 +91,7 @@ class SccDfs5gWfdStaTest(d2d_performance_test_base.D2dPerformanceTestBase):
     )
 
   def _is_wifi_ap_ready(self) -> bool:
-    return True if self.test_parameters.wifi_5g_ssid else False
+    return True if self.test_parameters.wifi_dfs_5g_ssid else False
 
   @property
   def _devices_capabilities_definition(self) -> dict[str, dict[str, bool]]:

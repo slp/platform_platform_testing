@@ -21,7 +21,7 @@ import enum
 import logging
 from typing import Any
 
-SUCCESS_RATE_TARGET = 0.95  # 95%
+SUCCESS_RATE_TARGET = 0.98
 MCC_PERFORMANCE_TEST_COUNT = 100
 MCC_PERFORMANCE_TEST_MAX_CONSECUTIVE_ERROR = 5
 SCC_PERFORMANCE_TEST_COUNT = 10
@@ -36,8 +36,8 @@ FIRST_DISCOVERY_TIMEOUT = datetime.timedelta(seconds=30)
 FIRST_CONNECTION_INIT_TIMEOUT = datetime.timedelta(seconds=30)
 FIRST_CONNECTION_RESULT_TIMEOUT = datetime.timedelta(seconds=35)
 BT_1K_PAYLOAD_TRANSFER_TIMEOUT = datetime.timedelta(seconds=20)
-BT_1M_PAYLOAD_TRANSFER_TIMEOUT = datetime.timedelta(seconds=50)
-BLE_1M_PAYLOAD_TRANSFER_TIMEOUT = datetime.timedelta(seconds=50)
+BT_500K_PAYLOAD_TRANSFER_TIMEOUT = datetime.timedelta(seconds=25)
+BLE_500K_PAYLOAD_TRANSFER_TIMEOUT = datetime.timedelta(seconds=25)
 SECOND_DISCOVERY_TIMEOUT = datetime.timedelta(seconds=35)
 SECOND_CONNECTION_INIT_TIMEOUT = datetime.timedelta(seconds=10)
 SECOND_CONNECTION_RESULT_TIMEOUT = datetime.timedelta(seconds=25)
@@ -55,13 +55,13 @@ MAX_PHY_RATE_PER_STREAM_N_20_MBPS = 72
 
 MCC_THROUGHPUT_MULTIPLIER = 0.25
 MAX_PHY_RATE_TO_MIN_THROUGHPUT_RATIO_5G = 0.37
-MAX_PHY_RATE_TO_MIN_THROUGHPUT_RATIO_2G = 0.2
+MAX_PHY_RATE_TO_MIN_THROUGHPUT_RATIO_2G = 0.10
 # Add a temporary cap for NC speed check until nearby connections layer overhead
 # issue is fixed. Note that this cap is not applied to iperf speed check
 NC_THROUGHPUT_MIN_CAP_MBPS = 20
 
-CLASSIC_BT_MEDIUM_THROUGHPUT_BENCHMARK_MBPS = 0.02  # 20KBps
-BLE_MEDIUM_THROUGHPUT_BENCHMARK_MBPS = 0.02  # 20KBps
+CLASSIC_BT_MEDIUM_THROUGHPUT_BENCHMARK_MBPS = 0.02
+BLE_MEDIUM_THROUGHPUT_BENCHMARK_MBPS = 0.02
 
 KEEP_ALIVE_TIMEOUT_BT_MS = 30000
 KEEP_ALIVE_INTERVAL_BT_MS = 5000
@@ -75,11 +75,13 @@ LATENCY_PRECISION_DIGITS = 1
 UNSET_LATENCY = datetime.timedelta.max
 UNSET_THROUGHPUT_KBPS = -1.0
 MAX_NUM_BUG_REPORT = 5
+INVALID_INT = -1
 
 TRANSFER_FILE_SIZE_500MB = 500 * 1024  # kB
 TRANSFER_FILE_SIZE_200MB = 200 * 1024  # kB
 TRANSFER_FILE_SIZE_20MB = 20 * 1024  # kB
 TRANSFER_FILE_SIZE_1MB = 1024  # kB
+TRANSFER_FILE_SIZE_500KB = 512  # kB
 TRANSFER_FILE_SIZE_1KB = 1  # kB
 
 TARGET_CUJ_QUICK_START = 'quick_start'
@@ -136,10 +138,12 @@ class TestParameters:
   allow_unrooted_device: bool = False
   keep_alive_timeout_ms: int = KEEP_ALIVE_TIMEOUT_WIFI_MS
   keep_alive_interval_ms: int = KEEP_ALIVE_INTERVAL_WIFI_MS
+  enable_2g_ble_scan_throttling: bool = True
 
   run_function_tests_with_performance_tests: bool = True
   run_bt_performance_test: bool = True
   run_ble_performance_test: bool = False
+  run_bt_coex_test: bool = True
   run_directed_test: bool = True
   run_compound_test: bool = True
   run_iperf_test: bool = True
@@ -242,7 +246,10 @@ class SingleTestFailureReason(enum.IntEnum):
   SOURCE_WIFI_CONNECTION = 8
   TARGET_WIFI_CONNECTION = 9
   AP_IS_NOT_CONFIGURED = 10
-  SUCCESS = 11
+  DISCONNECTED_FROM_AP = 11
+  WRONG_AP_FREQUENCY = 12
+  WRONG_P2P_FREQUENCY = 13
+  SUCCESS = 14
 
 
 COMMON_TRIAGE_TIP: dict[SingleTestFailureReason, str] = {
@@ -281,6 +288,20 @@ COMMON_TRIAGE_TIP: dict[SingleTestFailureReason, str] = {
     ),
     SingleTestFailureReason.AP_IS_NOT_CONFIGURED: (
         'The test AP is not set correctly in the test configuration file.'
+    ),
+    SingleTestFailureReason.DISCONNECTED_FROM_AP: (
+        'The STA is disconnected from the AP. Check AP DHCP config. Check if'
+        ' other devices can connect to the same AP.'
+    ),
+    SingleTestFailureReason.WRONG_AP_FREQUENCY: (
+        'Check if the test AP is set to the expected frequency.'
+    ),
+    SingleTestFailureReason.WRONG_P2P_FREQUENCY: (
+        'The test P2P frequency is not set to the expected value. If if is SCC'
+        ' DBS test case, check if the device does support DBS. If it is the SCC'
+        ' indoor or SCC DFS test case, check if the device does support'
+        ' indoor/DFS channels in WFD mode. Check if device capabilities are set'
+        ' correctly.'
     ),
 }
 
@@ -354,11 +375,11 @@ class SingleTestResult:
       SingleTestFailureReason.UNINITIALIZED
   )
   result_message: str = ''
-  prior_nc_setup_quality_info: ConnectionSetupQualityInfo = dataclasses.field(
+  prior_nc_quality_info: ConnectionSetupQualityInfo = dataclasses.field(
       default_factory=ConnectionSetupQualityInfo
   )
   discoverer_sta_latency: datetime.timedelta = UNSET_LATENCY
-  file_transfer_nc_setup_quality_info: ConnectionSetupQualityInfo = (
+  quality_info: ConnectionSetupQualityInfo = (
       dataclasses.field(default_factory=ConnectionSetupQualityInfo)
   )
   file_transfer_throughput_kbps: float = UNSET_THROUGHPUT_KBPS
