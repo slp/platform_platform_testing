@@ -48,7 +48,11 @@ public class ArtifactSaver {
                 fileName);
     }
 
-    static File artifactFile(Description description, String prefix, String ext) {
+    /**
+     * @return a file to store an artifact for test described by description. Providing the same
+     *     prefix and ext will overwrite the same file.
+     */
+    public static File artifactFile(Description description, String prefix, String ext) {
         return artifactFile(
                 "TestScreenshot-" + prefix + "-" + getClassAndMethodName(description) + "." + ext);
     }

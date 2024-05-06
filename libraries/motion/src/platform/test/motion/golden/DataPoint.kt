@@ -27,7 +27,7 @@ import org.json.JSONObject
  * [NullDataPoint] allow to describe why [DataPoint] are absent in [TimeSeries], making the golden
  * tests more robust.
  */
-sealed interface DataPoint<in T> {
+sealed interface DataPoint<out T> {
 
     fun asJson(): Any
 

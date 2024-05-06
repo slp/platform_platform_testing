@@ -26,9 +26,12 @@ import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import platform.test.motion.Sampling.Companion.evenlySampled
+import platform.test.motion.MotionTestRule
 import platform.test.motion.testing.SampleScene
 import platform.test.motion.tests.R
+import platform.test.motion.view.AnimationSampling.Companion.evenlySampled
+import platform.test.motion.view.ViewRecordingSpec.Companion.capture
+import platform.test.motion.view.ViewRecordingSpec.Companion.captureWithoutScreenshot
 import platform.test.screenshot.DeviceEmulationRule
 import platform.test.screenshot.DeviceEmulationSpec
 import platform.test.screenshot.DisplaySpec
@@ -39,7 +42,7 @@ import platform.test.screenshot.ScreenshotTestRule
 
 @SmallTest
 @RunWith(AndroidJUnit4::class)
-class ViewMotionTestRuleTest {
+class ViewToolkitTest {
 
     private val pathManager = GoldenPathManager(context, ASSETS_PATH, pathConfig = PathConfig())
 
@@ -48,9 +51,9 @@ class ViewMotionTestRuleTest {
     @get:Rule(order = 2) val activityRule = ActivityScenarioRule(ScreenshotActivity::class.java)
     @get:Rule(order = 3)
     val motionRule =
-        ViewMotionTestRule<ScreenshotActivity>(
+        MotionTestRule(
+            ViewToolkit { activityRule.scenario },
             pathManager,
-            { activityRule.scenario },
             bitmapDiffer = screenshotRule,
         )
 
@@ -60,9 +63,12 @@ class ViewMotionTestRuleTest {
         val animator = sceneRoot.createSlideLeftAnimator()
 
         val recordedMotion =
-            motionRule.checkThat(animator).record(sceneRoot, evenlySampled(10)) {
-                onViewWithId(R.id.test_box) { capture(ViewFeatureCaptures.x, "box_x") }
-            }
+            motionRule.record(
+                animator,
+                sceneRoot.capture(evenlySampled(10)) {
+                    onViewWithId(R.id.test_box) { feature(ViewFeatureCaptures.x, "box_x") }
+                }
+            )
 
         motionRule.assertThat(recordedMotion).timeSeriesMatchesGolden("timeseries_simple_scene_box")
     }
@@ -73,13 +79,12 @@ class ViewMotionTestRuleTest {
         val animator = sceneRoot.createSlideLeftAnimator()
 
         val recordedMotion =
-            motionRule.checkThat(animator).record(
-                sceneRoot,
-                evenlySampled(10),
-                visualCapture = null
-            ) {
-                onViewWithId(R.id.test_box) { capture(ViewFeatureCaptures.x, "box_x") }
-            }
+            motionRule.record(
+                animator,
+                sceneRoot.captureWithoutScreenshot(evenlySampled(10)) {
+                    onViewWithId(R.id.test_box) { feature(ViewFeatureCaptures.x, "box_x") }
+                }
+            )
 
         motionRule.assertThat(recordedMotion).timeSeriesMatchesGolden("timeseries_simple_scene_box")
     }
@@ -90,10 +95,7 @@ class ViewMotionTestRuleTest {
         val sceneRoot = createSampleScene()
         val animator = sceneRoot.createSlideLeftAnimator()
 
-        val recordedMotion =
-            motionRule.checkThat(animator).record(sceneRoot, evenlySampled(10)) {
-                onViewWithId(R.id.test_box) { capture(ViewFeatureCaptures.x, "box_x") }
-            }
+        val recordedMotion = motionRule.record(animator, sceneRoot.capture(evenlySampled(10)) {})
 
         motionRule.assertThat(recordedMotion).filmstripMatchesGolden()
     }

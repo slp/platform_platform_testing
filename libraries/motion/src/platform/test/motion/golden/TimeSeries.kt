@@ -64,7 +64,7 @@ data class SupplementalFrameId(override val label: String) : FrameId
  *
  * All [dataPoints] must be of the same [DataPointType].
  */
-data class Feature<in T>(
+data class Feature<out T>(
     /** Test-specific, human readable name identifying the feature. */
     val name: String,
     /** Recorded data points of the feature. */

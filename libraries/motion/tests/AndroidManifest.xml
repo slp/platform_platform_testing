@@ -18,11 +18,10 @@
 
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
 
-    <application>
+    <application android:debuggable="true">
         <activity
             android:name="platform.test.screenshot.ScreenshotActivity"
             android:exported="true" />
-
         <uses-library android:name="android.test.runner" />
     </application>
 

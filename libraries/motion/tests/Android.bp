@@ -27,6 +27,11 @@ android_test {
     optimize: {
         enabled: false,
     },
+    // Libraries used by mockito inline
+    jni_libs: [
+        "libdexmakerjvmtiagent",
+        "libstaticjvmtiagent",
+    ],
     srcs: [
         "src/**/*.kt",
 
@@ -40,6 +45,8 @@ android_test {
         "platform-screenshot-diff-core",
         "platform-screenshot-diff-proto",
         "uiautomator-helpers",
+        "mockito-target-inline-minus-junit4",
+        "mockito-kotlin2",
         "error_prone_annotations",
         "androidx.annotation_annotation",
         "androidx.transition_transition",

@@ -18,8 +18,8 @@ package platform.test.motion.view
 
 import android.graphics.Point
 import android.view.View
-import platform.test.motion.FeatureCapture
-import platform.test.motion.TimeSeriesCaptureScope
+import platform.test.motion.golden.FeatureCapture
+import platform.test.motion.golden.TimeSeriesCaptureScope
 import platform.test.motion.golden.asDataPoint
 
 /** Returns a [TimeSeriesCaptureScope] for the child view with the specified ID. */
@@ -31,20 +31,21 @@ fun <U : View> TimeSeriesCaptureScope<out View>.onViewWithId(
 /** Common, generic [FeatureCapture] implementations for Views. */
 object ViewFeatureCaptures {
     /** Captures the `alpha` value of a view. */
-    val alpha = FeatureCapture<View, Float> { view -> view.alpha.asDataPoint() }
+    val alpha = FeatureCapture<View, Float>("alpha") { view -> view.alpha.asDataPoint() }
 
     /** Captures the `elevation` value of a view. */
-    val elevation = FeatureCapture<View, Float> { view -> view.elevation.asDataPoint() }
+    val elevation =
+        FeatureCapture<View, Float>("elevation") { view -> view.elevation.asDataPoint() }
 
     /** Captures the `x` value of a view. */
-    val x = FeatureCapture<View, Float> { view -> view.x.asDataPoint() }
+    val x = FeatureCapture<View, Float>("x") { view -> view.x.asDataPoint() }
 
     /** Captures the `y` value of a view. */
-    val y = FeatureCapture<View, Float> { view -> view.y.asDataPoint() }
+    val y = FeatureCapture<View, Float>("y") { view -> view.y.asDataPoint() }
 
     /** Captures the top-left coordinate of the view in screen coordinate system. */
     val positionOnScreen =
-        FeatureCapture<View, Point> { view ->
+        FeatureCapture<View, Point>("pos") { view ->
             val outLocation = IntArray(2)
             view.getLocationOnScreen(outLocation)
 
