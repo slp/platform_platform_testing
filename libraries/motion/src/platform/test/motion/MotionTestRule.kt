@@ -16,6 +16,7 @@
 
 package platform.test.motion
 
+import android.util.Log
 import com.google.common.truth.FailureMetadata
 import com.google.common.truth.Subject
 import com.google.common.truth.Truth.assertAbout
@@ -37,22 +38,28 @@ import platform.test.screenshot.proto.ScreenshotResultProto
 import platform.test.screenshot.report.ExportToScubaStrategy
 
 /**
- * Test rule to verify correctness of animations.
+ * Test rule to verify correctness of animations and other time-based state.
  *
  * Capture a time-series of values, at specified intervals, during an animation. Additionally, a
  * screenshot is captured along each data frame, to simplify verification of the test setup as well
  * as debugging.
  *
- * To capture the animation, use the environment-specific extension functions.
+ * To capture the animation, use the [Toolkit]-provided extension functions. See for example
+ * `ComposeToolkit` and `ViewToolkit`.
+ *
+ * @param toolkit Environment specific implementation.
+ * @param goldenPathManager Specifies how to locate the golden files.
+ * @param bitmapDiffer A optional `ScreenshotTestRule` to enable support of `filmstripMatchesGolden`
  */
-open class MotionTestRule(
+class MotionTestRule<Toolkit>(
+    val toolkit: Toolkit,
     private val goldenPathManager: GoldenPathManager,
-    internal val bitmapDiffer: BitmapDiffer? = null,
+    internal val bitmapDiffer: BitmapDiffer? = null
 ) : TestWatcher() {
     private val scubaExportStrategy = ExportToScubaStrategy(goldenPathManager)
 
-    @Volatile protected var testClassName: String? = null
-    @Volatile protected var testMethodName: String? = null
+    @Volatile internal var testClassName: String? = null
+    @Volatile internal var testMethodName: String? = null
 
     /** Returns a Truth subject factory to be used with [Truth.assertAbout]. */
     fun motion(): Subject.Factory<RecordedMotionSubject, RecordedMotion> {
@@ -73,6 +80,7 @@ open class MotionTestRule(
     override fun finished(description: Description?) {
         testClassName = null
         testMethodName = null
+        ensureOutputDirectoryMarkerCreated()
     }
 
     /**
@@ -80,15 +88,13 @@ open class MotionTestRule(
      *
      * Golden data types not included in the `typeRegistry` will produce an [UnknownType].
      *
-     * NOTE: This method is only `open` to be overridden for tests.
-     *
      * @param typeRegistry [DataPointType] implementations used to de-serialize structured JSON
      *   values to golden values. See [TimeSeries.dataPointTypes] for creating the registry based on
      *   the currently produced timeseries.
      * @throws GoldenNotFoundException if the golden does not exist.
      * @throws JSONException if the golden file fails to parse.
      */
-    internal open fun readGoldenTimeSeries(
+    internal fun readGoldenTimeSeries(
         goldenIdentifier: String,
         typeRegistry: Map<String, DataPointType<*>>
     ): TimeSeries {
@@ -103,12 +109,8 @@ open class MotionTestRule(
         }
     }
 
-    /**
-     * Writes generated, actual golden JSON data to the device, to be picked up by TF.
-     *
-     * This method is only `open` to be overridden for tests.
-     */
-    internal open fun writeGeneratedTimeSeries(
+    /** Writes generated, actual golden JSON data to the device, to be picked up by TF. */
+    internal fun writeGeneratedTimeSeries(
         goldenIdentifier: String,
         recordedMotion: RecordedMotion,
         result: TimeSeriesVerificationResult,
@@ -147,7 +149,7 @@ open class MotionTestRule(
         }
     }
 
-    internal open fun writeDebugFilmstrip(
+    internal fun writeDebugFilmstrip(
         recordedMotion: RecordedMotion,
         goldenIdentifier: String,
         matches: Boolean
@@ -188,13 +190,25 @@ open class MotionTestRule(
         recordedMotion: RecordedMotion,
     ) = "motion_debug_filmstrip_${recordedMotion.testClassName}"
 
+    private fun ensureOutputDirectoryMarkerCreated() {
+        try {
+            val markerFile =
+                File(goldenPathManager.deviceLocalPath).resolve(".motion_test_output_marker")
+            if (!markerFile.exists()) {
+                markerFile.createNewFile()
+            }
+        } catch (e: IOException) {
+            Log.e(TAG, "Unable to create golden output marker file", e)
+        }
+    }
+
     companion object {
         private const val JSON_EXTENSION = "json"
         private const val JSON_INDENTATION = 2
         private val GOLDEN_IDENTIFIER_REGEX = "^[A-Za-z0-9_-]+$".toRegex()
+        private const val TAG = "MotionTestRule"
     }
 }
-
 /**
  * Time-series golden verification result.
  *

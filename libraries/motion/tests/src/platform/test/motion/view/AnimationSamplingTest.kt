@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package platform.test.motion
+package platform.test.motion.view
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Correspondence.tolerance
@@ -23,10 +23,10 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Assert.assertThrows
 import org.junit.Test
 import org.junit.runner.RunWith
-import platform.test.motion.Sampling.Companion.evenlySampled
+import platform.test.motion.view.AnimationSampling.Companion.evenlySampled
 
 @RunWith(AndroidJUnit4::class)
-class SamplingTest {
+class AnimationSamplingTest {
 
     @Test
     fun evenlySampled_1_inMiddle() {

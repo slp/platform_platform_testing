@@ -39,7 +39,7 @@ class RecordedMotionSubject
 internal constructor(
     failureMetadata: FailureMetadata,
     private val actual: RecordedMotion?,
-    private val motionTestRule: MotionTestRule,
+    private val motionTestRule: MotionTestRule<*>,
 ) : Subject(failureMetadata, actual) {
 
     /**

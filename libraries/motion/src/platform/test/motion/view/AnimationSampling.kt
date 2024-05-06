@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package platform.test.motion
+package platform.test.motion.view
 
 /**
  * Description of animation sampling strategy.
@@ -23,7 +23,7 @@ package platform.test.motion
  * @param sampleBefore Samples the frame before the animation is started.
  * @param sampleAfter Samples the frame after the animation has ended.
  */
-data class Sampling(
+data class AnimationSampling(
     val sampleAt: List<Float>,
     val sampleBefore: Boolean = true,
     val sampleAfter: Boolean = true,
@@ -36,7 +36,7 @@ data class Sampling(
 
     companion object {
         /**
-         * Creates a [Sampling] to sample an animation exactly [sampleCount] times, evenly
+         * Creates a [AnimationSampling] to sample an animation exactly [sampleCount] times, evenly
          * distributed over the animations playtime.
          *
          * [sampleAtStart] and [sampleAtEnd] define whether a frame is sampled at progress 0 and 1,
@@ -56,7 +56,7 @@ data class Sampling(
             sampleAtStart: Boolean = true,
             sampleAtEnd: Boolean = true,
             sampleAfter: Boolean = !sampleAtEnd,
-        ): Sampling {
+        ): AnimationSampling {
             if (sampleAtStart && sampleAtEnd) {
                 require(sampleCount >= 2)
             } else {
@@ -71,7 +71,7 @@ data class Sampling(
                     else -> sampleCount + 1
                 }
 
-            return Sampling(
+            return AnimationSampling(
                 List(sampleCount) { (1f / divider) * (it + offset) },
                 sampleBefore,
                 sampleAfter,

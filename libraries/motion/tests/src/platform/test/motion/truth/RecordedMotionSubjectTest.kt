@@ -19,138 +19,130 @@ package platform.test.motion.truth
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Rect
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.ExpectFailure
-import com.google.common.truth.Truth.assertAbout
-import com.google.common.truth.Truth.assertThat
-import com.google.common.truth.Truth.assertWithMessage
 import com.google.common.truth.TruthFailureSubject
+import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doNothing
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import platform.test.motion.GoldenNotFoundException
 import platform.test.motion.MotionTestRule
 import platform.test.motion.RecordedMotion
 import platform.test.motion.TimeSeriesVerificationResult
-import platform.test.motion.golden.DataPointType
 import platform.test.motion.golden.TimeSeries
 import platform.test.motion.golden.TimestampFrameId
 import platform.test.screenshot.BitmapDiffer
 import platform.test.screenshot.GoldenPathManager
 import platform.test.screenshot.PathConfig
-import platform.test.screenshot.matchers.BitmapMatcher
 
 @RunWith(AndroidJUnit4::class)
 class RecordedMotionSubjectTest {
 
+    private val goldenPathManager =
+        GoldenPathManager(
+            InstrumentationRegistry.getInstrumentation().context,
+            pathConfig = PathConfig()
+        )
+    private val bitmapDiffer: BitmapDiffer = mock()
+    private val motionRule =
+        spy(MotionTestRule(Unit, goldenPathManager, bitmapDiffer)) {
+            doNothing().whenever(it).writeDebugFilmstrip(any(), any(), any())
+            doNothing().whenever(it).writeGeneratedTimeSeries(any(), any(), any())
+        }
+
     @Test
     fun timeSeriesMatchesGolden_goldenNotFound() {
-        val (rule, recordedMotion) =
-            fakeRecordedMotion(
-                actual = TimeSeries(listOf(TimestampFrameId(0L)), emptyList()),
-                golden = null
-            )
+        val recordedMotion = fakeRecordedMotion()
+
+        doAnswer { throw GoldenNotFoundException(it.getArgument(0)) }
+            .whenever(motionRule)
+            .readGoldenTimeSeries(any(), any())
 
         with(
-            assertThrows {
-                assertAbout(rule.motion()).that(recordedMotion).timeSeriesMatchesGolden("foo")
-            }
+            assertThrows { motionRule.assertThat(recordedMotion).timeSeriesMatchesGolden("foo") }
         ) {
             factKeys().contains("Golden [foo] not found")
         }
 
-        assertWithMessage("exports actual data")
-            .that(rule.writeGeneratedTimeInvocations)
-            .containsExactly(
-                Triple("foo", recordedMotion, TimeSeriesVerificationResult.MISSING_REFERENCE)
+        verify(motionRule)
+            .writeGeneratedTimeSeries(
+                "foo",
+                recordedMotion,
+                TimeSeriesVerificationResult.MISSING_REFERENCE
             )
-
-        assertWithMessage("exports debug filmstrip as failed")
-            .that(rule.writeDebugFilmstripInvocations)
-            .containsExactly("foo" to false)
+        verify(motionRule).writeDebugFilmstrip(recordedMotion, "foo", false)
     }
 
     @Test
     fun timeSeriesMatchesGolden_matchesGolden() {
-        val (rule, recordedMotion) =
-            fakeRecordedMotion(
-                actual = TimeSeries(listOf(TimestampFrameId(0L)), emptyList()),
-                golden = TimeSeries(listOf(TimestampFrameId(0L)), emptyList())
-            )
+        val recordedMotion = fakeRecordedMotion()
 
-        assertAbout(rule.motion()).that(recordedMotion).timeSeriesMatchesGolden("foo")
+        doReturn(recordedMotion.timeSeries)
+            .whenever(motionRule)
+            .readGoldenTimeSeries(anyString(), any())
 
-        assertWithMessage("exports actual data")
-            .that(rule.writeGeneratedTimeInvocations)
-            .containsExactly(Triple("foo", recordedMotion, TimeSeriesVerificationResult.PASSED))
+        motionRule.assertThat(recordedMotion).timeSeriesMatchesGolden("foo")
 
-        assertWithMessage("exports debug filmstrip as failed")
-            .that(rule.writeDebugFilmstripInvocations)
-            .containsExactly("foo" to true)
+        verify(motionRule)
+            .writeGeneratedTimeSeries("foo", recordedMotion, TimeSeriesVerificationResult.PASSED)
+        verify(motionRule).writeDebugFilmstrip(recordedMotion, "foo", true)
     }
 
     @Test
     fun timeSeriesMatchesGolden_doesNotMatchGolden() {
-        val (rule, recordedMotion) =
-            fakeRecordedMotion(
-                actual = TimeSeries(listOf(TimestampFrameId(1L)), emptyList()),
-                golden = TimeSeries(listOf(TimestampFrameId(0L)), emptyList())
-            )
+        val recordedMotion = fakeRecordedMotion()
+        doReturn(TimeSeries(listOf(TimestampFrameId(1L)), emptyList()))
+            .whenever(motionRule)
+            .readGoldenTimeSeries(any(), any())
 
         with(
-            assertThrows {
-                assertAbout(rule.motion()).that(recordedMotion).timeSeriesMatchesGolden("foo")
-            }
+            assertThrows { motionRule.assertThat(recordedMotion).timeSeriesMatchesGolden("foo") }
         ) {
-            factValue("|  expected").isEqualTo("[0ms]")
-            factValue("|  but got").isEqualTo("[1ms]")
+            factValue("|  expected").isEqualTo("[1ms]")
+            factValue("|  but got").isEqualTo("[0ms]")
         }
 
-        assertWithMessage("exports actual data")
-            .that(rule.writeGeneratedTimeInvocations)
-            .containsExactly(Triple("foo", recordedMotion, TimeSeriesVerificationResult.FAILED))
-
-        assertWithMessage("exports debug filmstrip as failed")
-            .that(rule.writeDebugFilmstripInvocations)
-            .containsExactly("foo" to false)
+        verify(motionRule)
+            .writeGeneratedTimeSeries("foo", recordedMotion, TimeSeriesVerificationResult.FAILED)
+        verify(motionRule).writeDebugFilmstrip(recordedMotion, "foo", false)
     }
 
     @Test
     fun filmstripMatchesGolden_matchesGolden() {
-        val (rule, recordedMotion) =
-            fakeRecordedMotion(
-                actual = TimeSeries(listOf(TimestampFrameId(0L)), emptyList()),
-                golden = null,
-                matchesBitmap = true
-            )
+        val recordedMotion = fakeRecordedMotion()
 
-        assertAbout(rule.motion()).that(recordedMotion).filmstripMatchesGolden("foo")
+        motionRule.assertThat(recordedMotion).filmstripMatchesGolden("foo")
 
-        assertThat(rule.readGoldenTimeSeriesInvocations).isEmpty()
-        assertThat(rule.writeGeneratedTimeInvocations).isEmpty()
-        assertThat(rule.writeDebugFilmstripInvocations).isEmpty()
+        verify(motionRule, never()).readGoldenTimeSeries(any(), any())
+        verify(motionRule, never()).writeGeneratedTimeSeries(any(), any(), any())
+        verify(motionRule, never()).writeDebugFilmstrip(any(), any(), any())
     }
 
     @Test
     fun filmstripMatchesGolden_doesNotMatchGolden() {
-        val (rule, recordedMotion) =
-            fakeRecordedMotion(
-                actual = TimeSeries(listOf(TimestampFrameId(0L)), emptyList()),
-                golden = null,
-                matchesBitmap = false
-            )
+        val recordedMotion = fakeRecordedMotion()
 
-        with(
-            assertThrows {
-                assertAbout(rule.motion()).that(recordedMotion).filmstripMatchesGolden("foo")
-            }
-        ) {
-            factKeys().contains("expected to be true")
+        whenever(bitmapDiffer.assertBitmapAgainstGolden(any(), any(), any(), any()))
+            .thenThrow(AssertionError("Image mismatch!"))
+
+        Assert.assertThrows(AssertionError::class.java) {
+            motionRule.assertThat(recordedMotion).filmstripMatchesGolden("foo")
         }
-        assertThat(rule.readGoldenTimeSeriesInvocations).isEmpty()
-        assertThat(rule.writeGeneratedTimeInvocations).isEmpty()
-        assertThat(rule.writeDebugFilmstripInvocations).isEmpty()
+
+        verify(motionRule, never()).readGoldenTimeSeries(any(), any())
+        verify(motionRule, never()).writeGeneratedTimeSeries(any(), any(), any())
+        verify(motionRule, never()).writeDebugFilmstrip(any(), any(), any())
     }
 
     private inline fun assertThrows(body: () -> Unit): TruthFailureSubject {
@@ -166,77 +158,19 @@ class RecordedMotionSubjectTest {
     }
 
     private fun fakeRecordedMotion(
-        actual: TimeSeries,
-        golden: TimeSeries?,
-        matchesBitmap: Boolean = true
-    ): Pair<FakeMotionTestRule, RecordedMotion> {
+        actual: TimeSeries = TimeSeries(listOf(TimestampFrameId(0L)), emptyList())
+    ): RecordedMotion {
         val screenshots =
             List(actual.frameIds.size) { index ->
                 Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888).also {
                     Canvas(it).drawColor(if (index % 2 == 0) Color.RED else Color.GREEN)
                 }
             }
-
-        val recordedMotion =
-            RecordedMotion(
-                testClassName = "MotionTest",
-                testMethodName = "foo_test",
-                actual,
-                screenshots
-            )
-
-        val fakeBitmapDiffer =
-            object : BitmapDiffer {
-                override fun assertBitmapAgainstGolden(
-                    actual: Bitmap,
-                    goldenIdentifier: String,
-                    matcher: BitmapMatcher,
-                    regions: List<Rect>
-                ) {
-                    assertWithMessage("fake bitmap differ").that(matchesBitmap).isTrue()
-                }
-            }
-
-        val fakeRule = FakeMotionTestRule(golden, fakeBitmapDiffer)
-        return fakeRule to recordedMotion
-    }
-
-    private class FakeMotionTestRule(private val golden: TimeSeries?, bitmapDiffer: BitmapDiffer?) :
-        MotionTestRule(
-            goldenPathManager =
-                GoldenPathManager(
-                    InstrumentationRegistry.getInstrumentation().context,
-                    pathConfig = PathConfig()
-                ),
-            bitmapDiffer = bitmapDiffer
-        ) {
-        var readGoldenTimeSeriesInvocations = mutableListOf<String>()
-        var writeGeneratedTimeInvocations =
-            mutableListOf<Triple<String, RecordedMotion, TimeSeriesVerificationResult>>()
-        var writeDebugFilmstripInvocations = mutableListOf<Pair<String, Boolean>>()
-
-        override fun readGoldenTimeSeries(
-            goldenIdentifier: String,
-            typeRegistry: Map<String, DataPointType<*>>
-        ): TimeSeries {
-            readGoldenTimeSeriesInvocations.add(goldenIdentifier)
-            return golden ?: throw GoldenNotFoundException(goldenIdentifier)
-        }
-
-        override fun writeGeneratedTimeSeries(
-            goldenIdentifier: String,
-            recordedMotion: RecordedMotion,
-            result: TimeSeriesVerificationResult
-        ) {
-            writeGeneratedTimeInvocations.add(Triple(goldenIdentifier, recordedMotion, result))
-        }
-
-        override fun writeDebugFilmstrip(
-            recordedMotion: RecordedMotion,
-            goldenIdentifier: String,
-            matches: Boolean
-        ) {
-            writeDebugFilmstripInvocations.add(goldenIdentifier to matches)
-        }
+        return RecordedMotion(
+            testClassName = "MotionTest",
+            testMethodName = "foo_test",
+            actual,
+            screenshots
+        )
     }
 }
