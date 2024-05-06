@@ -15,10 +15,15 @@
   ~ limitations under the License.
   -->
 
-<configuration description="Runs Motion Tests for PlatformMotionTestingTests">
+<configuration description="Android Motion Tests {MODULE}">
+    <metrics_collector class="com.android.tradefed.device.metric.FilePullerLogCollector">
+        <option name="directory-keys" value="/data/user/0/{PACKAGE}/files/goldens/" />
+        <option name="collect-on-run-ended-only" value="true" />
+    </metrics_collector>
+    {EXTRA_CONFIGS}
     <target_preparer class="com.android.tradefed.targetprep.suite.SuiteApkInstaller">
         <option name="cleanup-apks" value="true" />
-        <option name="test-file-name" value="PlatformMotionTestingTests.apk" />
+        <option name="test-file-name" value="{MODULE}.apk" />
     </target_preparer>
     <!-- Screen must be on for the test to be able to capture screenshots. -->
     <target_preparer class="com.android.tradefed.targetprep.DeviceSetup">
@@ -28,12 +33,9 @@
         <option name="run-command" value="input keyevent KEYCODE_WAKEUP" />
         <option name="run-command" value="wm dismiss-keyguard" />
     </target_preparer>
-    <metrics_collector class="com.android.tradefed.device.metric.FilePullerLogCollector">
-        <option name="directory-keys" value="/data/user/0/platform.test.motion.tests/files/platform_screenshots" />
-        <option name="collect-on-run-ended-only" value="true" />
-    </metrics_collector>
     <test class="com.android.tradefed.testtype.AndroidJUnitTest">
-        <option name="package" value="platform.test.motion.tests" />
+        {EXTRA_TEST_RUNNER_CONFIGS}
+        <option name="package" value="{PACKAGE}" />
         <option name="runner" value="androidx.test.runner.AndroidJUnitRunner" />
     </test>
 </configuration>

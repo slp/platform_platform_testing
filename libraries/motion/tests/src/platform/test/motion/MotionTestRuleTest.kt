@@ -17,7 +17,6 @@
 package platform.test.motion
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
 import java.io.File
 import org.json.JSONArray
@@ -28,17 +27,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import platform.test.motion.golden.TimeSeries
 import platform.test.motion.testing.JsonSubject.Companion.assertThat
-import platform.test.screenshot.GoldenPathManager
-import platform.test.screenshot.PathConfig
+import platform.test.motion.testing.createGoldenPathManager
 
 @RunWith(AndroidJUnit4::class)
 class MotionTestRuleTest {
 
-    private val goldenPathManager =
-        GoldenPathManager(
-            InstrumentationRegistry.getInstrumentation().context,
-            pathConfig = PathConfig()
-        )
+    private val goldenPathManager = createGoldenPathManager("assets")
 
     private val subject = MotionTestRule(Unit, goldenPathManager)
 

@@ -15,18 +15,13 @@
 
 package {
     default_applicable_licenses: ["Android-Apache-2.0"],
+    default_team: "trendy_team_motion",
 }
 
 android_test {
     name: "PlatformMotionTestingTests",
     manifest: "AndroidManifest.xml",
-    test_config: "AndroidTest.xml",
-    platform_apis: true,
-    sdk_version: "current",
-    certificate: "platform",
-    optimize: {
-        enabled: false,
-    },
+    defaults: ["MotionTestDefaults"],
     // Libraries used by mockito inline
     jni_libs: [
         "libdexmakerjvmtiagent",

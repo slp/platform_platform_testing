@@ -19,17 +19,13 @@ package platform.test.motion.view
 import android.graphics.Point
 import android.graphics.Rect
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.google.common.truth.Expect
 import com.google.common.truth.Truth.assertThat
 import org.json.JSONObject
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import platform.test.motion.golden.DataPoint
-import platform.test.motion.golden.DataPoint.Companion.unknownType
-import platform.test.motion.golden.DataPointType
 import platform.test.motion.golden.ValueDataPoint
-import platform.test.motion.testing.JsonSubject
+import platform.test.motion.testing.DataPointTypeSubject.Companion.assertThat
 import platform.test.motion.view.DataPointTypes.cornerRadii
 import platform.test.motion.view.DataPointTypes.point
 import platform.test.motion.view.DataPointTypes.rect
@@ -37,27 +33,9 @@ import platform.test.motion.view.DataPointTypes.rect
 @RunWith(AndroidJUnit4::class)
 class DataPointTypesTest {
 
-    @get:Rule val expect: Expect = Expect.create()
-    private fun <T> assertConversions(
-        subject: DataPointType<T>,
-        nativeObject: T,
-        jsonRepresentation: String
-    ) {
-        expect
-            .withMessage("serialize to JSON")
-            .about(JsonSubject.json())
-            .that(subject.toJson(nativeObject))
-            .isEqualTo(JSONObject(jsonRepresentation))
-
-        expect
-            .withMessage("deserialize from JSON")
-            .that(subject.fromJson(JSONObject(jsonRepresentation)))
-            .isEqualTo(DataPoint.of(nativeObject, subject))
-    }
-
     @Test
     fun point_fromToJson() {
-        assertConversions(point, Point(/* x = */ 1, /* y = */ 2), """{"x":1, "y": 2}""")
+        assertThat(point).convertsJson(Point(/* x = */ 1, /* y = */ 2), """{"x":1, "y": 2}""")
     }
 
     @Test
@@ -70,25 +48,24 @@ class DataPointTypesTest {
 
     @Test
     fun point_fromInvalidJson_returnsUnknown() {
-        assertThat(point.fromJson(JSONObject())).isEqualTo(unknownType<Point>())
-        assertThat(point.fromJson(1)).isEqualTo(unknownType<Point>())
+        assertThat(point).invalidJsonReturnsUnknownDataPoint(JSONObject(), 1)
     }
 
     @Test
     fun rect_fromToJson() {
-        assertConversions(
-            rect,
-            Rect(/* left = */ 1, /* top = */ 2, /* right = */ 3, /* bottom = */ 4),
-            """{"left":1, "top": 2,"right":3, "bottom": 4}"""
-        )
+        assertThat(rect)
+            .convertsJson(
+                Rect(/* left = */ 1, /* top = */ 2, /* right = */ 3, /* bottom = */ 4),
+                """{"left":1, "top": 2,"right":3, "bottom": 4}"""
+            )
     }
 
     @Test
     fun rect_fromInvalidJson_returnsUnknown() {
-        assertThat(rect.fromJson(JSONObject())).isEqualTo(unknownType<Rect>())
-        assertThat(rect.fromJson(1)).isEqualTo(unknownType<Rect>())
+        assertThat(rect).invalidJsonReturnsUnknownDataPoint(JSONObject(), 1)
     }
 
+    @Test
     fun rect_dataPoint_isImmutable() {
         val native = Rect(/* left = */ 1, /* top = */ 2, /* right = */ 3, /* bottom = */ 4)
         val dataPoint = DataPoint.of(native, rect)
@@ -98,10 +75,10 @@ class DataPointTypesTest {
 
     @Test
     fun cornerRadii_fromToJson() {
-        assertConversions(
-            cornerRadii,
-            CornerRadii(FloatArray(8) { (it + 1).toFloat() }),
-            """{
+        assertThat(cornerRadii)
+            .convertsJson(
+                CornerRadii(FloatArray(8) { (it + 1).toFloat() }),
+                """{
                 "top_left_x": 1,
                 "top_left_y": 2,
                 "top_right_x": 3,
@@ -111,9 +88,10 @@ class DataPointTypesTest {
                 "bottom_left_x": 7,
                 "bottom_left_y": 8
                 }"""
-        )
+            )
     }
 
+    @Test
     fun cornerRadii_dataPoint_isImmutable() {
         val native = FloatArray(8) { (it + 1).toFloat() }
         val dataPoint = DataPoint.of(CornerRadii(native), cornerRadii)

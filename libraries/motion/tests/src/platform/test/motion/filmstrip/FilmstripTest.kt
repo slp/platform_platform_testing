@@ -20,7 +20,6 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -28,8 +27,7 @@ import org.junit.rules.TestName
 import org.junit.runner.RunWith
 import platform.test.motion.golden.SupplementalFrameId
 import platform.test.motion.golden.TimestampFrameId
-import platform.test.screenshot.GoldenPathManager
-import platform.test.screenshot.PathConfig
+import platform.test.motion.testing.createGoldenPathManager
 import platform.test.screenshot.ScreenshotAsserterConfig
 import platform.test.screenshot.ScreenshotTestRule
 
@@ -37,11 +35,7 @@ import platform.test.screenshot.ScreenshotTestRule
 class FilmstripTest {
 
     private val goldenPathManager =
-        GoldenPathManager(
-            InstrumentationRegistry.getInstrumentation().context,
-            "platform_testing/libraries/motion/tests/assets",
-            pathConfig = PathConfig()
-        )
+        createGoldenPathManager("platform_testing/libraries/motion/tests/assets")
 
     @get:Rule val screenshotTestRule = ScreenshotTestRule(goldenPathManager)
     @get:Rule val testName = TestName()
