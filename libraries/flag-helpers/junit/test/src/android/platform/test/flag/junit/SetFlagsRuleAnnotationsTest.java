@@ -395,47 +395,6 @@ public final class SetFlagsRuleAnnotationsTest {
     }
 
     @Test
-    public void initAllFlagsToReleaseConfigDefault_worksOutsideOfTestCode() {
-        SetFlagsRule setFlagsRule = new SetFlagsRule(NULL_DEFAULT);
-        setFlagsRule.initAllFlagsToReleaseConfigDefault();
-        new AnnotationTestRuleHelper(setFlagsRule)
-                .setTestCode(
-                        () -> {
-                            setFlagsRule.enableFlags(Flags.FLAG_FLAG_NAME4);
-                            assertFalse(Flags.flagName3());
-                        })
-                .prepareTest()
-                .assertPasses();
-    }
-
-    @Test
-    public void initAllFlagsToReleaseConfigDefault_worksInsideTestCode() {
-        SetFlagsRule setFlagsRule = new SetFlagsRule(NULL_DEFAULT);
-        new AnnotationTestRuleHelper(setFlagsRule)
-                .setTestCode(
-                        () -> {
-                            setFlagsRule.initAllFlagsToReleaseConfigDefault();
-                            setFlagsRule.enableFlags(Flags.FLAG_FLAG_NAME4);
-                            assertFalse(Flags.flagName3());
-                        })
-                .prepareTest()
-                .assertPasses();
-    }
-
-    @Test
-    public void initAllFlagsToReleaseConfigDefault_failsAfterFlagIsSet() {
-        SetFlagsRule setFlagsRule = new SetFlagsRule(NULL_DEFAULT);
-        new AnnotationTestRuleHelper(setFlagsRule)
-                .setTestCode(
-                        () -> {
-                            setFlagsRule.enableFlags(Flags.FLAG_FLAG_NAME4);
-                            setFlagsRule.initAllFlagsToReleaseConfigDefault();
-                        })
-                .prepareTest()
-                .assertFailsWithType(IllegalStateException.class);
-    }
-
-    @Test
     public void paramEnabledFlagsGetEnabled() {
         FlagsParameterization params =
                 new FlagsParameterization(Map.of(Flags.FLAG_FLAG_NAME3, true));
