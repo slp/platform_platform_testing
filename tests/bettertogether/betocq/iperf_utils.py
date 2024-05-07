@@ -17,6 +17,8 @@ import time
 from mobly import utils
 from mobly.controllers import android_device
 
+from betocq import nc_constants
+
 # IPv4, 10 sec, 1 stream
 DEFAULT_IPV4_CLIENT_ARGS = '-t 10 -P1'
 DEFAULT_IPV4_SERVER_ARGS = '-J'
@@ -53,37 +55,38 @@ class IPerfServerOnDevice:
 def run_iperf_test(
     ad_network_client: android_device.AndroidDevice,
     ad_network_owner: android_device.AndroidDevice,
+    medium: nc_constants.NearbyConnectionMedium,
 ) -> int:
   """Run iperf test from ad_network_client to ad_network_owner.
 
   Args:
     ad_network_client: android device that is the client in the iperf test.
     ad_network_owner: android device that is the server in the iperf test.
+    medium: wifi medium used in the transfer
 
   Returns:
-    speed in KB/s if there is a valid result or -1.
+    speed in KB/s if there is a valid result or nc_constants.INVALID_INT.
   """
-  speed_kbyte_sec = -1
+  speed_kbyte_sec = nc_constants.INVALID_INT
+  owner_addr = get_owner_ip_addr(ad_network_client, ad_network_owner, medium)
+  if not owner_addr:
+    return nc_constants.INVALID_INT
 
-  group_owner_addr = get_group_owner_addr(ad_network_client)
-  if not group_owner_addr:
-    return speed_kbyte_sec
   client_arg = DEFAULT_IPV4_CLIENT_ARGS
   server_arg = DEFAULT_IPV4_SERVER_ARGS
-  # Check if group owner address is an IPv6 address
-  if len(group_owner_addr) > GROUP_OWNER_IPV4_ADDR_LEN_MAX:
+  # Add IPv6 option if the owner address is an IPv6 address
+  if len(owner_addr) > GROUP_OWNER_IPV4_ADDR_LEN_MAX:
     client_arg = DEFAULT_IPV4_CLIENT_ARGS + ' -6'
     server_arg = DEFAULT_IPV4_SERVER_ARGS + ' -6'
 
   server = IPerfServerOnDevice(ad_network_owner.serial, server_arg)
-
   try:
     ad_network_owner.log.info('Start iperf server')
     server.start()
     time.sleep(IPERF_SERVER_START_DELAY_SEC)
-    ad_network_client.log.info('Start iperf client')
+    ad_network_client.log.info(f'Start iperf client {owner_addr}')
     success, result_list = ad_network_client.run_iperf_client(
-        group_owner_addr, client_arg
+        owner_addr, client_arg
     )
     result = ''.join(result_list)
     last_mbits_sec_index = result.rfind('Mbits/sec')
@@ -99,13 +102,102 @@ def run_iperf_test(
     owner_ifconfig = get_ifconfig(ad_network_owner)
     client_ifconfig = get_ifconfig(ad_network_client)
     ad_network_client.log.info(client_ifconfig)
-    ad_network_client.log.info(group_owner_addr)
+    ad_network_client.log.info(owner_addr)
     ad_network_client.log.info(client_arg)
     ad_network_owner.log.info(owner_ifconfig)
     # time.sleep(IPERF_DEBUG_TIME_SEC)
   else:
     server.stop()
   return speed_kbyte_sec
+
+
+def get_owner_ip_addr(
+    ad_network_client: android_device.AndroidDevice,
+    ad_network_owner: android_device.AndroidDevice,
+    medium: nc_constants.NearbyConnectionMedium,
+) -> str:
+  """Get owner ip address which for ipv6 is postfix-ed by the client interface name."""
+  ip_addr = ''
+  if medium == nc_constants.NearbyConnectionMedium.WIFI_DIRECT:
+    ip_addr = get_group_owner_addr(ad_network_client)
+  elif medium == nc_constants.NearbyConnectionMedium.WIFI_LAN:
+    ip_addr = get_wlan_ip_addr(ad_network_owner)
+    if len(ip_addr) > GROUP_OWNER_IPV4_ADDR_LEN_MAX:
+      ip_addr += '%' + get_wlan_ifname(ad_network_client)
+  elif medium == nc_constants.NearbyConnectionMedium.WIFI_HOTSPOT:
+    ip_addr = get_p2p_ip_addr(ad_network_owner)
+    if len(ip_addr) > GROUP_OWNER_IPV4_ADDR_LEN_MAX:
+      ip_addr = ip_addr + '%' + get_wlan_ifname(ad_network_client)
+  elif medium == nc_constants.NearbyConnectionMedium.WIFI_AWARE:
+    ip_addr = get_aware_ip_addr(ad_network_owner)
+    if len(ip_addr) > GROUP_OWNER_IPV4_ADDR_LEN_MAX:
+      ip_addr = ip_addr + '%' + get_aware_ifname(ad_network_client)
+  return ip_addr
+
+
+def get_aware_ip_addr(ad: android_device.AndroidDevice) -> str:
+  """Get wlan ip address from ifconfig."""
+  ifconfig = get_ifconfig_aware(ad)
+  return extract_ip_addr_from_ifconfig(ifconfig)
+
+
+def get_wlan_ip_addr(ad: android_device.AndroidDevice) -> str:
+  """Get wlan ip address from ifconfig."""
+  ifconfig = get_ifconfig_wlan(ad)
+  return extract_ip_addr_from_ifconfig(ifconfig)
+
+
+def get_p2p_ip_addr(ad: android_device.AndroidDevice) -> str:
+  """Get p2p ip address from ifconfig."""
+  ifconfig = get_ifconfig_p2p(ad)
+  return extract_ip_addr_from_ifconfig(ifconfig)
+
+
+def get_aware_ifname(ad: android_device.AndroidDevice) -> str:
+  """Get Aware interface name from ifconfig."""
+  return get_ifconfig_aware(ad).split()[0].strip()
+
+
+def get_wlan_ifname(ad: android_device.AndroidDevice) -> str:
+  """Get WLAN interface name from ifconfig."""
+  ifconfig = get_ifconfig_wlan(ad)
+  # Use the last one if there are multiple WLAN interfaces.
+  index = ifconfig.rfind('wlan')
+  return ifconfig[index:].split()[0].strip()
+
+
+def get_p2p_ifname(ad: android_device.AndroidDevice) -> str:
+  """Get P2P interface name from ifconfig."""
+  return  get_ifconfig_p2p(ad).split()[0].strip()
+
+
+def extract_ip_addr_from_ifconfig(ifconfig: str) -> str:
+  """Extract ip address from ifconfig with IPv6 preferred."""
+  ipv6 = get_substr_between_prefix_postfix(
+      ifconfig, 'inet6 addr:', '/64 Scope: Link'
+  )
+  if ipv6:
+    return ipv6
+  ipv4 = get_substr_between_prefix_postfix(ifconfig, 'inet addr:', 'Bcast')
+  if ipv4:
+    return ipv4
+  return ''
+
+
+def get_substr_between_prefix_postfix(
+    string: str, prefix: str, postfix: str
+) -> str:
+  """Get substring between prefix and postfix by searching postfix and then prefix."""
+  right_index = string.rfind(postfix)
+  if right_index == -1:
+    return ''
+  left_index = string[:right_index].rfind(prefix)
+  if left_index > 0:
+    try:
+      return string[left_index + len(prefix): right_index].strip()
+    except IndexError:
+      return ''
+  return ''
 
 
 def get_ifconfig(
@@ -115,10 +207,42 @@ def get_ifconfig(
   return ad.adb.shell('ifconfig').decode('utf-8').strip()
 
 
+def get_ifconfig_aware(
+    ad: android_device.AndroidDevice,
+) -> str:
+  """Get aware network info from adb shell ifconfig."""
+  ifconfig = ad.adb.shell('ifconfig | grep -A5 aware').decode('utf-8').strip()
+  # Use the last one if there are multiple aware interfaces.
+  index = ifconfig.rfind('aware')
+  return ifconfig[index:]
+
+
+def get_ifconfig_wlan(
+    ad: android_device.AndroidDevice,
+) -> str:
+  """Get wlan network info from adb shell ifconfig."""
+  return ad.adb.shell('ifconfig | grep -A5 wlan').decode('utf-8').strip()
+
+
+def get_ifconfig_p2p(
+    ad: android_device.AndroidDevice,
+) -> str:
+  """Get p2p network info from adb shell ifconfig."""
+  return ad.adb.shell('ifconfig | grep -A5 p2p').decode('utf-8').strip()
+
+
 def get_group_owner_addr(
     ad: android_device.AndroidDevice,
 ) -> str:
-  """Get WFD group owner address from adb shell dumpsys wifip2p."""
+  """Get the group owner address from adb shell dumpsys wifip2p.
+
+  This works only if group owner address is the last substring of the line.
+
+  Args:
+    ad: android device that is the group client
+  Returns:
+    ipv4 address or ipv6 address with the link interface
+  """
 
   try:
     return (
