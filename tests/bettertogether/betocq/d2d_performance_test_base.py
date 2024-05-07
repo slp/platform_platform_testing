@@ -341,11 +341,20 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
       if (
           self.test_parameters.run_iperf_test
           and self._current_test_result.quality_info.upgrade_medium
-          == nc_constants.NearbyConnectionMedium.WIFI_DIRECT
+          in [
+              nc_constants.NearbyConnectionMedium.WIFI_DIRECT,
+              nc_constants.NearbyConnectionMedium.WIFI_HOTSPOT,
+              nc_constants.NearbyConnectionMedium.WIFI_LAN,
+              nc_constants.NearbyConnectionMedium.WIFI_AWARE,
+          ]
       ):
         # TODO: b/338094399 - update this part for the connection over WFD.
         self._current_test_result.iperf_throughput_kbps = (
-            iperf_utils.run_iperf_test(self.discoverer, self.advertiser)
+            iperf_utils.run_iperf_test(
+                self.discoverer,
+                self.advertiser,
+                self._current_test_result.quality_info.upgrade_medium,
+            )
         )
 
     finally:

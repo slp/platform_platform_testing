@@ -26,6 +26,7 @@ import android.tools.flicker.subject.exceptions.SimpleFlickerAssertionError
 import android.tools.utils.CleanFlickerEnvironmentRule
 import android.tools.utils.KotlinMockito
 import com.google.common.truth.Truth
+import org.junit.Assert.assertThrows
 import org.junit.Assume
 import org.junit.AssumptionViolatedException
 import org.junit.Before
@@ -162,6 +163,31 @@ class FlickerServiceRuleTest {
         testRule.starting(mockDescription)
         testRule.succeeded(mockDescription)
         testRule.finished(mockDescription)
+    }
+
+    @Test
+    fun throwsExceptionForExecutionErrorsIfRequested() {
+        val mockFlickerServiceResultsCollector =
+            Mockito.mock(IFlickerServiceResultsCollector::class.java)
+        val testRule =
+            FlickerServiceRule(
+                metricsCollector = mockFlickerServiceResultsCollector,
+                failTestOnServiceError = true,
+            )
+        val mockDescription = Description.createTestDescription(this::class.java, "mockTest")
+
+        val executionError = Throwable(Consts.FAILURE)
+        `when`(mockFlickerServiceResultsCollector.executionErrors)
+            .thenReturn(listOf(executionError))
+
+        val exception =
+            assertThrows(Throwable::class.java) {
+                testRule.starting(mockDescription)
+                testRule.succeeded(mockDescription)
+                testRule.finished(mockDescription)
+            }
+
+        Truth.assertThat(exception).hasMessageThat().isEqualTo(Consts.FAILURE)
     }
 
     @Test

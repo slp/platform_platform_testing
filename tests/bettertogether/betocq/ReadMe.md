@@ -135,15 +135,16 @@ BetoCQ takes three steps to address this issue:
 *   **Environment.**
 
     We recommend an RF shielding box or room to run the test.
-    At minimum, avoid running tests with many other devices nearby.
 
-*   **Wi-Fi AP and network.**
+*   **Wi-Fi Access Point (AP) and network.**
 
     The test AP must be a dual-band capable Wi-Fi AP with two SSIDs (one at
     2&nbsp;GHz and one at 5&nbsp;GHz) with support for DFS channels. Example of
     routers that meet the testing requirements include NETGEAR RAX50 AX5400,
-    NETGEAR RAX120 AX6000, and NETGEAR R8000b AC3200. Ideally two APs are
-    required to support all test cases.
+    NETGEAR RAX120 AX6000, and NETGEAR R8000b AC3200. It's ideal to use two APs
+    to support all test cases. The test AP must have the access to
+    google.com. Note that in China, this test requires an office VPN network or
+    installing a VPN app in devices.
 
 *   **Target device.**
 
@@ -158,6 +159,18 @@ BetoCQ takes three steps to address this issue:
     - A model that already passed the automated test suite as a target.
     - A flagship model with no known major Bluetooth and Wi-Fi issues.
     - A Google Pixel 8
+
+*   **Prepare devices.**
+
+    Before you run the automated test, prepare all devices by completing the
+    device setup processes.
+
+    Follow the instructions listed in [Google Play Protect]
+    (https://support.google.com/googleplay/answer/2812853)
+    to turn off Google Play Protect so that the test APK can run properly.
+
+    Keep the device awake while charging so that the operating system doesn't
+    suspend the test snippet process.
 
 ## Test steps {:#test-steps}
 
@@ -298,8 +311,22 @@ in a local directory:
 
 
 ### Run the test {:#run-test}
+To run the test on Linux directly from AOSP repo:
 
-To run the test on Linux and macOS, run the following commands from the local
+  - Refer to release instructions below to set up the build environment.
+
+    ```
+    source build/envsetup.sh
+    lunch aosp_arm-trunk_staging-eng
+    ```
+
+  - Run the test with atest:
+
+    ```
+    atest -v betocq_test_suite -- --config <local_testbed_directory>/cuj_and_test_config.yml --testbed Quickstart
+    ```
+
+To run the test on Linux and macOS with test binary, run the following commands from the local
 directory:
 
   ```
