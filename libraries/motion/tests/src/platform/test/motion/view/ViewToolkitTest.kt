@@ -16,7 +16,6 @@
 
 package platform.test.motion.view
 
-import android.platform.uiautomator_helpers.DeviceHelpers.context
 import android.view.LayoutInflater
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -28,6 +27,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import platform.test.motion.MotionTestRule
 import platform.test.motion.testing.SampleScene
+import platform.test.motion.testing.createGoldenPathManager
 import platform.test.motion.tests.R
 import platform.test.motion.view.AnimationSampling.Companion.evenlySampled
 import platform.test.motion.view.ViewRecordingSpec.Companion.capture
@@ -35,8 +35,6 @@ import platform.test.motion.view.ViewRecordingSpec.Companion.captureWithoutScree
 import platform.test.screenshot.DeviceEmulationRule
 import platform.test.screenshot.DeviceEmulationSpec
 import platform.test.screenshot.DisplaySpec
-import platform.test.screenshot.GoldenPathManager
-import platform.test.screenshot.PathConfig
 import platform.test.screenshot.ScreenshotActivity
 import platform.test.screenshot.ScreenshotTestRule
 
@@ -44,16 +42,17 @@ import platform.test.screenshot.ScreenshotTestRule
 @RunWith(AndroidJUnit4::class)
 class ViewToolkitTest {
 
-    private val pathManager = GoldenPathManager(context, ASSETS_PATH, pathConfig = PathConfig())
+    private val goldenPathManager =
+        createGoldenPathManager("platform_testing/libraries/motion/tests/assets")
 
     @get:Rule(order = 0) val deviceEmulationRule = DeviceEmulationRule(emulationSpec)
-    @get:Rule(order = 1) val screenshotRule = ScreenshotTestRule(pathManager)
+    @get:Rule(order = 1) val screenshotRule = ScreenshotTestRule(goldenPathManager)
     @get:Rule(order = 2) val activityRule = ActivityScenarioRule(ScreenshotActivity::class.java)
     @get:Rule(order = 3)
     val motionRule =
         MotionTestRule(
             ViewToolkit { activityRule.scenario },
-            pathManager,
+            goldenPathManager,
             bitmapDiffer = screenshotRule,
         )
 
@@ -112,7 +111,6 @@ class ViewToolkitTest {
     }
 
     companion object {
-        private const val ASSETS_PATH = "platform_testing/libraries/motion/tests/assets"
 
         private val emulationSpec =
             DeviceEmulationSpec(
