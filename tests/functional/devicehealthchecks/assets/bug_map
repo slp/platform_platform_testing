@@ -30,6 +30,7 @@ system_app_native_crash Binder*.*com.google.android.apps.safetyhub 162104694
 system_app_native_crash Lite\sThread*.*com.google.android.apps.safetyhub 162379378
 system_app_native_crash BG\sThread*.*com.google.android.apps.safetyhub 162381002
 system_app_native_crash FireflyProcMgr\s+>>>\scom.google.android.GoogleCamera\s<<<[\S\s]+SIGSEGV[\S\s]+null\spointer\sdereference 195519497
+system_app_native_crash system/gd/hal/hci_hal_android_hidl.cc:119\sinitializationComplete:\sassert\sfailed:\sstatus\s==\sHidlStatus::SUCCESS 333226989
 SYSTEM_TOMBSTONE Binder*.*com.google.android.apps.safetyhub 162104694
 SYSTEM_TOMBSTONE ReferenceQueueD*.*com.google.android.apps.safetyhub 162103095
 SYSTEM_TOMBSTONE Lite\sThread*.*com.google.android.apps.safetyhub 162379378
@@ -44,3 +45,4 @@ SYSTEM_TOMBSTONE >>>\s/vendor/bin/hw/android.hardware.camera.provider@2.6-servic
 SYSTEM_TOMBSTONE (coral|flame|sunfish)[\s\S]+enableInternal\s+>>>\s+com.android.nfc\s<<<[\s\S]+JNI\sFatalError\scalled:\senableInternal 187522327
 SYSTEM_TOMBSTONE applyRouting\s+>>>\scom.android.nfc\s<<<[\S\s]+JNI\sFatalError\scalled:\sapplyRouting 187061650
 SYSTEM_TOMBSTONE android.hardwar*.*/vendor/bin/hw/android.hardware.sensors@2.0-service 163430194
+system_server_crash java.lang.ClassCastException:\sjava.lang.Boolean cannot be cast to com.android.clockwork.modes.ModeManagerService 336676453
