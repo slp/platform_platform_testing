@@ -25,14 +25,19 @@ import android.util.Log;
 
 import androidx.annotation.VisibleForTesting;
 
+import com.android.helpers.MetricUtility;
 import com.android.helpers.PerfettoHelper;
 
 import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -46,6 +51,11 @@ public abstract class PerfettoTracingStrategy {
     // Argument to indicate the perfetto output file prefix
     public static final String PERFETTO_CONFIG_OUTPUT_FILE_PREFIX =
             "perfetto_config_output_file_prefix";
+    public static final String PERFETTO_PID_TRACK_ROOT = "perfetto_pid_track_root";
+    // Enable to persist the pid of perfetto process during test execution and use it
+    // for cleanup during instrumentation crash instances.
+    private static final String PERFETTO_PERSIST_PID_TRACK = "perfetto_persist_pid_track";
+    private static final String DEFAULT_PERFETTO_PID_TRACK_ROOT = "sdcard/";
     private static final String DEFAULT_PERFETTO_CONFIG_ROOT_DIR = "/data/misc/perfetto-traces/";
     // Collect per run if it is set to true otherwise collect per test.
     // Default perfetto config file name.
@@ -119,6 +129,7 @@ public abstract class PerfettoTracingStrategy {
     // Store the method name and invocation count to create unique file name for each trace.
     private boolean mPerfettoStartSuccess = false;
     private String mOutputFilePrefix;
+    private String mTrackPerfettoProcIdRootDir;
 
     PerfettoTracingStrategy(Instrumentation instr) {
         super();
@@ -187,6 +198,49 @@ public abstract class PerfettoTracingStrategy {
             }
         } else {
             Log.i(getTag(), "No perfetto process running before the test run starts.");
+        }
+
+        // Clean up any perfetto process from previous runs tracked via perfetto pid files.
+        if (mPerfettoHelper.getTrackPerfettoPidFlag()) {
+            cleanupPerfettoSessionsFromPreviousRuns();
+        }
+    }
+
+    private void cleanupPerfettoSessionsFromPreviousRuns() {
+        File rootFolder = new File(mPerfettoHelper.getTrackPerfettoRootDir());
+        File[] perfettoPidFiles =
+                rootFolder.listFiles(
+                        (d, name) -> name.startsWith(mPerfettoHelper.getPerfettoFilePrefix()));
+        Set<Integer> pids = new HashSet<>();
+        for (File perfettoPidFile : perfettoPidFiles) {
+            try {
+                String pid = MetricUtility.readStringFromFile(perfettoPidFile);
+                pids.add(Integer.parseInt(pid.trim()));
+                Log.i(getTag(), "Adding perfetto process for cleanup - ." + pid);
+            } catch (FileNotFoundException fnf) {
+                Log.e(getTag(), "Unable to access the perfetto process id file.", fnf);
+            } catch (IOException ioe) {
+                Log.e(getTag(), "Failed to retrieve the perfetto process id.", ioe);
+            }
+            if (perfettoPidFile.exists()) {
+                Log.i(
+                        getTag(),
+                        String.format(
+                                "Deleting perfetto process id file %s .",
+                                perfettoPidFile.toString()));
+                perfettoPidFile.delete();
+            }
+        }
+
+        try {
+            if (mPerfettoHelper.stopPerfettoProcesses(pids)) {
+                Log.i(
+                        getTag(),
+                        "Stopped the already running perfetto tracing before the new test run"
+                                + " start.");
+            }
+        } catch (IOException e) {
+            Log.e(getTag(), "Failed to stop the perfetto.", e);
         }
     }
 
@@ -373,6 +427,13 @@ public abstract class PerfettoTracingStrategy {
 
         mOutputFilePrefix =
                 args.getString(PERFETTO_CONFIG_OUTPUT_FILE_PREFIX, DEFAULT_PERFETTO_PREFIX);
+
+        mPerfettoHelper.setTrackPerfettoPidFlag(
+                Boolean.parseBoolean(args.getString(PERFETTO_PERSIST_PID_TRACK)));
+        if (mPerfettoHelper.getTrackPerfettoPidFlag()) {
+            mPerfettoHelper.setTrackPerfettoRootDir(
+                    args.getString(PERFETTO_PID_TRACK_ROOT, DEFAULT_PERFETTO_PID_TRACK_ROOT));
+        }
 
         // Whether to hold wakelocks on all Prefetto tracing functions. You may want to enable
         // this if your device is not USB connected. This option prevents the device from
