@@ -18,6 +18,7 @@ package platform.test.screenshot
 
 import android.content.Context
 import android.os.Build
+import com.android.internal.util.Preconditions.checkArgument
 import java.io.File
 
 private const val BRAND_TAG = "brand"
@@ -150,6 +151,20 @@ fun getDefaultPathConfig(): PathConfig {
 
 fun getSimplePathConfig(): PathConfig {
     return PathConfig(PathElementNoContext(MODEL_TAG, true, ::getDeviceModel))
+}
+
+/**
+ * Path config with device model and variant. Variant distinguishes different versions of golden
+ * (due to flag difference).
+ *
+ * Example: pixel_6_pro/trunk_staging/testCase.png
+ */
+fun getDeviceVariantPathConfig(variant: String): PathConfig {
+    checkArgument(variant.isNotEmpty(), "variant can't be empty")
+    return PathConfig(
+        PathElementNoContext(MODEL_TAG, isDir = true, ::getDeviceModel),
+        PathElementNoContext("variant", isDir = true) { variant },
+    )
 }
 
 /** The [PathConfig] that should be used when emulating a device using the [DeviceEmulationRule]. */
