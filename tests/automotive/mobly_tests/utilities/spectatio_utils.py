@@ -68,6 +68,11 @@ class CallUtils:
         """Get dialing phone number"""
         return self.device.mbs.getDialingNumber()
 
+    def get_user_phone_number(self):
+        """Get user phone number"""
+        return self.device.mbs.getUserProfilePhoneNumber()
+
+
     def get_home_address_from_details(self):
         """Return the home address of the contact whose details are currently being displayed"""
         return self.device.mbs.getHomeAddress()
@@ -411,6 +416,20 @@ class CallUtils:
     def verify_dialing_number(self, expected_dialing_number):
         """Replace all non-digits characters to null"""
         actual_dialing_number = re.sub(r'\D', '', str(self.get_dialing_number()))
+        logging.info(
+            'Expected dialing number: %s, Actual: %s',
+            expected_dialing_number,
+            actual_dialing_number,
+        )
+        if actual_dialing_number != expected_dialing_number:
+            raise CallUtilsError(
+                "Actual and Expected dialing numbers don't match.")
+
+
+    # Verify dialing number the same as expected
+    def verify_user_phone_number(self, expected_dialing_number):
+        """Replace all non-digits characters to null"""
+        actual_dialing_number = re.sub(r'\D', '', str(self.get_user_phone_number()))
         logging.info(
             'Expected dialing number: %s, Actual: %s',
             expected_dialing_number,

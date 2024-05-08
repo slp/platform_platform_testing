@@ -97,6 +97,11 @@ public class DialerSnippet implements Snippet {
         return mDialerHelper.get().getDialingNumber();
     }
 
+    @Rpc(description = "Get the phone number while the call is in progress.")
+    public String getUserProfilePhoneNumber() {
+        return mDialerHelper.get().getUserProfilePhoneNumber();
+    }
+
     @Rpc(description = "Get the entered on dial pad.")
     public String getNumberInDialPad() {
         return mDialerHelper.get().getNumberInDialPad();
