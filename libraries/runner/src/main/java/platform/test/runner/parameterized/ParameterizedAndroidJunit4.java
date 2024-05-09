@@ -56,22 +56,15 @@ public final class ParameterizedAndroidJunit4 extends Suite {
     private static final String ANDROID_PARAMETERIZED_RUNNER_CLASS_NAME =
             "platform.test.runner.parameterized.AndroidParameterizedRunner";
 
-    private static final String RSL_RUNNER_CLASS_NAME =
-            "com.google.android.testing.rsl.robolectric.junit.RslTestRunner";
-    private static final String RSL_PARAMETERIZED_RUNNER_CLASS_NAME =
-            "platform.test.runner.parameterized.RslParameterizedRunner";
-
     private final ArrayList<Runner> mRunners = new ArrayList<>();
 
     public ParameterizedAndroidJunit4(Class<?> klass) throws Throwable {
         super(klass, ImmutableList.of());
         TestClass testClass = getTestClass();
-        ClassLoader classLoader = getClass().getClassLoader();
         Parameters parameters =
-                ParameterizedRunnerDelegate.getParametersMethod(testClass, classLoader)
+                ParameterizedRunnerDelegate.getParametersMethod(testClass)
                         .getAnnotation(Parameters.class);
-        List<Object> parametersList =
-                ParameterizedRunnerDelegate.getParametersList(testClass, classLoader);
+        List<Object> parametersList = ParameterizedRunnerDelegate.getParametersList(testClass);
         for (int i = 0; i < parametersList.size(); i++) {
             Object parametersObj = parametersList.get(i);
             Object[] parameterArray =
@@ -86,26 +79,10 @@ public final class ParameterizedAndroidJunit4 extends Suite {
     private static Runner makeTestRunner(
             TestClass testClass, Parameters parameters, int i, Object[] parameterArray)
             throws InitializationError {
-        String parameterizedRunnerClassName;
-        String runnerClassName = System.getProperty(JUNIT_RUNNER_SYSTEM_PROPERTY, null);
-        if (runnerClassName == null) {
-            if (isRunningOnAndroid()) {
-                parameterizedRunnerClassName = ANDROID_PARAMETERIZED_RUNNER_CLASS_NAME;
-            } else {
-                parameterizedRunnerClassName = ROBOLECTRIC_PARAMETERIZED_RUNNER_CLASS_NAME;
-            }
-        } else {
-            if (ROBOLECTRIC_RUNNER_CLASS_NAME.equals(runnerClassName)) {
-                parameterizedRunnerClassName = ROBOLECTRIC_PARAMETERIZED_RUNNER_CLASS_NAME;
-            } else if (RSL_RUNNER_CLASS_NAME.equals(runnerClassName)) {
-                parameterizedRunnerClassName = RSL_PARAMETERIZED_RUNNER_CLASS_NAME;
-            } else if (ANDROID_RUNNER_CLASS_NAME.equals(runnerClassName)) {
-                parameterizedRunnerClassName = ANDROID_PARAMETERIZED_RUNNER_CLASS_NAME;
-            } else {
-                throw new IllegalStateException(
-                        "Don't know how to parameterized test runner class " + runnerClassName);
-            }
-        }
+        String parameterizedRunnerClassName =
+                isRunningOnAndroid()
+                        ? ANDROID_PARAMETERIZED_RUNNER_CLASS_NAME
+                        : ROBOLECTRIC_PARAMETERIZED_RUNNER_CLASS_NAME;
         try {
             Class<? extends Runner> parameterizedRunnerClass =
                     (Class<? extends Runner>)
@@ -131,9 +108,21 @@ public final class ParameterizedAndroidJunit4 extends Suite {
      * Returns true if the test is running as an Android instrumentation test, on a real Android
      * device or emulator.
      */
-    private static boolean isRunningOnAndroid() {
-        return Ascii.toLowerCase(System.getProperty(JAVA_RUNTIME_SYSTEM_PROPERTY))
-                .contains(JAVA_RUNTIME_ANDROID);
+    static boolean isRunningOnAndroid() {
+        String runnerClassName = System.getProperty(JUNIT_RUNNER_SYSTEM_PROPERTY, null);
+        if (runnerClassName != null) {
+            if (ROBOLECTRIC_RUNNER_CLASS_NAME.equals(runnerClassName)) {
+                return false;
+            } else if (ANDROID_RUNNER_CLASS_NAME.equals(runnerClassName)) {
+                return true;
+            } else {
+                throw new IllegalStateException(
+                        "Don't know how to parameterized test runner class " + runnerClassName);
+            }
+        } else {
+            return Ascii.toLowerCase(System.getProperty(JAVA_RUNTIME_SYSTEM_PROPERTY))
+                    .contains(JAVA_RUNTIME_ANDROID);
+        }
     }
 
     private static String nameFor(String namePattern, int index, Object[] parameters) {

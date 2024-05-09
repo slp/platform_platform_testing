@@ -49,4 +49,17 @@ public @interface Parameters {
      * @see MessageFormat
      */
     String name() default "{index}";
+
+    /**
+     * Specifies the test environment this parameter provider should be used. A test can define
+     * multiple methods as Parameters provider. The runner will first try to pick the most specific
+     * provider, and fallback to the default provider if there is none.
+     */
+    TestEnvironment target() default TestEnvironment.ALL;
+
+    enum TestEnvironment {
+        ALL,
+        DEVICE,
+        DEVICE_LESS
+    }
 }
