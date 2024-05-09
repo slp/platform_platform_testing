@@ -46,4 +46,5 @@ android_test {
         "ats",
     ],
     privileged: true,
+    data: [":perfetto_artifacts"],
 }

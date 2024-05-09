@@ -264,6 +264,16 @@ public class DialHelperImpl extends AbstractStandardAppHelper implements IAutoDi
         return dialedNumber.getText();
     }
 
+    @Override
+    public String getUserProfilePhoneNumber() {
+        BySelector phoneNumberSelector =
+                getUiElementFromConfig(AutomotiveConfigConstants.USER_PROFILE_PHONE_NUMBER);
+        UiObject2 phoneNumber = getSpectatioUiUtil().findUiObject(phoneNumberSelector);
+        getSpectatioUiUtil()
+                .validateUiObject(phoneNumber, AutomotiveConfigConstants.USER_PROFILE_PHONE_NUMBER);
+        return phoneNumber.getText();
+    }
+
     /** {@inheritDoc} */
     public String getDialedContactName() {
         BySelector dialedContactNameSelector =

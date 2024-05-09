@@ -116,6 +116,14 @@ public interface IAutoDialHelper extends IAppHelper, Scrollable {
     String getDialingNumber();
 
     /**
+     * Setup expectations: A call is underway, and the call screen is in focus on the device.
+     *
+     * <p>This method is used to get the number that is has been dialed /called on a
+     * currently-displayed ongoing call
+     */
+    String getUserProfilePhoneNumber();
+
+    /**
      * Setup expectations: The app is open and in Dialpad
      *
      * <p>This method is used to get the number entered on dialpad

@@ -46,6 +46,7 @@ public class AutomotiveConfigConstants {
     public static final String VOICE_CHANNEL_CAR = "VOICE_CHANNEL_CAR";
     public static final String DIALED_CONTACT_TYPE = "DIALED_CONTACT_TYPE";
     public static final String DIALING_NUMBER = "DIALING_NUMBER";
+    public static final String USER_PROFILE_PHONE_NUMBER = "USER_PROFILE_PHONE_NUMBER";
     public static final String CONTACT_SEARCH_BAR = "CONTACT_SEARCH_BAR";
     public static final String CONTACT_SEARCH_RESULT = "CONTACT_SEARCH_RESULT";
     public static final String CONTACT_SEARCH_RESULT_NAME = "CONTACT_SEARCH_RESULT_NAME";
