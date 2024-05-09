@@ -36,9 +36,9 @@ class IsMediaMetadataOnHuValid(bluetooth_base_test.BluetoothBaseTest):
 
     def test_is_media_metadata_valid_on_hu(self):
         """Tests is media metadata on HU valid"""
+        self.media_utils.open_media_app_on_hu()
         self.media_utils.open_youtube_music_app()
         current_phone_song_title = self.media_utils.get_song_title_from_phone()
-        self.media_utils.open_media_app_on_hu()
         self.media_utils.pause_media_on_hu()
         self.media_utils.maximize_now_playing()
         current_hu_song_title = self.media_utils.get_song_title_from_hu()
@@ -84,6 +84,7 @@ class IsMediaMetadataOnHuValid(bluetooth_base_test.BluetoothBaseTest):
     def teardown_test(self):
         # Close YouTube Music app
         self.media_utils.close_youtube_music_app()
+        self.call_utils.press_home()
         super().teardown_test()
 
 

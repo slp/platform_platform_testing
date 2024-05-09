@@ -158,3 +158,8 @@ DIALER_RECENTS_LABEL = "Recents"
 DIALER_CONTACTS_LABEL = "Contacts"
 DIALER_FAVORITES_LABEL = "Favorites"
 DIALER_DIALPAD_LABEL = "Dialpad"
+
+# Bluetooth Logs
+BLUETOOTH_TAG="setprop persist.log.tag.bluetooth verbose"
+BLUETOOTH_NOOPERABLE="setprop persist.bluetooth.btsnoopenable true"
+BLUETOOTH_BTSNOOP_DEFAULT_MODE="settings put global bluetooth_btsnoop_default_mode full"
