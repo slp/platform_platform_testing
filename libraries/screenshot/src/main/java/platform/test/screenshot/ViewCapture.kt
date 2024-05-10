@@ -85,6 +85,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 suspend fun View.captureToBitmap(rect: Rect? = null): Bitmap {
     val mainHandlerDispatcher = Handler(Looper.getMainLooper()).asCoroutineDispatcher()
     var bitmap: Bitmap? = null
+    ControlledLooperSingleton.getInstance().drainMainThreadUntilIdle()
     val job =
         CoroutineScope(mainHandlerDispatcher).launch {
             val hardwareDrawingEnabled = HardwareRendererCompat.isDrawingEnabled()
