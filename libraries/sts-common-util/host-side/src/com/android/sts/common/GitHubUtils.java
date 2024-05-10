@@ -16,6 +16,8 @@
 
 package com.android.sts.common;
 
+import com.android.tradefed.log.LogUtil.CLog;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -77,7 +79,8 @@ public class GitHubUtils {
             JsonObject releaseObject;
 
             if (tagName.isPresent()) {
-                JsonArray releases = getJson(releasesUri).getAsJsonArray();
+                JsonArray releases =
+                        getJsonWithRetries(releasesUri, 3 /* maxRetries */).getAsJsonArray();
                 releaseObject = findReleaseByTagName(releases, tagName.get());
             } else {
                 releaseObject =
@@ -116,6 +119,31 @@ public class GitHubUtils {
             URLConnection conn = uri.toURL().openConnection();
             InputStreamReader reader = new InputStreamReader(conn.getInputStream());
             return new JsonParser().parse(reader);
+        }
+
+        /**
+         * Retrieves JSON data from the specified URI with retries in case of IOException.
+         *
+         * @param uri The URI from which to retrieve JSON data.
+         * @param maxRetries The maximum number of retries in case of IOException.
+         * @return A JsonElement containing the retrieved JSON data.
+         * @throws IOException If an IO error occurs while retrieving JSON data and the maximum
+         *     number of retries is exceeded.
+         */
+        public static JsonElement getJsonWithRetries(URI uri, int maxRetries) throws IOException {
+            int retries = 0;
+            while (true) {
+                try {
+                    return getJson(uri);
+                } catch (IOException e) {
+                    if (retries < maxRetries) {
+                        CLog.e("IOException caught while fetching json. Error: " + e.toString());
+                        retries++;
+                        continue;
+                    }
+                    throw e;
+                }
+            }
         }
     }
 }
