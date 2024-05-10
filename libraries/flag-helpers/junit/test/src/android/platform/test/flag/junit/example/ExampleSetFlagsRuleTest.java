@@ -16,8 +16,6 @@
 
 package android.platform.test.flag.junit.example;
 
-import static android.platform.test.flag.junit.SetFlagsRule.DefaultInitValueType.DEVICE_DEFAULT;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -26,6 +24,7 @@ import android.platform.test.annotations.EnableFlags;
 import android.platform.test.flag.junit.Flags;
 import android.platform.test.flag.junit.SetFlagsRule;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +40,10 @@ public class ExampleSetFlagsRuleTest {
     // NOTE: Flags.flagName3() defaults to false
     // NOTE: Flags.flagName4() defaults to true
 
-    @Rule public final SetFlagsRule mSetFlagsRule = new SetFlagsRule(DEVICE_DEFAULT);
+    @ClassRule
+    public static final SetFlagsRule.ClassRule mSetFlagsClassRule = new SetFlagsRule.ClassRule();
+
+    @Rule public final SetFlagsRule mSetFlagsRule = mSetFlagsClassRule.createSetFlagsRule();
 
     @Test
     public void runTestWithDefaults() {
