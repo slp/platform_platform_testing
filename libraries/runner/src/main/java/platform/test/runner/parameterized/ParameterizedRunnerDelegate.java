@@ -16,6 +16,8 @@
 
 package platform.test.runner.parameterized;
 
+import static platform.test.runner.parameterized.ParameterizedAndroidJunit4.isRunningOnAndroid;
+
 import org.junit.Assert;
 import org.junit.runners.model.FrameworkField;
 import org.junit.runners.model.FrameworkMethod;
@@ -24,7 +26,6 @@ import org.junit.runners.model.TestClass;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.List;
@@ -54,29 +55,26 @@ class ParameterizedRunnerDelegate {
         return mName;
     }
 
-    public Object createTestInstance(Class<?> bootstrappedClass, final TestClass testClass)
-            throws Exception {
+    public Object createTestInstance(final TestClass testClass) throws Exception {
+        Class<?> bootstrappedClass = testClass.getJavaClass();
         Constructor<?>[] constructors = bootstrappedClass.getConstructors();
         Assert.assertEquals(1, constructors.length);
-        ClassLoader classLoader = bootstrappedClass.getClassLoader();
         if (!fieldsAreAnnotated(testClass)) {
-            return constructors[0].newInstance(computeParams(classLoader, testClass));
+            return constructors[0].newInstance(computeParams(testClass));
         } else {
             Object instance = constructors[0].newInstance();
-            injectParametersIntoFields(instance, classLoader, testClass);
+            injectParametersIntoFields(instance, testClass);
             return instance;
         }
     }
 
-    private Object[] computeParams(ClassLoader classLoader, final TestClass testClass)
-            throws Exception {
+    private Object[] computeParams(final TestClass testClass) throws Exception {
         // Robolectric uses a different class loader when running the tests, so the parameters
         // objects
         // created by the test runner are not compatible with the parameters required by the test.
         // Instead, we compute the parameters within the test's class loader.
         try {
-            List<Object> parametersList = getParametersList(testClass, classLoader);
-
+            List<Object> parametersList = getParametersList(testClass);
             if (mParametersIndex >= parametersList.size()) {
                 throw new Exception(
                         "Re-computing the parameter list returned a different number of parameters"
@@ -100,18 +98,16 @@ class ParameterizedRunnerDelegate {
     }
 
     @SuppressWarnings("unchecked")
-    private void injectParametersIntoFields(
-            Object testClassInstance, ClassLoader classLoader, final TestClass testClass)
+    private void injectParametersIntoFields(Object testClassInstance, final TestClass testClass)
             throws Exception {
         // Robolectric uses a different class loader when running the tests, so referencing
         // Parameter
         // directly causes type mismatches. Instead, we find its class within the test's class
         // loader.
-        Class<?> parameterClass = getClassInClassLoader(Parameter.class, classLoader);
-        Object[] parameters = computeParams(classLoader, testClass);
+        Object[] parameters = computeParams(testClass);
         HashSet<Integer> parameterFieldsFound = new HashSet<>();
         for (Field field : testClassInstance.getClass().getFields()) {
-            Annotation parameter = field.getAnnotation((Class<Annotation>) parameterClass);
+            Annotation parameter = field.getAnnotation(Parameter.class);
             if (parameter != null) {
                 int index = (int) parameter.annotationType().getMethod("value").invoke(parameter);
                 parameterFieldsFound.add(index);
@@ -184,16 +180,7 @@ class ParameterizedRunnerDelegate {
 
     @SuppressWarnings("unchecked")
     private static List<FrameworkField> getAnnotatedFieldsByParameter(TestClass testClass) {
-        try {
-            return testClass.getAnnotatedFields(
-                    (Class<Parameter>)
-                            testClass
-                                    .getJavaClass()
-                                    .getClassLoader()
-                                    .loadClass(Parameter.class.getName()));
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        return testClass.getAnnotatedFields(Parameter.class);
     }
 
     static boolean fieldsAreAnnotated(TestClass testClass) {
@@ -201,69 +188,35 @@ class ParameterizedRunnerDelegate {
     }
 
     @SuppressWarnings("unchecked")
-    static List<Object> getParametersList(TestClass testClass, ClassLoader classLoader)
-            throws Throwable {
-        return (List<Object>) getParametersMethod(testClass, classLoader).invokeExplosively(null);
+    static List<Object> getParametersList(TestClass testClass) throws Throwable {
+        return (List<Object>) getParametersMethod(testClass).invokeExplosively(null);
     }
 
     @SuppressWarnings("unchecked")
-    static FrameworkMethod getParametersMethod(TestClass testClass, ClassLoader classLoader)
-            throws Exception {
-        List<FrameworkMethod> methods =
-                testClass.getAnnotatedMethods(
-                        (Class<Parameters>) classLoader.loadClass(Parameters.class.getName()));
+    static FrameworkMethod getParametersMethod(TestClass testClass) throws Exception {
+        List<FrameworkMethod> methods = testClass.getAnnotatedMethods(Parameters.class);
+        FrameworkMethod fallback = null;
+        boolean isRunningOnDevice = isRunningOnAndroid();
+
         for (FrameworkMethod each : methods) {
             int modifiers = each.getMethod().getModifiers();
             if (Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers)) {
-                return getFrameworkMethodInClassLoader(each, classLoader);
+                switch (each.getAnnotation(Parameters.class).target()) {
+                    case ALL -> fallback = each;
+                    case DEVICE -> {
+                        if (isRunningOnDevice) return each;
+                    }
+                    case DEVICE_LESS -> {
+                        if (!isRunningOnDevice) return each;
+                    }
+                }
             }
         }
-
+        if (fallback != null) {
+            return fallback;
+        }
         throw new Exception(
                 String.format(
                         "No public static parameters method on class %s", testClass.getName()));
-    }
-
-    /**
-     * Returns the {@link FrameworkMethod} object for the given method in the provided class loader.
-     */
-    private static FrameworkMethod getFrameworkMethodInClassLoader(
-            FrameworkMethod method, ClassLoader classLoader)
-            throws ClassNotFoundException, NoSuchMethodException {
-        Method methodInClassLoader = getMethodInClassLoader(method.getMethod(), classLoader);
-        if (methodInClassLoader.equals(method.getMethod())) {
-            // The method was already loaded in the right class loader, return it as is.
-            return method;
-        }
-        return new FrameworkMethod(methodInClassLoader);
-    }
-
-    /** Returns the {@link Method} object for the given method in the provided class loader. */
-    private static Method getMethodInClassLoader(Method method, ClassLoader classLoader)
-            throws ClassNotFoundException, NoSuchMethodException {
-        Class<?> declaringClass = method.getDeclaringClass();
-
-        if (declaringClass.getClassLoader() == classLoader) {
-            // The method was already loaded in the right class loader, return it as is.
-            return method;
-        }
-
-        // Find the class in the class loader corresponding to the declaring class of the method.
-        Class<?> declaringClassInClassLoader = getClassInClassLoader(declaringClass, classLoader);
-
-        // Find the method with the same signature in the class loader.
-        return declaringClassInClassLoader.getMethod(method.getName(), method.getParameterTypes());
-    }
-
-    /** Returns the {@link Class} object for the given class in the provided class loader. */
-    private static Class<?> getClassInClassLoader(Class<?> klass, ClassLoader classLoader)
-            throws ClassNotFoundException {
-        if (klass.getClassLoader() == classLoader) {
-            // The method was already loaded in the right class loader, return it as is.
-            return klass;
-        }
-
-        // Find the class in the class loader corresponding to the declaring class of the method.
-        return classLoader.loadClass(klass.getName());
     }
 }

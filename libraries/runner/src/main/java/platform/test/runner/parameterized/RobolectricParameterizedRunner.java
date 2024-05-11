@@ -18,8 +18,11 @@ package platform.test.runner.parameterized;
 
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
+import org.junit.runners.model.TestClass;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.internal.SandboxTestRunner;
+import org.robolectric.util.ReflectionHelpers;
+import org.robolectric.util.ReflectionHelpers.ClassParameter;
 
 import java.util.List;
 
@@ -30,17 +33,19 @@ import java.util.List;
  */
 public class RobolectricParameterizedRunner extends RobolectricTestRunner {
 
-    private final ParameterizedRunnerDelegate mDelegate;
+    private final int mParametersIndex;
+    private final String mName;
 
     public RobolectricParameterizedRunner(Class<?> type, int parametersIndex, String name)
             throws InitializationError {
         super(type);
-        mDelegate = new ParameterizedRunnerDelegate(parametersIndex, name);
+        mParametersIndex = parametersIndex;
+        mName = name;
     }
 
     @Override
     protected String getName() {
-        return mDelegate.getName();
+        return mName;
     }
 
     @Override
@@ -58,7 +63,7 @@ public class RobolectricParameterizedRunner extends RobolectricTestRunner {
 
     @Override
     public String toString() {
-        return "RobolectricParameterizedRunner " + mDelegate.getName();
+        return "RobolectricParameterizedRunner " + getName();
     }
 
     @Override
@@ -79,8 +84,15 @@ public class RobolectricParameterizedRunner extends RobolectricTestRunner {
 
                 @Override
                 protected Object createTest() throws Exception {
-                    return mDelegate.createTestInstance(
-                            getTestClass().getJavaClass(), getTestClass());
+                    // The test object needs to be created in a different class loader
+                    // than the runner
+                    return ReflectionHelpers.callStaticMethod(
+                            getTestClass().getJavaClass().getClassLoader(),
+                            RobolectricParameterizedRunner.class.getName(),
+                            "createTestInstance",
+                            ClassParameter.from(TestClass.class, getTestClass()),
+                            ClassParameter.from(Integer.TYPE, mParametersIndex),
+                            ClassParameter.from(String.class, mName));
                 }
 
                 @Override
@@ -91,5 +103,14 @@ public class RobolectricParameterizedRunner extends RobolectricTestRunner {
         } catch (InitializationError initializationError) {
             throw new RuntimeException(initializationError);
         }
+    }
+
+    /**
+     * Utility method called using reflection so that the test can be created in a different
+     * classLoader
+     */
+    public static Object createTestInstance(TestClass testClass, int parametersIndex, String name)
+            throws Exception {
+        return new ParameterizedRunnerDelegate(parametersIndex, name).createTestInstance(testClass);
     }
 }

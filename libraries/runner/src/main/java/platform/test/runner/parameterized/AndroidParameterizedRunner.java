@@ -65,6 +65,6 @@ public class AndroidParameterizedRunner extends AndroidJUnit4ClassRunner {
 
     @Override
     protected Object createTest() throws Exception {
-        return mDelegate.createTestInstance(getTestClass().getJavaClass(), getTestClass());
+        return mDelegate.createTestInstance(getTestClass());
     }
 }
