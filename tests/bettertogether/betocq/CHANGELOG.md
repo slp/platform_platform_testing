@@ -1,32 +1,40 @@
 # BetoCQ test suite release history
 
-## 2.1
+## 2.1 (05/02/2024)
 
 ## New
-* Add iperf test.
+* Add iperf test for WFD mode. iperf test speed requirement is 40MB/s while Nearby
+  Connections speed requirement is 20MB/s in 2-stream 80MHz mode.
+* Add the BT coex performance test.
+* Add the support of BLE scan throttling during 2G transfer (enabled by default)
+* Change the success rate target to 98%.
+* Add Aware test case and enable it for QuickShare CUJ.
+* Enable scc_2g_wfd_sta_tests for all devices.
 
 ### Bug fixes
-* Add the support of BLE scan throttling during 2G transfer (enabled by default)
+* Fix the missing data of failed test cases by replacing all "sponge_properties"
+  with "properties".
 * Remove the unnecessary flag overriding and rely on the production config instead.
-* Add BT coex test to betocq.
-* Change the success rate target to 98%.
-* Add the check of AP connection. If AP is disconnected or connect to a wrong frequency on the target side, mark the test as failed.
-* consolidate AP connection and speed check codes to one function.
+* Add the check of AP connection. If AP is disconnected or connect to a wrong
+  frequency on the target side, mark the test as failed.
+* Consolidate AP connection and speed check codes to one function.
 * Add P2P frequency check for WFD/HS SCC test cases.
-* Reduce 2G speed check from 3 to 2 MB/s until it is improved in NC.
+* Reduce 2G speed check from 3 to 1 MB/s until it is improved in NC.
 * Remove AP frequency check for the test cases with empty wifi_ssid.
 * Fix typo in DFS test cases and reduce BT transfer size by 50%.
 * Skip p2p frequency check if wifi speed check is disabled or it is a DBS test.
+* Add the method overriding annotation.
+* Add more triaging tips for AP disconnected, wrong AP frequency and P2P/STA
+  frequency mismatch cases.
 
-## 2.0
+## 2.0 (04/10/2024)
 
 ### New
-* BetoCQ test suite: more accurate connectivity quality test suite with better
-coverage.
+* BetoCQ test suite: improved test coverage with the right quality bar taking into
+  device capabilities
   * CUJ tests: Connectivity performance evaluation for the specific CUJs, such
   as Quickstart, Quickshare, etc.
-  * Directed tests: Specific performance tests for mediums used by D2D
-  connection.
+  * Directed tests: Performance test with fixed D2D medium.
   * Function tests: Tests for the basic functions used by D2D connection.
 
 ## 1.6
