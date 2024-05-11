@@ -64,6 +64,8 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
     )
     self._finished_test_iteration: int = 0
     self._use_prior_bt: bool = False
+    self._start_time: datetime.datetime = datetime.datetime.now()
+    self._wifi_ssid: str = ''
     self._test_results: list[nc_constants.SingleTestResult] = []
 
   # @typing.override
@@ -130,6 +132,11 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
             'mMaxSupportedTxLinkSpeed', nc_constants.INVALID_INT
         )
     )
+    if sta_frequency == nc_constants.INVALID_INT:
+      sta_frequency = setup_utils.get_wifi_sta_frequency(self.advertiser)
+      sta_max_link_speed_mbps = setup_utils.get_wifi_sta_max_link_speed(
+          self.advertiser
+      )
     return (sta_frequency, sta_max_link_speed_mbps)
 
   def _get_throughput_benchmark(
@@ -214,6 +221,7 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
   ) -> None:
     """Test the D2D performance with the specified upgrade medium."""
     self._upgrade_medium_under_test = upgrade_medium_under_test
+    self._wifi_ssid = wifi_ssid
 
     if self.test_parameters.toggle_airplane_mode_target_side:
       setup_utils.toggle_airplane_mode(self.advertiser)
@@ -371,6 +379,8 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
     (sta_frequency, max_link_speed_mbps) = (
         self._get_target_sta_frequency_and_max_link_speed()
     )
+    self._current_test_result.sta_frequency = sta_frequency
+    self._current_test_result.max_sta_link_speed_mbps = max_link_speed_mbps
     if wifi_ssid and(
         sta_frequency == nc_constants.INVALID_INT
         or max_link_speed_mbps == nc_constants.INVALID_INT
@@ -400,6 +410,7 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
         ]
     ):
       p2p_frequency = setup_utils.get_wifi_p2p_frequency(self.advertiser)
+      self._current_test_result.quality_info.medium_frequency = p2p_frequency
       if all([
           p2p_frequency != nc_constants.INVALID_INT,
           p2p_frequency != sta_frequency,
@@ -413,6 +424,20 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
         asserts.fail(
             f'P2P frequeny ({p2p_frequency}) is different from STA frequency'
             f' ({sta_frequency}) in SCC test case. Check the device capability'
+            ' configuration especially for DBS, DFS, indoor capabilities.'
+        )
+      if all([
+          p2p_frequency != nc_constants.INVALID_INT,
+          p2p_frequency == sta_frequency,
+          self._is_mcc,
+          nc_speed_min_mbps > 0,
+      ]):
+        self._active_nc_fail_reason = (
+            nc_constants.SingleTestFailureReason.WRONG_P2P_FREQUENCY
+        )
+        asserts.fail(
+            f'P2P frequeny ({p2p_frequency}) is same as STA frequency'
+            f' ({sta_frequency}) in MCC test case. Check the device capability'
             ' configuration especially for DBS, DFS, indoor capabilities.'
         )
 
@@ -735,7 +760,17 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
             '03_target_device': '\n'.join(
                 self.__get_device_attributes(self.advertiser)
             ),
-            '04_detailed_stats': '\n'.join(detailed_stats),
+            '04_test_config': '\n'.join([
+                f'Country Code: {self._get_country_code()}',
+                f'MCC mode: {self._is_mcc}',
+                f'2G medium {self._is_2g_d2d_wifi_medium}',
+                f'DBS mode: {self._is_dbs_mode}',
+                f'medium: {self._upgrade_medium_under_test.name}',
+                f'wifi_ssid: {self._wifi_ssid}',
+                f'Start time: {self._start_time}',
+                f'End time: {datetime.datetime.now()}',
+            ]),
+            '05_detailed_stats': '\n'.join(detailed_stats),
         },
     })
 
@@ -749,7 +784,12 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
           is not nc_constants.SingleTestFailureReason.SUCCESS
       ):
         stats.append(
-            f'  - {test_result.test_iteration}: {test_result.result_message}'
+            f'- Iter: {test_result.test_iteration}: {datetime.datetime.now()}'
+            f' {test_result.result_message}\n'
+            f' sta freq: {test_result.sta_frequency},'
+            f' sta max link speed: {test_result.max_sta_link_speed_mbps},'
+            f' used medium: {test_result.quality_info.get_medium_name()},'
+            f' medium freq: {test_result.quality_info.medium_frequency}.'
         )
 
     if stats:
