@@ -163,7 +163,8 @@ BetoCQ takes three steps to address this issue:
 *   **Prepare devices.**
 
     Before you run the automated test, prepare all devices by completing the
-    device setup processes.
+    device setup processes. After the new devices are set up, connect them to
+    the internet for at least one hour to ensure each is properly configured.
 
     Follow the instructions listed in [Google Play Protect]
     (https://support.google.com/googleplay/answer/2812853)
@@ -171,6 +172,11 @@ BetoCQ takes three steps to address this issue:
 
     Keep the device awake while charging so that the operating system doesn't
     suspend the test snippet process.
+
+    To avoid the strong signal issue, keep two devices at least 10 cm away. This
+    is especially important for 2G test as the 2G signal is typically stronger
+    than 5G or 6G signal.
+
 
 ## Test steps {:#test-steps}
 
@@ -344,7 +350,7 @@ serial number explicitly:
   ```
 
 Note that no space is allowed between
-two device serial numbers in the above command.
+two device serial numbers in the above commafnd.
 
 To run the test on Windows:
 
@@ -365,7 +371,8 @@ To run the test on Windows:
     `/tmp/logs/mobly/<CujTestName>/<TestDateTime>`.
 
 2.  Use Result Uploader to upload the artifact folder to Google's result storage
-  service. The latest version of the tool and instructions are provided in the
+  service so that the test results are visualized. The latest version of the tool
+  and instructions are provided in the
  [results_uploader](https://cs.android.com/android/platform/superproject/main/+/main:tools/test/mobly_extensions/tools/results_uploader/).
     -   If this is your first time using the tool, file an issue with Google to
         get onboarded.
