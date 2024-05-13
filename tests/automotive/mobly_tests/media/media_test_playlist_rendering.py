@@ -34,8 +34,8 @@ class PlaylistRendering(bluetooth_base_test.BluetoothBaseTest):
 
     def test_playlist_rendering(self):
         """Tests validating is song selectable using playlist on HU"""
-        self.media_utils.open_youtube_music_app()
         self.media_utils.open_media_app_on_hu()
+        self.media_utils.open_youtube_music_app()
         self.media_utils.maximize_now_playing()
         asserts.assert_true(self.media_utils.is_playlist_icon_visible(),
                             'Playlist icon should be visible on HU')
@@ -52,6 +52,7 @@ class PlaylistRendering(bluetooth_base_test.BluetoothBaseTest):
     def teardown_test(self):
         # Close YouTube Music app
         self.media_utils.close_youtube_music_app()
+        self.call_utils.press_home()
         super().teardown_test()
 
 
