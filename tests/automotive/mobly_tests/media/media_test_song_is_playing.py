@@ -53,6 +53,7 @@ class IsSongPlayingTest(bluetooth_base_test.BluetoothBaseTest):
     def teardown_test(self):
         # Close YouTube Music app
         self.media_utils.close_youtube_music_app()
+        self.call_utils.press_home()
         super().teardown_test()
 
 

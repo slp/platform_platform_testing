@@ -36,8 +36,8 @@ class IsMediaMetadataForNextAndPrevSongOnHuValid(bluetooth_base_test.BluetoothBa
 
     def test_is_media_metadata_valid_on_hu(self):
         """Tests is media metadata on HU valid"""
-        self.media_utils.open_youtube_music_app()
         self.media_utils.open_media_app_on_hu()
+        self.media_utils.open_youtube_music_app()
         self.call_utils.wait_with_log(5)
         self.media_utils.pause_media_on_hu()
 
@@ -122,6 +122,7 @@ class IsMediaMetadataForNextAndPrevSongOnHuValid(bluetooth_base_test.BluetoothBa
     def teardown_test(self):
         # Close YouTube Music app
         self.media_utils.close_youtube_music_app()
+        self.call_utils.press_home()
         super().teardown_test()
 
 

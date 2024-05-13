@@ -33,8 +33,8 @@ class IsNowPlayingLabelDisplayed(bluetooth_base_test.BluetoothBaseTest):
 
     def test_is_now_paying_label_displayed(self):
         """Tests is Now Playing label displayed on HU"""
-        self.media_utils.open_youtube_music_app()
         self.media_utils.open_media_app_on_hu()
+        self.media_utils.open_youtube_music_app()
         self.call_utils.wait_with_log(5)
         self.media_utils.pause_media_on_hu()
         self.media_utils.maximize_now_playing()
@@ -44,6 +44,7 @@ class IsNowPlayingLabelDisplayed(bluetooth_base_test.BluetoothBaseTest):
     def teardown_test(self):
         # Close YouTube Music app
         self.media_utils.close_youtube_music_app()
+        self.call_utils.press_home()
         super().teardown_test()
 
 
