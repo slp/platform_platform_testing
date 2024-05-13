@@ -144,7 +144,7 @@ class FixedWifiMediumFunctionTestActor(
 
   def _get_medium_upgrade_failure_tip(self) -> str:
     return nc_constants.MEDIUM_UPGRADE_FAIL_TRIAGE_TIPS.get(
-        self._wifi_medium_under_test, 'unsupported test medium')
+        self._wifi_medium_under_test, ' unsupported test medium')
 
   def _get_file_transfer_failure_tip(self) -> str:
     if self._wifi_medium_under_test is not None:

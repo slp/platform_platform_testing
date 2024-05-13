@@ -252,12 +252,19 @@ class SingleTestFailureReason(enum.IntEnum):
   SUCCESS = 14
 
 
+COMMON_WIFI_CONNECTION_FAILURE_REASONS = (
+    ' 1) Check if the wifi ssid or password is correct;\n',
+    ' 2) Try to remove any saved wifi network from wifi settings;\n',
+    ' 3) Check if other device can connect to the same AP\n',
+    ' 4) Check the wifi connection related log on the device.\n',
+)
+
 COMMON_TRIAGE_TIP: dict[SingleTestFailureReason, str] = {
     SingleTestFailureReason.UNINITIALIZED: (
         'not executed, the whole test was exited earlier; the devices may be'
-        'disconnected from the host, abnormal things, such as system crash, '
-        'mobly snippet was killed; Or something wrong with the script, check'
-        'the test running log and the corresponding bugreport log.'
+        ' disconnected from the host, abnormal things, such as system crash, '
+        ' mobly snippet was killed; Or something wrong with the script, check'
+        ' the test running log and the corresponding bugreport log.'
     ),
     SingleTestFailureReason.SUCCESS: 'success!',
     SingleTestFailureReason.SOURCE_START_DISCOVERY: (
@@ -274,17 +281,12 @@ COMMON_TRIAGE_TIP: dict[SingleTestFailureReason, str] = {
         'The target device can not accept the connection through BLE.'
     ),
     SingleTestFailureReason.SOURCE_WIFI_CONNECTION: (
-        'The source device can not connect to the wifi network. '
-        '1) Check if the wifi ssid or password is correct;'
-        '2) Try to remove any saved wifi network from wifi settings;'
-        '3) Check if other device can connect to the same AP'
-        '4) Check the wifi related log on the source device.'
+        'The source device can not connect to the wifi network.\n'
+        f'{COMMON_WIFI_CONNECTION_FAILURE_REASONS}'
     ),
     SingleTestFailureReason.TARGET_WIFI_CONNECTION: (
-        '1) Check if the wifi ssid or password is correct;'
-        '2) Try to remove any saved wifi network from wifi settings;'
-        '3) Check if other device can connect to the same AP'
-        '4) Check the wifi related log on the target device.'
+        'The target device can not connect to the wifi network.\n'
+        f'{COMMON_WIFI_CONNECTION_FAILURE_REASONS}'
     ),
     SingleTestFailureReason.AP_IS_NOT_CONFIGURED: (
         'The test AP is not set correctly in the test configuration file.'
@@ -296,35 +298,61 @@ COMMON_TRIAGE_TIP: dict[SingleTestFailureReason, str] = {
     SingleTestFailureReason.WRONG_AP_FREQUENCY: (
         'Check if the test AP is set to the expected frequency.'
     ),
-    SingleTestFailureReason.WRONG_P2P_FREQUENCY: (
-        'The test P2P frequency is not set to the expected value. If if is SCC'
-        ' DBS test case, check if the device does support DBS. If it is the SCC'
-        ' indoor or SCC DFS test case, check if the device does support'
-        ' indoor/DFS channels in WFD mode. Check if device capabilities are set'
-        ' correctly.'
-    ),
+    SingleTestFailureReason.WRONG_P2P_FREQUENCY: '\n'.join([
+        'The test P2P frequency is not set to the expected value.',
+        ' Check if device capabilities are set correctly in the config file.',
+        ' If it is SCC DBS test case, check if the device does support DBS;',
+        (
+            ' If it is the SCC indoor or DFS test case, check if the device'
+            ' does support indoor/DFS channels in WFD mode;'
+        ),
+        (
+            ' If it is a MCC test, check if devices actually supports DBS,'
+            ' indoor or DFS feature  and set device capabilities correctly.'
+        ),
+    ]),
 }
 
+COMMON_WFD_UPGRADE_FAILURE_REASONS = '\n'.join([
+    'If WFD GO fails to start, check your factory build to ensure that',
+    (
+        ' 1) includes the wpa_supplicant patch to avoid scan before starting GO'
+        ' https://w1.fi/cgit/hostap/commit/?id=b18d95759375834b6ca6f864c898f27d161b14ca.'
+    ),
+    (
+        ' 2) includes WiFi mainline module 34.11.10.06.0 or later version which'
+        ' fixes the out-of-order message issue between P2P and tethering'
+        ' modules'
+    ),
+    (
+        ' 3) HAL getUsableChannels() returns the correct channel list. Run "adb'
+        ' shell cmd wifi get-allowed-channel" and ensure it does not include'
+        ' DFS channels unless config_wifiEnableStaDfsChannelForPeerNetwork is'
+        ' set to true. DFS channels can be found from'
+        ' https://en.wikipedia.org/wiki/List_of_WLAN_channels.'
+    ),
+    (
+        'Also check if BT socket is still connected and read/write is normal'
+        ' when the upgrade failure happens'
+    ),
+])
 
 MEDIUM_UPGRADE_FAIL_TRIAGE_TIPS: dict[NearbyMedium, str] = {
-    NearbyMedium.WIFILAN_ONLY: ' WLAN, check if AP blocks the mDNS traffic',
+    NearbyMedium.WIFILAN_ONLY: (
+        ' WLAN, check if AP blocks the mDNS traffic. Check if STA is connected'
+        ' to AP during WiFi upgrade.'
+    ),
     NearbyMedium.UPGRADE_TO_WIFIHOTSPOT: (
         ' HOTSPOT, check the related wifip2p and NearbyConnections logs to see'
-        ' if the WFD group owner'
-        ' fails to start on'
-        ' the target side or the legacy STA fails to connect on the source'
-        ' side.'
-        ' If WFD GO fails to start, check if wpa_supplicant already has the'
-        ' patch to avoid scan before starting GO'
-        ' https://w1.fi/cgit/hostap/commit/?id=b18d95759375834b6ca6f864c898f27d161b14ca'
+        ' if the WFD group owner fails to start on'
+        ' the target side or the STA fails to connect on the source side.\n'
+        f' {COMMON_WFD_UPGRADE_FAILURE_REASONS}'
     ),
     NearbyMedium.UPGRADE_TO_WIFIDIRECT: (
         ' WFD, check the related wifip2p and NearbyConnections logs if the WFD'
-        ' group owner fails to start on the'
-        ' target side or WFD group client fails to connect on the source side.'
-        ' If WFD GO fails to start, check if wpa_supplicant already has the'
-        ' patch to avoid scan before starting GO'
-        ' https://w1.fi/cgit/hostap/commit/?id=b18d95759375834b6ca6f864c898f27d161b14ca'
+        ' group owner fails to start on the target side or WFD group client'
+        ' fails to connect on the source side. \n'
+        f' {COMMON_WFD_UPGRADE_FAILURE_REASONS}'
     ),
     NearbyMedium.UPGRADE_TO_ALL_WIFI: (
         ' all WiFI mediums, check NearbyConnections logs to see if WFD, WLAN'
@@ -350,6 +378,7 @@ class ConnectionSetupQualityInfo:
   medium_upgrade_latency: datetime.timedelta = UNSET_LATENCY
   medium_upgrade_expected: bool = False
   upgrade_medium: NearbyConnectionMedium | None = None
+  medium_frequency: int = INVALID_INT
 
   def get_dict(self) -> dict[str, str]:
     dict_repr = {
@@ -363,6 +392,11 @@ class ConnectionSetupQualityInfo:
     if self.upgrade_medium:
       dict_repr['medium'] = self.upgrade_medium.name
     return dict_repr
+
+  def get_medium_name(self) -> str:
+    if self.upgrade_medium:
+      return self.upgrade_medium.name
+    return 'na'
 
 
 @dataclasses.dataclass(frozen=False)
@@ -387,6 +421,8 @@ class SingleTestResult:
   advertiser_sta_latency: datetime.timedelta = UNSET_LATENCY
   discoverer_sta_expected: bool = False
   advertiser_wifi_expected: bool = False
+  sta_frequency: int = INVALID_INT
+  max_sta_link_speed_mbps: int = INVALID_INT
 
 
 @dataclasses.dataclass(frozen=False)

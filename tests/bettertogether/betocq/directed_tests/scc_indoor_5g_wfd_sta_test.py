@@ -86,8 +86,9 @@ class SccIndoor5gWfdStaTest(d2d_performance_test_base.D2dPerformanceTestBase):
         ' file, enable_sta_indoor_channel_for_peer_network is set to true.'
         ' Check if the target device does support WFD group owner in the'
         ' STA-associated indoor channel. Check if'
-        ' config_wifiEnableStaIndoorChannelForPeerNetworkhttps://cs.android.com/android/platform/superproject/main/+/main:packages/modules/Wifi/service/ServiceWifiResources/res/values/config.xml),is'
-        ' set to true and has the correct driver/FW implementation.'
+        ' config_wifiEnableStaIndoorChannelForPeerNetwork'
+        ' https://cs.android.com/android/platform/superproject/main/+/main:packages/modules/Wifi/service/ServiceWifiResources/res/values/config.xml'
+        ' is set to true and has the correct driver/FW implementation.'
     )
 
   def _is_wifi_ap_ready(self) -> bool:

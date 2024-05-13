@@ -83,8 +83,8 @@ class Scc2gWfdStaTest(d2d_performance_test_base.D2dPerformanceTestBase):
   def _get_throughput_low_tip(self) -> str:
     return (
         f'{self._throughput_low_string}.'
-        'This is a SCC 2G test case with WFD medium. Check with the wifi chip'
-        'vendor about the possible firmware Tx/Rx issues in this mode.'
+        ' This is a SCC 2G test case with WFD medium. Check with the wifi chip'
+        ' vendor about the possible firmware Tx/Rx issues in this mode.'
     )
 
   def _is_wifi_ap_ready(self) -> bool:
