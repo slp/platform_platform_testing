@@ -389,6 +389,19 @@ def enable_dfs_scc(ad: android_device.AndroidDevice) -> None:
   check_and_try_to_write_ph_flag(ad, pname, flag_name, flag_type, flag_value)
 
 
+def disable_wlan_deny_list(ad: android_device.AndroidDevice) -> None:
+  """Enable WFD/WIFI_HOTSPOT in a STA-associated DFS channel."""
+  pname = 'com.google.android.gms.nearby'
+  flag_name = 'wifi_lan_blacklist_verify_bssid_interval_hours'
+  flag_type = 'long'
+  flag_value = '0'
+
+  check_and_try_to_write_ph_flag(ad, pname, flag_name, flag_type, flag_value)
+
+  flag_name = 'mediums_wifi_lan_temporary_blacklist_verify_bssid_interval_hours'
+  check_and_try_to_write_ph_flag(ad, pname, flag_name, flag_type, flag_value)
+
+
 def enable_ble_scan_throttling_during_2g_transfer(
     ad: android_device.AndroidDevice, enable_ble_scan_throttling: bool = False
 ) -> None:

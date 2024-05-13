@@ -1,5 +1,22 @@
 # BetoCQ test suite release history
 
+## 2.2 (05/10/2024)
+
+## New
+* Add iperf test for Aware, hotspot modes.
+* Disable WLAN deny list so that the past failure won't affect the new runs.
+* Add the key test info in test summary.
+* Add the STA and medium info of failed iterations.
+* Add P2P frequency check for MCC test cases.
+* Add more failure triage tips.
+
+### Bug fixes
+* Improve the format of common triaging tips.
+* Don't check max link speed for the disconnection check.
+* Fix the format of triaging tips.
+* Fix the control in test config.
+* Fall back to use "adb shell cmd wifi status" when wifiGetConnectionInfo() fails.
+
 ## 2.1 (05/02/2024)
 
 ## New

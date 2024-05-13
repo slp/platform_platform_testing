@@ -54,6 +54,7 @@ class Scc5gAllWifiDbs2gStaTest(
 
   def setup_class(self):
     super().setup_class()
+    self._is_dbs_mode = True
     self.performance_test_iterations = getattr(
         self.test_scc_5g_all_wifi_dbs_2g_sta, base_test.ATTR_REPEAT_CNT
     )
