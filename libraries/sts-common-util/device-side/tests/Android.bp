@@ -24,6 +24,7 @@ android_test {
         "sts-device-util",
         "junit",
         "compatibility-device-util-axt",
+        "androidx.test.uiautomator_uiautomator",
     ],
 
     // tag this module as a test artifact
