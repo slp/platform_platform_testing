@@ -17,6 +17,7 @@
 package android.platform.test.flag.junit;
 
 import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
 
 import android.platform.test.flag.util.FlagReadException;
 import android.platform.test.flag.util.FlagSetException;
@@ -29,7 +30,6 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -70,6 +70,8 @@ public final class SetFlagsRule implements TestRule {
     private final boolean mIsInitWithDefault;
     private FlagsParameterization mFlagsParameterization;
     private boolean mIsRuleEvaluating = false;
+
+    private boolean mIsAtLeastV = isAtLeastV();
 
     public enum DefaultInitValueType {
         /**
@@ -228,6 +230,11 @@ public final class SetFlagsRule implements TestRule {
     }
 
     private void setFlagValue(String fullFlagName, boolean value) {
+        assumeTrue(
+                "SetFlagsRule: Test related to aconfig flags can only be executed when SdkLevel >="
+                        + " V",
+                mIsAtLeastV);
+
         if (!fullFlagName.contains(".")) {
             throw new FlagSetException(
                     fullFlagName, "Flag name is not the expected format {packgeName}.{flagName}.");
@@ -415,7 +422,8 @@ public final class SetFlagsRule implements TestRule {
         }
 
         String packageName = flagsClass.getPackageName();
-        String fakeClassName = String.format("%s.%s", packageName, FAKE_FEATURE_FLAGS_IMPL_CLASS_NAME);
+        String fakeClassName =
+                String.format("%s.%s", packageName, FAKE_FEATURE_FLAGS_IMPL_CLASS_NAME);
         String interfaceName = String.format("%s.%s", packageName, FEATURE_FLAGS_CLASS_NAME);
 
         Field featureFlagsField = getFeatureFlagsField(flagsClass);
@@ -495,6 +503,31 @@ public final class SetFlagsRule implements TestRule {
             mMutatedFlagsClasses.clear();
         } catch (Exception e) {
             throw new FlagSetException(flagsClassName, e);
+        }
+    }
+
+    // TODO(340230814): do not use reflection to check the sdk version
+    private static boolean isAtLeastV() {
+        // TODO(340551298): Build.java is not loadable outside of Ravenwood. Doing so would
+        // make this class unusable by tests.
+        // Use this hack to avoid loading it.
+        if (System.getProperty("java.class.path").contains("ravenwood")) {
+            return true;
+        }
+        String androidOsVersionClass = "android.os.Build$VERSION";
+        String versionField = "SDK_INT";
+        int v_sdk_level = 35;
+        try {
+            Class<?> versionClass = Class.forName(androidOsVersionClass);
+            int version = (Integer) versionClass.getDeclaredField(versionField).get(null);
+            return version >= v_sdk_level;
+        } catch (ClassNotFoundException | LinkageError e) {
+            // Skip sdk level check when this tool is used on the host testing code.
+            return true;
+        } catch (NoSuchFieldException e) {
+            throw new UnsupportedOperationException("Cannot found field SDK_INT", e);
+        } catch (Exception e) {
+            throw new UnsupportedOperationException("Fail to get sdk level", e);
         }
     }
 
