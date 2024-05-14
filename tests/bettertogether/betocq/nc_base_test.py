@@ -234,6 +234,7 @@ class NCBaseTestClass(base_test.BaseTestClass):
     setup_utils.enable_logs(ad)
     setup_utils.disable_redaction(ad)
     setup_utils.enable_wifi_aware(ad)
+    setup_utils.disable_wlan_deny_list(ad)
 
     setup_utils.enable_ble_scan_throttling_during_2g_transfer(
         ad, self.test_parameters.enable_2g_ble_scan_throttling

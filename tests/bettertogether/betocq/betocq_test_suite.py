@@ -113,11 +113,11 @@ class BetoCqPerformanceTestSuite(base_betocq_suite.BaseBetocqSuite):
             clazz=scc_5g_wfd_dbs_2g_sta_test.Scc5gWfdDbs2gStaTest,
             config=config,
         )
+      if test_parameters.run_compound_test:
         self.add_test_class(
             clazz=mcc_5g_all_wifi_non_dbs_2g_sta_test.Mcc5gAllWifiNonDbs2gStaTest,
             config=config,
         )
-      if test_parameters.run_compound_test:
         self.add_test_class(
             clazz=scc_2g_all_wifi_sta_test.Scc2gAllWifiStaTest,
             config=config,
@@ -156,11 +156,15 @@ class BetoCqPerformanceTestSuite(base_betocq_suite.BaseBetocqSuite):
             clazz=scc_5g_wlan_sta_test.Scc5gWifiLanStaTest,
             config=config,
         )
-        if test_parameters.run_compound_test:
-          self.add_test_class(
-              clazz=scc_indoor_5g_wfd_sta_test.SccIndoor5gWfdStaTest,
-              config=config,
-          )
+        self.add_test_class(
+            clazz=scc_indoor_5g_wfd_sta_test.SccIndoor5gWfdStaTest,
+            config=config,
+        )
+      if test_parameters.run_compound_test:
+        self.add_test_class(
+            clazz=scc_5g_all_wifi_sta_test.Scc5gAllWifiStaTest,
+            config=config,
+        )
 
     # add directed/cuj tests which requires DFS 5G wlan AP - channel 52
     if (
@@ -185,11 +189,6 @@ class BetoCqPerformanceTestSuite(base_betocq_suite.BaseBetocqSuite):
         )
         self.add_test_class(
             clazz=scc_dfs_5g_wfd_sta_test.SccDfs5gWfdStaTest,
-            config=config,
-        )
-      if test_parameters.run_compound_test:
-        self.add_test_class(
-            clazz=scc_5g_all_wifi_sta_test.Scc5gAllWifiStaTest,
             config=config,
         )
 

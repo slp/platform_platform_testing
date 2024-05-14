@@ -163,8 +163,29 @@ suspend fun View.forceRedraw() {
 }
 
 private suspend fun View.generateBitmap(rect: Rect? = null): Bitmap {
-    val rectWidth = rect?.width() ?: width
-    val rectHeight = rect?.height() ?: height
+    var rectWidth = rect?.width() ?: width
+    var rectHeight = rect?.height() ?: height
+
+    // Throttling to wait for the readiness of `rectWidth` and `rectHeight`.
+    val maximumPixelNumbers = 1_000_000_000L
+    val milliSecondsInTenSeconds = 10L * 1000L
+    var milliSecondsToWait = 10L
+    while (rectWidth.toLong() * rectHeight.toLong() > maximumPixelNumbers
+        && milliSecondsToWait < milliSecondsInTenSeconds) {
+        Log.d("View.generateBitmap",
+            "Current width ($rectWidth) or current height ($rectHeight) is too large"
+                + ", which might indicate the view is not stable yet. "
+                + "Wait for $milliSecondsToWait milliseconds to retry.")
+        Thread.sleep(milliSecondsToWait)
+        milliSecondsToWait = milliSecondsToWait * 2
+        rectWidth = rect?.width() ?: width
+        rectHeight = rect?.height() ?: height
+    }
+    if (rectWidth.toLong() * rectHeight.toLong() > maximumPixelNumbers) {
+        throw IllegalStateException(
+            "The view $this is not stable within $milliSecondsInTenSeconds milliseconds.")
+    }
+
     val destBitmap = Bitmap.createBitmap(rectWidth, rectHeight, Bitmap.Config.ARGB_8888)
 
     return when {
