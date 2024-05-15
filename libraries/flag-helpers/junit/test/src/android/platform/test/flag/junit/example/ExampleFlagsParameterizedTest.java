@@ -28,6 +28,7 @@ import android.platform.test.flag.junit.Flags;
 import android.platform.test.flag.junit.FlagsParameterization;
 import android.platform.test.flag.junit.SetFlagsRule;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +40,13 @@ import java.util.List;
 /**
  * Example for how to write a test using {@link SetFlagsRule}, {@link FlagsParameterization} and the
  * annotations {@link EnableFlags}, {@link DisableFlags}.
+ *
+ * <p>NOTE: when using {@link FlagsParameterization}, the {@link SetFlagsRule.ClassRule} needs to
+ * know which flags to monitor. Since we have at least one {@link EnableFlags} or {@link
+ * DisableFlags} annotation that refers to the class we're setting flags on, we don't need to do
+ * anything else. If we did not, we would need to add {@link UsesFlags} to tell it.
+ *
+ * <p>@UsesFlags(Flags.cass)
  */
 @RunWith(Parameterized.class)
 public class ExampleFlagsParameterizedTest {
@@ -49,8 +57,11 @@ public class ExampleFlagsParameterizedTest {
                 Flags.FLAG_FLAG_NAME3, Flags.FLAG_FLAG_NAME4);
     }
 
+    @ClassRule
+    public static final SetFlagsRule.ClassRule mSetFlagsClassRule = new SetFlagsRule.ClassRule();
+
     public ExampleFlagsParameterizedTest(FlagsParameterization flags) {
-        mSetFlagsRule = new SetFlagsRule(NULL_DEFAULT, flags);
+        mSetFlagsRule = mSetFlagsClassRule.createSetFlagsRule(flags);
     }
 
     @Rule public final SetFlagsRule mSetFlagsRule;

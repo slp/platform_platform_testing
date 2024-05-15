@@ -46,26 +46,5 @@ public class Flags {
         FEATURE_FLAGS = featureFlagsImpl;
     }
 
-    private static FeatureFlags FEATURE_FLAGS =
-            new FeatureFlags() {
-                @Override
-                public boolean flagName3() {
-                    return false;
-                }
-
-                @Override
-                public boolean flagName4() {
-                    return true;
-                }
-
-                @Override
-                public boolean roEnabled() {
-                    return true;
-                }
-
-                @Override
-                public boolean roDisabled() {
-                    return false;
-                }
-            };
+    private static FeatureFlags FEATURE_FLAGS = new FeatureFlagsImpl();
 }
