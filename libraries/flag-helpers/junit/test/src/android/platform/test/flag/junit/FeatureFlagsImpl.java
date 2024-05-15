@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 The Android Open Source Project
+ * Copyright (C) 2024 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
-package android.platform.test.flag.util;
+package android.platform.test.flag.junit;
 
-/** Exception to set flag values. */
-public class FlagSetException extends RuntimeException {
-    public FlagSetException(String flag, String msg) {
-        super(String.format("Flag %s set error: %s", flag, msg));
+class FeatureFlagsImpl implements FeatureFlags {
+    @Override
+    public boolean flagName3() {
+        return false;
     }
 
-    public FlagSetException(String flag, Throwable cause) {
-        super(String.format("Flag %s set error", flag), cause);
+    @Override
+    public boolean flagName4() {
+        return true;
     }
 
-    public FlagSetException(String flag, String msg, Throwable cause) {
-        super(String.format("Flag %s set error: %s", flag, msg), cause);
+    @Override
+    public boolean roEnabled() {
+        return true;
+    }
+
+    @Override
+    public boolean roDisabled() {
+        return false;
     }
 }

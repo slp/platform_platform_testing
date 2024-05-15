@@ -23,6 +23,7 @@ import android.platform.test.annotations.DisableFlags;
 import android.platform.test.annotations.EnableFlags;
 import android.platform.test.annotations.RequiresFlagsDisabled;
 import android.platform.test.annotations.RequiresFlagsEnabled;
+import android.platform.test.annotations.UsesFlags;
 
 import com.google.common.collect.Sets;
 
@@ -56,6 +57,57 @@ public class AnnotationsRetriever {
             Set.of(Test.class, Retention.class, Target.class, Documented.class);
 
     private AnnotationsRetriever() {}
+
+    public static Set<String> getAllUsedFlagsClasses(Description description) {
+        Set<String> result = new HashSet<>();
+        Set<Object> visited = new HashSet<>();
+        collectUsedFlagsClasses(description, visited, result);
+        return result;
+    }
+
+    private static void collectUsedFlagsClasses(
+            Description description, Set<Object> visited, Set<String> result) {
+        Class<?> testClass = description.getTestClass();
+        if (testClass != null && !visited.contains(testClass)) {
+            visited.add(testClass);
+            collectUsedFlagsClasses(List.of(testClass.getAnnotations()), result);
+        }
+        collectUsedFlagsClasses(description.getAnnotations(), result);
+        for (Description child : description.getChildren()) {
+            collectUsedFlagsClasses(child, visited, result);
+        }
+    }
+
+    private static void collectUsedFlagsClasses(
+            Collection<Annotation> annotations, Set<String> result) {
+        result.addAll(getFlagsForAnnotation(sUsesFlags, annotations));
+    }
+
+    public static Set<String> getAllAnnotationSetFlags(Description description) {
+        Set<String> result = new HashSet<>();
+        Set<Object> visited = new HashSet<>();
+        collectAnnotationSetFlags(description, visited, result);
+        return result;
+    }
+
+    private static void collectAnnotationSetFlags(
+            Description description, Set<Object> visited, Set<String> result) {
+        Class<?> testClass = description.getTestClass();
+        if (testClass != null && !visited.contains(testClass)) {
+            visited.add(testClass);
+            collectAnnotationSetFlags(List.of(testClass.getAnnotations()), result);
+        }
+        collectAnnotationSetFlags(description.getAnnotations(), result);
+        for (Description child : description.getChildren()) {
+            collectAnnotationSetFlags(child, visited, result);
+        }
+    }
+
+    private static void collectAnnotationSetFlags(
+            Collection<Annotation> annotations, Set<String> result) {
+        result.addAll(getFlagsForAnnotation(sEnableFlags, annotations));
+        result.addAll(getFlagsForAnnotation(sDisableFlags, annotations));
+    }
 
     /** Gets all feature flag related annotations. */
     public static FlagAnnotations getFlagAnnotations(Description description) {
@@ -282,6 +334,26 @@ public class AnnotationsRetriever {
                 @Override
                 protected String[] getFlags(DisableFlags annotation) {
                     return annotation.value();
+                }
+            };
+    private static final FlagsAnnotation<UsesFlags> sUsesFlags =
+            new FlagsAnnotation<>(UsesFlags.class) {
+                @Override
+                protected String[] getFlags(UsesFlags annotation) {
+                    throw new UnsupportedOperationException("call getFlagsSet instead");
+                }
+
+                @Nonnull
+                Set<String> getFlagsSet(UsesFlags annotation) {
+                    Class<?>[] values = annotation.value();
+                    if (values == null) {
+                        return Set.of();
+                    }
+                    HashSet<String> result = new HashSet<>();
+                    for (Class<?> flagsClass : values) {
+                        result.add(flagsClass.getName());
+                    }
+                    return result;
                 }
             };
 }
