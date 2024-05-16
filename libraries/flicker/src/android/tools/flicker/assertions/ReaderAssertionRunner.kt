@@ -17,6 +17,7 @@
 package android.tools.flicker.assertions
 
 import android.tools.flicker.subject.exceptions.FlickerAssertionError
+import android.tools.flicker.subject.exceptions.FlickerAssertionWrapperError
 import android.tools.io.Reader
 import android.tools.withTracing
 
@@ -36,6 +37,9 @@ class ReaderAssertionRunner(
                 null
             } catch (error: FlickerAssertionError) {
                 error
+            } catch (error: Throwable) {
+                // Wrap other assertions or failures into a FlickerAssertionError
+                FlickerAssertionWrapperError(error)
             }
         }
     }

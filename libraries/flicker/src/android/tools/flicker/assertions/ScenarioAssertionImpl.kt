@@ -43,12 +43,11 @@ data class ScenarioAssertionImpl(
                     assertionData,
                     assertionData.mapNotNull {
                         val exception = assertionRunner.runAssertion(it) ?: return@mapNotNull null
-                        if (exception !is FlickerAssertionError) {
-                            throw exception
-                        } else {
-                            assertionExtraData.forEach { (key, value) ->
-                                exception.messageBuilder.addExtraDescription(key, value)
-                            }
+                        require(exception is FlickerAssertionError) {
+                            "Expected assertion runner to return a FlickerAssertionError"
+                        }
+                        assertionExtraData.forEach { (key, value) ->
+                            exception.messageBuilder.addExtraDescription(key, value)
                         }
                         exception
                     },
