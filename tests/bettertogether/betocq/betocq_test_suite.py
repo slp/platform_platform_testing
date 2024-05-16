@@ -59,6 +59,34 @@ from betocq.function_tests import beto_cq_function_group_test
 class BetoCqPerformanceTestSuite(base_betocq_suite.BaseBetocqSuite):
   """Add all BetoCQ tests to run in sequence."""
 
+  def __init__(self, runner, config):
+    super().__init__(runner, config)
+    self._enabled_test_classes = {}
+
+  def enable_test_class(self, clazz, config=None):
+    """Enable the test class within the suite.
+
+    Once enabled, the test class will run if the user selects it explicitly from
+    the command line, or by default if no user selection is made.
+
+    Args:
+      clazz: class, a Mobly test class.
+      config: config_parser.TestRunConfig, the config to run the class with. If
+        not specified, the loaded config file is used as is.
+    """
+    self._enabled_test_classes[clazz] = config
+
+  def add_enabled_test_classes_from_selection(self):
+    """Add enabled test classes to run, based on the user selection."""
+    test_selector = suite_runner._parse_cli_args(None).tests
+    selected_tests = suite_runner.compute_selected_tests(
+        self._enabled_test_classes.keys(), test_selector
+    )
+    for test_class, tests in selected_tests.items():
+      self.add_test_class(
+          test_class, config=self._enabled_test_classes[test_class], tests=tests
+      )
+
   def setup_suite(self, config):
     """Add all BetoCQ tests to the suite."""
     test_parameters = nc_constants.TestParameters.from_user_params(
@@ -66,29 +94,29 @@ class BetoCqPerformanceTestSuite(base_betocq_suite.BaseBetocqSuite):
     )
 
     if test_parameters.target_cuj_name is nc_constants.TARGET_CUJ_ESIM:
-      self.add_test_class(bt_performance_test.BtPerformanceTest)
+      self.enable_test_class(bt_performance_test.BtPerformanceTest)
       return
 
-    # add function tests if required
+    # enable function tests if required
     if (
         test_parameters.run_function_tests_with_performance_tests
         or test_parameters.use_auto_controlled_wifi_ap
     ):
-      self.add_test_class(
+      self.enable_test_class(
           beto_cq_function_group_test.BetoCqFunctionGroupTest
       )
 
     if test_parameters.run_bt_coex_test:
-      self.add_test_class(bt_2g_wifi_coex_test.Bt2gWifiCoexTest)
+      self.enable_test_class(bt_2g_wifi_coex_test.Bt2gWifiCoexTest)
 
-    # add bt and ble test
+    # enable bt and ble test
     if test_parameters.run_bt_performance_test:
-      self.add_test_class(bt_performance_test.BtPerformanceTest)
+      self.enable_test_class(bt_performance_test.BtPerformanceTest)
 
     if test_parameters.run_ble_performance_test:
-      self.add_test_class(ble_performance_test.BlePerformanceTest)
+      self.enable_test_class(ble_performance_test.BlePerformanceTest)
 
-    # add directed/cuj tests which requires 2G wlan AP - channel 6
+    # enable directed/cuj tests which requires 2G wlan AP - channel 6
     if (
         test_parameters.wifi_2g_ssid
         or test_parameters.use_auto_controlled_wifi_ap
@@ -97,37 +125,37 @@ class BetoCqPerformanceTestSuite(base_betocq_suite.BaseBetocqSuite):
       config.user_params['wifi_channel'] = 6
 
       if test_parameters.run_directed_test:
-        self.add_test_class(
+        self.enable_test_class(
             clazz=mcc_5g_wfd_non_dbs_2g_sta_test.Mcc5gWfdNonDbs2gStaTest,
             config=config,
         )
-        self.add_test_class(
+        self.enable_test_class(
             clazz=scc_2g_wfd_sta_test.Scc2gWfdStaTest,
             config=config,
         )
-        self.add_test_class(
+        self.enable_test_class(
             clazz=scc_2g_wlan_sta_test.Scc2gWlanStaTest,
             config=config,
         )
-        self.add_test_class(
+        self.enable_test_class(
             clazz=scc_5g_wfd_dbs_2g_sta_test.Scc5gWfdDbs2gStaTest,
             config=config,
         )
       if test_parameters.run_compound_test:
-        self.add_test_class(
+        self.enable_test_class(
             clazz=mcc_5g_all_wifi_non_dbs_2g_sta_test.Mcc5gAllWifiNonDbs2gStaTest,
             config=config,
         )
-        self.add_test_class(
+        self.enable_test_class(
             clazz=scc_2g_all_wifi_sta_test.Scc2gAllWifiStaTest,
             config=config,
         )
-        self.add_test_class(
+        self.enable_test_class(
             clazz=scc_5g_all_wifi_dbs_2g_sta_test.Scc5gAllWifiDbs2gStaTest,
             config=config,
         )
 
-    # add directed tests which requires 5G wlan AP - channel 36
+    # enable directed tests which requires 5G wlan AP - channel 36
     if (
         test_parameters.wifi_5g_ssid
         or test_parameters.use_auto_controlled_wifi_ap
@@ -136,11 +164,11 @@ class BetoCqPerformanceTestSuite(base_betocq_suite.BaseBetocqSuite):
       config.user_params['wifi_channel'] = 36
 
       if test_parameters.run_directed_test:
-        self.add_test_class(
+        self.enable_test_class(
             clazz=mcc_2g_wfd_indoor_5g_sta_test.Mcc2gWfdIndoor5gStaTest,
             config=config,
         )
-        self.add_test_class(
+        self.enable_test_class(
             clazz=scc_5g_wfd_sta_test.Scc5gWfdStaTest,
             config=config,
         )
@@ -148,25 +176,25 @@ class BetoCqPerformanceTestSuite(base_betocq_suite.BaseBetocqSuite):
             test_parameters.target_cuj_name
             is nc_constants.TARGET_CUJ_QUICK_SHARE
         ):
-          self.add_test_class(
+          self.enable_test_class(
               clazz=scc_5g_aware_sta_test.Scc5gAwareStaTest,
               config=config,
           )
-        self.add_test_class(
+        self.enable_test_class(
             clazz=scc_5g_wlan_sta_test.Scc5gWifiLanStaTest,
             config=config,
         )
-        self.add_test_class(
+        self.enable_test_class(
             clazz=scc_indoor_5g_wfd_sta_test.SccIndoor5gWfdStaTest,
             config=config,
         )
       if test_parameters.run_compound_test:
-        self.add_test_class(
+        self.enable_test_class(
             clazz=scc_5g_all_wifi_sta_test.Scc5gAllWifiStaTest,
             config=config,
         )
 
-    # add directed/cuj tests which requires DFS 5G wlan AP - channel 52
+    # enable directed/cuj tests which requires DFS 5G wlan AP - channel 52
     if (
         test_parameters.wifi_dfs_5g_ssid
         or test_parameters.use_auto_controlled_wifi_ap
@@ -175,22 +203,24 @@ class BetoCqPerformanceTestSuite(base_betocq_suite.BaseBetocqSuite):
       config.user_params['wifi_channel'] = 52
 
       if test_parameters.run_directed_test:
-        self.add_test_class(
+        self.enable_test_class(
             clazz=mcc_5g_hotspot_dfs_5g_sta_test.Mcc5gHotspotDfs5gStaTest,
             config=config,
         )
-        self.add_test_class(
+        self.enable_test_class(
             clazz=mcc_5g_wfd_dfs_5g_sta_test.Mcc5gWfdDfs5gStaTest,
             config=config,
         )
-        self.add_test_class(
+        self.enable_test_class(
             clazz=scc_dfs_5g_hotspot_sta_test.SccDfs5gHotspotStaTest,
             config=config,
         )
-        self.add_test_class(
+        self.enable_test_class(
             clazz=scc_dfs_5g_wfd_sta_test.SccDfs5gWfdStaTest,
             config=config,
         )
+
+    self.add_enabled_test_classes_from_selection()
 
 
 if __name__ == '__main__':
