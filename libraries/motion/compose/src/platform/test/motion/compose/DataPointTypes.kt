@@ -16,11 +16,15 @@
 
 package platform.test.motion.compose
 
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.isFinite
+import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import java.lang.reflect.Array.getDouble
 import org.json.JSONObject
 import platform.test.motion.golden.DataPointType
 import platform.test.motion.golden.UnknownTypeException
@@ -28,6 +32,8 @@ import platform.test.motion.golden.UnknownTypeException
 fun Dp.asDataPoint() = DataPointTypes.dp.makeDataPoint(this)
 
 fun IntSize.asDataPoint() = DataPointTypes.intSize.makeDataPoint(this)
+
+fun Offset.asDataPoint() = DataPointTypes.offset.makeDataPoint(this)
 
 fun DpSize.asDataPoint() = DataPointTypes.dpSize.makeDataPoint(this)
 
@@ -93,6 +99,31 @@ object DataPointTypes {
                 JSONObject().apply {
                     put("x", it.x.value)
                     put("y", it.y.value)
+                }
+            }
+        )
+
+    val offset: DataPointType<Offset> =
+        DataPointType(
+            "offset",
+            jsonToValue = {
+                when (it) {
+                    "unspecified" -> Offset.Unspecified
+                    "infinite" -> Offset.Infinite
+                    is JSONObject ->
+                        Offset(it.getDouble("x").toFloat(), it.getDouble("y").toFloat())
+                    else -> throw UnknownTypeException()
+                }
+            },
+            valueToJson = {
+                when {
+                    it.isUnspecified -> "unspecified"
+                    !it.isFinite -> "infinite"
+                    else ->
+                        JSONObject().apply {
+                            put("x", it.x)
+                            put("y", it.y)
+                        }
                 }
             }
         )

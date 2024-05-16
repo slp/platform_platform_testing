@@ -22,6 +22,8 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
@@ -29,26 +31,35 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.isSpecified
+import androidx.compose.ui.geometry.lerp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.unit.dp
 import com.google.common.truth.IterableSubject
 import com.google.common.truth.Truth.assertThat
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import platform.test.motion.MotionTestRule
+import platform.test.motion.compose.DataPointTypes.offset
 import platform.test.motion.compose.values.MotionTestValueKey
 import platform.test.motion.compose.values.MotionTestValues
 import platform.test.motion.compose.values.motionTestValues
@@ -56,129 +67,261 @@ import platform.test.motion.golden.DataPointTypes
 import platform.test.motion.golden.NotFoundDataPoint
 import platform.test.motion.golden.ValueDataPoint
 import platform.test.motion.testing.createGoldenPathManager
-import platform.test.screenshot.DeviceEmulationRule
-import platform.test.screenshot.DeviceEmulationSpec
-import platform.test.screenshot.Displays
 
 class ComposeToolkitTest {
     private val pathManager =
         createGoldenPathManager("platform_testing/libraries/motion/compose/tests/goldens")
-    private val deviceEmulationSpec = DeviceEmulationSpec(Displays.Phone)
-
-    @get:Rule(order = 0) val deviceEmulationRule = DeviceEmulationRule(deviceEmulationSpec)
-    @get:Rule(order = 1) val composeRule = createComposeRule()
-    @get:Rule(order = 2) val motionRule = MotionTestRule(ComposeToolkit(composeRule), pathManager)
+    @get:Rule val motionRule = createComposeMotionTestRule(pathManager)
 
     @Test
-    fun recordMotion_capturePosition() {
-        var completed = false
+    fun recordMotion_capturePosition() =
+        motionRule.runTest {
+            var completed = false
 
-        val motion =
-            motionRule.recordMotion(
-                content = { play ->
-                    val offset by animateDpAsState(if (play) 90.dp else 0.dp) { completed = true }
-                    Box(
-                        modifier =
-                            Modifier.offset(x = offset)
-                                .testTag("foo")
-                                .size(10.dp)
-                                .background(Color.Red)
-                    )
-                },
-                ComposeRecordingSpec.until({ completed }) {
-                    feature(hasTestTag("foo"), ComposeFeatureCaptures.positionInRoot)
-                }
-            )
+            val motion =
+                recordMotion(
+                    content = { play ->
+                        val offset by
+                            animateDpAsState(if (play) 90.dp else 0.dp) { completed = true }
+                        Box(
+                            modifier =
+                                Modifier.offset(x = offset)
+                                    .testTag("foo")
+                                    .size(10.dp)
+                                    .background(Color.Red)
+                        )
+                    },
+                    ComposeRecordingSpec.until({ completed }) {
+                        feature(hasTestTag("foo"), ComposeFeatureCaptures.positionInRoot)
+                    }
+                )
 
-        motionRule.assertThat(motion).timeSeriesMatchesGolden()
+            assertThat(motion).timeSeriesMatchesGolden()
+        }
+
+    @Test
+    fun recordMotion_captureSize() =
+        motionRule.runTest {
+            var completed = false
+
+            val motion =
+                recordMotion(
+                    content = { play ->
+                        Box(
+                            modifier =
+                                Modifier.testTag("foo")
+                                    .animateContentSize { _, _ -> completed = true }
+                                    .width(if (play) 90.dp else 10.dp)
+                                    .height(10.dp)
+                                    .background(Color.Red)
+                        )
+                    },
+                    ComposeRecordingSpec.until({ completed }) {
+                        feature(hasTestTag("foo"), ComposeFeatureCaptures.dpSize)
+                    }
+                )
+
+            assertThat(motion).timeSeriesMatchesGolden()
+        }
+
+    @Test
+    fun recordMotion_captureAlpha() =
+        motionRule.runTest {
+            var completed = false
+
+            val motion =
+                recordMotion(
+                    content = { play ->
+                        val opacity by
+                            animateFloatAsState(if (play) 1f else 0f) { completed = true }
+                        Box(
+                            modifier =
+                                Modifier.graphicsLayer { alpha = opacity }
+                                    .size(10.dp)
+                                    .fillMaxHeight()
+                                    .background(Color.Red)
+                                    .testTag("BoxOfInterest")
+                                    .motionTestValues { opacity exportAs MotionTestValues.alpha }
+                        )
+                    },
+                    ComposeRecordingSpec.until({ completed }) {
+                        feature(hasTestTag("BoxOfInterest"), ComposeFeatureCaptures.alpha)
+                    }
+                )
+
+            assertThat(motion).timeSeriesMatchesGolden()
+        }
+
+    @Test
+    fun recordMotion_captureCrossfade() =
+        motionRule.runTest {
+            var completed = false
+
+            val motion =
+                recordMotion(
+                    content = { play ->
+                        val opacity by
+                            animateFloatAsState(if (play) 1f else 0f) { completed = true }
+
+                        Box(
+                            modifier =
+                                Modifier.graphicsLayer { alpha = opacity }
+                                    .size(10.dp)
+                                    .fillMaxHeight()
+                                    .background(Color.Red)
+                                    .testTag("bar")
+                                    .motionTestValues { opacity exportAs MotionTestValues.alpha }
+                        )
+                        Box(
+                            modifier =
+                                Modifier.graphicsLayer { alpha = 1 - opacity }
+                                    .size(10.dp)
+                                    .fillMaxHeight()
+                                    .background(Color.Blue)
+                                    .testTag("foo")
+                                    .motionTestValues {
+                                        (1f - opacity) exportAs MotionTestValues.alpha
+                                    }
+                        )
+                    },
+                    ComposeRecordingSpec.until({ completed }) {
+                        feature(hasTestTag("bar"), ComposeFeatureCaptures.alpha, name = "bar_alpha")
+                        feature(hasTestTag("foo"), ComposeFeatureCaptures.alpha, name = "foo_alpha")
+                    }
+                )
+
+            assertThat(motion).timeSeriesMatchesGolden()
+        }
+
+    @Test
+    fun recordMotion_motionControl_performTap() =
+        motionRule.runTest {
+            val motion =
+                recordMotion(
+                    content = {
+                        var clickCount by remember { mutableStateOf(0) }
+                        val animatedSize by animateDpAsState(targetValue = 20.dp * (clickCount + 1))
+                        Box(
+                            modifier =
+                                Modifier.clickable { clickCount++ }
+                                    .testTag("foo")
+                                    .width(animatedSize)
+                                    .height(20.dp)
+                        )
+                    },
+                    ComposeRecordingSpec(
+                        recording = {
+                            awaitFrames(1)
+                            onNodeWithTag("foo").performTouchInput { click() }
+                            // Ideally, there would be a way to await the end of all pending
+                            // animations. That is currently not possible (while also manually
+                            // advancing the time, see http://shortn/_3WkhxugOzv), so this waits
+                            // for a fixed duration. Since the tests are stable, the animation
+                            // duration will always be the same - and if it changes, one has to
+                            // update the golden anyways, so this is not a huge issue.
+                            // Alternatively, the production code has to be instrumented, and track
+                            // the animation end manually.
+                            awaitDelay(300.milliseconds)
+                            onNodeWithTag("foo").performTouchInput { click() }
+                            awaitDelay(300.milliseconds)
+                        }
+                    ) {
+                        feature(hasTestTag("foo"), ComposeFeatureCaptures.dpSize)
+                    }
+                )
+            motionRule.assertThat(motion).timeSeriesMatchesGolden()
+        }
+
+    @Composable
+    private fun DraggableContent() {
+        var pointerPosition by remember { mutableStateOf(Offset.Unspecified) }
+
+        Box(
+            modifier =
+                Modifier.pointerInput(Unit) {
+                        detectDragGestures(
+                            onDragStart = { pointerPosition = it },
+                            onDragEnd = { pointerPosition = Offset.Unspecified }
+                        ) { _, dragAmount ->
+                            pointerPosition =
+                                if (pointerPosition.isSpecified) pointerPosition + dragAmount
+                                else dragAmount
+                        }
+                    }
+                    .testTag("foo")
+                    .motionTestValues { pointerPosition exportAs pointerOffsetKey }
+                    .size(300.dp)
+                    .drawBehind {
+                        if (pointerPosition.isSpecified) {
+                            drawCircle(Color.Red, radius = 50.dp.toPx(), center = pointerPosition)
+                        }
+                    }
+        )
     }
 
     @Test
-    fun recordMotion_captureSize() {
-        var completed = false
+    fun recordMotion_motionControl_performGesture_notRecordableWithDefaultImplementations() =
+        motionRule.runTest {
+            val motion =
+                recordMotion(
+                    content = { DraggableContent() },
+                    ComposeRecordingSpec(
+                        recording = {
+                            // For the purpose of this test, make sure one frame is recorded before
+                            // the (undesired) blocking swipeDown call is performed. That ensures
+                            // that the golden will actually indicate the skipped frames.
+                            awaitFrames(1)
 
-        val motion =
-            motionRule.recordMotion(
-                content = { play ->
-                    Box(
-                        modifier =
-                            Modifier.testTag("foo")
-                                .animateContentSize { _, _ -> completed = true }
-                                .width(if (play) 90.dp else 10.dp)
-                                .height(10.dp)
-                                .background(Color.Red)
-                    )
-                },
-                ComposeRecordingSpec.until({ completed }) {
-                    feature(hasTestTag("foo"), ComposeFeatureCaptures.dpSize)
-                }
-            )
+                            onNodeWithTag("foo").performTouchInput {
+                                // The regular gesture functions do advance time internally;
+                                // the motion test will not record frames while performing the
+                                // gesture.
+                                // It might still be useful to get the test subject into some other
+                                // state.
+                                swipeDown(durationMillis = 100, startY = top)
+                            }
+                            awaitDelay(200.milliseconds)
+                        }
+                    ) {
+                        feature(pointerOffsetKey, offset)
+                    }
+                )
 
-        motionRule.assertThat(motion).timeSeriesMatchesGolden()
-    }
-
-    @Test
-    fun recordMotion_captureAlpha() {
-        var completed = false
-
-        val motion =
-            motionRule.recordMotion(
-                content = { play ->
-                    val opacity by animateFloatAsState(if (play) 1f else 0f) { completed = true }
-                    Box(
-                        modifier =
-                            Modifier.graphicsLayer { alpha = opacity }
-                                .size(10.dp)
-                                .fillMaxHeight()
-                                .background(Color.Red)
-                                .testTag("BoxOfInterest")
-                                .motionTestValues { opacity exportAs MotionTestValues.alpha }
-                    )
-                },
-                ComposeRecordingSpec.until({ completed }) {
-                    feature(hasTestTag("BoxOfInterest"), ComposeFeatureCaptures.alpha)
-                }
-            )
-
-        motionRule.assertThat(motion).timeSeriesMatchesGolden()
-    }
+            // The golden is expected to be missing the first 100ms, while the `swipeDown` executes.
+            motionRule.assertThat(motion).timeSeriesMatchesGolden()
+        }
 
     @Test
-    fun recordMotion_captureCrossfade() {
-        var completed = false
+    fun recordMotion_motionControl_performGesture_sendIndividualEvents() =
+        motionRule.runTest {
+            val motion =
+                recordMotion(
+                    content = { DraggableContent() },
+                    ComposeRecordingSpec(
+                        recording = {
+                            val dragSurface = onNodeWithTag("foo")
 
-        val motion =
-            motionRule.recordMotion(
-                content = { play ->
-                    val opacity by animateFloatAsState(if (play) 1f else 0f) { completed = true }
+                            // Motion tests that record the results of a gesture must send
+                            // individual events.
+                            // TODO(b/322324387): Either work with compose to allow using regular
+                            // test gesture control, or at least supply the similar convenience
+                            // helper functions.
+                            dragSurface.performTouchInput { down(topCenter) }
+                            repeat(20) { i ->
+                                dragSurface.performTouchInput {
+                                    moveTo(lerp(topCenter, bottomCenter, i / 20f), delayMillis = 0)
+                                }
+                                awaitFrames(1)
+                            }
+                            dragSurface.performTouchInput { up() }
+                        }
+                    ) {
+                        feature(pointerOffsetKey, offset)
+                    }
+                )
 
-                    Box(
-                        modifier =
-                            Modifier.graphicsLayer { alpha = opacity }
-                                .size(10.dp)
-                                .fillMaxHeight()
-                                .background(Color.Red)
-                                .testTag("bar")
-                                .motionTestValues { opacity exportAs MotionTestValues.alpha }
-                    )
-                    Box(
-                        modifier =
-                            Modifier.graphicsLayer { alpha = 1 - opacity }
-                                .size(10.dp)
-                                .fillMaxHeight()
-                                .background(Color.Blue)
-                                .testTag("foo")
-                                .motionTestValues { (1f - opacity) exportAs MotionTestValues.alpha }
-                    )
-                },
-                ComposeRecordingSpec.until({ completed }) {
-                    feature(hasTestTag("bar"), ComposeFeatureCaptures.alpha, name = "bar_alpha")
-                    feature(hasTestTag("foo"), ComposeFeatureCaptures.alpha, name = "foo_alpha")
-                }
-            )
-
-        motionRule.assertThat(motion).timeSeriesMatchesGolden()
-    }
+            motionRule.assertThat(motion).timeSeriesMatchesGolden()
+        }
 
     /**
      * Helper to assert the exact timing of the recording.
@@ -213,215 +356,227 @@ class ComposeToolkitTest {
      *                  └ testContent enters composition, rule calls `waitForIdle`
      * ```
      */
-    private fun assertThatFrameCountValues(
+    private fun MotionTestRule<ComposeToolkit>.assertThatFrameCountValues(
         recordBefore: Boolean,
         recordAfter: Boolean,
-        motionControl: suspend MotionControlScope.() -> Unit,
+        motionControl: MotionControl,
     ) = assertThatFrameCountValuesImpl(recordBefore, recordAfter, motionControl)
 
     @Test
-    fun recordMotion_motionControl_recordDurationOnly() {
-        assertThatFrameCountValues(recordBefore = true, recordAfter = false) { awaitFrames(5) }
-            // Minimum delays, play flag flipped after 2
-            .containsExactly(/* before */ 2, 103, 104, 105, 106, 107)
-            .inOrder()
-    }
+    fun recordMotion_motionControl_recordDurationOnly() =
+        motionRule.runTest {
+            assertThatFrameCountValues(
+                    recordBefore = true,
+                    recordAfter = false,
+                    MotionControl { awaitFrames(5) }
+                )
+                // Minimum delays, play flag flipped after 2
+                .containsExactly(/* before */ 2, 103, 104, 105, 106, 107)
+                .inOrder()
+        }
 
     @Test
-    fun recordMotion_motionControl_recordDurationOnly_withoutBefore() {
-        assertThatFrameCountValues(recordBefore = false, recordAfter = false) { awaitFrames(5) }
-            // Same as above, just not recording before. Must not make a difference
-            .containsExactly(103, 104, 105, 106, 107)
-            .inOrder()
-    }
+    fun recordMotion_motionControl_recordDurationOnly_withoutBefore() =
+        motionRule.runTest {
+            assertThatFrameCountValues(
+                    recordBefore = false,
+                    recordAfter = false,
+                    MotionControl { awaitFrames(5) }
+                )
+                // Same as above, just not recording before. Must not make a difference
+                .containsExactly(103, 104, 105, 106, 107)
+                .inOrder()
+        }
 
     @Test
-    fun recordMotion_motionControl_recordBeforeAndAfter() {
-        assertThatFrameCountValues(recordBefore = true, recordAfter = true) { awaitFrames(1) }
-            // after represents the state when the composable is idle, no matter how long the
-            // recording took
-            .containsExactly(/* before */ 2, 103, /* after */ 116)
-            .inOrder()
-    }
+    fun recordMotion_motionControl_recordBeforeAndAfter() =
+        motionRule.runTest {
+            assertThatFrameCountValues(
+                    recordBefore = true,
+                    recordAfter = true,
+                    MotionControl { awaitFrames(1) }
+                )
+                // after represents the state when the composable is idle, no matter how long the
+                // recording took
+                .containsExactly(/* before */ 2, 103, /* after */ 116)
+                .inOrder()
+        }
 
     @Test
-    fun recordMotion_motionControl_delayStartRecording() {
-        assertThatFrameCountValues(recordBefore = true, recordAfter = false) {
-                // adjust the recording start by two frames.
-                val onStartRecording = delayStartRecording()
-                awaitFrames(2)
-                onStartRecording()
-                awaitFrames(5)
-            }
-            // Start recording is delayed, readyToPlay is still after frame 2 (before is captured
-            // just before the flag is flipped)
-            .containsExactly(/* before */ 2, 105, 106, 107, 108, 109)
-            .inOrder()
-    }
+    fun recordMotion_motionControl_delayStartRecording() =
+        motionRule.runTest {
+            assertThatFrameCountValues(
+                    recordBefore = true,
+                    recordAfter = false,
+                    MotionControl(delayRecording = { awaitFrames(2) }) { awaitFrames(5) }
+                )
+                // Start recording is delayed, readyToPlay is still after frame 2 (before is
+                // captured
+                // just before the flag is flipped)
+                .containsExactly(/* before */ 2, 105, 106, 107, 108, 109)
+                .inOrder()
+        }
 
     @Test
-    fun recordMotion_motionControl_delayStartRecording_zeroDelay_hasNoEffect() {
-        assertThatFrameCountValues(recordBefore = true, recordAfter = false) {
-                val onStartRecording = delayStartRecording()
-                onStartRecording()
-                awaitFrames(5)
-            }
-            // Capturing the delayStartRecording() but immediately releasing it is a no-op
-            // must result in the same as recordMotion_motionControl_recordDurationOnly
-            .containsExactly(/* before */ 2, 103, 104, 105, 106, 107)
-            .inOrder()
-    }
+    fun recordMotion_motionControl_delayReadyToPlay() =
+        motionRule.runTest {
+            assertThatFrameCountValues(
+                    recordBefore = true,
+                    recordAfter = false,
+                    MotionControl(delayReadyToPlay = { awaitFrames(2) }) { awaitFrames(5) }
+                )
+                // delaying readyToPlay pushes back the before recording
+                .containsExactly(/* before */ 4, 105, 106, 107, 108, 109)
+                .inOrder()
+        }
 
     @Test
-    fun recordMotion_motionControl_delayReadyToPlay() {
-        assertThatFrameCountValues(recordBefore = true, recordAfter = false) {
-                val onReadyToPlay = delayReadyToPlay()
-                awaitFrames(2)
-                onReadyToPlay()
-                awaitFrames(5)
-            }
-            // delaying readyToPlay pushes back the before recording
-            .containsExactly(/* before */ 4, 105, 106, 107, 108, 109)
-            .inOrder()
-    }
+    fun recordMotion_motionControl_delayPlayAndRecording() =
+        motionRule.runTest {
+            assertThatFrameCountValues(
+                    recordBefore = true,
+                    recordAfter = false,
+                    MotionControl(
+                        delayReadyToPlay = { awaitFrames(2) },
+                        delayRecording = { awaitFrames(3) }
+                    ) {
+                        awaitFrames(5)
+                    }
+                )
+                .containsExactly(/* before */ 4, 108, 109, 110, 111, 112)
+                .inOrder()
+        }
 
     @Test
-    fun recordMotion_motionControl_delayReadyToPlay_zeroDelay_hasNoEffect() {
-        assertThatFrameCountValues(recordBefore = true, recordAfter = false) {
-                val onReadyToPlay = delayReadyToPlay()
-                onReadyToPlay()
-                awaitFrames(5)
-            }
-            // Capturing the delayReadyToPlay() but immediately releasing it is a no-op
-            // must result in the same as recordMotion_motionControl_recordDurationOnly
-            .containsExactly(/* before */ 2, 103, 104, 105, 106, 107)
-            .inOrder()
-    }
+    fun recordMotion_motionControl_awaitDelay_10ms_skipsOneFrame() =
+        motionRule.runTest {
+            assertThatFrameCountValues(
+                    recordBefore = false,
+                    recordAfter = false,
+                    MotionControl { awaitDelay(10.milliseconds) }
+                )
+                .hasSize(1)
+        }
 
     @Test
-    fun recordMotion_motionControl_delayPlayAndRecording() {
-        assertThatFrameCountValues(recordBefore = true, recordAfter = false) {
-                val onReadyToPlay = delayReadyToPlay()
-                val onStartRecording = delayStartRecording()
-                awaitFrames(2)
-
-                onReadyToPlay()
-                awaitFrames(3)
-
-                onStartRecording()
-                awaitFrames(5)
-            }
-            .containsExactly(/* before */ 4, 108, 109, 110, 111, 112)
-            .inOrder()
-    }
+    fun recordMotion_motionControl_awaitDelay_16ms_skipsOneFrame() =
+        motionRule.runTest {
+            assertThatFrameCountValues(
+                    recordBefore = false,
+                    recordAfter = false,
+                    MotionControl { awaitDelay(16.milliseconds) }
+                )
+                .hasSize(1)
+        }
 
     @Test
-    fun recordMotion_motionControl_awaitDelay_10ms_skipsOneFrame() {
-        assertThatFrameCountValues(recordBefore = false, recordAfter = false) {
-                awaitDelay(10.milliseconds)
-            }
-            .hasSize(1)
-    }
+    fun recordMotion_motionControl_awaitDelay_17ms_skipsTwoFrames() =
+        motionRule.runTest {
+            assertThatFrameCountValues(
+                    recordBefore = false,
+                    recordAfter = false,
+                    MotionControl { awaitDelay(17.milliseconds) }
+                )
+                .hasSize(2)
+        }
 
     @Test
-    fun recordMotion_motionControl_awaitDelay_16ms_skipsOneFrame() {
-        assertThatFrameCountValues(recordBefore = false, recordAfter = false) {
-                awaitDelay(16.milliseconds)
-            }
-            .hasSize(1)
-    }
+    fun recordMotion_motionControl_awaitDelay_delayStartsAfterImmediately() =
+        motionRule.runTest {
+            assertThatFrameCountValues(
+                    recordBefore = false,
+                    recordAfter = false,
+                    MotionControl {
+                        // 20ms
+                        awaitDelay(10.milliseconds)
+                        awaitDelay(10.milliseconds)
+                    }
+                )
+                .hasSize(2)
+        }
 
     @Test
-    fun recordMotion_motionControl_awaitDelay_17ms_skipsTwoFrames() {
-        assertThatFrameCountValues(recordBefore = false, recordAfter = false) {
-                awaitDelay(17.milliseconds)
-            }
-            .hasSize(2)
-    }
+    fun recordMotion_motionControl_awaitDelay_roundsUpToFullDelay() =
+        motionRule.runTest {
+            assertThatFrameCountValues(
+                    recordBefore = false,
+                    recordAfter = false,
+                    MotionControl { awaitDelay(10.milliseconds) }
+                )
+                .hasSize(1)
+        }
 
     @Test
-    fun recordMotion_motionControl_awaitDelay_delayStartsAfterImmediately() {
-        assertThatFrameCountValues(recordBefore = false, recordAfter = false) {
-                // 20ms
-                awaitDelay(10.milliseconds)
-                awaitDelay(10.milliseconds)
-            }
-            .hasSize(2)
-    }
+    fun recordMotion_motionControl_awaitCondition() =
+        motionRule.runTest {
+            val checkConditionInvocationFrames = mutableListOf<Int>()
+
+            assertThatFrameCountValues(
+                    recordBefore = true,
+                    recordAfter = false,
+                    MotionControl {
+                        awaitCondition {
+                            val currentFrameCount = motionTestValueOfNode(frameCountKey)
+                            checkConditionInvocationFrames.add(currentFrameCount)
+                            currentFrameCount == 105
+                        }
+                    }
+                )
+                // Must not record the frame where the condition returned true
+                .containsExactly(/* before */ 2, 103, 104)
+                .inOrder()
+
+            assertThat(checkConditionInvocationFrames).containsExactly(103, 104, 105).inOrder()
+        }
 
     @Test
-    fun recordMotion_motionControl_awaitDelay_roundsUpToFullDelay() {
-        assertThatFrameCountValues(recordBefore = false, recordAfter = false) {
-                awaitDelay(10.milliseconds)
-            }
-            .hasSize(1)
-    }
+    fun recordMotion_motionControl_awaitConditionOnSignals() =
+        motionRule.runTest {
+            val awaitReadyToPlayInvocationFrames = mutableListOf<Int>()
+            val awaitStartRecordingInvocationFrames = mutableListOf<Int>()
+            val awaitAnimationEndInvocationFrames = mutableListOf<Int>()
 
-    @Test
-    fun recordMotion_motionControl_awaitCondition() {
-        val checkConditionInvocationFrames = mutableListOf<Int>()
+            assertThatFrameCountValues(
+                    recordBefore = true,
+                    recordAfter = false,
+                    MotionControl(
+                        delayReadyToPlay = {
+                            awaitCondition {
+                                motionTestValueOfNode(frameCountKey)
+                                    .also(awaitReadyToPlayInvocationFrames::add) == 5
+                            }
+                        },
+                        delayRecording = {
+                            awaitCondition {
+                                motionTestValueOfNode(frameCountKey)
+                                    .also(awaitStartRecordingInvocationFrames::add) == 107
+                            }
+                        }
+                    ) {
+                        awaitCondition {
+                            motionTestValueOfNode(frameCountKey)
+                                .also(awaitAnimationEndInvocationFrames::add) == 110
+                        }
+                    }
+                )
+                .containsExactly(/* before */ 6, 108, 109)
+                .inOrder()
 
-        assertThatFrameCountValues(recordBefore = true, recordAfter = false) {
-                awaitCondition {
-                    val currentFrameCount = motionTestValueOfNode(frameCountKey)
-                    checkConditionInvocationFrames.add(currentFrameCount)
-                    currentFrameCount == 105
-                }
-            }
-            // Must not record the frame where the condition returned true
-            .containsExactly(/* before */ 2, 103, 104)
-            .inOrder()
-
-        assertThat(checkConditionInvocationFrames).containsExactly(103, 104, 105).inOrder()
-    }
-
-    @Test
-    fun recordMotion_motionControl_awaitConditionOnSignals() {
-        val awaitReadyToPlayInvocationFrames = mutableListOf<Int>()
-        val awaitStartRecordingInvocationFrames = mutableListOf<Int>()
-        val awaitAnimationEndInvocationFrames = mutableListOf<Int>()
-
-        assertThatFrameCountValues(recordBefore = true, recordAfter = false) {
-                val onReadyToPlay = delayReadyToPlay()
-                val onStartRecording = delayStartRecording()
-
-                awaitCondition {
-                    motionTestValueOfNode(frameCountKey)
-                        .also(awaitReadyToPlayInvocationFrames::add) == 5
-                }
-
-                onReadyToPlay()
-
-                awaitCondition {
-                    motionTestValueOfNode(frameCountKey)
-                        .also(awaitStartRecordingInvocationFrames::add) == 107
-                }
-
-                onStartRecording()
-
-                awaitCondition {
-                    motionTestValueOfNode(frameCountKey)
-                        .also(awaitAnimationEndInvocationFrames::add) == 110
-                }
-            }
-            .containsExactly(/* before */ 6, 108, 109)
-            .inOrder()
-
-        assertThat(awaitReadyToPlayInvocationFrames).containsExactly(1, 2, 3, 4, 5).inOrder()
-        // 6 (and not 106) as this method is invoked immediately after readyToPlay was flipped, and
-        // no recomposition happened yet.
-        assertThat(awaitStartRecordingInvocationFrames).containsExactly(6, 107).inOrder()
-        assertThat(awaitAnimationEndInvocationFrames).containsExactly(108, 109, 110).inOrder()
-    }
+            assertThat(awaitReadyToPlayInvocationFrames).containsExactly(1, 2, 3, 4, 5).inOrder()
+            // 6 (and not 106) as this method is invoked immediately after readyToPlay was flipped,
+            // and no recomposition happened yet.
+            assertThat(awaitStartRecordingInvocationFrames).containsExactly(6, 107).inOrder()
+            assertThat(awaitAnimationEndInvocationFrames).containsExactly(108, 109, 110).inOrder()
+        }
 
     /** @see assertThatFrameCountValues */
-    private fun assertThatFrameCountValuesImpl(
+    private fun MotionTestRule<ComposeToolkit>.assertThatFrameCountValuesImpl(
         recordBefore: Boolean,
         recordAfter: Boolean,
-        motionControl: suspend MotionControlScope.() -> Unit,
+        motionControl: MotionControl,
     ): IterableSubject {
         val motion =
-            motionRule.recordMotion(
+            recordMotion(
                 content = { play ->
                     var frameCount by remember { mutableStateOf(0) }
                     LaunchedEffect(Unit) {
@@ -466,6 +621,7 @@ class ComposeToolkitTest {
     }
 
     companion object {
-        val frameCountKey = MotionTestValueKey<Int>("frameCount")
+        private val frameCountKey = MotionTestValueKey<Int>("frameCount")
+        private val pointerOffsetKey = MotionTestValueKey<Offset>("pointerOffset")
     }
 }
