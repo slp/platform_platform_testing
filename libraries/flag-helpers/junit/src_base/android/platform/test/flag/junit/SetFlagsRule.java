@@ -147,7 +147,10 @@ public final class SetFlagsRule implements TestRule {
      *
      * @param fullFlagNames The name of the flags in the flag class with the format
      *     {packageName}.{flagName}
+     *
+     * @deprecated Annotate your test or class with <code>@EnableFlags(String...)</code> instead
      */
+    @Deprecated
     public void enableFlags(String... fullFlagNames) {
         if (!mIsRuleEvaluating) {
             throw new IllegalStateException("Not allowed to set flags outside test and setup code");
@@ -165,7 +168,10 @@ public final class SetFlagsRule implements TestRule {
      *
      * @param fullFlagNames The name of the flags in the flag class with the format
      *     {packageName}.{flagName}
+     *
+     * @deprecated Annotate your test or class with <code>@DisableFlags(String...)</code> instead
      */
+    @Deprecated
     public void disableFlags(String... fullFlagNames) {
         if (!mIsRuleEvaluating) {
             throw new IllegalStateException("Not allowed to set flags outside test and setup code");
