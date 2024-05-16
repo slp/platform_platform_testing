@@ -21,7 +21,6 @@ import android.tools.traces.executeShellCommand
 import android.tools.traces.io.IoUtils
 import com.android.internal.protolog.common.LogLevel
 import java.io.File
-import java.io.FileOutputStream
 import java.util.concurrent.locks.ReentrantLock
 import perfetto.protos.PerfettoConfig
 import perfetto.protos.PerfettoConfig.DataSourceConfig
@@ -49,7 +48,8 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
         traceFile = File.createTempFile(traceType.fileName, "")
         traceFileInPerfettoDir = PERFETTO_TRACES_DIR.resolve(requireNotNull(traceFile).name)
 
-        FileOutputStream(configFile).use { config.writeTo(it) }
+        configFile.writeBytes(config.toByteArray())
+
         // Experiment for sporadic failures like b/333220956.
         // The perfetto command below sometimes fails to find the config file on disk,
         // so let's try to wait till the file exists on disk.

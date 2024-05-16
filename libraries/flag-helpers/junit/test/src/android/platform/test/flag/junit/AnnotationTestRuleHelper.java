@@ -35,12 +35,20 @@ import java.util.List;
 
 class AnnotationTestRuleHelper {
     private Class<?> mTestClass = null;
+    private TestRule mClassRule = null;
+    private TestCode mPreTestCode = null;
     private TestRule mTestRule = null;
     private TestCode mTestCode = null;
     private List<Annotation> mMethodAnnotations = new ArrayList<>();
 
     AnnotationTestRuleHelper(TestRule testRule) {
         mTestRule = testRule;
+    }
+
+    /** Set a ClassRule to invoke before the main TestRule */
+    AnnotationTestRuleHelper setClassRule(TestRule classRule) {
+        mClassRule = classRule;
+        return this;
     }
 
     /** set test class with annotations for the example test */
@@ -73,8 +81,17 @@ class AnnotationTestRuleHelper {
         return this;
     }
 
-    /** produce a Description */
-    Description buildDescription() {
+    /** produce a Description for the test class */
+    private Description buildClassDescription() {
+        if (mTestClass == null) {
+            return Description.createSuiteDescription("testClass");
+        } else {
+            return Description.createSuiteDescription(mTestClass);
+        }
+    }
+
+    /** produce a Description for the test method */
+    private Description buildTestDescription() {
         Annotation[] methodAnnotations = mMethodAnnotations.toArray(new Annotation[0]);
         if (mTestClass == null) {
             return Description.createTestDescription("testClass", "testMethod", methodAnnotations);
@@ -83,13 +100,24 @@ class AnnotationTestRuleHelper {
         }
     }
 
+    /**
+     * set the test code that executes within the ClassRule but before the TestRule. This
+     * approximates the time period where test class initialization.
+     */
+    AnnotationTestRuleHelper setPreTestCode(TestCode preTestCode) {
+        mPreTestCode = preTestCode;
+        return this;
+    }
+
+    /** set the test code that executes within the TestRule */
     AnnotationTestRuleHelper setTestCode(TestCode testCode) {
         mTestCode = testCode;
         return this;
     }
 
     PreparedTest prepareTest() {
-        Statement testStatement =
+        // Wrap the test code in a Statement
+        final Statement testCodeStatement =
                 new Statement() {
                     public void evaluate() throws Throwable {
                         if (mTestCode != null) {
@@ -97,7 +125,37 @@ class AnnotationTestRuleHelper {
                         }
                     }
                 };
-        return new PreparedTest(mTestRule.apply(testStatement, buildDescription()));
+
+        // Wrap the test code with the TestRule
+        Description testDescription = buildTestDescription();
+        final Statement testRuleStatement = mTestRule.apply(testCodeStatement, testDescription);
+
+        // Wrap to prefix the entire test with the preTestCode
+        final Statement preTestStatement;
+        if (mPreTestCode == null) {
+            preTestStatement = testRuleStatement;
+        } else {
+            preTestStatement =
+                    new Statement() {
+                        public void evaluate() throws Throwable {
+                            mPreTestCode.evaluate();
+                            testRuleStatement.evaluate();
+                        }
+                    };
+        }
+
+        // Wrap the entire test with the ClassRule
+        final Statement classRuleStatement;
+        if (mClassRule == null) {
+            classRuleStatement = preTestStatement;
+        } else {
+            Description classDescription = buildClassDescription();
+            classDescription.addChild(testDescription);
+            classRuleStatement = mClassRule.apply(preTestStatement, classDescription);
+        }
+
+        // Wrap the statement in a PreparedTest which can assert on the result of running the test
+        return new PreparedTest(classRuleStatement);
     }
 
     static class PreparedTest {
