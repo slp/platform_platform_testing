@@ -20,6 +20,7 @@ import android.tools.flicker.subject.exceptions.FlickerAssertionError
 import android.tools.flicker.subject.exceptions.FlickerAssertionWrapperError
 import android.tools.io.Reader
 import android.tools.withTracing
+import org.junit.AssumptionViolatedException
 
 class ReaderAssertionRunner(
     private val resultReader: Reader,
@@ -30,12 +31,14 @@ class ReaderAssertionRunner(
             resultReader.executionError ?: doRunAssertion(assertion)
         }
 
-    private fun doRunAssertion(assertion: AssertionData): FlickerAssertionError? {
+    private fun doRunAssertion(assertion: AssertionData): Throwable? {
         return withTracing("ReaderAssertionRunner#doRunAssertion") {
             try {
                 assertion.checkAssertion(subjectsParser)
                 null
             } catch (error: FlickerAssertionError) {
+                error
+            } catch (error: AssumptionViolatedException) {
                 error
             } catch (error: Throwable) {
                 // Wrap other assertions or failures into a FlickerAssertionError

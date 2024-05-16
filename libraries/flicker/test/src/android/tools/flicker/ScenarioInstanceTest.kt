@@ -18,6 +18,7 @@ package android.tools.flicker
 
 import android.tools.Rotation
 import android.tools.Timestamps
+import android.tools.flicker.assertions.AssertionResult
 import android.tools.flicker.assertions.FlickerTest
 import android.tools.flicker.assertors.AssertionTemplate
 import android.tools.flicker.config.FlickerConfigEntry
@@ -99,13 +100,13 @@ class ScenarioInstanceTest {
         val multipleAssertionResult =
             results.first { it.name == "MY_CUSTOM_SCENARIO::myAssertionMultiple" }
 
-        Truth.assertThat(singleAssertionResult.failed).isTrue()
+        Truth.assertThat(singleAssertionResult.status).isEqualTo(AssertionResult.Status.FAIL)
         Truth.assertThat(singleAssertionResult.assertionErrors).hasSize(1)
         Truth.assertThat(singleAssertionResult.assertionErrors.first())
             .hasMessageThat()
             .startsWith(errorMessage)
 
-        Truth.assertThat(multipleAssertionResult.failed).isTrue()
+        Truth.assertThat(multipleAssertionResult.status).isEqualTo(AssertionResult.Status.FAIL)
         Truth.assertThat(multipleAssertionResult.assertionErrors).hasSize(2)
         Truth.assertThat(multipleAssertionResult.assertionErrors.first())
             .hasMessageThat()
@@ -168,14 +169,14 @@ class ScenarioInstanceTest {
         Truth.assertThat(results.map { it.name }).contains("MY_CUSTOM_SCENARIO::myAssertion2")
 
         val assertion1Result = results.first { it.name == "MY_CUSTOM_SCENARIO::myAssertion1" }
-        Truth.assertThat(assertion1Result.failed).isTrue()
+        Truth.assertThat(assertion1Result.status).isEqualTo(AssertionResult.Status.FAIL)
         Truth.assertThat(assertion1Result.assertionErrors).hasSize(1)
         Truth.assertThat(assertion1Result.assertionErrors.first())
             .hasMessageThat()
             .startsWith(errorMessage)
 
         val assertion2Result = results.first { it.name == "MY_CUSTOM_SCENARIO::myAssertion2" }
-        Truth.assertThat(assertion2Result.failed).isTrue()
+        Truth.assertThat(assertion2Result.status).isEqualTo(AssertionResult.Status.FAIL)
         Truth.assertThat(assertion2Result.assertionErrors).hasSize(2)
         Truth.assertThat(assertion2Result.assertionErrors.first().message)
             .contains("Some flicker error")

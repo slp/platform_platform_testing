@@ -22,6 +22,7 @@ import android.tools.flicker.assertors.AssertionTemplate
 import android.tools.flicker.subject.exceptions.SimpleFlickerAssertionError
 import android.tools.io.Reader
 import com.google.common.truth.Truth
+import org.junit.Assume
 import org.junit.Test
 import org.mockito.Mockito
 
@@ -77,9 +78,40 @@ class ScenarioAssertionTest {
 
         val result = scenarioAssertion.execute()
 
-        Truth.assertThat(result.failed).isTrue()
+        Truth.assertThat(result.status).isEqualTo(AssertionResult.Status.FAIL)
         Truth.assertThat(result.assertionErrors).hasSize(1)
-        Truth.assertThat(result.assertionErrors.first()).hasMessageThat()
+        Truth.assertThat(result.assertionErrors.first())
+            .hasMessageThat()
             .contains("expected: efg\nbut was : abc")
+    }
+
+    @Test
+    fun supportsRunningAssertionsWithAssumptionViolations() {
+        val mockReader = Mockito.mock(Reader::class.java)
+        val mockScenarioInstance = Mockito.mock(ScenarioInstance::class.java)
+
+        val assertionTemplate =
+            object : AssertionTemplate("MyCustomAssertion") {
+                override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
+                    Assume.assumeTrue(false)
+                }
+            }
+
+        val scenarioAssertion =
+            ScenarioAssertionImpl(
+                name = "My Assertion",
+                reader = mockReader,
+                assertionData = assertionTemplate.createAssertions(mockScenarioInstance),
+                stabilityGroup = AssertionInvocationGroup.BLOCKING,
+                assertionExtraData = mapOf()
+            )
+
+        val result = scenarioAssertion.execute()
+
+        Truth.assertThat(result.status).isEqualTo(AssertionResult.Status.ASSUMPTION_VIOLATION)
+        Truth.assertThat(result.assumptionViolations).hasSize(1)
+        Truth.assertThat(result.assumptionViolations.first())
+            .hasMessageThat()
+            .isEqualTo("got: <false>, expected: is <true>")
     }
 }
