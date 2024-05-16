@@ -38,9 +38,10 @@ import org.junit.runners.model.Statement
 import platform.test.screenshot.BitmapDiffer
 import platform.test.screenshot.DeviceEmulationRule
 import platform.test.screenshot.DeviceEmulationSpec
-import platform.test.screenshot.GoldenPathManager
-import platform.test.screenshot.MaterialYouColorsRule
 import platform.test.screenshot.FontsRule
+import platform.test.screenshot.GoldenPathManager
+import platform.test.screenshot.HardwareRenderingRule
+import platform.test.screenshot.MaterialYouColorsRule
 import platform.test.screenshot.ScreenshotActivity
 import platform.test.screenshot.ScreenshotAsserterFactory
 import platform.test.screenshot.ScreenshotTestRule
@@ -56,22 +57,28 @@ class ComposeScreenshotTestRule(
 ) : TestRule, BitmapDiffer by screenshotRule, ScreenshotAsserterFactory by screenshotRule {
     private val colorsRule = MaterialYouColorsRule()
     private val fontsRule = FontsRule()
+    private val hardwareRenderingRule = HardwareRenderingRule()
     private val deviceEmulationRule = DeviceEmulationRule(emulationSpec)
     val composeRule = createAndroidComposeRule<ScreenshotActivity>()
 
-    // As denoted in `MaterialYouColorsRule` and `FontsRule`, these two rules need to come first,
-    // though their relative orders are not critical.
-    private val delegateRule =
-        RuleChain.outerRule(colorsRule)
-            .around(deviceEmulationRule)
+    private val commonRule =
+        RuleChain.outerRule(deviceEmulationRule)
             .around(screenshotRule)
             .around(composeRule)
-    private val roboRule = RuleChain.outerRule(fontsRule).around(delegateRule)
+
+    // As denoted in `MaterialYouColorsRule` and `FontsRule`, these two rules need to come first,
+    // though their relative orders are not critical.
+    private val deviceRule = RuleChain.outerRule(colorsRule).around(commonRule)
+    private val roboRule =
+        RuleChain.outerRule(fontsRule)
+            .around(colorsRule)
+            .around(hardwareRenderingRule)
+            .around(commonRule)
     private val matcher = UnitTestBitmapMatcher
     private val isRobolectric = Build.FINGERPRINT.contains("robolectric")
 
     override fun apply(base: Statement, description: Description): Statement {
-        val ruleToApply = if (isRobolectric) roboRule else delegateRule
+        val ruleToApply = if (isRobolectric) roboRule else deviceRule
         return ruleToApply.apply(base, description)
     }
 
