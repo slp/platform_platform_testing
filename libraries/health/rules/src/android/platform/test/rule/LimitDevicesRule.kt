@@ -18,6 +18,8 @@ package android.platform.test.rule
 import android.os.Build
 import android.platform.test.rule.DeviceProduct.CF_PHONE
 import android.platform.test.rule.DeviceProduct.CF_TABLET
+import android.util.Log
+import androidx.test.platform.app.InstrumentationRegistry
 import kotlin.annotation.AnnotationRetention.RUNTIME
 import kotlin.annotation.AnnotationTarget.CLASS
 import kotlin.annotation.AnnotationTarget.FUNCTION
@@ -42,6 +44,15 @@ annotation class DeniedDevices(vararg val denied: DeviceProduct)
 annotation class ScreenshotTestDevices(vararg val allowed: DeviceProduct = [CF_PHONE, CF_TABLET])
 
 /**
+ * Only runs the test on [flakyProducts] if this configuration is running flaky tests (see
+ * runningFlakyTests parameter on [LimitDevicesRule] constructor Runs it normally on all other
+ * devices.
+ */
+@Retention(RUNTIME)
+@Target(FUNCTION, CLASS)
+annotation class FlakyDevices(vararg val flaky: DeviceProduct)
+
+/**
  * Ignore LimitDevicesRule constraints when [ignoreLimit] is true. Main use case is to allow local
  * builds to bypass [LimitDevicesRule] and be able to run on any devices.
  */
@@ -50,17 +61,22 @@ annotation class ScreenshotTestDevices(vararg val allowed: DeviceProduct = [CF_P
 /**
  * Limits a test to run specified devices.
  *
- * Devices are specified by [AllowedDevices], [DeniedDevices] and [ScreenshotTestDevices]
- * annotations. Only one annotation on class or one per test is supported. Values are matched
- * against [thisDevice].
+ * Devices are specified by [AllowedDevices], [DeniedDevices], [ScreenshotTestDevices], and
+ * [FlakyDevices] annotations. Only one annotation on class or one per test is supported. Values are
+ * matched against [thisDevice].
+ *
+ * To read the instrumentation args to determine whether to run on [FlakyDevices] (recommended), use
+ * [readParamsFromInstrumentation] to construct the rule
  *
  * NOTE: It's not encouraged to use this to filter if it's possible to filter based on other device
  * characteristics. For example, to run a test only only on large screens or foldable,
  * [DeviceTypeRule] is encouraged. This rule should **never** be used to avoid running a test on a
  * tablet when the test is broken.
  */
-class LimitDevicesRule(private val thisDevice: String = Build.PRODUCT) : TestRule {
-
+class LimitDevicesRule(
+    private val thisDevice: String = Build.PRODUCT,
+    private val runningFlakyTests: Boolean = false
+) : TestRule {
     override fun apply(base: Statement, description: Description): Statement {
         if (description.ignoreLimit()) {
             return base
@@ -79,6 +95,15 @@ class LimitDevicesRule(private val thisDevice: String = Build.PRODUCT) : TestRul
             )
         }
 
+        val flakyDevices = description.flakyDevices()
+        if (thisDevice in flakyDevices) {
+            if (!runningFlakyTests) {
+                return makeAssumptionViolatedStatement(
+                    "Skipping test as $thisDevice is flaky and this config excludes fakes"
+                )
+            }
+        }
+
         val allowedDevices = description.allowedDevices()
         if (allowedDevices.isEmpty() || thisDevice in allowedDevices) {
             return base
@@ -89,38 +114,60 @@ class LimitDevicesRule(private val thisDevice: String = Build.PRODUCT) : TestRul
     }
 
     private fun Description.allowedDevices(): List<String> =
-        listOfNotNull(
-                getAnnotation(AllowedDevices::class.java)?.allowed,
-                getAnnotation(ScreenshotTestDevices::class.java)?.allowed,
-                testClass?.getClassAnnotation(AllowedDevices::class.java)?.allowed,
-                testClass?.getClassAnnotation(ScreenshotTestDevices::class.java)?.allowed,
+        listOf(
+                getMostSpecificAnnotation<AllowedDevices>()?.allowed,
+                getMostSpecificAnnotation<ScreenshotTestDevices>()?.allowed
             )
-            .flatMap { devices -> devices.map { it.product } }
+            .collectProducts()
 
     private fun Description.deniedDevices(): List<String> =
-        listOfNotNull(
-                getAnnotation(DeniedDevices::class.java)?.denied,
-                testClass?.getClassAnnotation(DeniedDevices::class.java)?.denied
-            )
-            .flatMap { devices -> devices.map { it.product } }
+        listOf(getMostSpecificAnnotation<DeniedDevices>()?.denied).collectProducts()
+
+    private fun Description.flakyDevices(): List<String> =
+        listOf(getMostSpecificAnnotation<FlakyDevices>()?.flaky).collectProducts()
 
     private fun Description.limitDevicesAnnotation(): Set<Annotation> =
         listOfNotNull(
-                getAnnotation(AllowedDevices::class.java),
-                getAnnotation(DeniedDevices::class.java),
-                getAnnotation(ScreenshotTestDevices::class.java),
-                testClass?.getClassAnnotation(AllowedDevices::class.java),
-                testClass?.getClassAnnotation(DeniedDevices::class.java),
-                testClass?.getClassAnnotation(ScreenshotTestDevices::class.java)
+                getMostSpecificAnnotation<AllowedDevices>(),
+                getMostSpecificAnnotation<DeniedDevices>(),
+                getMostSpecificAnnotation<ScreenshotTestDevices>(),
+                getMostSpecificAnnotation<FlakyDevices>()
             )
             .toSet()
 
     private fun Description.ignoreLimit(): Boolean =
         getAnnotation(IgnoreLimit::class.java)?.ignoreLimit == true ||
-            testClass?.getClassAnnotation(IgnoreLimit::class.java)?.ignoreLimit == true
+            testClass?.getClassAnnotation<IgnoreLimit>()?.ignoreLimit == true
 
-    private fun <T : Annotation> Class<*>.getClassAnnotation(java: Class<T>) =
-        getLowestAncestorClassAnnotation(this, java)
+    private inline fun <reified T : Annotation> Description.getMostSpecificAnnotation(): T? {
+        getAnnotation(T::class.java)?.let {
+            return it
+        }
+        return testClass?.getClassAnnotation<T>()
+    }
+
+    private inline fun <reified T : Annotation> Class<*>.getClassAnnotation() =
+        getLowestAncestorClassAnnotation(this, T::class.java)
+
+    private fun List<Array<out DeviceProduct>?>.collectProducts() =
+        filterNotNull().flatMap { it.toList() }.map { it.product }
+
+    companion object {
+        private fun isRunningFlakyTests(): Boolean {
+            val args = InstrumentationRegistry.getArguments()
+            val isRunning = args.getString(RUNNING_FLAKY_TESTS_KEY, "false").toBoolean()
+            if (isRunning) {
+                Log.d(TAG, "Running on flaky devices, due to $RUNNING_FLAKY_TESTS_KEY param.")
+            }
+            return isRunning
+        }
+
+        fun readParamsFromInstrumentation(thisDevice: String = Build.PRODUCT) =
+            LimitDevicesRule(thisDevice, isRunningFlakyTests())
+
+        private const val RUNNING_FLAKY_TESTS_KEY = "running-flaky-tests"
+        private const val TAG = "LimitDevicesRule"
+    }
 }
 
 enum class DeviceProduct(val product: String) {
