@@ -61,7 +61,8 @@ public class GhidraPreparer extends BaseTargetPreparer {
     private File mGhidraZipFile = null; // Stores the ghidra zip file
     private File mCacheDir = null; // Refers to the ghidra cache directory
     private URI mGhidraZipUri = null; // Stores the url to download ghidra zip
-    private String mPreviousPropertyVal = null;
+    private String mPreviousPropertyVal = null; // To restore analyzeHeadless path set in other runs
+    private Optional<String> mGhidraZipNameFromBl = Optional.empty();
 
     @Option(
             name = "ghidra-tag",
@@ -78,20 +79,28 @@ public class GhidraPreparer extends BaseTargetPreparer {
     public void setUp(TestInformation testInformation)
             throws DeviceNotAvailableException, BuildError, TargetSetupError {
         synchronized (LOCK_SETUP) {
+            mGhidraZipNameFromBl = GhidraBusinessLogicHandler.getReleaseAssetName();
+            String ghidraZipName =
+                    mGhidraZipNameFromBl.isPresent() ? mGhidraZipNameFromBl.get() : "ghidra.zip";
+            ghidraZipName = (mAssetName == null) ? ghidraZipName : mAssetName;
             try {
-                // Fetch value of property 'ghidra_analyze_headless'
+                // Fetch value of property 'ghidra_analyze_headless' to restore later
                 mPreviousPropertyVal = testInformation.properties().get(PROPERTY_KEY);
 
-                // Fetch the ghidra zip name and url to download ghidra
-                Map.Entry<String, URI> assetNameToUri = getZipNameAndUri();
-                String ghidraZipName = assetNameToUri.getKey();
-                mGhidraZipUri = assetNameToUri.getValue();
-
-                // Create required directories, download ghidra and extract the zip at
+                // Check if Ghidra zip was manually downloaded. If not then create required
+                // directories, download ghidra and extract the zip at
                 // /tmp/tradefed_ghidra/<mGhidraZipDir>/<ghidra_zip_here>
-                File ghidraDir = Paths.get("tradefed_ghidra", ghidraZipName).toFile();
-                mGhidraZipDir = createNamedTempDir(ghidraDir.getPath());
-                mCacheDir = createNamedTempDir("ghidra_cache");
+                if (!Paths.get("/tmp/tradefed_ghidra", ghidraZipName).toFile().exists()) {
+                    Map.Entry<String, URI> assetNameToUri = getZipNameAndUri();
+                    ghidraZipName = assetNameToUri.getKey();
+                    mGhidraZipUri = assetNameToUri.getValue();
+                    mGhidraZipDir =
+                            createNamedTempDir(
+                                    Paths.get("tradefed_ghidra", ghidraZipName).toString());
+                    mCacheDir = createNamedTempDir("ghidra_cache");
+                } else {
+                    mGhidraZipDir = Paths.get("/tmp/tradefed_ghidra", ghidraZipName).toFile();
+                }
 
                 // If 'analyzeHeadless' already exists add path to properties and return.
                 String analyzeHeadlessPath = getAnalyzeHeadlessPath();
@@ -100,21 +109,15 @@ public class GhidraPreparer extends BaseTargetPreparer {
                     return;
                 }
 
-                // Download and extract ghidra zip
-                downloadAndExtractGhidra();
+                // Download and extract ghidra zip if needed
+                lazyDownloadAndExtractGhidra();
 
                 // Add path of 'analyzeHeadless' to properties
                 analyzeHeadlessPath = getAnalyzeHeadlessPath();
                 if (analyzeHeadlessPath != null) {
                     testInformation.properties().put(PROPERTY_KEY, analyzeHeadlessPath);
                 } else {
-                    throw new TargetSetupError(
-                            String.format(
-                                    "Failed to fetch 'analyzeHeadless' location. Ghidra"
-                                        + " 'analyzeHeadless' is not found. Please download ghidra"
-                                        + " manually at /tmp/tradefed_ghidra/%s/ from %s",
-                                    assetNameToUri.getKey() /* Ghidra zip name */,
-                                    assetNameToUri.getValue() /* Download link */));
+                    throw new TargetSetupError("Failed to fetch 'analyzeHeadless' location.");
                 }
             } catch (Exception e) {
                 // Remove the ghidra directory for the current version
@@ -129,12 +132,20 @@ public class GhidraPreparer extends BaseTargetPreparer {
                     mCacheDir = null;
                 }
                 throw new TargetSetupError(
-                        "Set up failed.", e, null /* deviceDescriptor */, false /* deviceSide */);
+                        String.format(
+                                "Please manually download ghidra from"
+                                    + " 'https://github.com/NationalSecurityAgency/ghidra/releases'"
+                                    + " to /tmp/tradefed_ghidra/%1$s/%1$s. Make sure to rename the"
+                                    + " zip to %1$s if required.",
+                                ghidraZipName),
+                        e,
+                        null /* deviceDescriptor */,
+                        false /* deviceSide */);
             }
         }
     }
 
-    private void downloadAndExtractGhidra() throws Exception {
+    private void lazyDownloadAndExtractGhidra() throws Exception {
         // Download Ghidra zip
         mGhidraZipFile = new File(mGhidraZipDir, mGhidraZipDir.getName());
         if (!mGhidraZipFile.exists()) {
@@ -165,7 +176,7 @@ public class GhidraPreparer extends BaseTargetPreparer {
     /** Fetch the first entry from the map of assetName to URI */
     private Map.Entry<String, URI> getZipNameAndUri() throws IOException, URISyntaxException {
         Optional<String> ghidraReleaseTagName = GhidraBusinessLogicHandler.getGitReleaseTagName();
-        Optional<String> ghidraReleaseAssetName = GhidraBusinessLogicHandler.getReleaseAssetName();
+        Optional<String> ghidraReleaseAssetName = mGhidraZipNameFromBl;
         if (mTagName != null) {
             ghidraReleaseTagName = Optional.of(mTagName);
         }
