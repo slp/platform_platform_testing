@@ -27,11 +27,7 @@ java_defaults {
     name: "MotionTestDefaults",
     test_config_template: ":motion_test_template",
     certificate: "platform",
-    sdk_version: "current",
     platform_apis: true,
-    optimize: {
-        enabled: false,
-    },
 }
 
 filegroup {
