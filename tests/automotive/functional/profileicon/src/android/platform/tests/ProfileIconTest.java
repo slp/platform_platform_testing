@@ -18,7 +18,6 @@ package android.platform.tests;
 
 import static junit.framework.Assert.assertTrue;
 
-import android.content.pm.UserInfo;
 import android.platform.helpers.HelperAccessor;
 import android.platform.helpers.IAutoHomeHelper;
 import android.platform.helpers.IAutoUserHelper;
@@ -55,8 +54,6 @@ public class ProfileIconTest {
     @ConditionalIgnore(condition = IgnoreOnPortrait.class)
     public void testToVerifyGuestProfile() throws Exception {
         mUsersHelper.get().switchUser("Driver", USER_NAME);
-        UserInfo guest = mMultiUserHelper.getCurrentForegroundUserInfo();
-        mMultiUserHelper.switchAndWaitForStable(guest.id, MultiUserConstants.WAIT_FOR_IDLE_TIME_MS);
         assertTrue(
                 "Failed to switch from current user to Guest Profile.",
                 USER_NAME.equals(mHomeHelper.get().getUserProfileName()));
