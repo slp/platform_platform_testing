@@ -22,6 +22,7 @@ import android.os.Bundle
 import android.tools.Cache
 import android.tools.flicker.AssertionInvocationGroup
 import android.tools.flicker.FlickerServiceResultsCollector.Companion.getKeyForAssertionResult
+import android.tools.flicker.assertions.AssertionResult
 import android.tools.flicker.assertions.ScenarioAssertion
 import java.lang.reflect.Method
 import org.junit.Assume
@@ -40,10 +41,15 @@ class FlickerServiceCachedTestCase(
         try {
             val result = assertion.execute()
 
+            if (result.status == AssertionResult.Status.ASSUMPTION_VIOLATION) {
+                throw result.assumptionViolations.first()
+            }
+
             val metricBundle = Bundle()
+
             metricBundle.putString(
                 getKeyForAssertionResult(result),
-                if (result.passed) "0" else "1"
+                if (result.status == AssertionResult.Status.PASS) "0" else "1"
             )
             SendToInstrumentation.sendBundle(instrumentation, metricBundle)
 

@@ -46,6 +46,7 @@ open class ViewScreenshotTestRule(
     private val colorsRule = MaterialYouColorsRule()
     private val fontsRule = FontsRule()
     private val timeZoneRule = TimeZoneRule()
+    private val hardwareRenderingRule = HardwareRenderingRule()
     private val deviceEmulationRule = DeviceEmulationRule(emulationSpec)
     private val activityRule = ActivityScenarioRule(ScreenshotActivity::class.java)
     private val commonRule =
@@ -55,7 +56,8 @@ open class ViewScreenshotTestRule(
     // though their relative orders are not critical.
     private val deviceRule = RuleChain.outerRule(colorsRule).around(commonRule)
     private val roboRule =
-        RuleChain.outerRule(colorsRule).around(fontsRule).around(timeZoneRule).around(commonRule)
+        RuleChain.outerRule(colorsRule).around(fontsRule).around(timeZoneRule)
+            .around(hardwareRenderingRule).around(commonRule)
     private val isRobolectric = if (Build.FINGERPRINT.contains("robolectric")) true else false
 
     var frameLimit = 10

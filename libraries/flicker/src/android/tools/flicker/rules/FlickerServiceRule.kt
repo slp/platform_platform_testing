@@ -24,6 +24,7 @@ import android.tools.flicker.FlickerServiceResultsCollector
 import android.tools.flicker.FlickerServiceTracesCollector
 import android.tools.flicker.IFlickerServiceResultsCollector
 import android.tools.flicker.annotation.FlickerTest
+import android.tools.flicker.assertions.AssertionResult
 import android.tools.flicker.config.FlickerConfig
 import android.tools.flicker.config.FlickerServiceConfig
 import android.tools.flicker.config.ScenarioId
@@ -172,7 +173,10 @@ constructor(
             return
         }
 
-        val failedMetrics = metricsCollector.resultsForTest(description).filter { it.failed }
+        val failedMetrics =
+            metricsCollector.resultsForTest(description).filter {
+                it.status == AssertionResult.Status.FAIL
+            }
         val assertionErrors = failedMetrics.flatMap { it.assertionErrors }
         assertionErrors.forEach {
             Log.e(LOG_TAG, "FaaS reported an assertion failure:")
@@ -195,7 +199,7 @@ constructor(
 
     private fun testContainsFlicker(description: Description): Boolean {
         val resultsForTest = metricsCollector.resultsForTest(description)
-        return resultsForTest.any { it.failed }
+        return resultsForTest.any { it.status == AssertionResult.Status.FAIL }
     }
 
     private fun testContainsServiceError(): Boolean {

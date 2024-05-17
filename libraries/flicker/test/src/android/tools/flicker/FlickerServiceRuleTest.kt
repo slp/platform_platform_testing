@@ -137,12 +137,15 @@ class FlickerServiceRuleTest {
 
         testRule.starting(mockDescription)
         testRule.succeeded(mockDescription)
-        try {
-            testRule.finished(mockDescription)
-            error("Exception was not thrown")
-        } catch (e: Throwable) {
-            Truth.assertThat(e).isEqualTo(assertionError)
-        }
+
+        val exception =
+            assertThrows(SimpleFlickerAssertionError::class.java) {
+                testRule.starting(mockDescription)
+                testRule.succeeded(mockDescription)
+                testRule.finished(mockDescription)
+            }
+
+        Truth.assertThat(exception).isEqualTo(assertionError)
     }
 
     @Test
@@ -238,6 +241,23 @@ class FlickerServiceRuleTest {
         testRule.finished(mockDescription)
     }
 
+    @Test
+    fun handlesAssertionsWithAssumptionFailures() {
+        val mockFlickerServiceResultsCollector =
+            Mockito.mock(IFlickerServiceResultsCollector::class.java)
+        val testRule =
+            FlickerServiceRule(
+                metricsCollector = mockFlickerServiceResultsCollector,
+                failTestOnFlicker = true
+            )
+        val mockDescription = Description.createTestDescription(this::class.java, "mockTest")
+
+        testRule.starting(mockDescription)
+        testRule.succeeded(mockDescription)
+
+        testRule.finished(mockDescription)
+    }
+
     companion object {
         fun mockFailureAssertionResult(error: FlickerAssertionError) =
             object : AssertionResult {
@@ -250,9 +270,10 @@ class FlickerServiceRuleTest {
                             }
                         }
                     )
+                override val assumptionViolations = emptyList<AssumptionViolatedException>()
                 override val assertionErrors = listOf(error)
                 override val stabilityGroup = AssertionInvocationGroup.BLOCKING
-                override val passed = false
+                override val status = AssertionResult.Status.FAIL
             }
 
         @ClassRule @JvmField val ENV_CLEANUP = CleanFlickerEnvironmentRule()

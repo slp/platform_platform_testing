@@ -203,7 +203,7 @@ class FlickerServiceResultsCollector(
                     assertionResultsByTest[description] = results
                     detectedScenariosByTest[description] = scenarios.map { it.type }.distinct()
                 }
-                if (results.any { it.failed }) {
+                if (results.any { it.status == AssertionResult.Status.FAIL }) {
                     reader.artifact.updateStatus(RunStatus.ASSERTION_FAILED)
                 } else {
                     reader.artifact.updateStatus(RunStatus.ASSERTION_SUCCESS)
@@ -246,7 +246,12 @@ class FlickerServiceResultsCollector(
         while (it.hasNext()) {
             val (key, aggregatedResult) = it.next()
             aggregatedResult.results.forEachIndexed { index, result ->
-                val resultStatus = if (result.passed) 0 else 1
+                if (result.status == AssertionResult.Status.ASSUMPTION_VIOLATION) {
+                    // skip
+                    return@forEachIndexed
+                }
+
+                val resultStatus = if (result.status == AssertionResult.Status.PASS) 0 else 1
                 Log.v(LOG_TAG, "Adding metric ${key}_$index = $resultStatus")
                 data.addStringMetric("${key}_$index", "$resultStatus")
             }
@@ -282,7 +287,7 @@ class FlickerServiceResultsCollector(
         dataRecord: DataRecord
     ) {
         val status = if (executionErrors.isEmpty()) OK_STATUS_CODE else EXECUTION_ERROR_STATUS_CODE
-        record.addStringMetric("${FAAS_METRICS_PREFIX}_STATUS", status.toString())
+        record.addStringMetric(FAAS_STATUS_KEY, status.toString())
 
         val maxLineLength = 120
         val statusFile = createFlickerServiceStatusFile(scenario)
@@ -310,7 +315,7 @@ class FlickerServiceResultsCollector(
                 buildString {
                         results?.forEach {
                             append("${it.name} (${it.stabilityGroup}) :: ")
-                            append((if (it.passed) "PASS" else "FAIL") + "\n")
+                            append("${it.status}\n")
                             appendLine(
                                 it.assertionErrors
                                     .joinToString("\n${"-".repeat(maxLineLength / 2)}\n\n") { error
@@ -344,6 +349,7 @@ class FlickerServiceResultsCollector(
         // Unique prefix to add to all FaaS metrics to identify them
         const val FAAS_METRICS_PREFIX = "FAAS"
         private const val LOG_TAG = "$FLICKER_TAG-Collector"
+        const val FAAS_STATUS_KEY = "${FAAS_METRICS_PREFIX}_STATUS"
         const val WINSCOPE_FILE_PATH_KEY = "winscope_file_path"
         const val FAAS_RESULTS_FILE_PATH_KEY = "faas_results_file_path"
         const val FLICKER_ASSERTIONS_COUNT_KEY = "flicker_assertions_count"
@@ -358,19 +364,20 @@ class FlickerServiceResultsCollector(
             val results = mutableListOf<AssertionResult>()
             var failures = 0
             var passes = 0
+            var assumptionViolations = 0
             val errors = mutableListOf<String>()
             var invocationGroup: AssertionInvocationGroup? = null
 
             fun addResult(result: AssertionResult) {
                 results.add(result)
 
-                if (result.failed) {
-                    failures++
-                    result.assertionErrors.forEach {
-                        errors.add(it.message ?: "FAILURE WITHOUT ERROR MESSAGE...")
+                when (result.status) {
+                    AssertionResult.Status.PASS -> passes++
+                    AssertionResult.Status.FAIL -> {
+                        failures++
+                        result.assertionErrors.forEach { errors.add(it.message) }
                     }
-                } else {
-                    passes++
+                    AssertionResult.Status.ASSUMPTION_VIOLATION -> assumptionViolations++
                 }
 
                 if (invocationGroup == null) {

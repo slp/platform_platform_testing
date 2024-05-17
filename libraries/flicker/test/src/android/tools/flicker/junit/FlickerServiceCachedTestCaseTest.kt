@@ -56,9 +56,10 @@ class FlickerServiceCachedTestCaseTest {
                             }
                         }
                     )
+                override val assumptionViolations = emptyList<AssumptionViolatedException>()
                 override val assertionErrors = emptyList<FlickerAssertionError>()
                 override val stabilityGroup = AssertionInvocationGroup.BLOCKING
-                override val passed = true
+                override val status: AssertionResult.Status = AssertionResult.Status.PASS
             }
         Mockito.`when`(mockScenarioAssertion.execute()).thenReturn(assertionResult)
         Mockito.`when`(mockScenarioInstance.generateAssertions())
@@ -109,10 +110,11 @@ class FlickerServiceCachedTestCaseTest {
                             }
                         }
                     )
+                override val assumptionViolations = emptyList<AssumptionViolatedException>()
                 override val assertionErrors =
                     listOf<FlickerAssertionError>(SimpleFlickerAssertionError("EXPECTED"))
                 override val stabilityGroup = AssertionInvocationGroup.BLOCKING
-                override val passed = false
+                override val status = AssertionResult.Status.FAIL
             }
         Mockito.`when`(mockScenarioAssertion.execute()).thenReturn(assertionResult)
         Mockito.`when`(mockScenarioInstance.generateAssertions())
@@ -165,10 +167,12 @@ class FlickerServiceCachedTestCaseTest {
                             }
                         }
                     )
+                override val assumptionViolations: Collection<AssumptionViolatedException> =
+                    emptyList()
                 override val assertionErrors =
                     listOf<FlickerAssertionError>(SimpleFlickerAssertionError("EXPECTED"))
                 override val stabilityGroup = AssertionInvocationGroup.NON_BLOCKING
-                override val passed = false
+                override val status: AssertionResult.Status = AssertionResult.Status.FAIL
             }
         Mockito.`when`(mockScenarioAssertion.execute()).thenReturn(assertionResult)
         Mockito.`when`(mockScenarioInstance.generateAssertions())
