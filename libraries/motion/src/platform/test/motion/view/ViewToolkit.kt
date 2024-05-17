@@ -21,7 +21,6 @@ import android.animation.AnimatorSet
 import android.graphics.Bitmap
 import android.view.View
 import androidx.annotation.OptIn
-import androidx.test.annotation.ExperimentalTestApi
 import androidx.test.core.app.ActivityScenario
 import com.google.errorprone.annotations.CheckReturnValue
 import java.util.concurrent.TimeUnit
@@ -67,7 +66,6 @@ data class ViewRecordingSpec<T>(
          * @param sampling Sampling times at which to capture the animation.
          * @param timeSeriesCapture produces the time-series, invoked on each animation frame.
          */
-        @OptIn(ExperimentalTestApi::class)
         fun <T> T.capture(
             screenshotView: View,
             sampling: AnimationSampling,
