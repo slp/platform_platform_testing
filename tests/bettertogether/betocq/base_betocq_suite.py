@@ -21,6 +21,11 @@ from mobly import base_suite
 from mobly import records
 import yaml
 
+from betocq import version
+
+
+_BETOCQ_SUITE_NAME = 'BeToCQ'
+
 
 class BaseBetocqSuite(base_suite.BaseSuite):
   """Base class for BetoCQ test suites.
@@ -42,7 +47,10 @@ class BaseBetocqSuite(base_suite.BaseSuite):
         if records.TestResultEnums.RECORD_CLASS in entry
         and records.TestResultEnums.RECORD_NAME not in entry
     ]
-    class_results = {}
+    class_results = {
+      'suite_name': _BETOCQ_SUITE_NAME,
+      'run_identifier': f'v{version.TEST_SCRIPT_VERSION}',
+    }
     for entry in class_data:
       properties = entry.get('properties', {})
       for key, value in properties.items():
