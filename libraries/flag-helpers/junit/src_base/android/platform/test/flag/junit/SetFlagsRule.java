@@ -147,7 +147,10 @@ public final class SetFlagsRule implements TestRule {
      *
      * @param fullFlagNames The name of the flags in the flag class with the format
      *     {packageName}.{flagName}
+     *
+     * @deprecated Annotate your test or class with <code>@EnableFlags(String...)</code> instead
      */
+    @Deprecated
     public void enableFlags(String... fullFlagNames) {
         if (!mIsRuleEvaluating) {
             throw new IllegalStateException("Not allowed to set flags outside test and setup code");
@@ -165,7 +168,10 @@ public final class SetFlagsRule implements TestRule {
      *
      * @param fullFlagNames The name of the flags in the flag class with the format
      *     {packageName}.{flagName}
+     *
+     * @deprecated Annotate your test or class with <code>@DisableFlags(String...)</code> instead
      */
+    @Deprecated
     public void disableFlags(String... fullFlagNames) {
         if (!mIsRuleEvaluating) {
             throw new IllegalStateException("Not allowed to set flags outside test and setup code");
@@ -690,8 +696,9 @@ public final class SetFlagsRule implements TestRule {
                 throw new FlagSetException(
                         flag.fullFlagName(),
                         "This flag was locked when it was read earlier in this test. To fix this"
-                                + " error, be sure to set your flag earlier than it is read by your"
-                                + " test.",
+                                + " error, always use @EnableFlags() and @DisableFlags() to set"
+                                + " flags, which ensures flags are set before even any"
+                                + " @Before-annotated setup methods.",
                         firstReadWithinTest);
             }
             Exception firstReadOutsideTest = mFirstReadOutsideTestsByFlag.get(flag.fullFlagName());
@@ -699,19 +706,23 @@ public final class SetFlagsRule implements TestRule {
                 throw new FlagSetException(
                         flag.fullFlagName(),
                         "This flag was locked when it was read outside of the test code; likely"
-                            + " during initialization of the test class. To fix this error, move"
-                            + " test fixture initialization code into your @Before-annotated setup"
-                            + " method.",
+                                + " during initialization of the test class. To fix this error,"
+                                + " move test fixture initialization code into your"
+                                + " @Before-annotated setup method, and ensure you are using"
+                                + " @EnableFlags() and @DisableFlags() to set flags.",
                         firstReadOutsideTest);
             }
             if (!isFlagsClassMonitored(flag)) {
                 throw new FlagSetException(
                         flag.fullFlagName(),
-                        "This flag's class is not monitored. To allow flags in this class to be set"
-                                + " by SetFlagsRule, add `@UsesFlags("
+                        "This flag's class is not monitored. Always use @EnableFlags() and"
+                                + " @DisableFlags() on the class or method instead of"
+                                + " .enableFlags() or .disableFlags() to prevent this error. When"
+                                + " using FlagsParameterization, add `@UsesFlags("
                                 + flag.flagPackageName()
-                                + ".Flags.class)` to the test class, or pass that class to the"
-                                + " constructor of your SetFlagsRule.ClassRule.");
+                                + ".Flags.class)` to the test class. As a last resort, pass the"
+                                + " Flags class to the constructor of your"
+                                + " SetFlagsRule.ClassRule.");
             }
             // Detect errors where the rule messed up and set the wrong flag value.
             Boolean classLevelValue = mClassLevelSetFlagValues.get(flag.fullFlagName());
