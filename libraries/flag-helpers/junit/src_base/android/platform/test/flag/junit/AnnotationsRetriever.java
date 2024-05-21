@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -156,7 +157,7 @@ public class AnnotationsRetriever {
                                             !Objects.equals(
                                                     classFlagValues.get(flag),
                                                     methodFlagValues.get(flag)))
-                            .toList();
+                            .collect(Collectors.toList());
             if (!mismatchedFlags.isEmpty()) {
                 throw new AssertionError(
                         "The following flags are required by "
