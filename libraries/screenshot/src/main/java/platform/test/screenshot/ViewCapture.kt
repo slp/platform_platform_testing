@@ -33,7 +33,6 @@ import android.view.ViewTreeObserver.OnDrawListener
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import androidx.concurrent.futures.SuspendToFutureAdapter
-import androidx.test.annotation.ExperimentalTestApi
 import androidx.test.core.internal.os.HandlerExecutor
 import androidx.test.internal.platform.ServiceLoaderWrapper
 import androidx.test.internal.platform.os.ControlledLooper
@@ -81,7 +80,6 @@ import kotlinx.coroutines.suspendCancellableCoroutine
  *
  * This API is currently experimental and subject to change or removal.
  */
-@ExperimentalTestApi
 suspend fun View.captureToBitmap(rect: Rect? = null): Bitmap {
     val mainHandlerDispatcher = Handler(Looper.getMainLooper()).asCoroutineDispatcher()
     var bitmap: Bitmap? = null
@@ -113,7 +111,6 @@ private fun getControlledLooper(): ControlledLooper {
 }
 
 /** A ListenableFuture variant of captureToBitmap intended for use from Java. */
-@ExperimentalTestApi
 fun View.captureToBitmapAsync(rect: Rect? = null): ListenableFuture<Bitmap> {
     return SuspendToFutureAdapter.launchFuture(Dispatchers.Main) { captureToBitmap(rect) }
 }
@@ -125,7 +122,6 @@ fun View.captureToBitmapAsync(rect: Rect? = null): ListenableFuture<Bitmap> {
  */
 // TODO(b/316921934): uncomment once @ExperimentalTestApi is removed
 // @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-@ExperimentalTestApi
 suspend fun View.forceRedraw() {
     checkState(handler.looper.isCurrentThread, "Must be called from view's handler thread")
     if (Build.FINGERPRINT.contains("robolectric")) {

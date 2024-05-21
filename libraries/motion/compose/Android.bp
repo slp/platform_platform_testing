@@ -19,26 +19,14 @@ package {
 }
 
 filegroup {
-    name: "motion_test_template",
-    srcs: ["AndroidTestTemplate.xml"],
-}
-
-java_defaults {
-    name: "MotionTestDefaults",
-    test_config_template: ":motion_test_template",
-    certificate: "platform",
-    platform_apis: true,
-}
-
-filegroup {
-    name: "PlatformMotionTesting-srcs",
+    name: "PlatformMotionTestingCompose-srcs",
     srcs: [
         "src/**/*.kt",
     ],
 }
 
 android_library {
-    name: "PlatformMotionTesting",
+    name: "PlatformMotionTestingCompose",
     manifest: "AndroidManifest.xml",
     platform_apis: true,
     lint: {
@@ -48,20 +36,13 @@ android_library {
         enabled: false,
     },
     srcs: [
-        ":PlatformMotionTesting-srcs",
+        ":PlatformMotionTestingCompose-srcs",
     ],
     static_libs: [
-        "platform-screenshot-diff-core",
-        "platform-screenshot-diff-proto",
-        "uiautomator-helpers",
-        "error_prone_annotations",
-        "androidx.test.uiautomator_uiautomator",
-        "androidx.annotation_annotation",
-        "androidx.transition_transition",
-        "androidx.appcompat_appcompat",
-        "androidx.test.ext.junit",
-        "androidx.test.rules",
-        "androidx.test.runner",
-        "truth",
+        "PlatformMotionTestingComposeValues",
+        "PlatformMotionTesting",
+        "androidx.compose.runtime_runtime",
+        "androidx.compose.ui_ui",
+        "androidx.compose.ui_ui-test-junit4",
     ],
 }

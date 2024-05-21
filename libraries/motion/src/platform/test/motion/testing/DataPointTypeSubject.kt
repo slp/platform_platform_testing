@@ -21,6 +21,7 @@ import com.google.common.truth.Subject
 import com.google.common.truth.Subject.Factory
 import com.google.common.truth.Truth
 import com.google.common.truth.Truth.assertWithMessage
+import org.json.JSONArray
 import org.json.JSONObject
 import platform.test.motion.golden.DataPoint
 import platform.test.motion.golden.DataPointType
@@ -30,16 +31,40 @@ class DataPointTypeSubject<T>
 private constructor(failureMetadata: FailureMetadata, private val actual: DataPointType<T>?) :
     Subject(failureMetadata, actual) {
 
-    fun convertsJson(nativeObject: T, jsonRepresentation: String) {
+    /**
+     * Asserts that the [nativeObject] is serialized to/from the object [jsonRepresentation].
+     *
+     * The [jsonRepresentation] must be a valid JSON object, that means the string is expected to be
+     * wrapped in `{` and `}`.
+     */
+    fun convertsJsonObject(nativeObject: T, jsonRepresentation: String) {
+        convertsJson(nativeObject, jsonRepresentation) { JSONObject(it) }
+    }
+
+    /**
+     * Asserts that the [nativeObject] is serialized to/from the array [jsonRepresentation].
+     *
+     * The [jsonRepresentation] must be a valid JSON array, that means the string is expected to be
+     * wrapped in `[` and `]`.
+     */
+    fun convertsJsonArray(nativeObject: T, jsonRepresentation: String) {
+        convertsJson(nativeObject, jsonRepresentation) { JSONArray(it) }
+    }
+
+    private fun convertsJson(
+        nativeObject: T,
+        jsonRepresentation: String,
+        parseJsonRepresentation: (String) -> Any
+    ) {
         isNotNull()
         val dataPointType = checkNotNull(actual)
 
         assertWithMessage("serialize to JSON")
             .about(JsonSubject.json())
             .that(dataPointType.toJson(nativeObject))
-            .isEqualTo(JSONObject(jsonRepresentation))
+            .isEqualTo(parseJsonRepresentation(jsonRepresentation))
         assertWithMessage("deserialize from JSON")
-            .that(dataPointType.fromJson(JSONObject(jsonRepresentation)))
+            .that(dataPointType.fromJson(parseJsonRepresentation(jsonRepresentation)))
             .isEqualTo(DataPoint.of(nativeObject, dataPointType))
     }
 

@@ -8,7 +8,6 @@ import android.os.Looper
 import android.view.PixelCopy
 import android.view.Window
 import androidx.concurrent.futures.SuspendToFutureAdapter
-import androidx.test.annotation.ExperimentalTestApi
 import androidx.test.platform.graphics.HardwareRendererCompat
 import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +28,6 @@ import kotlinx.coroutines.Job
  *
  * This API is currently experimental and subject to change or removal.
  */
-@ExperimentalTestApi
 suspend fun Window.captureRegionToBitmap(boundsInWindow: Rect? = null): Bitmap {
     var bitmap: Bitmap? = null
 
@@ -46,7 +44,6 @@ suspend fun Window.captureRegionToBitmap(boundsInWindow: Rect? = null): Bitmap {
 }
 
 /** A ListenableFuture variant of captureRegionToBitmap intended for use from Java. */
-@ExperimentalTestApi
 fun Window.captureRegionToBitmapAsync(boundsInWindow: Rect? = null): ListenableFuture<Bitmap> {
     return SuspendToFutureAdapter.launchFuture(Dispatchers.Default + Job()) {
         captureRegionToBitmap(boundsInWindow)

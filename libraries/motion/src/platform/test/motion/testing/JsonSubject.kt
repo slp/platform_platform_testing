@@ -19,6 +19,7 @@ package platform.test.motion.testing
 import com.google.common.truth.FailureMetadata
 import com.google.common.truth.Subject
 import com.google.common.truth.Truth
+import org.json.JSONArray
 import org.json.JSONObject
 
 /** [Truth] subject for org.json. */
@@ -34,6 +35,10 @@ class JsonSubject private constructor(failureMetadata: FailureMetadata, private 
      */
     override fun isEqualTo(expected: Any?) {
         if (actual is JSONObject && expected is JSONObject) {
+            check("serializedJson")
+                .that(actual.toString(PRETTY_PRINT_INDENT))
+                .isEqualTo(expected.toString(PRETTY_PRINT_INDENT))
+        } else if (actual is JSONArray && expected is JSONArray) {
             check("serializedJson")
                 .that(actual.toString(PRETTY_PRINT_INDENT))
                 .isEqualTo(expected.toString(PRETTY_PRINT_INDENT))
