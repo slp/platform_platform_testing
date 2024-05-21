@@ -35,7 +35,7 @@ class DataPointTypesTest {
 
     @Test
     fun point_fromToJson() {
-        assertThat(point).convertsJson(Point(/* x = */ 1, /* y = */ 2), """{"x":1, "y": 2}""")
+        assertThat(point).convertsJsonObject(Point(/* x = */ 1, /* y = */ 2), """{"x":1, "y": 2}""")
     }
 
     @Test
@@ -54,7 +54,7 @@ class DataPointTypesTest {
     @Test
     fun rect_fromToJson() {
         assertThat(rect)
-            .convertsJson(
+            .convertsJsonObject(
                 Rect(/* left = */ 1, /* top = */ 2, /* right = */ 3, /* bottom = */ 4),
                 """{"left":1, "top": 2,"right":3, "bottom": 4}"""
             )
@@ -76,7 +76,7 @@ class DataPointTypesTest {
     @Test
     fun cornerRadii_fromToJson() {
         assertThat(cornerRadii)
-            .convertsJson(
+            .convertsJsonObject(
                 CornerRadii(FloatArray(8) { (it + 1).toFloat() }),
                 """{
                 "top_left_x": 1,

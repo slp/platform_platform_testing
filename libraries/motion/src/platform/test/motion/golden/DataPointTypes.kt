@@ -16,6 +16,8 @@
 
 package platform.test.motion.golden
 
+import org.json.JSONArray
+
 fun Float.asDataPoint() = DataPointTypes.float.makeDataPoint(this)
 
 fun Boolean.asDataPoint() = DataPointTypes.boolean.makeDataPoint(this)
@@ -71,4 +73,29 @@ object DataPointTypes {
 
     val string: DataPointType<String> =
         DataPointType("string", jsonToValue = { it.toString() }, valueToJson = { it })
+
+    /**
+     * Creates a [DataPointType] to serialize a list of values in an array, using [dataPointType].
+     */
+    fun <T : Any> listOf(dataPointType: DataPointType<T>): DataPointType<List<T>> {
+        return DataPointType(
+            "${dataPointType.typeName}[]",
+            jsonToValue = {
+                when (it) {
+                    is JSONArray ->
+                        List(it.length()) { index ->
+                            val dataPoint = dataPointType.fromJson(it.get(index))
+                            if (dataPoint !is ValueDataPoint<T>) {
+                                throw UnknownTypeException()
+                            }
+                            dataPoint.value
+                        }
+                    else -> throw UnknownTypeException()
+                }
+            },
+            valueToJson = {
+                JSONArray().apply { it.forEach { value -> put(dataPointType.toJson(value)) } }
+            }
+        )
+    }
 }
