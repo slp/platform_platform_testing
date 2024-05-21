@@ -428,23 +428,26 @@ public final class ProcessUtil {
      * This includes shared libraries linked.
      *
      * @param device device to be run on
-     * @param process pgrep pattern of process to look for
+     * @param processPgrepRegex pgrep pattern of process to look for
      * @param filenamePattern the filename pattern to find
-     * @return an Opotional of IFileEntry of the path of the file on the device if exists.
+     * @return an Optional of IFileEntry of the path of the file on the device if exists.
      */
     public static Optional<IFileEntry> findFileLoadedByProcess(
-            ITestDevice device, String process, Pattern filenamePattern)
+            ITestDevice device, String processPgrepRegex, Pattern filenamePattern)
             throws DeviceNotAvailableException {
-        Optional<Integer> pid = ProcessUtil.pidOf(device, process);
-        if (pid.isPresent()) {
-            String cmd = "lsof -p " + pid.get().toString() + " | grep -o '/.*'";
-            String[] openFiles = CommandUtil.runAndCheck(device, cmd).getStdout().split("\n");
-            for (String f : openFiles) {
-                if (f.contains("Permission denied")) {
-                    throw new IllegalStateException("no permission to read open files for process");
-                }
-                if (filenamePattern.matcher(f).find()) {
-                    return Optional.of(device.getFileEntry(f.trim()));
+        Optional<Map<Integer, String>> pids = pidsOf(device, processPgrepRegex);
+        if (pids.isPresent()) {
+            for (Integer pid : pids.get().keySet()) {
+                String cmd = "lsof -p " + pid.toString() + " | grep -o '/.*'";
+                String[] openFiles = CommandUtil.runAndCheck(device, cmd).getStdout().split("\n");
+                for (String f : openFiles) {
+                    if (f.contains("Permission denied")) {
+                        throw new IllegalStateException(
+                                "no permission to read open files for process");
+                    }
+                    if (filenamePattern.matcher(f).find()) {
+                        return Optional.of(device.getFileEntry(f.trim()));
+                    }
                 }
             }
         }
