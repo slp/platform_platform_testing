@@ -26,8 +26,11 @@ import java.io.FileOutputStream
 import java.io.IOException
 import kotlin.concurrent.Volatile
 import org.json.JSONObject
+import org.junit.rules.RuleChain
+import org.junit.rules.TestRule
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
+import org.junit.runners.model.Statement
 import platform.test.motion.golden.DataPointType
 import platform.test.motion.golden.JsonGoldenSerializer
 import platform.test.motion.golden.TimeSeries
@@ -54,12 +57,31 @@ import platform.test.screenshot.report.ExportToScubaStrategy
 class MotionTestRule<Toolkit>(
     val toolkit: Toolkit,
     private val goldenPathManager: GoldenPathManager,
-    internal val bitmapDiffer: BitmapDiffer? = null
-) : TestWatcher() {
-    private val scubaExportStrategy = ExportToScubaStrategy(goldenPathManager)
+    internal val bitmapDiffer: BitmapDiffer? = null,
+    extraRules: RuleChain = RuleChain.emptyRuleChain()
+) : TestRule {
 
     @Volatile internal var testClassName: String? = null
     @Volatile internal var testMethodName: String? = null
+    private val motionTestWatcher =
+        object : TestWatcher() {
+            override fun starting(description: Description) {
+                testClassName = description.testClass.simpleName
+                testMethodName = description.methodName
+            }
+
+            override fun finished(description: Description?) {
+                testClassName = null
+                testMethodName = null
+                ensureOutputDirectoryMarkerCreated()
+            }
+        }
+
+    private val rule = extraRules.around(motionTestWatcher)
+    override fun apply(base: Statement?, description: Description?): Statement =
+        rule.apply(base, description)
+
+    private val scubaExportStrategy = ExportToScubaStrategy(goldenPathManager)
 
     /** Returns a Truth subject factory to be used with [Truth.assertAbout]. */
     fun motion(): Subject.Factory<RecordedMotionSubject, RecordedMotion> {
@@ -71,17 +93,6 @@ class MotionTestRule<Toolkit>(
     /** Shortcut for `Truth.assertAbout(motion()).that(recordedMotion)`. */
     fun assertThat(recordedMotion: RecordedMotion): RecordedMotionSubject =
         assertAbout(motion()).that(recordedMotion)
-
-    override fun starting(description: Description) {
-        testClassName = description.testClass.simpleName
-        testMethodName = description.methodName
-    }
-
-    override fun finished(description: Description?) {
-        testClassName = null
-        testMethodName = null
-        ensureOutputDirectoryMarkerCreated()
-    }
 
     /**
      * Reads and parses the golden [TimeSeries].
