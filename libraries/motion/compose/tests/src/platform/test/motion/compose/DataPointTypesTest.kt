@@ -46,27 +46,27 @@ class DataPointTypesTest {
     @Test
     fun intSize_jsonConversion() {
         assertThat(intSize)
-            .convertsJson(IntSize(width = 1, height = 2), """{"width":1, "height": 2}""")
+            .convertsJsonObject(IntSize(width = 1, height = 2), """{"width":1, "height": 2}""")
 
         assertThat(intSize).invalidJsonReturnsUnknownDataPoint(JSONObject(), 1)
     }
     @Test
     fun dpSize_jsonConversion() {
         assertThat(dpSize)
-            .convertsJson(DpSize(width = 1.dp, height = 2.dp), """{"width":1, "height": 2}""")
+            .convertsJsonObject(DpSize(width = 1.dp, height = 2.dp), """{"width":1, "height": 2}""")
 
         assertThat(intSize).invalidJsonReturnsUnknownDataPoint(JSONObject(), 1)
     }
     @Test
     fun dpOffset_jsonConversion() {
-        assertThat(dpOffset).convertsJson(DpOffset(x = 1.dp, y = 2.dp), """{"x":1, "y": 2}""")
+        assertThat(dpOffset).convertsJsonObject(DpOffset(x = 1.dp, y = 2.dp), """{"x":1, "y": 2}""")
 
         assertThat(dpOffset).invalidJsonReturnsUnknownDataPoint(JSONObject(), 1)
     }
 
     @Test
     fun offset_jsonConversion() {
-        assertThat(offset).convertsJson(Offset(x = 1f, y = 2.5f), """{"x":1, "y": 2.5}""")
+        assertThat(offset).convertsJsonObject(Offset(x = 1f, y = 2.5f), """{"x":1, "y": 2.5}""")
 
         assertThat(offset.fromJson("unspecified")).isEqualTo(Offset.Unspecified.asDataPoint())
         assertThat(Offset.Unspecified.asDataPoint().asJson()).isEqualTo("unspecified")
