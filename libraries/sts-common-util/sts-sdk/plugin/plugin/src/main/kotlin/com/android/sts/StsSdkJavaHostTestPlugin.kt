@@ -43,38 +43,6 @@ class StsSdkJavaHostTestPlugin : Plugin<Project> {
             )
         compileOnlyConfiguration.dependencies.add(dependencies)
 
-        compileOnlyConfiguration.dependencies
-        val copyTestcasesResourcesTask =
-            project.tasks.register<Copy>("copyTestcasesResourcesJar", Copy::class.java) { task ->
-                task.from(project.tasks.getByName("jar")) { copySpec ->
-                    copySpec.rename(".*", "HostsideTest.jar")
-                }
-                task.from(project.zipTree(pluginJarUrl)) { copySpec ->
-                    // only include the single file instead of all jar contents
-                    copySpec.include("HostsideTest.config")
-                }
-                task.into(project.layout.buildDirectory.dir("android-sts/testcases"))
-            }
-
-        // The jar artifact will be published to the "stsSdkTestResource" configuration
-        project.plugins.apply("com.android.sts.sdk.base")
-        val stsSdkTestResourceConfiguration = project.configurations.getByName("stsSdkTestResource")
-
-        // Add src directory as artifact
-        project.artifacts.add(
-            stsSdkTestResourceConfiguration.name,
-            project.layout.projectDirectory.dir("src/main")
-        ) { action ->
-            // explicitly set the type to differentiate from other artifacts
-            action.setType("source")
-        }
-
-        project.artifacts.add(stsSdkTestResourceConfiguration.name, copyTestcasesResourcesTask) {
-            action ->
-            // explicitly set the type to differentiate from other artifacts
-            action.setType("resource")
-        }
-
         val writeManifestTask =
             project.tasks.register("writeManifestTask") { task ->
                 task.outputs.file(
@@ -88,9 +56,27 @@ class StsSdkJavaHostTestPlugin : Plugin<Project> {
                     writer.use { out -> out.write(Gson().toJson(moduleManifest)) }
                 }
             }
-        project.artifacts.add(stsSdkTestResourceConfiguration.name, writeManifestTask) { action ->
-            // explicitly set the type to differentiate from other artifacts
-            action.setType("manifest")
-        }
+
+        val copyTestcasesResourcesTask =
+            project.tasks.register<Copy>("copyTestcasesResourcesJar", Copy::class.java) { task ->
+                task.from(project.tasks.getByName("jar")) { copySpec ->
+                    copySpec.rename(".*", "HostsideTest.jar")
+                }
+                task.from(project.zipTree(pluginJarUrl)) { copySpec ->
+                    // only include the single file instead of all jar contents
+                    copySpec.include("HostsideTest.config")
+                }
+                task.into(project.layout.buildDirectory.dir("android-sts/testcases"))
+            }
+        val copyTestcasesResourcesTasks =
+            StsSdkBasePlugin.Abi.entries.map { abi -> Pair(abi, copyTestcasesResourcesTask) }
+
+        project.plugins.apply("com.android.sts.sdk.base")
+        StsSdkBasePlugin.applyConfiguration(
+            project = project,
+            sourceDirectoryArtifact = project.layout.projectDirectory.dir("src/main"),
+            manifestArtifact = writeManifestTask,
+            resourceArtifacts = copyTestcasesResourcesTasks
+        )
     }
 }

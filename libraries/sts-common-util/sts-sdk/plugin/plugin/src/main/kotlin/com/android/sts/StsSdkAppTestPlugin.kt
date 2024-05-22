@@ -47,16 +47,23 @@ class StsSdkAppTestPlugin : Plugin<Project> {
 
         // The APK artifact will be published to the "stsSdkTestResource" configuration
         project.plugins.apply("com.android.sts.sdk.base")
-        val stsSdkTestResourceConfiguration = project.configurations.getByName("stsSdkTestResource")
 
-        // Add src directory as artifact
-        project.artifacts.add(
-            stsSdkTestResourceConfiguration.name,
-            project.layout.projectDirectory.dir("src/main")
-        ) { action ->
-            // explicitly set the type to differentiate from other artifacts
-            action.setType("source")
-        }
+        val writeManifestTask =
+            project.tasks.register("writeManifestTask") { task ->
+                task.outputs.file(
+                    project.layout.buildDirectory.file("sts-sdk/sts-sdk-manifest.json")
+                )
+                task.doLast {
+                    val writer = BufferedWriter(task.outputs.files.singleFile.writer())
+                    val moduleManifest =
+                        StsSdkBasePlugin.ModuleManifest<AppTestExtension>(
+                            project,
+                            "AppTest",
+                            appTest
+                        )
+                    writer.use { out -> out.write(Gson().toJson(moduleManifest)) }
+                }
+            }
 
         // Perform this work in the "afterEvaluate" callback because the extensions are not
         // initialized yet.
@@ -79,7 +86,7 @@ class StsSdkAppTestPlugin : Plugin<Project> {
             }
 
             // Register callbacks for "onVariants" so that we can attach the APK to the
-            // stsSdkTestResource configuration
+            // stsSdkTestResource configuration.
             // This is the technique used by the "gradle-play-publisher" plugin
             // https://developer.android.com/reference/tools/gradle-api/8.3/com/android/build/api/variant/AndroidComponentsExtension
             // The order of this task is sensitive because the callbacks must be registered before
@@ -98,10 +105,9 @@ class StsSdkAppTestPlugin : Plugin<Project> {
                     // variant "apk"
                     // It's the dir containing the APK; typically "build/outputs/apk/debug"
                     val apkDir = variant.artifacts.get(SingleArtifact.APK)
-
-                    val copyAppTestTestcaseResourceTask =
+                    val copyAppTestcaseResourceTask =
                         project.tasks.register<Copy>(
-                            "copyAppTestTestcaseResource-$variantName",
+                            "copyAppTestcaseResource-$variantName",
                             Copy::class.java
                         ) { task ->
                             task.from(apkDir) {
@@ -114,37 +120,16 @@ class StsSdkAppTestPlugin : Plugin<Project> {
                             task.into(project.layout.buildDirectory.dir("sts-sdk/testcases/"))
                         }
 
-                    project.artifacts.add(
-                        stsSdkTestResourceConfiguration.name,
-                        copyAppTestTestcaseResourceTask
-                    ) { action ->
-                        // explicitly set the type to differentiate from other artifacts
-                        action.setType("resource")
-                    }
-
-                    val writeManifestTask =
-                        project.tasks.register("writeManifestTask-$variantName") { task ->
-                            task.outputs.file(
-                                project.layout.buildDirectory.file("sts-sdk/sts-sdk-manifest.json")
-                            )
-                            task.doLast {
-                                val writer = BufferedWriter(task.outputs.files.singleFile.writer())
-                                val moduleManifest =
-                                    StsSdkBasePlugin.ModuleManifest<AppTestExtension>(
-                                        project,
-                                        "AppTest",
-                                        appTest
-                                    )
-                                writer.use { out -> out.write(Gson().toJson(moduleManifest)) }
-                            }
+                    val copyAppTestcaseResourceTasks =
+                        StsSdkBasePlugin.Abi.entries.map { abi ->
+                            Pair(abi, copyAppTestcaseResourceTask)
                         }
-                    project.artifacts.add(
-                        stsSdkTestResourceConfiguration.name,
-                        writeManifestTask
-                    ) { action ->
-                        // explicitly set the type to differentiate from other artifacts
-                        action.setType("manifest")
-                    }
+                    StsSdkBasePlugin.applyConfiguration(
+                        project = project,
+                        sourceDirectoryArtifact = project.layout.projectDirectory.dir("src/main"),
+                        manifestArtifact = writeManifestTask,
+                        resourceArtifacts = copyAppTestcaseResourceTasks
+                    )
                 }
             }
         }

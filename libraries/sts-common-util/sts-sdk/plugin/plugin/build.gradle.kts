@@ -70,9 +70,9 @@ gradlePlugin {
             id = "com.android.sts.sdk.apptest"
             implementationClass = "com.android.sts.StsSdkAppTestPlugin"
         }
-        create("StsSdkNativeTestPlugin") {
-            id = "com.android.sts.sdk.nativetest"
-            implementationClass = "com.android.sts.StsSdkNativeTestPlugin"
+        create("StsSdkNdkTestPlugin") {
+            id = "com.android.sts.sdk.ndktest"
+            implementationClass = "com.android.sts.StsSdkNdkTestPlugin"
         }
     }
 }

@@ -17,16 +17,69 @@ package com.android.sts
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.attributes.Attribute
 
 class StsSdkBasePlugin : Plugin<Project> {
+    class AbiAttributes(name: String, bitness: Int) {
+        val name = name
+        val bitness = bitness
+    }
+
+    // https://developer.android.com/ndk/guides/abis#sa
+    enum class Abi(val attr: AbiAttributes) {
+        ABI_ARMEABI_V7A(AbiAttributes("armeabi-v7a", 32)),
+        ABI_ARM64_V8A(AbiAttributes("arm64-v8a", 64)),
+        ABI_X86(AbiAttributes("x86", 32)),
+        ABI_X86_64(AbiAttributes("x86_64", 64)),
+    }
+
+    companion object {
+        val STS_SDK_TESTCASES_RESOURCE_CONFIGURATION_NAME = "stsSdkTestResource"
+
+        fun applyConfiguration(
+            project: Project,
+            sourceDirectoryArtifact: Any,
+            manifestArtifact: Any,
+            resourceArtifacts: List<Pair<Abi, Any>>,
+        ) {
+            val stsSdkTestResourceConfiguration =
+                project.configurations.getByName(STS_SDK_TESTCASES_RESOURCE_CONFIGURATION_NAME)
+            val abiAttribute = Attribute.of("com.android.sts.sdk.abi", Abi::class.java)
+            stsSdkTestResourceConfiguration.outgoing { configurationPublications ->
+                configurationPublications.artifact(sourceDirectoryArtifact) {
+                    configurePublishArtifact ->
+                    configurePublishArtifact.setType("source")
+                }
+                configurationPublications.artifact(manifestArtifact) { configurePublishArtifact ->
+                    configurePublishArtifact.setType("manifest")
+                }
+                configurationPublications.variants { namedDomainObjectContainer ->
+                    resourceArtifacts.forEach { resourceArtifact ->
+                        val (abi, artifact) = resourceArtifact
+                        val abiName = abi.attr.name
+                        namedDomainObjectContainer.create("abi-$abiName") { configurationVariant ->
+                            configurationVariant.attributes { attributeContainer ->
+                                attributeContainer.attribute(abiAttribute, abi)
+                            }
+                            configurationVariant.artifact(artifact) { configurablePublishArtifact ->
+                                configurablePublishArtifact.setType("resource")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     override fun apply(project: Project) {
         // Export a configuration for users to add dependencies.
         // "stsSdkTestResource" represents Soong modules for the Tradefed testcases/ directory.
         // See "android_test_helper_app" and "cc_test" Soong modules.
         // Dependencies should map 1:1 to tradefed Android.bp files for easy reconstruction.
-        project.configurations.create("stsSdkTestResource") { config ->
-            config.isCanBeConsumed = true
-            config.isCanBeResolved = false
+        project.configurations.create(STS_SDK_TESTCASES_RESOURCE_CONFIGURATION_NAME) { configuration
+            ->
+            configuration.isCanBeConsumed = true
+            configuration.isCanBeResolved = false
         }
     }
 

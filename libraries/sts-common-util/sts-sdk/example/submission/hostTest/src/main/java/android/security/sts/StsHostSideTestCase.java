@@ -67,7 +67,7 @@ public class StsHostSideTestCase extends NonRootSecurityTestCase {
     public void testWithNativePoc() throws Exception {
         NativePoc.builder()
                 // the name of the PoC
-                .pocName("native-poc")
+                .pocName("NdkTest")
                 // extra files pushed to the device
                 .resources("res.txt")
                 // command-line arguments for the PoC
@@ -96,13 +96,13 @@ public class StsHostSideTestCase extends NonRootSecurityTestCase {
                 MallocDebug.withLibcMallocDebugOnNewProcess(
                         getDevice(),
                         "backtrace guard", // malloc debug options
-                        "native-poc" // process name
+                        "NdkTest" // process name
                         )) {
             assumeTrue("could not disable root", getDevice().disableAdbRoot());
 
             // run a native PoC
             NativePoc.builder()
-                    .pocName("native-poc")
+                    .pocName("NdkTest")
                     .args("memory_corrupt")
                     .build() // add more as needed
                     .run(this);
@@ -136,7 +136,7 @@ public class StsHostSideTestCase extends NonRootSecurityTestCase {
 
         // attack the service
         NativePoc.builder()
-                .pocName("native-poc")
+                .pocName("NdkTest")
                 // pass the library path to the PoC
                 .args(libFileEntry.get().getFullPath())
                 .assumePocExitSuccess(false) // example returns EXIT_FAILURE if not enough args
@@ -145,7 +145,7 @@ public class StsHostSideTestCase extends NonRootSecurityTestCase {
                                 new TombstoneUtils.Config()
                                         // Because the vulnerability is in the shared library, the
                                         // process crash is the PoC.
-                                        .setProcessPatterns(Pattern.compile("native-poc"))))
+                                        .setProcessPatterns(Pattern.compile("NdkTest"))))
                 .build()
                 .run(this);
     }
@@ -157,7 +157,7 @@ public class StsHostSideTestCase extends NonRootSecurityTestCase {
 
         // attack the device, which can be native poc, echo to socket, send intent, app, etc
         NativePoc.builder()
-                .pocName("native-poc")
+                .pocName("NdkTest")
                 .assumePocExitSuccess(false) // example returns EXIT_FAILURE if no args
                 .build() // add more as needed
                 .run(this);

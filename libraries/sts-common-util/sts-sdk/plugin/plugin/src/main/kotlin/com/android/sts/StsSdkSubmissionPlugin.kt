@@ -21,9 +21,12 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import java.nio.file.Files
+import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ProjectDependency
+import org.gradle.api.attributes.Attribute
 import org.gradle.api.file.RelativePath
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.bundling.Zip
@@ -36,23 +39,152 @@ open class StsSdkSubmissionExtension {
 }
 
 class StsSdkSubmissionPlugin : Plugin<Project> {
+    val taskGroup = "STS SDK"
+    val stsSdkSubmissionSourcesDir = "sts-sdk-submission"
+    val stsSdkTradefedDir = "android-sts"
+
+    // get plugin jar path from current class; plugin jar has resources
+    val pluginJarUrl = this.javaClass.getProtectionDomain().getCodeSource().getLocation()
+
+    val abiAttribute = Attribute.of("com.android.sts.sdk.abi", StsSdkBasePlugin.Abi::class.java)
+    var stsSdkTestResourceConfiguration: Configuration? = null
+
+    fun dependencyProjectConfiguration(
+        project: Project,
+        configuration: Configuration,
+        action: Action<Pair<Project, Configuration>>,
+    ) {
+        // By default, Gradle considers "evaluation" of the "configure" lifecycle to be done before
+        // the subprojects/dependencies are "configured/evaluated".
+        // This means that we can't process the subproject's configurations or artifacts unless this
+        // is set.
+        // Note: This likely only works for subprojects instead of all dependencies. I don't see
+        // another way because dependencies aren't available until afterEvaluate.
+        project.evaluationDependsOnChildren()
+
+        // Need to perform this work in the "afterEvaluate" callback because the extensions,
+        // dependencies, and dependency artifacts are not initialized yet.
+        project.afterEvaluate {
+            configuration.dependencies.forEach { dependency ->
+                if (dependency is ProjectDependency) {
+                    val dependencyProject = dependency.dependencyProject
+                    val dependencyConfiguration =
+                        dependencyProject.configurations.getByName(configuration.name)
+                    action.execute(Pair(dependencyProject, dependencyConfiguration))
+                }
+            }
+        }
+    }
+
+    fun registerAssembleStsSdkTradefedTask(
+        project: Project,
+        target: String,
+        abis: Set<StsSdkBasePlugin.Abi>,
+    ) {
+        val copyStsSdkTradefedToolsTask =
+            project.tasks.register<Copy>("copyStsSdkTradefedTools-$target", Copy::class.java) { task
+                ->
+                // use ziptree to copy the zip contents instead of the jar itself
+                task.from(project.zipTree(pluginJarUrl)) { copySpec ->
+                    // only include the "sts-tradefed-tools" path instead of all jar contents
+                    copySpec.include("sts-tradefed-tools/**")
+                    copySpec.eachFile { fileCopyDetails ->
+                        // drop the "sts-tradefed-tools" path prefix
+                        fileCopyDetails.relativePath =
+                            RelativePath(
+                                true /* endsWithFile */,
+                                *fileCopyDetails.relativePath.segments.drop(1).toTypedArray()
+                            )
+                    }
+                    // don't include the "sts-tradefed-tools" dir itself
+                    copySpec.includeEmptyDirs = false
+                }
+                task.into(project.layout.buildDirectory.dir("$target/$stsSdkTradefedDir/tools"))
+            }
+
+        val copyTradefedJdkTask =
+            project.tasks.register<Copy>("copyTradefedJdk-$target", Copy::class.java) { task ->
+                task.from(project.zipTree(pluginJarUrl)) { copySpec -> copySpec.include("jdk/**") }
+                task.into(project.layout.buildDirectory.dir("$target/$stsSdkTradefedDir"))
+            }
+
+        val assembleStsSdkTradefedTask =
+            project.tasks.register("assembleStsSdkTradefed-$target") { task ->
+                task.group = taskGroup
+                task.dependsOn(
+                    copyStsSdkTradefedToolsTask,
+                    copyTradefedJdkTask,
+                )
+            }
+
+        abis.forEach { abi ->
+            dependencyProjectConfiguration(project, stsSdkTestResourceConfiguration!!) {
+                dependencyProjectConfigurationPair ->
+                val (dependencyProject, dependencyConfiguration) =
+                    dependencyProjectConfigurationPair
+                val projectName = dependencyProject.name
+                dependencyConfiguration.outgoing { configurationPublications ->
+                    configurationPublications.variants { namedDomainObjectContainer ->
+                        namedDomainObjectContainer
+                            .filter { configurationVariant ->
+                                configurationVariant.attributes.getAttribute(abiAttribute) == abi
+                            }
+                            .forEach { configurationVariant ->
+                                val abiName = abi.attr.name
+                                configurationVariant.artifacts
+                                    .filter { publishArtifact ->
+                                        publishArtifact.type == "resource"
+                                    }
+                                    .forEach { publishArtifact ->
+                                        val copyTestcaseResourceTaskName =
+                                            "copyTestcaseResource-$target-$projectName-$abiName"
+                                        val copyTestcaseResourceTask =
+                                            project.tasks.register<Copy>(
+                                                copyTestcaseResourceTaskName,
+                                                Copy::class.java
+                                            ) { task ->
+                                                // Don't copy until entire task done
+                                                task.dependsOn(publishArtifact)
+                                                // TODO:
+                                                // https://github.com/gradle/gradle/issues/25587 -
+                                                // use publishArtifact directly
+                                                task.from(publishArtifact.file)
+                                                task.into(
+                                                    project.layout.buildDirectory.dir(
+                                                        "$target/$stsSdkTradefedDir/testcases"
+                                                    )
+                                                )
+                                            }
+                                        assembleStsSdkTradefedTask.configure { task ->
+                                            task.dependsOn(copyTestcaseResourceTask)
+                                        }
+                                    }
+                            }
+                    }
+                }
+            }
+        }
+
+        // Build STS SDK Tradefed tasks on assemble
+        project.tasks.named("assemble").configure { task ->
+            task.dependsOn(assembleStsSdkTradefedTask)
+        }
+    }
+
     override fun apply(project: Project) {
-        val taskGroup = "STS SDK"
-
-        val stsSdkSubmissionSourcesDir = "sts-sdk-submission"
-        val stsSdkTradefedDir = "android-sts"
-
-        // get plugin jar path from current class; plugin jar has resources
-        val pluginJarUrl = this.javaClass.getProtectionDomain().getCodeSource().getLocation()
-
         val stsSdkSubmissionExtension =
             project.extensions.create("stsSdkSubmission", StsSdkSubmissionExtension::class.java)
 
-        val stsSdkTestResourceConfiguration =
-            project.configurations.create("stsSdkTestResource") { config ->
-                config.isCanBeConsumed = false
-                config.isCanBeResolved = true
+        stsSdkTestResourceConfiguration =
+            project.configurations.create("stsSdkTestResource") { configuration ->
+                configuration.isCanBeConsumed = false
+                configuration.isCanBeResolved = true
             }
+
+        // The standard lifecycle tasks including `assemble` are defined in `base`
+        // By applying the plugin, we essentially export it
+        // Without it, users will hit an error that "assemble" isn't found
+        project.plugins.apply("base")
 
         val mergeManifestsTask =
             project.tasks.register("mergeManifests") { task ->
@@ -124,39 +256,18 @@ class StsSdkSubmissionPlugin : Plugin<Project> {
                 task.destinationDirectory.set(project.layout.buildDirectory)
             }
 
-        val copyStsSdkTradefedToolsTask =
-            project.tasks.register<Copy>("copyStsSdkTradefedTools", Copy::class.java) { task ->
-                // use ziptree to copy the zip contents instead of the jar itself
-                task.from(project.zipTree(pluginJarUrl)) { copySpec ->
-                    // only include the "sts-tradefed-tools" path instead of all jar contents
-                    copySpec.include("sts-tradefed-tools/**")
-                    copySpec.eachFile { zipEntry ->
-                        // drop the "sts-tradefed-tools" path prefix
-                        zipEntry.relativePath =
-                            RelativePath(
-                                true /* endsWithFile */,
-                                *zipEntry.relativePath.segments.drop(1).toTypedArray()
-                            )
-                    }
-                    // don't include the "sts-tradefed-tools" dir itself
-                    copySpec.includeEmptyDirs = false
-                }
-                task.into(project.layout.buildDirectory.dir("$stsSdkTradefedDir/tools"))
-            }
-
-        val copyTradefedJdkTask =
-            project.tasks.register<Copy>("copyTradefedJdk", Copy::class.java) { task ->
-                task.from(project.zipTree(pluginJarUrl)) { copySpec -> copySpec.include("jdk/**") }
-                task.into(project.layout.buildDirectory.dir(stsSdkTradefedDir))
-            }
-
-        val assembleStsSdkTradefedTask =
-            project.tasks.register("stsSdkTradefed") { task ->
-                task.dependsOn(
-                    copyStsSdkTradefedToolsTask,
-                    copyTradefedJdkTask,
-                )
-            }
+        // matching Android Build configs
+        val targetToMultiAbiSets =
+            mapOf(
+                "test_suites_arm64" to
+                    setOf(StsSdkBasePlugin.Abi.ABI_ARMEABI_V7A, StsSdkBasePlugin.Abi.ABI_ARM64_V8A),
+                "test_suites_x86_64" to
+                    setOf(StsSdkBasePlugin.Abi.ABI_X86, StsSdkBasePlugin.Abi.ABI_X86_64),
+            )
+        targetToMultiAbiSets.entries.forEach { mapEntry ->
+            val (target, abis) = mapEntry
+            registerAssembleStsSdkTradefedTask(project, target, abis)
+        }
 
         // By default, Gradle considers "evaluation" of the "configure" lifecycle to be done before
         // the subprojects/dependencies are "configured/evaluated".
@@ -169,42 +280,21 @@ class StsSdkSubmissionPlugin : Plugin<Project> {
         // Need to perform this work in the "afterEvaluate" callback because the extensions,
         // dependencies, and dependency artifacts are not initialized yet.
         project.afterEvaluate {
-            stsSdkTestResourceConfiguration.dependencies.forEach { dependency ->
+            stsSdkTestResourceConfiguration!!.dependencies.forEach { dependency ->
                 if (dependency is ProjectDependency) {
                     val dependencyProject = dependency.dependencyProject
                     val configuration =
                         dependencyProject.configurations.getByName(
-                            stsSdkTestResourceConfiguration.name
+                            stsSdkTestResourceConfiguration!!.name
                         )
                     val projectName = dependencyProject.name
 
-                    configuration.artifacts.forEach { artifact ->
-                        when (artifact.type) {
-                            "resource" -> {
-                                val copyTestcaseResourceTask =
-                                    project.tasks.register<Copy>(
-                                        "copyTestcaseResource-$projectName",
-                                        Copy::class.java
-                                    ) { task ->
-                                        // Don't copy until entire task done
-                                        task.dependsOn(
-                                            dependencyProject.tasks.getByName("assemble")
-                                        )
-                                        task.from(artifact.file)
-                                        task.into(
-                                            project.layout.buildDirectory.dir(
-                                                "$stsSdkTradefedDir/testcases"
-                                            )
-                                        )
-                                    }
-                                assembleStsSdkTradefedTask.configure { task ->
-                                    task.dependsOn(copyTestcaseResourceTask)
-                                }
-                            }
+                    configuration.artifacts.forEach { publishArtifact ->
+                        when (publishArtifact.type) {
                             "manifest" -> {
                                 mergeManifestsTask.configure { task ->
                                     task.dependsOn(dependencyProject.tasks.getByName("assemble"))
-                                    task.inputs.file(artifact.file)
+                                    task.inputs.file(publishArtifact.file)
                                 }
                             }
                             "source" -> {
@@ -213,7 +303,9 @@ class StsSdkSubmissionPlugin : Plugin<Project> {
                                         "copyStsSdkTestcaseResourceSource-$projectName",
                                         Copy::class.java
                                     ) { task ->
-                                        task.from(artifact.file)
+                                        // TODO: https://github.com/gradle/gradle/issues/25587 - use
+                                        // publishArtifact directly
+                                        task.from(publishArtifact.file)
                                         task.into(
                                             project.layout.buildDirectory.dir(
                                                 "$stsSdkSubmissionSourcesDir/source/$projectName/"
@@ -237,24 +329,28 @@ class StsSdkSubmissionPlugin : Plugin<Project> {
             }
         }
 
-        // The standard lifecycle tasks including `assemble` are defined in `base`
-        // By applying the plugin, we essentially export it
-        // Without it, users will hit an error that "assemble" isn't found
-        project.plugins.apply("base")
-
-        // Run this plugin's tasks on assemble
-        project.tasks.named("assemble").configure { task ->
-            task.dependsOn(assembleStsSdkTradefedTask)
-        }
-
-        project.tasks.register<Copy>("copyResultsToSubmission", Copy::class.java) { task ->
-            task.group = taskGroup
-            task.dependsOn(assembleStsSdkSubmissionZipTask)
-            task.from(project.layout.buildDirectory.dir(stsSdkTradefedDir)) { copySpec ->
-                copySpec.include("logs/**")
-                copySpec.include("results/**")
+        val copyInvocationResultsResultsToSubmissionTask =
+            project.tasks.register("copyInvocationResultsToSubmission") { task ->
+                task.group = taskGroup
             }
-            task.into(project.layout.buildDirectory.dir(stsSdkSubmissionSourcesDir))
+        targetToMultiAbiSets.entries.forEach { mapEntry ->
+            val (target, _) = mapEntry
+            val targetTask =
+                project.tasks.register<Copy>(
+                    "copyInvocationResultsToSubmission-$target",
+                    Copy::class.java
+                ) { task ->
+                    task.dependsOn(assembleStsSdkSubmissionZipTask)
+                    task.from(project.layout.buildDirectory.dir("$target/$stsSdkTradefedDir")) {
+                        copySpec ->
+                        copySpec.include("logs/**")
+                        copySpec.include("results/**")
+                    }
+                    task.into(project.layout.buildDirectory.dir(stsSdkSubmissionSourcesDir))
+                }
+            copyInvocationResultsResultsToSubmissionTask.configure { task ->
+                task.dependsOn(targetTask)
+            }
         }
     }
 }
