@@ -130,6 +130,8 @@ class ComponentNameMatcher(var component: ComponentName) : IComponentNameMatcher
 
         val POINTER_LOCATION = ComponentNameMatcher("", "PointerLocation")
 
+        val WIRED_CHARGING_ANIMATION = ComponentNameMatcher("", "Wired Charging Animation#")
+
         val SCREEN_RECORDING_OVERLAYS = SCREEN_DECOR_OVERLAY.or(POINTER_LOCATION)
 
         val LAUNCHER =
