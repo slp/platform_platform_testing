@@ -17,6 +17,7 @@
 package platform.test.screenshot
 
 import android.content.Context
+import android.util.Log
 import android.util.SparseIntArray
 import android.widget.RemoteViews
 import androidx.annotation.VisibleForTesting
@@ -75,13 +76,18 @@ class MaterialYouColors(
         /**
          * Create a [MaterialYouColors] from [colors], where:
          * - `colors[i]` should be the value of `FIRST_RESOURCE_COLOR_ID + i`.
-         * - [colors] must contain all values of all system colors, i.e. `colors.size` should be
-         *   `LAST_RESOURCE_COLOR_ID - FIRST_RESOURCE_COLOR_ID + 1`.
+         * - [colors] are recommended to contain all values of all system colors, i.e. `colors.size`
+         *   is best to be `LAST_RESOURCE_COLOR_ID - FIRST_RESOURCE_COLOR_ID + 1`, otherwise we are
+         *   expected to observed unused values in the sparse array (more elements in the array) or
+         *   unconfigured system colors (fewer elements in the array).
          */
         private fun fromColors(colors: IntArray): MaterialYouColors {
             val expectedSize = LAST_RESOURCE_COLOR_ID - FIRST_RESOURCE_COLOR_ID + 1
-            check(colors.size == expectedSize) {
-                "colors should have exactly $expectedSize elements"
+            if (colors.size != expectedSize) {
+                Log.d(
+                    "MaterialYouColors.fromColors",
+                    "colors are best to have exactly $expectedSize elements for a complete " +
+                    "configuration for system colors")
             }
 
             val sparseArray = SparseIntArray(/* initialCapacity= */ expectedSize)
