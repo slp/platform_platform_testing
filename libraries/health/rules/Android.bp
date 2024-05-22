@@ -47,6 +47,21 @@ java_library {
     ],
 }
 
+// Similar to platform-test-rules above but reduces the number of lib dependencies. When using
+// platform-test-rules, tradefed includes a different version of protobuf compared to the one
+// included by the dependencies above causing failures.
+java_library {
+    name: "platform-test-rules-deviceless",
+    static_libs: [
+        "junit",
+        "androidx.test.runner",
+    ],
+    srcs: [
+        "src/android/platform/test/rule/LimitDevicesRule.kt",
+        "src/android/platform/test/rule/AnnotationUtils.kt",
+    ],
+}
+
 java_library {
     name: "platform-test-core-rules",
     sdk_version: "test_current",
