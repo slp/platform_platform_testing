@@ -65,6 +65,7 @@ android_test {
         "truth",
         "mockito-target-extended-minus-junit4",
         "collector-device-lib",
+        "//frameworks/base/packages/SystemUI/aconfig:com_android_systemui_flags_lib",
     ],
     data: [
         "trace_config/*",
