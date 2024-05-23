@@ -27,7 +27,9 @@ import android.tools.utils.CleanFlickerEnvironmentRule
 import android.tools.utils.TEST_SCENARIO
 import android.tools.utils.assertArchiveContainsFiles
 import android.tools.utils.getLauncherPackageName
+import android.tools.utils.getSystemUiUidName
 import androidx.test.platform.app.InstrumentationRegistry
+import com.android.systemui.Flags.enableViewCaptureTracing
 import com.google.common.truth.Truth
 import java.io.File
 import org.junit.Assume
@@ -83,6 +85,12 @@ class FlickerServiceTracesCollectorTest {
 
     @Test
     fun reportedTraceFileContainsAllTraces() {
+        var possibleExpectedTraces = listOf(EXPECTED_TRACES_LAUNCHER_ONLY)
+        if (enableViewCaptureTracing()) {
+            possibleExpectedTraces =
+                listOf(EXPECTED_TRACES_LAUNCHER_FIRST, EXPECTED_TRACES_SYSUI_FIRST)
+        }
+
         val wmHelper = WindowManagerStateHelper(instrumentation)
         val collector = FlickerServiceTracesCollector()
         collector.start(TEST_SCENARIO)
@@ -93,7 +101,7 @@ class FlickerServiceTracesCollectorTest {
 
         require(tracePath.isNotEmpty()) { "Artifact path missing in result" }
         val traceFile = File(tracePath)
-        assertArchiveContainsFiles(traceFile, expectedTraces)
+        assertArchiveContainsFiles(traceFile, possibleExpectedTraces)
     }
 
     @Test
@@ -106,7 +114,7 @@ class FlickerServiceTracesCollectorTest {
     }
 
     companion object {
-        val expectedTraces =
+        val EXPECTED_TRACES_LAUNCHER_ONLY =
             if (android.tracing.Flags.perfettoTransitionTracing()) {
                 listOf(
                     TraceType.WM.fileName,
@@ -124,6 +132,52 @@ class FlickerServiceTracesCollectorTest {
                     TraceType.EVENT_LOG.fileName,
                     TraceType.PERFETTO.fileName,
                     "${getLauncherPackageName()}_0.vc__view_capture_trace.winscope",
+                )
+            }
+
+        val EXPECTED_TRACES_LAUNCHER_FIRST =
+            if (android.tracing.Flags.perfettoTransitionTracing()) {
+                listOf(
+                    TraceType.WM.fileName,
+                    TraceType.PROTOLOG.fileName,
+                    TraceType.EVENT_LOG.fileName,
+                    TraceType.PERFETTO.fileName,
+                    "${getLauncherPackageName()}_0.vc__view_capture_trace.winscope",
+                    "${getSystemUiUidName()}_1.vc__view_capture_trace.winscope",
+                )
+            } else {
+                listOf(
+                    TraceType.WM.fileName,
+                    TraceType.PROTOLOG.fileName,
+                    TraceType.LEGACY_WM_TRANSITION.fileName,
+                    TraceType.LEGACY_SHELL_TRANSITION.fileName,
+                    TraceType.EVENT_LOG.fileName,
+                    TraceType.PERFETTO.fileName,
+                    "${getLauncherPackageName()}_0.vc__view_capture_trace.winscope",
+                    "${getSystemUiUidName()}_1.vc__view_capture_trace.winscope",
+                )
+            }
+
+        val EXPECTED_TRACES_SYSUI_FIRST =
+            if (android.tracing.Flags.perfettoTransitionTracing()) {
+                listOf(
+                    TraceType.WM.fileName,
+                    TraceType.PROTOLOG.fileName,
+                    TraceType.EVENT_LOG.fileName,
+                    TraceType.PERFETTO.fileName,
+                    "${getSystemUiUidName()}_0.vc__view_capture_trace.winscope",
+                    "${getLauncherPackageName()}_1.vc__view_capture_trace.winscope",
+                )
+            } else {
+                listOf(
+                    TraceType.WM.fileName,
+                    TraceType.PROTOLOG.fileName,
+                    TraceType.LEGACY_WM_TRANSITION.fileName,
+                    TraceType.LEGACY_SHELL_TRANSITION.fileName,
+                    TraceType.EVENT_LOG.fileName,
+                    TraceType.PERFETTO.fileName,
+                    "${getSystemUiUidName()}_0.vc__view_capture_trace.winscope",
+                    "${getLauncherPackageName()}_1.vc__view_capture_trace.winscope",
                 )
             }
     }
