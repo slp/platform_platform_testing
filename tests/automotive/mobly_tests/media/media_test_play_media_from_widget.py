@@ -12,12 +12,14 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import logging
 
 from bluetooth_test import bluetooth_base_test
 from mobly import asserts
 from utilities.media_utils import MediaUtils
 from utilities.common_utils import CommonUtils
 from utilities.main_utils import common_main
+from utilities.video_utils_service import VideoRecording
 
 
 class IsAbleToPlayMediaFromWidgetTest(bluetooth_base_test.BluetoothBaseTest):
@@ -29,13 +31,18 @@ class IsAbleToPlayMediaFromWidgetTest(bluetooth_base_test.BluetoothBaseTest):
 
     def setup_test(self):
         self.common_utils.grant_local_mac_address_permission()
+        logging.info("\tInitializing video services on Target")
+        self.video_utils_service_target = VideoRecording(self.target)
+        logging.info("Enabling video recording for phone Target")
+        self.video_utils_service_target.enable_screen_recording()
         self.common_utils.enable_wifi_on_phone_device()
         self.bt_utils.pair_primary_to_secondary()
 
     def test_media_is_song_playing(self):
         """Tests validating play/pause media on HU"""
-        self.media_utils.open_youtube_music_app()
         self.media_utils.open_media_app_on_hu()
+        self.media_utils.open_youtube_music_app()
+        logging.info("Getting song title from phone device: %s", self.media_utils.get_song_title_from_phone())
         self.media_utils.press_pause_song_button()
         asserts.assert_false(self.media_utils.is_song_playing_on_hu(),
                              'Media player should be on PAUSE mode')
@@ -44,9 +51,15 @@ class IsAbleToPlayMediaFromWidgetTest(bluetooth_base_test.BluetoothBaseTest):
                             'Media player should be on PLAY mode')
 
     def teardown_test(self):
-        # Close YouTube Music app
+        #   Close YouTube Music app
         self.media_utils.close_youtube_music_app()
         self.call_utils.press_home()
+        logging.info("Stopping the screen recording on Target")
+        self.video_utils_service_target.stop_screen_recording()
+        logging.info("Pull the screen recording from Target")
+        self.video_utils_service_target.pull_recording_file(self.log_path)
+        logging.info("delete the screen recording from the Target")
+        self.video_utils_service_target.delete_screen_recording_from_device()
         super().teardown_test()
 
 
