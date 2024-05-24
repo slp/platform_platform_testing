@@ -118,6 +118,7 @@ class TestParameters:
 
   target_cuj_name: str = 'unspecified'
   requires_bt_multiplex: bool = False
+  requires_3p_api_test: bool = False
   abort_all_tests_on_function_tests_fail: bool = True
   fast_fail_on_any_error: bool = False
   use_auto_controlled_wifi_ap: bool = False
@@ -147,6 +148,7 @@ class TestParameters:
   run_directed_test: bool = True
   run_compound_test: bool = True
   run_iperf_test: bool = True
+  run_nearby_connections_function_tests: bool = False
 
   skip_bug_report: bool = False
 

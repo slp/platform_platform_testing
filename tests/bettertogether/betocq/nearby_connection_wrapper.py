@@ -91,7 +91,6 @@ class NearbyConnectionWrapper:
         f'Start advertising {self.advertising_discovery_medium.name}'
     )
     self._advertiser_connection_lifecycle_callback = advertiser_callback
-    self._advertiser_endpoint_id = self.advertiser_nearby.getLocalEndpointId()
 
   def start_discovery(self, timeout: datetime.timedelta) -> None:
     """Starts Nearby Connection discovery."""
@@ -122,6 +121,7 @@ class NearbyConnectionWrapper:
         endpoint_info['serviceId'], self.service_id,
         f'Received an unexpected service id during discovery: '
         f'{endpoint_found_event}')
+    self._advertiser_endpoint_id = endpoint_found_event.data['endpointId']
 
   def stop_advertising(self) -> None:
     """Stops Nearby Connection advertising."""
@@ -178,8 +178,6 @@ class NearbyConnectionWrapper:
         self.advertiser.serial,
         f'Received an unexpected endpoint: {d_connection_init_event}')
 
-    self._discoverer_endpoint_id = self.discoverer_nearby.getLocalEndpointId()
-
     # wait for the advertiser connection initialized.
     a_connection_init_event = (
         self._advertiser_connection_lifecycle_callback.waitAndGet(
@@ -196,6 +194,8 @@ class NearbyConnectionWrapper:
         a_connection_info['endpointName'],
         self.discoverer.serial,
         f'Received an unexpected endpoint: {a_connection_init_event}')
+
+    self._discoverer_endpoint_id = a_connection_init_event.data['endpointId']
 
   def accept_connection(
       self, timeout: datetime.timedelta
@@ -305,8 +305,8 @@ class NearbyConnectionWrapper:
       self,
       timeouts: nc_constants.ConnectionSetupTimeouts,
       medium_upgrade_type: nc_constants.MediumUpgradeType = nc_constants.MediumUpgradeType.DEFAULT,
-      keep_alive_timeout_ms: int = nc_constants.KEEP_ALIVE_TIMEOUT_BT_MS,
-      keep_alive_interval_ms: int = nc_constants.KEEP_ALIVE_INTERVAL_BT_MS,
+      keep_alive_timeout_ms: int = 0,
+      keep_alive_interval_ms: int = 0,
   ) -> None:
     """Starts Nearby Connection between two Android devices."""
     self.test_failure_reason = (
