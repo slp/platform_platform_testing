@@ -12,6 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import logging
 
 from bluetooth_test import bluetooth_base_test
 from mobly import asserts
@@ -19,6 +20,7 @@ from utilities import constants
 from utilities.common_utils import CommonUtils
 from utilities.main_utils import common_main
 from utilities.media_utils import MediaUtils
+from utilities.video_utils_service import VideoRecording
 
 
 class IsMediaStreamPairedWhenRadioLunchedTest(bluetooth_base_test.BluetoothBaseTest):
@@ -30,6 +32,10 @@ class IsMediaStreamPairedWhenRadioLunchedTest(bluetooth_base_test.BluetoothBaseT
 
     def setup_test(self):
         self.common_utils.grant_local_mac_address_permission()
+        logging.info("\tInitializing video services on Target")
+        self.video_utils_service_target = VideoRecording(self.target)
+        logging.info("Enabling video recording for Target device")
+        self.video_utils_service_target.enable_screen_recording()
         self.common_utils.enable_wifi_on_phone_device()
 
     def test_media_stream_when_radio_lunched(self):
@@ -50,9 +56,15 @@ class IsMediaStreamPairedWhenRadioLunchedTest(bluetooth_base_test.BluetoothBaseT
                             'Song title on phone device and HU should be the same')
 
     def teardown_test(self):
-        # Close YouTube Music app
+        #  Close YouTube Music app
         self.media_utils.close_youtube_music_app()
         self.call_utils.press_home()
+        logging.info("Stopping the screen recording on Target")
+        self.video_utils_service_target.stop_screen_recording()
+        logging.info("Pull the screen recording from Target")
+        self.video_utils_service_target.pull_recording_file(self.log_path)
+        logging.info("delete the screen recording from the Target")
+        self.video_utils_service_target.delete_screen_recording_from_device()
         super().teardown_test()
 
 
