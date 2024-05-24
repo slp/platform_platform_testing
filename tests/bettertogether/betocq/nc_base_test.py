@@ -267,6 +267,8 @@ class NCBaseTestClass(base_test.BaseTestClass):
         param_list=[[ad] for ad in self.ads],
         raise_on_exception=True,
     )
+    if hasattr(self, 'openwrt'):
+      self.openwrt.services.create_output_excerpts_all(self.current_test_info)
 
   def teardown_class(self) -> None:
     if self.__skipped_test_class:
