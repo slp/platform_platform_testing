@@ -14,7 +14,7 @@ android_test_import {
     apk: "nearby_snippet.apk",
     preprocessed: true,
     presigned: true,
-    test_suites:[],
+    test_suites: [],
 }
 
 // setup the 2nd nearby connection test, as
@@ -23,6 +23,17 @@ android_test_import {
     name: "nearby_snippet_2",
     owner: "google",
     apk: "nearby_snippet_2.apk",
+    preprocessed: true,
+    presigned: true,
+    test_suites: [],
+}
+
+// setup the 3P API nearby connection test, as
+// the client will call nearby connections 3P APIs.
+android_test_import {
+    name: "nearby_snippet_3p",
+    owner: "google",
+    apk: "nearby_snippet_3p.apk",
     preprocessed: true,
     presigned: true,
     test_suites: [],

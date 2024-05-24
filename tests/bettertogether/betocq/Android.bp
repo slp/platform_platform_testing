@@ -142,6 +142,7 @@ python_test_host {
         // package the snippets for atest
         ":nearby_snippet",
         ":nearby_snippet_2",
+        ":nearby_snippet_3p",
     ],
     test_suites: [],
     test_options: {

@@ -54,6 +54,7 @@ from betocq.directed_tests import scc_dfs_5g_hotspot_sta_test
 from betocq.directed_tests import scc_dfs_5g_wfd_sta_test
 from betocq.directed_tests import scc_indoor_5g_wfd_sta_test
 from betocq.function_tests import beto_cq_function_group_test
+from betocq.function_tests import nearbyconnections_function_test
 
 
 class BetoCqPerformanceTestSuite(base_betocq_suite.BaseBetocqSuite):
@@ -104,6 +105,12 @@ class BetoCqPerformanceTestSuite(base_betocq_suite.BaseBetocqSuite):
     ):
       self.enable_test_class(
           beto_cq_function_group_test.BetoCqFunctionGroupTest
+      )
+
+    # enable nearby connections function tests if required
+    if test_parameters.run_nearby_connections_function_tests:
+      self.add_test_class(
+          nearbyconnections_function_test.NearbyConnectionsFunctionTest
       )
 
     if test_parameters.run_bt_coex_test:
