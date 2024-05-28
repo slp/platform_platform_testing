@@ -44,6 +44,7 @@ from betocq.directed_tests import mcc_2g_wfd_indoor_5g_sta_test
 from betocq.directed_tests import mcc_5g_hotspot_dfs_5g_sta_test
 from betocq.directed_tests import mcc_5g_wfd_dfs_5g_sta_test
 from betocq.directed_tests import mcc_5g_wfd_non_dbs_2g_sta_test
+from betocq.directed_tests import mcc_aware_2g_5g_sta_test
 from betocq.directed_tests import scc_2g_wfd_sta_test
 from betocq.directed_tests import scc_2g_wlan_sta_test
 from betocq.directed_tests import scc_5g_aware_sta_test
@@ -94,7 +95,7 @@ class BetoCqPerformanceTestSuite(base_betocq_suite.BaseBetocqSuite):
         config.user_params
     )
 
-    if test_parameters.target_cuj_name is nc_constants.TARGET_CUJ_ESIM:
+    if test_parameters.target_cuj_name == nc_constants.TARGET_CUJ_ESIM:
       self.enable_test_class(bt_performance_test.BtPerformanceTest)
       return
 
@@ -179,12 +180,13 @@ class BetoCqPerformanceTestSuite(base_betocq_suite.BaseBetocqSuite):
             clazz=scc_5g_wfd_sta_test.Scc5gWfdStaTest,
             config=config,
         )
-        if (
-            test_parameters.target_cuj_name
-            is nc_constants.TARGET_CUJ_QUICK_SHARE
-        ):
-          self.enable_test_class(
+        if test_parameters.run_aware_test:
+          self.add_test_class(
               clazz=scc_5g_aware_sta_test.Scc5gAwareStaTest,
+              config=config,
+          )
+          self.add_test_class(
+              clazz=mcc_aware_2g_5g_sta_test.MccAware2g5gStaTest,
               config=config,
           )
         self.enable_test_class(

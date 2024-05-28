@@ -93,6 +93,13 @@ class NCBaseTestClass(base_test.BaseTestClass):
     )
 
     skipped_test_class_reason = self._get_skipped_test_class_reason()
+    for ad in self.ads:
+      if (
+          not ad.wifi_chipset
+          and self.test_parameters.skip_test_if_wifi_chipset_is_empty
+      ):
+        skipped_test_class_reason = 'wifi_chipset is empty in the config file'
+        ad.log.warning(skipped_test_class_reason)
     if skipped_test_class_reason:
       self.__skipped_test_class = True
       asserts.abort_class(skipped_test_class_reason)

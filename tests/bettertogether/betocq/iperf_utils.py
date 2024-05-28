@@ -161,9 +161,14 @@ def get_aware_ifname(ad: android_device.AndroidDevice) -> str:
 def get_wlan_ifname(ad: android_device.AndroidDevice) -> str:
   """Get WLAN interface name from ifconfig."""
   ifconfig = get_ifconfig_wlan(ad)
-  # Use the last one if there are multiple WLAN interfaces.
-  index = ifconfig.rfind('wlan')
-  return ifconfig[index:].split()[0].strip()
+  found_wlan1 = ifconfig.rfind('wlan1')
+  if found_wlan1 >= 0:
+    return 'wlan1'
+  found_wlan0 = ifconfig.rfind('wlan0')
+  if found_wlan0 >= 0:
+    return 'wlan0'
+  return ''
+
 
 
 def get_p2p_ifname(ad: android_device.AndroidDevice) -> str:

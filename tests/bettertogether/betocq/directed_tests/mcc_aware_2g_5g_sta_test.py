@@ -12,14 +12,12 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-"""This test is to test the Wifi SCC in a general case.
-
-In this case, both the Aware and WLAN are using the same 5G channel.
+"""This test is to test the Aware MCC when STAs are connected to 2G/5G.
 
 The device requirements:
   support 5G: true
 The AP requirements:
-  wifi channel: 36 (5180)
+  wifi channel: 36 (5180) and 6 (2437) in the same subnet
 """
 import logging
 import os
@@ -38,27 +36,28 @@ from betocq import d2d_performance_test_base
 from betocq import nc_constants
 
 
-class Scc5gAwareStaTest(d2d_performance_test_base.D2dPerformanceTestBase):
-  """Test class for Wifi SCC with 5G Aware and STA."""
+class MccAware2g5gStaTest(d2d_performance_test_base.D2dPerformanceTestBase):
+  """Test class for Aware MCC with the STA connected to 2G/5G channels."""
 
   def _get_country_code(self) -> str:
     return 'US'
 
   def setup_class(self):
     super().setup_class()
+    self._is_mcc = True
     self.performance_test_iterations = getattr(
-        self.test_scc_5g_aware_sta, base_test.ATTR_REPEAT_CNT
+        self.test_mcc_aware_2g_5g_sta, base_test.ATTR_REPEAT_CNT
     )
     logging.info(
         'performance test iterations: %s', self.performance_test_iterations
     )
 
   @base_test.repeat(
-      count=nc_constants.SCC_PERFORMANCE_TEST_COUNT,
-      max_consecutive_error=nc_constants.SCC_PERFORMANCE_TEST_MAX_CONSECUTIVE_ERROR,
+      count=nc_constants.MCC_PERFORMANCE_TEST_COUNT,
+      max_consecutive_error=nc_constants.MCC_PERFORMANCE_TEST_MAX_CONSECUTIVE_ERROR,
   )
-  def test_scc_5g_aware_sta(self):
-    """Test the performance for Wifi SCC with 5G Aware and STA."""
+  def test_mcc_aware_2g_5g_sta(self):
+    """Test the performance for Aware MCC."""
     self._test_connection_medium_performance(
         upgrade_medium_under_test=nc_constants.NearbyMedium.WIFIAWARE_ONLY,
         wifi_ssid=self.test_parameters.wifi_5g_ssid,
@@ -67,6 +66,7 @@ class Scc5gAwareStaTest(d2d_performance_test_base.D2dPerformanceTestBase):
         connection_medium=nc_constants.NearbyMedium(
             self.test_parameters.connection_medium
         ),
+        wifi_ssid2=self.test_parameters.wifi_2g_ssid,
     )
 
   def _get_file_transfer_failure_tip(self) -> str:
@@ -77,16 +77,20 @@ class Scc5gAwareStaTest(d2d_performance_test_base.D2dPerformanceTestBase):
 
   def _get_throughput_low_tip(self) -> str:
     return (
-        f'{self._throughput_low_string}. This is a SCC 5G test case with Aware'
-        ' and STA operating at the same 5G channel. Check STA and Aware'
-        ' frequencies in the target logs and ensure they'
-        ' have the same value. Check with the wifi chip vendor about the'
-        ' possible firmware Tx/Rx issues in this mode. Also check if the AP'
-        ' channel is set correctly and is supported by the used wifi medium.'
+        f'{self._throughput_low_string}. This is a MCC 5G test case with Aware'
+        ' and STA operating at different 5G channels. Check with the wifi chip'
+        ' vendor about the possible firmware Tx/Rx issues in this mode.'
+        ' Also check if the AP channel is set correctly and is supported by the'
+        ' used wifi medium.'
     )
 
   def _is_wifi_ap_ready(self) -> bool:
-    return True if self.test_parameters.wifi_5g_ssid else False
+    return (
+        True
+        if self.test_parameters.wifi_5g_ssid
+        and self.test_parameters.wifi_2g_ssid
+        else False
+    )
 
   @property
   def _devices_capabilities_definition(self) -> dict[str, dict[str, bool]]:
