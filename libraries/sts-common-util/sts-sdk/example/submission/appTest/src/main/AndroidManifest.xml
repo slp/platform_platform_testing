@@ -19,7 +19,8 @@
     android:versionCode="1"
     android:versionName="1.0">
     <instrumentation
-        android:name="androidx.test.runner.AndroidJUnitRunner" />
+        android:name="androidx.test.runner.AndroidJUnitRunner"
+        android:targetPackage="${applicationId}" />
     <application
         android:supportsRtl="true">
         <activity

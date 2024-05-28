@@ -27,9 +27,9 @@ import org.gradle.api.file.RelativePath
 import org.gradle.api.tasks.Copy
 
 open class NdkTestExtension {
-    var minSdk: Int? = null
-    var targetSdk: Int? = null
-    var compileSdk: Int? = 34 // default to Android 14
+    var minSdk: Int = 31 // oldest security-supported
+    var targetSdk: Int = 34 // newest security-supported
+    var compileSdk: Int = 34 // compile = target
 }
 
 class StsSdkNdkTestPlugin : Plugin<Project> {

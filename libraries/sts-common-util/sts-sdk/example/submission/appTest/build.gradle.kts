@@ -15,9 +15,5 @@
  */
 plugins { id("com.android.sts.sdk.apptest") }
 
-appTest {
-    name = "myapp"
-    minSdk = 11
-    targetSdk = 33
-    compileSdk = 33
-}
+// Note: the Gradle package name is appended to the namespace "android.security.sts"
+appTest {}

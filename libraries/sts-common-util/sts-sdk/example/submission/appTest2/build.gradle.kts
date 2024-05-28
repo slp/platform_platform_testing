@@ -15,8 +15,4 @@
  */
 plugins { id("com.android.sts.sdk.apptest") }
 
-appTest {
-    name = "myotherapp"
-    minSdk = 11
-    compileSdk = 33
-}
+appTest {}

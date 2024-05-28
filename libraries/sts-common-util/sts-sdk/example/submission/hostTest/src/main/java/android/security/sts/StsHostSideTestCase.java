@@ -42,9 +42,12 @@ import java.util.regex.Pattern;
 @RunWith(DeviceJUnit4ClassRunner.class)
 public class StsHostSideTestCase extends NonRootSecurityTestCase {
 
-    static final String TEST_APP = "sts_test_app_package.apk";
-    static final String TEST_PKG = "android.security.sts.sts_test_app_package";
-    static final String TEST_CLASS = TEST_PKG + "." + "DeviceTest";
+    // Set from the Gradle project for the AppTest plugins.
+    static final String TEST_APP = "AppTest.apk";
+    // The Gradle project name is appended to the namespace "android.security.sts".
+    static final String TEST_PKG = "android.security.sts.apptest";
+    // The class name will be different from the application ID but will match the source code.
+    static final String TEST_CLASS = "android.security.sts.DeviceTest";
 
     /** An app test, which uses this host Java test to launch an Android instrumented test */
     @Test

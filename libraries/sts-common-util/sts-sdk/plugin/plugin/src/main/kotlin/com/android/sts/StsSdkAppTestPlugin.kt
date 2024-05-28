@@ -32,12 +32,9 @@ import org.gradle.api.tasks.Copy
 // See "android_test_helper_app" at the "Soong reference files"
 // https://ci.android.com/builds/latest/branches/aosp-build-tools/targets/linux/view/soong_build.html
 open class AppTestExtension {
-    // Sets app namespace and applicationId
-    // https://developer.android.com/build/configure-app-module#set-namespace
-    var name: String? = null
-    var minSdk: Int? = null
-    var targetSdk: Int? = null
-    var compileSdk: Int? = 34 // default to Android 14
+    var minSdk: Int = 31 // oldest security-supported
+    var targetSdk: Int = 34 // newest security-supported
+    var compileSdk: Int = 34 // compile = target
 }
 
 class StsSdkAppTestPlugin : Plugin<Project> {
@@ -74,16 +71,34 @@ class StsSdkAppTestPlugin : Plugin<Project> {
             // BaseAppModuleExtension is internal to the AGP, but is widely used by similar
             // extensions and unlikely to break
             project.extensions.configure<BaseAppModuleExtension>("android") {
-                // Base the id on the Gradle project name so each APK is guaranteed to have unique
-                // id
+                // Base on the Gradle project name so each APK is guaranteed to have unique id
                 it.defaultConfig.applicationId = namespace + '.' + project.name.lowercase()
-                // Explicitly set the namespace to reduce refactoring requirements for STS
-                // integration
+                // Set the namespace to reduce refactoring requirements for STS integration
+                // https://developer.android.com/build/configure-app-module#set-namespace
                 it.namespace = namespace
                 it.compileSdk = appTest.compileSdk
                 it.defaultConfig.minSdk = appTest.minSdk
                 it.defaultConfig.targetSdk = appTest.targetSdk
             }
+
+            val implementationConfiguration = project.configurations.getByName("implementation")
+            // TODO: https://github.com/gradle/gradle/issues/16634 - Can't use version catalog
+            // because the extension is not registered by subproject or root project
+            listOf(
+                    "androidx.appcompat:appcompat:1.6.1",
+                    "androidx.core:core:1.13.1",
+                    "com.google.android.material:material:1.12.0",
+                    "junit:junit:4.13.2",
+                    "androidx.test.ext:junit:1.1.5",
+                    "androidx.test.espresso:espresso-core:3.5.1",
+                    "androidx.test.uiautomator:uiautomator:2.3.0",
+                    "org.jetbrains.kotlin:kotlin-stdlib:1.8.22"
+                )
+                .forEach { dependencyString ->
+                    implementationConfiguration.dependencies.add(
+                        project.dependencies.create(dependencyString)
+                    )
+                }
 
             // Register callbacks for "onVariants" so that we can attach the APK to the
             // stsSdkTestResource configuration.
