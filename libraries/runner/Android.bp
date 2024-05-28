@@ -21,6 +21,7 @@ android_library {
     name: "platform-parametric-runner-lib",
     manifest: "AndroidManifest.xml",
     platform_apis: true,
+    min_sdk_version: "Tiramisu",
     lint: { test: true },
     optimize: {
         enabled: false
