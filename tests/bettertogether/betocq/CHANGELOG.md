@@ -1,5 +1,27 @@
 # BetoCQ test suite release history
 
+## 2.3 (05/28/2024)
+
+## New
+* Skip test if wifi_chipset is empty.
+* Add MCC Aware test case with STAs connected to 2G/5G.
+* Make connection, advertising/discovery mediums configurable.
+* Allow the two devices connect to different SSIDs.
+* Raise NC speed bar back to 40MB/s except for WLAN.
+* Generate per-test openwrt syslog.
+* Add 3p api function into nearby_connections_function_test.py.
+* Report the suite name to the test summary.
+* Enable individual test selection from the command-line.
+
+### Bug fixes
+* Add 10s delay after sta connection to allow scan, DHCP and internet
+  validation to complete.
+* Fix the bug that it can not run the test cases of eSIM and Quick Share.
+* Clarify the failure reasons for some test failures.
+* Fix the issue that wlan1 is not correctly detected.
+* Fix the timestamp in failed iteration logs.
+* Reduce wait time between iteration from 13s to 3s.
+
 ## 2.2 (05/10/2024)
 
 ## New
