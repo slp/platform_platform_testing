@@ -110,6 +110,8 @@ class StsSdkSubmissionPlugin : Plugin<Project> {
 
         val assembleStsSdkTradefedTask =
             project.tasks.register("assembleStsSdkTradefed-$target") { task ->
+                task.description =
+                    "Assemble the STS SDK Tradefed executable test suite for $target."
                 task.group = taskGroup
                 task.dependsOn(
                     copyStsSdkTradefedToolsTask,
@@ -242,6 +244,7 @@ class StsSdkSubmissionPlugin : Plugin<Project> {
 
         val assembleStsSdkSubmissionSourcesTask =
             project.tasks.register("assembleStsSdkSubmissionSources") { task ->
+                task.description = "Assemble the source files for the submission zip."
                 task.group = taskGroup
                 task.dependsOn(mergeManifestsTask)
                 task.dependsOn(copyRootProjectTask)
@@ -250,6 +253,7 @@ class StsSdkSubmissionPlugin : Plugin<Project> {
 
         val assembleStsSdkSubmissionZipTask =
             project.tasks.register<Zip>("assembleStsSdkSubmissionZip", Zip::class.java) { task ->
+                task.description = "Assemble the submission zip for upload."
                 task.group = taskGroup
                 task.from(assembleStsSdkSubmissionSourcesTask)
                 task.archiveFileName.set("sts-sdk-submission.zip")
@@ -331,6 +335,11 @@ class StsSdkSubmissionPlugin : Plugin<Project> {
 
         val copyInvocationResultsResultsToSubmissionTask =
             project.tasks.register("copyInvocationResultsToSubmission") { task ->
+                task.description =
+                    "Copy the results from previous Tradefed invocations into the STS SDK " +
+                        "submission sources directory to assist with the review process. Note " +
+                        "that this contains logs from both the host and device; please review " +
+                        "the contents before or after running this."
                 task.group = taskGroup
             }
         targetToMultiAbiSets.entries.forEach { mapEntry ->
