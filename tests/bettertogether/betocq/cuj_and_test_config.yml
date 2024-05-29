@@ -105,6 +105,22 @@ TestBeds:
       <<: *test-params
       target_cuj_name: "quick_start"
 
+- Name: NearbyConnectionsFunction
+  <<: *controllers
+  TestParams:
+    <<: *test-params
+    target_cuj_name: "nearby_connections_function"
+    requires_3p_api_test: True
+    connect_to_wifi_before_test: True
+    run_function_tests_with_performance_tests: False
+    run_bt_performance_test: False
+    run_ble_performance_test: False
+    run_bt_coex_test: False
+    run_directed_test: False
+    run_compound_test: False
+    run_iperf_test: False
+    run_nearby_connections_function_tests: True
+
 - Name: QuickshareFunctionTest
   Controllers:
     <<: *controllers
