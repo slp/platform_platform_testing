@@ -131,7 +131,7 @@ class MediaUtils:
     # Get song title from phone device
     def get_song_title_from_phone(self):
         logging.info("Getting song title from phone device")
-        time.sleep(constants.WAIT_FOR_LOAD)
+        time.sleep(constants.YOUTUBE_SYNC_TIME)
         song_metadata_array = self.get_song_metadata().split(',')
         actual_song_title = song_metadata_array[0]
         logging.info("Actual song title on phone device: %s", actual_song_title)
