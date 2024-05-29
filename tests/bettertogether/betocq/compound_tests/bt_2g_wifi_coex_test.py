@@ -47,6 +47,8 @@ class Bt2gWifiCoexTest(d2d_performance_test_base.D2dPerformanceTestBase):
 
   def setup_class(self):
     self.test_parameters.requires_bt_multiplex = True
+    # we don't care speed so that there is no need to wait
+    self.test_parameters.target_post_wifi_connection_idle_time_sec = 0
     super().setup_class()
     self.performance_test_iterations = getattr(
         self.test_bt_2g_wifi_coex, base_test.ATTR_REPEAT_CNT
