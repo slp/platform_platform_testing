@@ -57,6 +57,8 @@ class StsSdkNdkTestPlugin : Plugin<Project> {
             }
 
         project.afterEvaluate {
+            val rename = project.name + "_StsSdkPlaceholder"
+
             project.plugins.apply("com.android.library")
             project.extensions.configure<LibraryExtension>("android") {
                 it.namespace = "com.android.sts"
@@ -91,10 +93,8 @@ class StsSdkNdkTestPlugin : Plugin<Project> {
                                     Copy::class.java
                                 ) { task ->
                                     task.from(project.zipTree(aarDir)) { copySpec ->
-                                        val ndkName =
-                                            projectName.replaceFirstChar { it.uppercase() }
                                         copySpec.include(aarPrefabPath)
-                                        copySpec.rename(".*", "${ndkName}_sts${abi.attr.bitness}")
+                                        copySpec.rename(".*", "${rename}_sts${abi.attr.bitness}")
                                         copySpec.eachFile { fileCopyDetails ->
                                             // drop the path prefix
                                             fileCopyDetails.relativePath =

@@ -17,9 +17,12 @@ package com.android.sts
 
 import com.google.gson.Gson
 import java.io.BufferedWriter
+import java.util.regex.Pattern
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
+import org.gradle.api.tasks.SourceSetContainer
 
 class StsSdkJavaHostTestPlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -78,5 +81,63 @@ class StsSdkJavaHostTestPlugin : Plugin<Project> {
             manifestArtifact = writeManifestTask,
             resourceArtifacts = copyTestcasesResourcesTasks
         )
+
+        val verifyPackageNamesTask =
+            project.tasks.register("verifyPackageNames") { task ->
+                task.doLast {
+                    val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
+                    sourceSets.getByName("main").java.forEach { file ->
+                        val expectedPackagePrefix = "android.security.sts.sts_sdk_placeholder"
+                        val fileText = file.readText()
+                        // Extract the package from the Java file
+                        val packageRegex = """^package\s+(?<package>[\w.]+);?$"""
+                        val packageMatcher =
+                            Pattern.compile(packageRegex, Pattern.MULTILINE).matcher(fileText)
+                        if (!packageMatcher.find()) {
+                            throw GradleException("Could not find package pattern in file: $file")
+                        }
+                        val packageName = packageMatcher.group("package")
+                        if (packageName == null) {
+                            throw GradleException("Could not find package name in file: $file")
+                        }
+                        if (!packageName.startsWith(expectedPackagePrefix)) {
+                            throw GradleException(
+                                "Package name doesn't start with \"$expectedPackagePrefix\" in " +
+                                    "file: $file"
+                            )
+                        }
+                    }
+                }
+            }
+
+        val verifyResourcesTask =
+            project.tasks.register("verifyResources") { task ->
+                task.doLast {
+                    val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
+                    val resourcesSourceSet = sourceSets.getByName("main").resources
+                    val expectedResourceDirectory = "StsSdkPlaceholder"
+
+                    val invalidPrefixResourceIterator =
+                        resourcesSourceSet.asFileTree
+                            .matching { patternFilterable ->
+                                patternFilterable.exclude(expectedResourceDirectory)
+                            }
+                            .iterator()
+                    if (invalidPrefixResourceIterator.hasNext()) {
+                        val invalidPrefixResources =
+                            invalidPrefixResourceIterator.asSequence().toList()
+                        throw GradleException(
+                            "All resource files need to be contained within " +
+                                "$expectedResourceDirectory/ in the resources directory: " +
+                                "$invalidPrefixResources"
+                        )
+                    }
+                }
+            }
+
+        // Perform verification when classes are being compiled.
+        project.tasks.named("classes").configure { task ->
+            task.dependsOn(verifyPackageNamesTask, verifyResourcesTask)
+        }
     }
 }

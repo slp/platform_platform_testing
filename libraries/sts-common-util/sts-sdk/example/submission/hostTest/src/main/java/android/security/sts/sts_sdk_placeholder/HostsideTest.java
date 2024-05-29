@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package android.security.sts;
+package android.security.sts.sts_sdk_placeholder;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
@@ -40,12 +40,12 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 @RunWith(DeviceJUnit4ClassRunner.class)
-public class StsHostSideTestCase extends NonRootSecurityTestCase {
+public class HostsideTest extends NonRootSecurityTestCase {
 
     // Set from the Gradle project for the AppTest plugins.
-    static final String TEST_APP = "AppTest.apk";
+    static final String TEST_APP = "appTest_StsSdkPlaceholder.apk";
     // The Gradle project name is appended to the namespace "android.security.sts".
-    static final String TEST_PKG = "android.security.sts.apptest";
+    static final String TEST_PKG = "android.security.sts.appTest_StsSdkPlaceholder";
     // The class name will be different from the application ID but will match the source code.
     static final String TEST_CLASS = "android.security.sts.DeviceTest";
 
@@ -70,9 +70,9 @@ public class StsHostSideTestCase extends NonRootSecurityTestCase {
     public void testWithNativePoc() throws Exception {
         NativePoc.builder()
                 // the name of the PoC
-                .pocName("NdkTest")
+                .pocName("ndkTest_StsSdkPlaceholder")
                 // extra files pushed to the device
-                .resources("res.txt")
+                .resources("StsSdkPlaceholder/res.txt")
                 // command-line arguments for the PoC
                 .args("res.txt", "vulnerable")
                 // other options allow different linker paths for library shims
@@ -99,13 +99,13 @@ public class StsHostSideTestCase extends NonRootSecurityTestCase {
                 MallocDebug.withLibcMallocDebugOnNewProcess(
                         getDevice(),
                         "backtrace guard", // malloc debug options
-                        "NdkTest" // process name
+                        "ndkTest_StsSdkPlaceholder" // process name
                         )) {
             assumeTrue("could not disable root", getDevice().disableAdbRoot());
 
             // run a native PoC
             NativePoc.builder()
-                    .pocName("NdkTest")
+                    .pocName("ndkTest_StsSdkPlaceholder")
                     .args("memory_corrupt")
                     .build() // add more as needed
                     .run(this);
@@ -139,7 +139,7 @@ public class StsHostSideTestCase extends NonRootSecurityTestCase {
 
         // attack the service
         NativePoc.builder()
-                .pocName("NdkTest")
+                .pocName("ndkTest_StsSdkPlaceholder")
                 // pass the library path to the PoC
                 .args(libFileEntry.get().getFullPath())
                 .assumePocExitSuccess(false) // example returns EXIT_FAILURE if not enough args
@@ -148,7 +148,8 @@ public class StsHostSideTestCase extends NonRootSecurityTestCase {
                                 new TombstoneUtils.Config()
                                         // Because the vulnerability is in the shared library, the
                                         // process crash is the PoC.
-                                        .setProcessPatterns(Pattern.compile("NdkTest"))))
+                                        .setProcessPatterns(
+                                                Pattern.compile("ndkTest_StsSdkPlaceholder"))))
                 .build()
                 .run(this);
     }
@@ -160,7 +161,7 @@ public class StsHostSideTestCase extends NonRootSecurityTestCase {
 
         // attack the device, which can be native poc, echo to socket, send intent, app, etc
         NativePoc.builder()
-                .pocName("NdkTest")
+                .pocName("ndkTest_StsSdkPlaceholder")
                 .assumePocExitSuccess(false) // example returns EXIT_FAILURE if no args
                 .build() // add more as needed
                 .run(this);

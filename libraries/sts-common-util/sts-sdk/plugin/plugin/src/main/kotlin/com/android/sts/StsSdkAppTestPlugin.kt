@@ -20,6 +20,7 @@ import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.google.gson.Gson
 import java.io.BufferedWriter
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
@@ -67,12 +68,24 @@ class StsSdkAppTestPlugin : Plugin<Project> {
         project.afterEvaluate {
             project.plugins.apply("com.android.application")
 
+            // https://developer.android.com/build/configure-app-module
+            // "All characters must be alphanumeric or an underscore [a-zA-Z0-9_]."
+            val nameRegex = """[a-zA-Z0-9_]+""".toRegex()
+            if (!project.name.matches(nameRegex)) {
+                throw GradleException("Project name doesn't match $nameRegex: ${project.name}")
+            }
+
+            // Because every module must be unique, append a placeholder to find/replace on import.
+            // https://source.android.com/docs/setup/reference/androidbp
+            // "every module must have a name property, and the value must be unique"
+            val rename = project.name + "_StsSdkPlaceholder"
+
             // Copy our restricted-scope AppTestExtension into the normal Android extension
             // BaseAppModuleExtension is internal to the AGP, but is widely used by similar
             // extensions and unlikely to break
             project.extensions.configure<BaseAppModuleExtension>("android") {
                 // Base on the Gradle project name so each APK is guaranteed to have unique id
-                it.defaultConfig.applicationId = namespace + '.' + project.name.lowercase()
+                it.defaultConfig.applicationId = "$namespace.$rename"
                 // Set the namespace to reduce refactoring requirements for STS integration
                 // https://developer.android.com/build/configure-app-module#set-namespace
                 it.namespace = namespace
@@ -126,9 +139,8 @@ class StsSdkAppTestPlugin : Plugin<Project> {
                             Copy::class.java
                         ) { task ->
                             task.from(apkDir) {
-                                val apkName = project.name.replaceFirstChar { it.uppercase() }
                                 // Rename to expected Soong module name
-                                it.rename(".*\\.apk", apkName + ".apk")
+                                it.rename(".*\\.apk", rename + ".apk")
                                 // Only include apks (glob, not regex)
                                 it.include("*.apk")
                             }
