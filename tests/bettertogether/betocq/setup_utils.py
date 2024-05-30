@@ -191,6 +191,8 @@ def connect_to_wifi(
   if not ad.nearby.wifiIsEnabled():
     ad.nearby.wifiEnable()
   # return until the wifi is connected.
+  password = password or None
+  ad.log.info('Connect to wifi: ssid: %s, password: %s', ssid, password)
   ad.nearby.wifiConnectSimple(ssid, password)
 
 

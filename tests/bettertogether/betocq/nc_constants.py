@@ -29,8 +29,10 @@ SCC_PERFORMANCE_TEST_MAX_CONSECUTIVE_ERROR = 2
 BT_PERFORMANCE_TEST_COUNT = 100
 BT_PERFORMANCE_TEST_MAX_CONSECUTIVE_ERROR = 5
 
-NEARBY_RESET_WAIT_TIME = datetime.timedelta(seconds=5)
-WIFI_DISCONNECTION_DELAY = datetime.timedelta(seconds=3)
+TARGET_POST_WIFI_CONNECTION_IDLE_TIME_SEC = 10
+
+NEARBY_RESET_WAIT_TIME = datetime.timedelta(seconds=2)
+WIFI_DISCONNECTION_DELAY = datetime.timedelta(seconds=1)
 
 FIRST_DISCOVERY_TIMEOUT = datetime.timedelta(seconds=30)
 FIRST_CONNECTION_INIT_TIMEOUT = datetime.timedelta(seconds=30)
@@ -56,9 +58,7 @@ MAX_PHY_RATE_PER_STREAM_N_20_MBPS = 72
 MCC_THROUGHPUT_MULTIPLIER = 0.25
 MAX_PHY_RATE_TO_MIN_THROUGHPUT_RATIO_5G = 0.37
 MAX_PHY_RATE_TO_MIN_THROUGHPUT_RATIO_2G = 0.10
-# Add a temporary cap for NC speed check until nearby connections layer overhead
-# issue is fixed. Note that this cap is not applied to iperf speed check
-NC_THROUGHPUT_MIN_CAP_MBPS = 20
+WLAN_THROUGHPUT_CAP_MBPS = 20  # cap for WLAN medium due to encryption overhead
 
 CLASSIC_BT_MEDIUM_THROUGHPUT_BENCHMARK_MBPS = 0.02
 BLE_MEDIUM_THROUGHPUT_BENCHMARK_MBPS = 0.02
@@ -118,6 +118,7 @@ class TestParameters:
 
   target_cuj_name: str = 'unspecified'
   requires_bt_multiplex: bool = False
+  requires_3p_api_test: bool = False
   abort_all_tests_on_function_tests_fail: bool = True
   fast_fail_on_any_error: bool = False
   use_auto_controlled_wifi_ap: bool = False
@@ -130,6 +131,7 @@ class TestParameters:
   wifi_ssid: str = ''  # optional, for tests which can use any wifi
   wifi_password: str = ''
   advertising_discovery_medium: NearbyMedium = NearbyMedium.BLE_ONLY
+  connection_medium: NearbyMedium = NearbyMedium.BT_ONLY
   toggle_airplane_mode_target_side: bool = False
   reset_wifi_connection: bool = True
   disconnect_bt_after_test: bool = False
@@ -139,6 +141,9 @@ class TestParameters:
   keep_alive_timeout_ms: int = KEEP_ALIVE_TIMEOUT_WIFI_MS
   keep_alive_interval_ms: int = KEEP_ALIVE_INTERVAL_WIFI_MS
   enable_2g_ble_scan_throttling: bool = True
+  target_post_wifi_connection_idle_time_sec: int = (
+      TARGET_POST_WIFI_CONNECTION_IDLE_TIME_SEC
+  )
 
   run_function_tests_with_performance_tests: bool = True
   run_bt_performance_test: bool = True
@@ -146,8 +151,10 @@ class TestParameters:
   run_bt_coex_test: bool = True
   run_directed_test: bool = True
   run_compound_test: bool = True
+  run_aware_test: bool = False
   run_iperf_test: bool = True
-
+  run_nearby_connections_function_tests: bool = False
+  skip_test_if_wifi_chipset_is_empty: bool = True
   skip_bug_report: bool = False
 
   @classmethod
@@ -249,7 +256,8 @@ class SingleTestFailureReason(enum.IntEnum):
   DISCONNECTED_FROM_AP = 11
   WRONG_AP_FREQUENCY = 12
   WRONG_P2P_FREQUENCY = 13
-  SUCCESS = 14
+  DEVICE_CONFIG_ERROR = 14
+  SUCCESS = 15
 
 
 COMMON_WIFI_CONNECTION_FAILURE_REASONS = (
@@ -268,24 +276,23 @@ COMMON_TRIAGE_TIP: dict[SingleTestFailureReason, str] = {
     ),
     SingleTestFailureReason.SUCCESS: 'success!',
     SingleTestFailureReason.SOURCE_START_DISCOVERY: (
-        'The source device can not start BLE scan.'
+        'The source device fails to discover the target device.'
     ),
     SingleTestFailureReason.TARGET_START_ADVERTISING: (
-        'The target device can not start BLE advertising.'
+        'The target device can not start advertising.'
     ),
     SingleTestFailureReason.SOURCE_REQUEST_CONNECTION: (
-        'The source device can not request connection to the target device'
-        ' through BLE.'
+        'The source device fails to connect to the target device'
     ),
     SingleTestFailureReason.TARGET_ACCEPT_CONNECTION: (
-        'The target device can not accept the connection through BLE.'
+        'The target device fails to accept the connection.'
     ),
     SingleTestFailureReason.SOURCE_WIFI_CONNECTION: (
-        'The source device can not connect to the wifi network.\n'
+        'The source device can not connect to the wifi AP.\n'
         f'{COMMON_WIFI_CONNECTION_FAILURE_REASONS}'
     ),
     SingleTestFailureReason.TARGET_WIFI_CONNECTION: (
-        'The target device can not connect to the wifi network.\n'
+        'The target device can not connect to the wifi AP.\n'
         f'{COMMON_WIFI_CONNECTION_FAILURE_REASONS}'
     ),
     SingleTestFailureReason.AP_IS_NOT_CONFIGURED: (
@@ -311,6 +318,9 @@ COMMON_TRIAGE_TIP: dict[SingleTestFailureReason, str] = {
             ' indoor or DFS feature  and set device capabilities correctly.'
         ),
     ]),
+    SingleTestFailureReason.DEVICE_CONFIG_ERROR: (
+        'Check if device capabilities are set correctly in the config file.'
+    ),
 }
 
 COMMON_WFD_UPGRADE_FAILURE_REASONS = '\n'.join([
@@ -423,6 +433,7 @@ class SingleTestResult:
   advertiser_wifi_expected: bool = False
   sta_frequency: int = INVALID_INT
   max_sta_link_speed_mbps: int = INVALID_INT
+  start_time: datetime.datetime = datetime.datetime.now()
 
 
 @dataclasses.dataclass(frozen=False)

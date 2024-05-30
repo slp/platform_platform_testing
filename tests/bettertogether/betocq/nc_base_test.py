@@ -37,6 +37,7 @@ from betocq import version
 
 NEARBY_SNIPPET_PACKAGE_NAME = 'com.google.android.nearby.mobly.snippet'
 NEARBY_SNIPPET_2_PACKAGE_NAME = 'com.google.android.nearby.mobly.snippet.second'
+NEARBY_SNIPPET_3P_PACKAGE_NAME = 'com.google.android.nearby.mobly.snippet.thirdparty'
 
 # TODO(b/330803934): Need to design external path for OEM.
 _CONFIG_EXTERNAL_PATH = 'TBD'
@@ -53,12 +54,16 @@ class NCBaseTestClass(base_test.BaseTestClass):
     self.test_parameters: nc_constants.TestParameters = (
         nc_constants.TestParameters.from_user_params(self.user_params)
     )
+    self._test_result_messages: dict[str, str] = {}
     self._nearby_snippet_apk_path: str = None
     self._nearby_snippet_2_apk_path: str = None
+    self._nearby_snippet_3p_apk_path: str = None
     self.performance_test_iterations: int = 1
     self.num_bug_reports: int = 0
     self._requires_2_snippet_apks = False
+    self._requires_3p_snippet_apks = False
     self.__loaded_2_nearby_snippets = False
+    self.__loaded_3p_nearby_snippets = False
     self.__skipped_test_class = False
 
   def _get_skipped_test_class_reason(self) -> str | None:
@@ -88,6 +93,13 @@ class NCBaseTestClass(base_test.BaseTestClass):
     )
 
     skipped_test_class_reason = self._get_skipped_test_class_reason()
+    for ad in self.ads:
+      if (
+          not ad.wifi_chipset
+          and self.test_parameters.skip_test_if_wifi_chipset_is_empty
+      ):
+        skipped_test_class_reason = 'wifi_chipset is empty in the config file'
+        ad.log.warning(skipped_test_class_reason)
     if skipped_test_class_reason:
       self.__skipped_test_class = True
       asserts.abort_class(skipped_test_class_reason)
@@ -100,6 +112,11 @@ class NCBaseTestClass(base_test.BaseTestClass):
       self._requires_2_snippet_apks = True
       self._nearby_snippet_2_apk_path = self.user_params.get(file_tag, {}).get(
           'nearby_snippet_2', ['']
+      )[0]
+    if self.test_parameters.requires_3p_api_test:
+      self._requires_3p_snippet_apks = True
+      self._nearby_snippet_3p_apk_path = self.user_params.get(file_tag, {}).get(
+          'nearby_snippet_3p', ['']
       )[0]
 
     # disconnect from all wifi automatically
@@ -207,6 +224,21 @@ class NCBaseTestClass(base_test.BaseTestClass):
       )
       ad.load_snippet('nearby2', NEARBY_SNIPPET_2_PACKAGE_NAME)
       self.__loaded_2_nearby_snippets = True
+    if self._requires_3p_snippet_apks:
+      ad.log.info('try to install nearby_snippet_3p_apk')
+      if self._nearby_snippet_3p_apk_path:
+        setup_utils.install_apk(ad, self._nearby_snippet_3p_apk_path)
+      else:
+        ad.log.warning(
+            'nearby_snippet_3p apk is not specified, '
+            'make sure it is installed in the device'
+        )
+      setup_utils.grant_manage_external_storage_permission(
+          ad, NEARBY_SNIPPET_3P_PACKAGE_NAME
+      )
+      ad.load_snippet('nearby3p', NEARBY_SNIPPET_3P_PACKAGE_NAME)
+      self.__loaded_3p_nearby_snippets = True
+
     if not ad.nearby.wifiIsEnabled():
       ad.nearby.wifiEnable()
     setup_utils.disconnect_from_wifi(ad)
@@ -248,6 +280,11 @@ class NCBaseTestClass(base_test.BaseTestClass):
       self.discoverer.nearby2.stopAllEndpoints()
       self.advertiser.nearby2.stopAdvertising()
       self.advertiser.nearby2.stopAllEndpoints()
+    if self.__loaded_3p_nearby_snippets:
+      self.discoverer.nearby3p.stopDiscovery()
+      self.discoverer.nearby3p.stopAllEndpoints()
+      self.advertiser.nearby3p.stopAdvertising()
+      self.advertiser.nearby3p.stopAllEndpoints()
     time.sleep(nc_constants.NEARBY_RESET_WAIT_TIME.total_seconds())
 
   def _teardown_device(self, ad: android_device.AndroidDevice) -> None:
@@ -260,6 +297,8 @@ class NCBaseTestClass(base_test.BaseTestClass):
     ad.unload_snippet('nearby')
     if self.__loaded_2_nearby_snippets:
       ad.unload_snippet('nearby2')
+    if self.__loaded_3p_nearby_snippets:
+      ad.unload_snippet('nearby3p')
 
   def teardown_test(self) -> None:
     utils.concurrent_exec(

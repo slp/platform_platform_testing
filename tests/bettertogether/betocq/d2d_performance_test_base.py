@@ -30,7 +30,7 @@ from betocq import nearby_connection_wrapper
 from betocq import setup_utils
 
 
-_DELAY_BETWEEN_EACH_TEST_CYCLE = datetime.timedelta(seconds=5)
+_DELAY_BETWEEN_EACH_TEST_CYCLE = datetime.timedelta(seconds=0)
 _BITS_PER_BYTE = 8
 _MAX_FREQ_2G_MHZ = 2500
 _MIN_FREQ_5G_DFS_MHZ = 5260
@@ -50,6 +50,8 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
     self._is_dbs_mode: bool = False
     self._throughput_low_string: str = ''
     self._upgrade_medium_under_test: nc_constants.NearbyMedium = None
+    self._connection_medium: nc_constants.NearbyMedium = None
+    self._advertising_discovery_medium: nc_constants.NearbyMedium = None
     self._current_test_result: nc_constants.SingleTestResult = (
         nc_constants.SingleTestResult()
     )
@@ -161,6 +163,7 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
           * nc_constants.MAX_PHY_RATE_TO_MIN_THROUGHPUT_RATIO_2G
           / _BITS_PER_BYTE
       )
+      nc_min_throughput_mbyte_per_sec = min_throughput_mbyte_per_sec
     else:  # 5G wifi medium
       max_phy_rate_mbps = min(
           self.discoverer.max_phy_rate_5g_mbps,
@@ -198,9 +201,16 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
             * nc_constants.MCC_THROUGHPUT_MULTIPLIER
         )
 
-    nc_min_throughput_mbyte_per_sec = min(
-        min_throughput_mbyte_per_sec, nc_constants.NC_THROUGHPUT_MIN_CAP_MBPS
-    )
+      nc_min_throughput_mbyte_per_sec = min_throughput_mbyte_per_sec
+      if (
+          self._current_test_result.quality_info.upgrade_medium
+          == nc_constants.NearbyConnectionMedium.WIFI_LAN
+      ):
+        nc_min_throughput_mbyte_per_sec = min(
+            nc_min_throughput_mbyte_per_sec,
+            nc_constants.WLAN_THROUGHPUT_CAP_MBPS,
+        )
+
 
     self.advertiser.log.info(
         f'target STA freq = {sta_frequency}, '
@@ -214,17 +224,23 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
   def _test_connection_medium_performance(
       self,
       upgrade_medium_under_test: nc_constants.NearbyMedium,
-      wifi_ssid: str = '',
-      wifi_password: str = '',
+      wifi_ssid: str = '',  # used by discoverer and possibly advertiser
+      wifi_password: str = '',  # used by discoverer and advertiser
       force_disable_bt_multiplex: bool = False,
       connection_medium: nc_constants.NearbyMedium = nc_constants.NearbyMedium.BT_ONLY,
+      wifi_ssid2: str = '',  # used by advertiser if not empty
   ) -> None:
     """Test the D2D performance with the specified upgrade medium."""
     self._upgrade_medium_under_test = upgrade_medium_under_test
+    self._connection_medium = connection_medium
     self._wifi_ssid = wifi_ssid
 
     if self.test_parameters.toggle_airplane_mode_target_side:
       setup_utils.toggle_airplane_mode(self.advertiser)
+    advertising_discovery_medium = nc_constants.NearbyMedium(
+        self.test_parameters.advertising_discovery_medium
+    )
+    self._advertising_discovery_medium = advertising_discovery_medium
     if self.test_parameters.reset_wifi_connection:
       self._reset_wifi_connection()
     # 1. discoverer connect to wifi STA/AP
@@ -249,6 +265,7 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
       )
 
     # 2. set up BT connection if required
+    # Because target STA is not yet connected, discovery is done over BLE only.
     advertising_discovery_medium = nc_constants.NearbyMedium.BLE_ONLY
 
     connection_setup_timeouts = nc_constants.ConnectionSetupTimeouts(
@@ -268,7 +285,7 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
           self.discoverer,
           self.advertiser.nearby2,
           self.discoverer.nearby2,
-          advertising_discovery_medium=advertising_discovery_medium,
+          advertising_discovery_medium=nc_constants.NearbyMedium.BLE_ONLY,
           connection_medium=nc_constants.NearbyMedium.BT_ONLY,
           upgrade_medium=nc_constants.NearbyMedium.BT_ONLY,
       )
@@ -286,13 +303,16 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
 
     # set up Wifi connection and transfer
     # 3. advertiser connect to wifi STA/AP
-    if wifi_ssid:
+    wifi_ssid_advertiser = wifi_ssid
+    if wifi_ssid2:
+      wifi_ssid_advertiser = wifi_ssid2
+    if wifi_ssid_advertiser:
       self._active_nc_fail_reason = (
           nc_constants.SingleTestFailureReason.TARGET_WIFI_CONNECTION
       )
       advertiser_wifi_sta_latency = (
           setup_utils.connect_to_wifi_sta_till_success(
-              self.advertiser, wifi_ssid, wifi_password
+              self.advertiser, wifi_ssid_advertiser, wifi_password
           )
       )
       self.advertiser.log.info(
@@ -306,6 +326,9 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
       self._current_test_result.advertiser_sta_latency = (
           advertiser_wifi_sta_latency
       )
+      # Let scan, DHCP and internet validation complete before NC.
+      # This is important especially for the transfer speed test.
+      time.sleep(self.test_parameters.target_post_wifi_connection_idle_time_sec)
 
     # 4. set up the D2D nearby connection
     logging.info('set up a nearby connection for file transfer.')
@@ -348,12 +371,13 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
       )
       if (
           self.test_parameters.run_iperf_test
-          and self._current_test_result.quality_info.upgrade_medium
+          and not self._is_mcc
+          and upgrade_medium_under_test
           in [
-              nc_constants.NearbyConnectionMedium.WIFI_DIRECT,
-              nc_constants.NearbyConnectionMedium.WIFI_HOTSPOT,
-              nc_constants.NearbyConnectionMedium.WIFI_LAN,
-              nc_constants.NearbyConnectionMedium.WIFI_AWARE,
+              nc_constants.NearbyMedium.UPGRADE_TO_WIFIDIRECT,
+              nc_constants.NearbyMedium.UPGRADE_TO_WIFIHOTSPOT,
+              nc_constants.NearbyMedium.WIFILAN_ONLY,
+              nc_constants.NearbyMedium.WIFIAWARE_ONLY,
           ]
       ):
         # TODO: b/338094399 - update this part for the connection over WFD.
@@ -367,7 +391,7 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
 
     finally:
       self._active_nc_fail_reason = active_snippet.test_failure_reason
-      self._check_ap_connection_and_speed(wifi_ssid)
+      self._check_ap_connection_and_speed(wifi_ssid_advertiser)
 
     # 6. disconnect prior BT connection if required
     if prior_bt_snippet:
@@ -765,7 +789,12 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
                 f'MCC mode: {self._is_mcc}',
                 f'2G medium {self._is_2g_d2d_wifi_medium}',
                 f'DBS mode: {self._is_dbs_mode}',
-                f'medium: {self._upgrade_medium_under_test.name}',
+                (
+                    'advertising_discovery_medium:'
+                    f' {self._advertising_discovery_medium.name}'
+                ),
+                f'connection_medium: {self._connection_medium.name}',
+                f'upgrade_medium: {self._upgrade_medium_under_test.name}',
                 f'wifi_ssid: {self._wifi_ssid}',
                 f'Start time: {self._start_time}',
                 f'End time: {datetime.datetime.now()}',
@@ -784,7 +813,7 @@ class D2dPerformanceTestBase(nc_base_test.NCBaseTestClass, abc.ABC):
           is not nc_constants.SingleTestFailureReason.SUCCESS
       ):
         stats.append(
-            f'- Iter: {test_result.test_iteration}: {datetime.datetime.now()}'
+            f'- Iter: {test_result.test_iteration}: {test_result.start_time}'
             f' {test_result.result_message}\n'
             f' sta freq: {test_result.sta_frequency},'
             f' sta max link speed: {test_result.max_sta_link_speed_mbps},'

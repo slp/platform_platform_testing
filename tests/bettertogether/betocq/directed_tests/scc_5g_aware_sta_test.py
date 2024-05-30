@@ -60,9 +60,13 @@ class Scc5gAwareStaTest(d2d_performance_test_base.D2dPerformanceTestBase):
   def test_scc_5g_aware_sta(self):
     """Test the performance for Wifi SCC with 5G Aware and STA."""
     self._test_connection_medium_performance(
-        nc_constants.NearbyMedium.WIFIAWARE_ONLY,
+        upgrade_medium_under_test=nc_constants.NearbyMedium.WIFIAWARE_ONLY,
         wifi_ssid=self.test_parameters.wifi_5g_ssid,
         wifi_password=self.test_parameters.wifi_5g_password,
+        force_disable_bt_multiplex=True,
+        connection_medium=nc_constants.NearbyMedium(
+            self.test_parameters.connection_medium
+        ),
     )
 
   def _get_file_transfer_failure_tip(self) -> str:
