@@ -68,10 +68,7 @@ java_library {
     ],
     srcs: [
         "src/android/platform/test/rule/*SettingRule.kt",
-        "src/**/*.java"
-    ],
-    exclude_srcs: [
-        "src/android/platform/test/rule/flicker/**/*.java",
+        "src/**/*.java",
     ],
 }
 
