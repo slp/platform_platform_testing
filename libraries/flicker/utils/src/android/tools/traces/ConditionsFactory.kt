@@ -16,6 +16,7 @@
 
 package android.tools.traces
 
+import android.content.res.Resources
 import android.tools.PlatformConsts
 import android.tools.Rotation
 import android.tools.traces.component.ComponentNameMatcher
@@ -27,8 +28,28 @@ import android.tools.traces.wm.WindowManagerState
 import android.tools.traces.wm.WindowState
 
 object ConditionsFactory {
-    private fun getNavBarComponent(wmState: WindowManagerState) =
-        if (wmState.isTablet) ComponentNameMatcher.TASK_BAR else ComponentNameMatcher.NAV_BAR
+
+    /** Check if this is a phone device instead of a folded foldable. */
+    fun isPhoneNavBar(): Boolean {
+        val isPhone: Boolean
+        val foldedDeviceStatesId: Int =
+            Resources.getSystem().getIdentifier("config_foldedDeviceStates", "array", "android")
+        isPhone =
+            if (foldedDeviceStatesId != 0) {
+                Resources.getSystem().getIntArray(foldedDeviceStatesId).isEmpty()
+            } else {
+                true
+            }
+        return isPhone
+    }
+
+    fun getNavBarComponent(wmState: WindowManagerState): IComponentMatcher {
+        var component: IComponentMatcher = ComponentNameMatcher.NAV_BAR
+        if (wmState.isTablet || !isPhoneNavBar()) {
+            component = component.or(ComponentNameMatcher.TASK_BAR)
+        }
+        return component
+    }
 
     /**
      * Condition to check if the [ComponentNameMatcher.NAV_BAR] or [ComponentNameMatcher.TASK_BAR]
