@@ -15,22 +15,16 @@
  */
 package android.platform.test.rule
 
-import org.junit.runner.Description
+import android.provider.Settings
 
 /**
- * Rule that allows to control whether the avalanche visual suppression setting is enabled.
- * Also restores the setting to its original value at the end of the test.
+ * Rule that disables the "Notification Cooldown" feature which prevents high priority notifications
+ * from being shown for the first 2 minutes after boot and various other conditions.
+ *
+ * This rule is required to prevent flakes when running tests that post Heads Up Notifications.
  */
-
-class AvalancheVisualSuppressionRule : TestWatcher() {
-
-    override fun starting(description: Description?) {
-        super.starting(description)
-        executeShellCommand("settings put system notification_cooldown_enabled 0")
-    }
-
-    override fun finished(description: Description?) {
-        super.finished(description)
-        executeShellCommand("settings reset system notification_cooldown_enabled")
-    }
-}
+public class DisableNotificationCooldownSettingRule :
+    SystemSettingRule<Int>(
+        Settings.System.NOTIFICATION_COOLDOWN_ENABLED,
+        initialValue = 0,
+    )
