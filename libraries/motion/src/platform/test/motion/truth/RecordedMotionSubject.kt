@@ -78,11 +78,6 @@ internal constructor(
         } finally {
             // Export the actual values, so that they can later be downloaded to update the golden.
             motionTestRule.writeGeneratedTimeSeries(goldenIdentifier, recordedMotion, result)
-            motionTestRule.writeDebugFilmstrip(
-                recordedMotion,
-                goldenIdentifier,
-                result == TimeSeriesVerificationResult.PASSED
-            )
         }
     }
 
