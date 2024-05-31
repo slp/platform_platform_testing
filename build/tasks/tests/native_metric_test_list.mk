@@ -29,7 +29,8 @@ native_metric_tests := \
     mmapPerf \
     netd_benchmark \
     VibratorHalIntegrationBenchmark \
-    librenderengine_bench
+    librenderengine_bench \
+    statsd_benchmark
 
 ifneq ($(strip $(BOARD_PERFSETUP_SCRIPT)),)
 native_metric_tests += perf-setup
