@@ -16,7 +16,6 @@
 
 package platform.test.motion.compose
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,15 +39,12 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.rules.RuleChain
 import platform.test.motion.MotionTestRule
 import platform.test.motion.RecordedMotion
 import platform.test.motion.RecordedMotion.Companion.create
-import platform.test.motion.compose.ComposeToolkit.Companion.TAG
 import platform.test.motion.compose.values.EnableMotionTestValueCollection
 import platform.test.motion.golden.DataPoint
 import platform.test.motion.golden.Feature
@@ -66,11 +62,7 @@ import platform.test.screenshot.GoldenPathManager
 class ComposeToolkit(
     val composeContentTestRule: ComposeContentTestRule,
     val testScope: TestScope,
-) {
-    internal companion object {
-        const val TAG = "ComposeToolkit"
-    }
-}
+)
 
 /** Runs a motion test in the [ComposeToolkit.testScope] */
 fun MotionTestRule<ComposeToolkit>.runTest(
@@ -186,7 +178,6 @@ fun MotionTestRule<ComposeToolkit>.recordMotion(
         val screenshotCollector = mutableListOf<ImageBitmap>()
 
         fun recordFrame(frameId: FrameId) {
-            Log.i(TAG, "recordFrame($frameId)")
             frameIdCollector.add(frameId)
             recordingSpec.timeSeriesCapture.invoke(TimeSeriesCaptureScope(this, propertyCollector))
             screenshotCollector.add(onRoot().captureToImage())
@@ -197,7 +188,6 @@ fun MotionTestRule<ComposeToolkit>.recordMotion(
         mainClock.autoAdvance = false
 
         setContent { EnableMotionTestValueCollection { content(playbackStarted) } }
-        Log.i(TAG, "recordMotion() created compose content")
 
         waitForIdle()
 
@@ -208,8 +198,6 @@ fun MotionTestRule<ComposeToolkit>.recordMotion(
                 recordingSpec.motionControl
             )
 
-        Log.i(TAG, "recordMotion() awaiting readyToPlay")
-
         // Wait for the test to allow readyToPlay
         while (!motionControl.readyToPlay) {
             motionControl.nextFrame()
@@ -218,14 +206,11 @@ fun MotionTestRule<ComposeToolkit>.recordMotion(
         if (recordingSpec.recordBefore) {
             recordFrame(SupplementalFrameId("before"))
         }
-        Log.i(TAG, "recordMotion() awaiting recordingStarted")
 
         playbackStarted = true
         while (!motionControl.recordingStarted) {
             motionControl.nextFrame()
         }
-
-        Log.i(TAG, "recordMotion() begin recording")
 
         val startFrameTime = mainClock.currentTime
         while (!motionControl.recordingEnded) {
@@ -233,11 +218,8 @@ fun MotionTestRule<ComposeToolkit>.recordMotion(
             motionControl.nextFrame()
         }
 
-        Log.i(TAG, "recordMotion() end recording")
-
         mainClock.autoAdvance = true
         waitForIdle()
-        toolkit.testScope.advanceUntilIdle()
 
         if (recordingSpec.recordAfter) {
             recordFrame(SupplementalFrameId("after"))
@@ -299,10 +281,7 @@ private class MotionControlImpl(
             }
 
     fun nextFrame() {
-        val previousFrameTime = composeTestRule.mainClock.currentTime
         composeTestRule.mainClock.advanceTimeByFrame()
-        val thisFrameTime = composeTestRule.mainClock.currentTime
-        testScope.advanceTimeBy(thisFrameTime - previousFrameTime)
         composeTestRule.waitForIdle()
 
         when (state) {
