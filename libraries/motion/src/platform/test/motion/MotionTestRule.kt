@@ -37,6 +37,7 @@ import platform.test.motion.golden.TimeSeries
 import platform.test.motion.truth.RecordedMotionSubject
 import platform.test.screenshot.BitmapDiffer
 import platform.test.screenshot.GoldenPathManager
+import platform.test.screenshot.proto.ScreenshotResultProto
 import platform.test.screenshot.report.ExportToScubaStrategy
 
 /**
@@ -129,9 +130,10 @@ class MotionTestRule<Toolkit>(
 
         val relativeGoldenPath =
             goldenPathManager.goldenIdentifierResolver(goldenIdentifier, JSON_EXTENSION)
-        val deviceLocalPath = File(goldenPathManager.deviceLocalPath)
         val goldenFile =
-            deviceLocalPath.resolve(recordedMotion.testClassName).resolve(relativeGoldenPath)
+            File(goldenPathManager.deviceLocalPath)
+                .resolve(recordedMotion.testClassName)
+                .resolve(relativeGoldenPath)
 
         val goldenFileDirectory = checkNotNull(goldenFile.parentFile)
         if (!goldenFileDirectory.exists()) {
@@ -145,20 +147,7 @@ class MotionTestRule<Toolkit>(
         )
         metadata.put("filmstripTestIdentifier", debugFilmstripTestIdentifier(recordedMotion))
         metadata.put("goldenIdentifier", goldenIdentifier)
-
         metadata.put("result", result.name)
-
-        recordedMotion.videoRenderer?.let { videoRenderer ->
-            try {
-                val videoFile =
-                    goldenFile.resolveSibling("${goldenFile.nameWithoutExtension}.$VIDEO_EXTENSION")
-
-                videoRenderer.renderToFile(videoFile.absolutePath)
-                metadata.put("videoLocation", videoFile.relativeTo(deviceLocalPath))
-            } catch (e: Exception) {
-                throw IOException("Failed to render video", e)
-            }
-        }
 
         try {
             FileOutputStream(goldenFile).bufferedWriter().use {
@@ -169,6 +158,31 @@ class MotionTestRule<Toolkit>(
         } catch (e: Exception) {
             throw IOException("Failed to write generated JSON (${goldenFile.absolutePath}). ", e)
         }
+    }
+
+    internal fun writeDebugFilmstrip(
+        recordedMotion: RecordedMotion,
+        goldenIdentifier: String,
+        matches: Boolean
+    ) {
+        if (recordedMotion.filmstrip == null) {
+            return
+        }
+        requireValidGoldenIdentifier(goldenIdentifier)
+        val filmstrip = recordedMotion.filmstrip.renderFilmstrip()
+        scubaExportStrategy.reportResult(
+            debugFilmstripTestIdentifier(recordedMotion),
+            goldenIdentifier,
+            actual = filmstrip,
+            status =
+                if (matches) ScreenshotResultProto.DiffResult.Status.PASSED
+                else ScreenshotResultProto.DiffResult.Status.FAILED,
+            comparisonStatistics =
+                ScreenshotResultProto.DiffResult.ComparisonStatistics.newBuilder()
+                    .setNumberPixelsCompared(filmstrip.width * filmstrip.height)
+                    .setNumberPixelsIgnored(filmstrip.width * filmstrip.height)
+                    .build()
+        )
     }
 
     private fun requireValidGoldenIdentifier(goldenIdentifier: String) {
@@ -201,7 +215,6 @@ class MotionTestRule<Toolkit>(
 
     companion object {
         private const val JSON_EXTENSION = "json"
-        private const val VIDEO_EXTENSION = "mp4"
         private const val JSON_INDENTATION = 2
         private val GOLDEN_IDENTIFIER_REGEX = "^[A-Za-z0-9_-]+$".toRegex()
         private const val TAG = "MotionTestRule"
