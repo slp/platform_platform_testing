@@ -11,5 +11,21 @@
         }
       ]
     }
+  ],
+  "presubmit-large": [
+    {
+      "name": "SystemUITests",
+      "options": [
+        {
+          "include-annotation": "android.platform.test.annotations.MotionTest"
+        },
+        {
+          "exclude-annotation": "androidx.test.filters.FlakyTest"
+        },
+        {
+          "exclude-annotation": "org.junit.Ignore"
+        }
+      ]
+    }
   ]
 }
