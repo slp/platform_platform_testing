@@ -49,7 +49,9 @@ def main():
         help="Port to run test at watcher web UI on.",
     )
     parser.add_argument(
-        "--serial", default="", help="The ADB device serial to pull goldens from."
+        "--serial",
+        default=os.environ.get("ANDROID_SERIAL"),
+        help="The ADB device serial to pull goldens from.",
     )
 
     parser.add_argument(
@@ -84,12 +86,33 @@ def main():
         print("ANDROID_BUILD_TOP not set. Have you sourced envsetup.sh?")
         sys.exit(1)
 
+    serial = args.serial
+    if not serial:
+        devices_response = subprocess.run(
+            ["adb", "devices"], check=True, capture_output=True
+        ).stdout.decode("utf-8")
+        lines = [s for s in devices_response.splitlines() if s.strip()]
+
+        if len(lines) == 1:
+            print("no adb devices found")
+            sys.exit(1)
+
+        if len(lines) > 2:
+            print("multiple adb devices found, specify --serial")
+            sys.exit(1)
+
+        serial = lines[1].split("\t")[0]
+
+    adb_client = AdbClient(serial)
+    if not adb_client.run_as_root():
+        sys.exit(1)
+
     global android_build_top
     android_build_top = args.android_build_top
 
     with tempfile.TemporaryDirectory() as tmpdir:
         global golden_watcher, this_server_address
-        golden_watcher = GoldenFileWatcher(tmpdir, args.serial)
+        golden_watcher = GoldenFileWatcher(tmpdir, adb_client)
 
         for dir in golden_watcher.list_golden_output_directories():
             golden_watcher.add_remote_dir(dir)
@@ -237,17 +260,11 @@ class WatchWebAppRequestHandler(http.server.BaseHTTPRequestHandler):
                 golden_data["actualUrl"] = (
                     f"{this_server_address}/golden/{golden.checksum}/{golden.local_file[len(golden_watcher.temp_dir) + 1 :]}"
                 )
+                golden_data["videoUrl"] = (
+                    f"{this_server_address}/golden/{golden.checksum}/{golden.video_location}"
+                )
 
-                filmstrip_golden = golden.findFilmstrip()
-                if filmstrip_golden is not None:
-                    golden_data["filmstripUrl"] = (
-                        f"{this_server_address}/golden/{filmstrip_golden.checksum}/{filmstrip_golden.actual_image}"
-                    )
-
-            elif (
-                isinstance(golden, CachedScreenshotGolden)
-                and not golden.is_debug_filmstrip
-            ):
+            elif isinstance(golden, CachedScreenshotGolden):
                 golden_data["type"] = "screenshot"
 
                 golden_data["label"] = golden.golden_identifier
@@ -326,9 +343,9 @@ class WatchWebAppRequestHandler(http.server.BaseHTTPRequestHandler):
 
 class GoldenFileWatcher:
 
-    def __init__(self, temp_dir, adb_serial):
+    def __init__(self, temp_dir, adb_client):
         self.temp_dir = temp_dir
-        self.adb_serial = adb_serial
+        self.adb_client = adb_client
         self.remote_dirs = set()
 
         # name -> CachedGolden
@@ -366,7 +383,7 @@ class GoldenFileWatcher:
 
             golden = None
             if local_file.endswith(".json"):
-                golden = self.motion_golden(golden_remote_file, local_file)
+                golden = self.motion_golden(remote_dir, golden_remote_file, local_file)
             elif local_file.endswith("goldResult.textproto"):
                 golden = self.screenshot_golden(
                     remote_dir, golden_remote_file, local_file
@@ -377,10 +394,14 @@ class GoldenFileWatcher:
             else:
                 print(f"skipping unknonwn golden ")
 
-    def motion_golden(self, remote_file, local_file):
+    def motion_golden(self, remote_dir, remote_file, local_file):
 
         golden = CachedMotionGolden(remote_file, local_file)
         golden.checksum = hashlib.md5(open(local_file, "rb").read()).hexdigest()
+
+        if golden.video_location:
+            self.adb_pull_image(remote_dir, golden.video_location)
+
         return golden
 
     def screenshot_golden(self, remote_dir, remote_file, local_file):
@@ -411,24 +432,19 @@ class GoldenFileWatcher:
     def adb_pull(self, remote_file):
         local_file = os.path.join(self.temp_dir, os.path.basename(remote_file))
         self.run_adb_command(["pull", remote_file, local_file])
-        self.run_adb_command(["shell", "rm", remote_file])
+        # self.run_adb_command(["shell", "rm", remote_file])
         return local_file
 
     def adb_pull_image(self, remote_dir, remote_file):
         remote_path = os.path.join(remote_dir, remote_file)
         local_path = os.path.join(self.temp_dir, remote_file)
+        os.makedirs(os.path.dirname(local_path), exist_ok=True)
         self.run_adb_command(["pull", remote_path, local_path])
-        self.run_adb_command(["shell", "rm", remote_path])
+        # self.run_adb_command(["shell", "rm", remote_path])
         return local_path
 
     def run_adb_command(self, args):
-        command = ["adb"]
-        if self.adb_serial:
-            command += ["-s", self.adb_serial]
-        command += args
-        return subprocess.run(command, check=True, capture_output=True).stdout.decode(
-            "utf-8"
-        )
+        return self.adb_client.run_adb_command(args)
 
 
 class CachedGolden:
@@ -452,6 +468,7 @@ class CachedMotionGolden(CachedGolden):
         self.result = metadata["result"]
         self.golden_repo_path = metadata["goldenRepoPath"]
         self.golden_identifier = metadata["goldenIdentifier"]
+        self.video_location = metadata["videoLocation"]
         self.test_identifier = metadata["filmstripTestIdentifier"]
 
         with open(local_file, "w") as json_file:
@@ -460,24 +477,10 @@ class CachedMotionGolden(CachedGolden):
 
         super().__init__(remote_file, local_file)
 
-    def findFilmstrip(self):
-        for golden in golden_watcher.cached_goldens.values():
-            if not isinstance(golden, CachedScreenshotGolden):
-                continue
-            if not golden.is_debug_filmstrip:
-                continue
-            if golden.actual_image.find("motion_debug_filmstrip_") == -1:
-                continue
-            if golden.golden_repo_path.find(self.golden_identifier) >= 0:
-                return golden
-
-        return None
-
 
 class CachedScreenshotGolden(CachedGolden):
 
     def __init__(self, remote_file, local_file):
-        self.is_debug_filmstrip = local_file.find("motion_debug_filmstrip_") >= 0
 
         metadata = parse_text_proto(local_file)
 
@@ -493,6 +496,34 @@ class CachedScreenshotGolden(CachedGolden):
         self.result = metadata["result_type"]
 
         super().__init__(remote_file, local_file)
+
+
+class AdbClient:
+    def __init__(self, adb_serial):
+        self.adb_serial = adb_serial
+
+    def run_as_root(self):
+        root_result = self.run_adb_command(["root"])
+        if "restarting adbd as root" in root_result:
+            self.wait_for_device()
+            return True
+        if "adbd is already running as root" in root_result:
+            return True
+
+        print(f"run_as_root returned [{root_result}]")
+
+        return False
+
+    def wait_for_device(self):
+        self.run_adb_command(["wait-for-device"])
+
+    def run_adb_command(self, args):
+        command = ["adb"]
+        command += ["-s", self.adb_serial]
+        command += args
+        return subprocess.run(command, check=True, capture_output=True).stdout.decode(
+            "utf-8"
+        )
 
 
 def find_free_port():
