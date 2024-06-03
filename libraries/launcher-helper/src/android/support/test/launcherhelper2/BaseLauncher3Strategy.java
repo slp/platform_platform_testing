@@ -112,7 +112,7 @@ public abstract class BaseLauncher3Strategy implements ILauncherStrategy {
         UiObject2 allAppsContainer = mDevice.wait(Until.findObject(getAllAppsSelector()), 2000);
 
         final int topGestureMargin = (int) (allAppsContainer.getVisibleBounds().height() * 0.15f);
-        allAppsContainer.setGestureMargins(0, topGestureMargin, 0, 0);
+        allAppsContainer.setGestureMargins(0, topGestureMargin, 0, 1);
 
         Assert.assertNotNull("openAllApps: did not find all apps container", allAppsContainer);
         return allAppsContainer;
