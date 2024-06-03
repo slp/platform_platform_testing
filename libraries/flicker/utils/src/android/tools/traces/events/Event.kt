@@ -27,12 +27,12 @@ import android.tools.TraceEntry
  * @param uid The UID which wrote the log entry, special UIDs are strings instead of numbers (e.g.
  *   root)
  * @param threadId The thread which wrote the log entry
- * @param tag The type tag code of the entry
+ * @param eventTag The type tag code of the entry
  */
 open class Event(
     override val timestamp: Timestamp,
     val processId: Int,
     val uid: String,
     val threadId: Int,
-    val tag: String
+    val eventTag: String
 ) : TraceEntry
