@@ -62,8 +62,9 @@ public class CompilationFilterRule extends TestWatcher {
 
         // Profile varies based on the test even for the same app. Tracking the test id to make
         // sure the test compiled once after the first iteration of the test.
-        String[] className = description.getClassName().split("\\$");
-        String testId = String.format("%s#%s", className[0], description.getMethodName());
+        String normalizedClassName = description.getClassName().split("\\$")[0];
+        String normalizedMethodName = description.getMethodName().split("\\$")[0];
+        String testId = String.format("%s#%s", normalizedClassName, normalizedMethodName);
         if (mCompiledTests.contains(testId)) {
             Log.d(LOG_TAG, String.format("Test %s already compiled", testId));
             return;
