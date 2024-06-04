@@ -40,7 +40,7 @@ class BluetoothBaseTest(base_test.BaseTestClass):
         self.call_utils = (spectatio_utils.CallUtils(self.discoverer))
         self.bt_utils = (bt_utils.BTUtils(self.discoverer, self.target))
         logging.info("\tInitializing video services")
-        self.video_utils_service = VideoRecording(self.discoverer)
+        self.video_utils_service = VideoRecording(self.discoverer, self.__class__.__name__)
         logging.info("Enabling video recording for Discoverer device")
         self.video_utils_service.enable_screen_recording()
 
@@ -59,6 +59,9 @@ class BluetoothBaseTest(base_test.BaseTestClass):
         self.discoverer.mbs.btDisable()
         logging.info("Disable Bluetooth on Target device")
         self.target.mbs.btDisable()
+        self.hu_recording_handler()
+
+    def hu_recording_handler(self):
         logging.info("Stopping the screen recording on Discoverer Device")
         self.video_utils_service.stop_screen_recording()
         logging.info("Pull the screen recording from Discoverer device")
