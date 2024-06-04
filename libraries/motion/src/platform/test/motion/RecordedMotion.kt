@@ -19,6 +19,7 @@ package platform.test.motion
 import android.graphics.Bitmap
 import platform.test.motion.filmstrip.Filmstrip
 import platform.test.motion.filmstrip.MotionScreenshot
+import platform.test.motion.filmstrip.VideoRenderer
 import platform.test.motion.golden.TimeSeries
 
 /**
@@ -35,12 +36,23 @@ internal constructor(
     screenshots: List<Bitmap>?,
 ) {
     /** Visual filmstrip of the animation. */
-    val filmstrip: Filmstrip? =
-        screenshots?.let {
-            Filmstrip(
-                timeSeries.frameIds.zip(it) { frameId, bitmap -> MotionScreenshot(frameId, bitmap) }
-            )
+    val filmstrip: Filmstrip?
+    /** Renders the screenshots as an MP4 video. */
+    val videoRenderer: VideoRenderer?
+
+    init {
+        if (screenshots != null) {
+            val motionScreenshots =
+                timeSeries.frameIds.zip(screenshots) { frameId, bitmap ->
+                    MotionScreenshot(frameId, bitmap)
+                }
+            filmstrip = Filmstrip(motionScreenshots)
+            videoRenderer = VideoRenderer(motionScreenshots)
+        } else {
+            filmstrip = null
+            videoRenderer = null
         }
+    }
 
     companion object {
         fun MotionTestRule<*>.create(timeSeries: TimeSeries, screenshots: List<Bitmap>?) =

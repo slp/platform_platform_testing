@@ -16,6 +16,9 @@
 
 package platform.test.motion
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
 import java.io.File
@@ -25,7 +28,9 @@ import org.json.JSONObject
 import org.junit.Assert.assertThrows
 import org.junit.Test
 import org.junit.runner.RunWith
+import platform.test.motion.golden.SupplementalFrameId
 import platform.test.motion.golden.TimeSeries
+import platform.test.motion.golden.TimestampFrameId
 import platform.test.motion.testing.JsonSubject.Companion.assertThat
 import platform.test.motion.testing.createGoldenPathManager
 
@@ -125,6 +130,49 @@ class MotionTestRuleTest {
     }
 
     @Test
+    fun writeGeneratedTimeSeries_withScreenshots_writesVideoAndIncludesMetadata() {
+        val w = 100
+        val h = 200
+
+        subject.writeGeneratedTimeSeries(
+            "updated_golden",
+            RecordedMotion(
+                "FooClass",
+                "bar_test",
+                TimeSeries(
+                    listOf(TimestampFrameId(0), TimestampFrameId(16), SupplementalFrameId("after")),
+                    listOf()
+                ),
+                listOf(
+                    mockScreenshot(Color.RED, w, h),
+                    mockScreenshot(Color.GREEN, w, h),
+                    mockScreenshot(Color.BLUE, w, h)
+                )
+            ),
+            TimeSeriesVerificationResult.MISSING_REFERENCE
+        )
+
+        val expectedVideo =
+            File(goldenPathManager.deviceLocalPath).resolve("FooClass/updated_golden.mp4")
+        assertThat(expectedVideo.exists()).isTrue()
+
+        val expectedFile =
+            File(goldenPathManager.deviceLocalPath).resolve("FooClass/updated_golden.json")
+        val fileContents = JSONObject(expectedFile.readText())
+
+        assertThat(fileContents.get("//metadata") as JSONObject)
+            .isEqualTo(
+                JSONObject().apply {
+                    put("goldenRepoPath", "assets/updated_golden.json")
+                    put("filmstripTestIdentifier", "motion_debug_filmstrip_FooClass")
+                    put("goldenIdentifier", "updated_golden")
+                    put("result", "MISSING_REFERENCE")
+                    put("videoLocation", "FooClass/updated_golden.mp4")
+                }
+            )
+    }
+
+    @Test
     fun writeGeneratedTimeSeries_withInvalidIdentifier_throws() {
         assertThrows(IllegalArgumentException::class.java) {
             subject.writeGeneratedTimeSeries(
@@ -134,4 +182,11 @@ class MotionTestRuleTest {
             )
         }
     }
+
+    private fun mockScreenshot(
+        color: Int,
+        width: Int = 400,
+        height: Int = 200,
+        bitmapConfig: Bitmap.Config = Bitmap.Config.ARGB_8888
+    ) = Bitmap.createBitmap(width, height, bitmapConfig).also { Canvas(it).drawColor(color) }
 }
