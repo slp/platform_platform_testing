@@ -43,7 +43,7 @@ class CujEvent(
             "processId=$processId, " +
             "uid=$uid, " +
             "threadId=$threadId, " +
-            "tag=$tag" +
+            "eventTag=$eventTag" +
             ")"
     }
 
