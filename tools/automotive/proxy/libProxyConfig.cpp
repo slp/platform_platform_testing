@@ -44,7 +44,7 @@ static Service readVmService(Json::Value service) {
 }
 
 std::vector<VmProxyConfig> getAllVmProxyConfigs() {
-    std::ifstream file(proxyConfig);
+    std::ifstream file(std::string(proxyConfig).c_str());
     Json::Value jsonConfig;
     file >> jsonConfig;
     std::vector<VmProxyConfig> vmConfigs;
