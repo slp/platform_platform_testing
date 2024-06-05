@@ -57,7 +57,6 @@ class RecordedMotionSubjectTest {
     private val bitmapDiffer: BitmapDiffer = mock()
     private val motionRule =
         spy(MotionTestRule(Unit, goldenPathManager, bitmapDiffer)) {
-            doNothing().whenever(it).writeDebugFilmstrip(any(), any(), any())
             doNothing().whenever(it).writeGeneratedTimeSeries(any(), any(), any())
         }
 
@@ -81,7 +80,6 @@ class RecordedMotionSubjectTest {
                 recordedMotion,
                 TimeSeriesVerificationResult.MISSING_REFERENCE
             )
-        verify(motionRule).writeDebugFilmstrip(recordedMotion, "foo", false)
     }
 
     @Test
@@ -96,7 +94,6 @@ class RecordedMotionSubjectTest {
 
         verify(motionRule)
             .writeGeneratedTimeSeries("foo", recordedMotion, TimeSeriesVerificationResult.PASSED)
-        verify(motionRule).writeDebugFilmstrip(recordedMotion, "foo", true)
     }
 
     @Test
@@ -115,7 +112,6 @@ class RecordedMotionSubjectTest {
 
         verify(motionRule)
             .writeGeneratedTimeSeries("foo", recordedMotion, TimeSeriesVerificationResult.FAILED)
-        verify(motionRule).writeDebugFilmstrip(recordedMotion, "foo", false)
     }
 
     @Test
@@ -126,7 +122,6 @@ class RecordedMotionSubjectTest {
 
         verify(motionRule, never()).readGoldenTimeSeries(any(), any())
         verify(motionRule, never()).writeGeneratedTimeSeries(any(), any(), any())
-        verify(motionRule, never()).writeDebugFilmstrip(any(), any(), any())
     }
 
     @Test
@@ -142,7 +137,6 @@ class RecordedMotionSubjectTest {
 
         verify(motionRule, never()).readGoldenTimeSeries(any(), any())
         verify(motionRule, never()).writeGeneratedTimeSeries(any(), any(), any())
-        verify(motionRule, never()).writeDebugFilmstrip(any(), any(), any())
     }
 
     private inline fun assertThrows(body: () -> Unit): TruthFailureSubject {
