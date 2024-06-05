@@ -17,6 +17,7 @@
 package platform.test.screenshot
 
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import android.util.SparseIntArray
 import android.widget.RemoteViews
@@ -91,7 +92,12 @@ class MaterialYouColors(
             }
 
             val sparseArray = SparseIntArray(/* initialCapacity= */ expectedSize)
-            colors.forEachIndexed { i, color ->
+
+            // TODO(345046862): Remove this check once we found a proper fix for this bug.
+            val isRobolectric = if (Build.FINGERPRINT.contains("robolectric")) true else false
+            val lastIndex = if (isRobolectric) expectedSize else 65
+            for (i in 0..<lastIndex) {
+                val color = colors[i]
                 sparseArray.put(FIRST_RESOURCE_COLOR_ID + i, color)
             }
 
