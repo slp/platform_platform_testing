@@ -253,7 +253,7 @@ class ComposeToolkitTest {
                     .size(300.dp)
                     .drawBehind {
                         if (pointerPosition.isSpecified) {
-                            drawCircle(Color.Red, radius = 50.dp.toPx(), center = pointerPosition)
+                            drawCircle(Color.Red, radius = 5.dp.toPx(), center = pointerPosition)
                         }
                     }
         )
@@ -288,6 +288,28 @@ class ComposeToolkitTest {
                 )
 
             // The golden is expected to be missing the first 100ms, while the `swipeDown` executes.
+            motionRule.assertThat(motion).timeSeriesMatchesGolden()
+        }
+
+    @Test
+    fun recordMotion_motionControl_performGestureAsync() =
+        motionRule.runTest {
+            val motion =
+                recordMotion(
+                    content = { DraggableContent() },
+                    ComposeRecordingSpec(
+                        recording = {
+                            performTouchInputAsync(onNodeWithTag("foo")) {
+                                swipeDown(durationMillis = 100)
+                            }
+                            // Await an extra frame to capture the up event in the golden
+                            awaitFrames(1)
+                        }
+                    ) {
+                        feature(pointerOffsetKey, offset)
+                    }
+                )
+
             motionRule.assertThat(motion).timeSeriesMatchesGolden()
         }
 

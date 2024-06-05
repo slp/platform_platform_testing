@@ -232,6 +232,11 @@ class WatchWebAppRequestHandler(http.server.BaseHTTPRequestHandler):
         ) == root_directory and path.isfile(resolved_path):
             self.send_response(200)
             self.send_header("Content-type", mimetypes.guess_type(resolved_path)[0])
+            # Accept-ranges: bytes is needed for chrome to allow seeking the
+            # video. At this time, won't handle ranges on subsequent gets,
+            # but that is likely OK given the size of these videos and that
+            # its local only.
+            self.send_header("Accept-ranges", "bytes")
             self.add_standard_headers()
             self.end_headers()
             with open(resolved_path, "rb") as f:
@@ -290,6 +295,8 @@ class WatchWebAppRequestHandler(http.server.BaseHTTPRequestHandler):
     def service_refresh_goldens(self, clear):
         if clear:
             golden_watcher.clean()
+        for dir in golden_watcher.list_golden_output_directories():
+            golden_watcher.add_remote_dir(dir)
         golden_watcher.refresh_all_golden_files()
         self.service_list_goldens()
 
@@ -468,7 +475,10 @@ class CachedMotionGolden(CachedGolden):
         self.result = metadata["result"]
         self.golden_repo_path = metadata["goldenRepoPath"]
         self.golden_identifier = metadata["goldenIdentifier"]
-        self.video_location = metadata["videoLocation"]
+        self.video_location = None
+        if "videoLocation" in metadata:
+          self.video_location = metadata["videoLocation"]
+
         self.test_identifier = metadata["filmstripTestIdentifier"]
 
         with open(local_file, "w") as json_file:
