@@ -189,7 +189,7 @@ private val GREEN_BLUE =
   /* "system_on_surface_light" */ -15066335,
   /* "system_surface_container_low_light" */ -723974,
   /* "system_surface_container_lowest_light" */ -1,
-  /* "system_surface_container_light" */ -11118732,
+  /* "system_surface_container_light" */ -1118732,
   /* "system_surface_container_high_light" */ -1513489,
   /* "system_surface_container_highest_light" */ -1842455,
   /* "system_surface_bright_light" */ -329473,
