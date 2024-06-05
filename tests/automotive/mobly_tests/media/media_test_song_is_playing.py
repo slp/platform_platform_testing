@@ -32,7 +32,7 @@ class IsSongPlayingTest(bluetooth_base_test.BluetoothBaseTest):
     def setup_test(self):
         self.common_utils.grant_local_mac_address_permission()
         logging.info("\tInitializing video services on Target device")
-        self.video_utils_service_target = VideoRecording(self.target)
+        self.video_utils_service_target = VideoRecording(self.target,self.__class__.__name__)
         logging.info("Enabling video recording for Target device")
         self.video_utils_service_target.enable_screen_recording()
         self.common_utils.enable_wifi_on_phone_device()
