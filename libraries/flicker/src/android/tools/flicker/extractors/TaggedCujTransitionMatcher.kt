@@ -95,7 +95,8 @@ class TaggedCujTransitionMatcher(
             }
 
         require(!associatedTransitionRequired || matchedTransitions.size == 1) {
-            "Got too many associated transitions expected only 1."
+            "Got too many associated transitions for CUJ $cujEntry expected only 1, but got: [\n" +
+                "${matchedTransitions.joinToString(",\n")}\n]"
         }
 
         return matchedTransitions
