@@ -141,11 +141,18 @@ class NCBaseTestClass(base_test.BaseTestClass):
     if 'wifi_channel' in self.user_params:
       wifi_channel = self.user_params['wifi_channel']
       self.wifi_info = self.openwrt.start_wifi(
-          config=wifi_configs.WiFiConfig(channel=wifi_channel)
+          config=wifi_configs.WiFiConfig(
+              channel=wifi_channel,
+              country_code=self._get_country_code(),
+          )
       )
     else:
       wifi_channel = None
-      self.wifi_info = self.openwrt.start_wifi(config=wifi_configs.WiFiConfig())
+      self.wifi_info = self.openwrt.start_wifi(
+          config=wifi_configs.WiFiConfig(
+              country_code=self._get_country_code(),
+          )
+      )
 
     if wifi_channel is None:
       self.test_parameters.wifi_ssid = self.wifi_info.ssid
