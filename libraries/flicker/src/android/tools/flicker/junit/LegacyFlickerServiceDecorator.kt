@@ -83,6 +83,8 @@ class LegacyFlickerServiceDecorator(
                 Log.d(FLICKER_TAG, "Computed ${result.size} flicker tests")
             }
         }
+        Log.d(LOG_TAG, "Computed ${result.size} methods")
+        result.forEach { Log.v(LOG_TAG, "Computed method - $it") }
         return result
     }
 
