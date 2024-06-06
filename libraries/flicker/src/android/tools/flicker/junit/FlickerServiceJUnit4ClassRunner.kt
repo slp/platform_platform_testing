@@ -18,6 +18,7 @@ package android.tools.flicker.junit
 
 import android.os.Bundle
 import android.platform.test.util.TestFilter
+import android.tools.FLICKER_TAG
 import android.tools.Scenario
 import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
@@ -151,6 +152,8 @@ constructor(
         } else {
             result.addAll(getTestMethods({} /* placeholder param */))
         }
+        Log.d(LOG_TAG, "Computed ${result.size} methods")
+        result.forEach { Log.v(LOG_TAG, "Computed method - $it") }
         return result
     }
 
@@ -333,7 +336,6 @@ constructor(
     override fun childrenInvoker(notifier: RunNotifier): Statement {
         return object : Statement() {
             override fun evaluate() {
-                Log.d("PAB", "RUNNING MY CHILD INVOKER")
                 runChildren(notifier)
             }
         }
@@ -424,6 +426,7 @@ constructor(
     }
 
     companion object {
+        private const val LOG_TAG = "$FLICKER_TAG-JunitRunner"
         private val CURRENT_RULE_CONTAINER = ThreadLocal<RuleContainer>()
     }
 

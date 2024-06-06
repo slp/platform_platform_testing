@@ -30,6 +30,7 @@ class TaggedScenarioExtractor(
     private val targetTag: CujType,
     private val transitionMatcher: TransitionMatcher?,
     private val adjustCuj: CujAdjust,
+    private val additionalCujFilter: ((Cuj) -> Boolean)? = null,
     private val ignoreIfNoMatchingTransition: Boolean = false,
 ) : ScenarioExtractor {
     companion object {
@@ -43,6 +44,7 @@ class TaggedScenarioExtractor(
             cujTrace.entries
                 .filter { it.cuj === targetTag }
                 .filter { !it.canceled }
+                .filter { additionalCujFilter?.invoke(it) ?: true }
                 .map { adjustCuj.adjustCuj(it, reader) }
 
         if (targetCujEntries.isEmpty()) {
