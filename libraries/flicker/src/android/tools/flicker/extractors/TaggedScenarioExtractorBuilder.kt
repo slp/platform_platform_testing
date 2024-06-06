@@ -27,6 +27,7 @@ class TaggedScenarioExtractorBuilder {
         object : CujAdjust {
             override fun adjustCuj(cujEntry: Cuj, reader: Reader): Cuj = cujEntry
         }
+    private var additionalCujFilter: ((Cuj) -> Boolean)? = null
     private var ignoreIfNoMatchingTransition: Boolean = false
 
     fun setTargetTag(value: CujType): TaggedScenarioExtractorBuilder = apply { targetTag = value }
@@ -36,6 +37,8 @@ class TaggedScenarioExtractorBuilder {
     }
 
     fun setAdjustCuj(value: CujAdjust): TaggedScenarioExtractorBuilder = apply { adjustCuj = value }
+
+    fun setAdditionalCujFilter(filter: (Cuj) -> Boolean) = apply { additionalCujFilter = filter }
 
     fun setIgnoreIfNoMatchingTransition(value: Boolean) = apply {
         ignoreIfNoMatchingTransition = value
@@ -47,6 +50,7 @@ class TaggedScenarioExtractorBuilder {
             targetTag,
             transitionMatcher,
             adjustCuj,
+            additionalCujFilter,
             ignoreIfNoMatchingTransition
         )
     }

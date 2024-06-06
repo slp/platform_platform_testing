@@ -27,11 +27,12 @@ import android.tools.traces.events.CujType
 val SwipeToRecents =
     FlickerConfigEntry(
         enabled = true,
-        scenarioId = ScenarioId("SWIPE_TO_RECENTS"),
+        scenarioId = ScenarioId("SWIPE_TO_RECENTS_FROM_APP"),
         assertions = AssertionTemplates.COMMON_ASSERTIONS,
         extractor =
             TaggedScenarioExtractorBuilder()
                 .setTargetTag(CujType.CUJ_LAUNCHER_APP_SWIPE_TO_RECENTS)
+                .setAdditionalCujFilter { it.tag != "Home" }
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(TransitionFilters.CLOSE_APP_TO_LAUNCHER_FILTER)
                 )
