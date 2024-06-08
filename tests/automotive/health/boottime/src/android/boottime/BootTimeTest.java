@@ -16,8 +16,6 @@
 
 package android.boottime;
 
-import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
-import com.android.ddmlib.testrunner.RemoteAndroidTestRunner;
 import com.android.tradefed.config.Option;
 import com.android.tradefed.config.OptionClass;
 import com.android.tradefed.device.DeviceNotAvailableException;
@@ -25,7 +23,6 @@ import com.android.tradefed.device.ITestDevice;
 import com.android.tradefed.device.LogcatReceiver;
 import com.android.tradefed.invoker.TestInformation;
 import com.android.tradefed.log.LogUtil.CLog;
-import com.android.tradefed.result.CollectingTestListener;
 import com.android.tradefed.result.FileInputStreamSource;
 import com.android.tradefed.result.InputStreamSource;
 import com.android.tradefed.result.LogDataType;
@@ -45,12 +42,15 @@ import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Performs successive reboots */
 @RunWith(DeviceJUnit4ClassRunner.class)
 @OptionClass(alias = "boot-time-test")
 public class BootTimeTest extends BaseHostJUnit4Test {
+    private static final String LOGCAT_CMD = "logcat *:V";
     private static final String LOGCAT_CMD_ALL = "logcat -b all *:V";
     private static final String LOGCAT_CMD_CLEAR = "logcat -c";
     private static final long LOGCAT_SIZE = 80 * 1024 * 1024;
@@ -70,11 +70,6 @@ public class BootTimeTest extends BaseHostJUnit4Test {
     private static final String PERFETTO_FILE_PATH = "perfetto_file_path";
     private static final int BOOT_COMPLETE_POLL_INTERVAL = 1000;
     private static final int BOOT_COMPLETE_POLL_RETRY_COUNT = 45;
-    private static final String PACKAGE_NAME = "com.android.boothelper";
-    private static final String CLASS_NAME = "com.android.boothelper.BootHelperTest";
-    private static final String RUNNER = "androidx.test.runner.AndroidJUnitRunner";
-    private static final String UNLOCK_PIN_TEST = "unlockScreenWithPin";
-    private static final String SETUP_PIN_TEST = "setupLockScreenPin";
 
     public static String getBootTimePropKey() {
         return BOOT_TIME_PROP_KEY;
@@ -126,14 +121,15 @@ public class BootTimeTest extends BaseHostJUnit4Test {
     private boolean mForceF2FsShutdown = false;
 
     @Option(
-            name = "skip-pin-setup",
+            name = "boot-time-pattern",
             description =
-                    "Skip the pin setup if already set once"
-                            + "and not needed for the second run especially in local testing.")
-    private boolean mSkipPinSetup = false;
+                    "Named boot time regex patterns which are used to capture signals in logcat and"
+                            + " calculate duration between device boot to the signal being logged."
+                            + " Key: name of custom boot metric, Value: regex to match single"
+                            + " logcat line. Maybe repeated.")
+    private Map<String, String> mBootTimePatterns = new HashMap<>();
 
     private LogcatReceiver mRebootLogcatReceiver = null;
-    private IRemoteAndroidTestRunner mPostBootTestRunner = null;
 
     @Rule public TestLogData testLog = new TestLogData();
     @Rule public TestMetrics testMetrics = new TestMetrics();
@@ -159,29 +155,13 @@ public class BootTimeTest extends BaseHostJUnit4Test {
 
     @Before
     public void setUp() throws Exception {
-        mPostBootTestRunner = null;
         setUpDeviceForSuccessiveBoots();
-        CLog.v("Waiting for %d msecs before successive boots.", mBootDelayTime);
-        sleep(mBootDelayTime);
     }
 
     @Test
     public void testSuccessiveBoots() throws Exception {
-        for (int count = 0; count < mBootCount; count++) {
-            testSuccessiveBoot(count);
-        }
-    }
-
-    @Test
-    public void testSuccessiveBootsDismissPin() throws Exception {
-        // If pin is already set skip the setup method otherwise setup the pin.
-        if (!mSkipPinSetup) {
-            getDevice()
-                    .runInstrumentationTests(
-                            createRemoteAndroidTestRunner(SETUP_PIN_TEST),
-                            new CollectingTestListener());
-        }
-        mPostBootTestRunner = createRemoteAndroidTestRunner(UNLOCK_PIN_TEST);
+        CLog.v("Waiting for %d msecs before successive boots.", mBootDelayTime);
+        sleep(mBootDelayTime);
         for (int count = 0; count < mBootCount; count++) {
             testSuccessiveBoot(count);
         }
@@ -208,10 +188,6 @@ public class BootTimeTest extends BaseHostJUnit4Test {
         CLog.v("Waiting for %d msecs immediately after successive boot.", mAfterBootDelayTime);
         sleep(mAfterBootDelayTime);
         waitForBootComplete();
-        if (mPostBootTestRunner != null) {
-            sleep(2000);
-            getDevice().runInstrumentationTests(mPostBootTestRunner, new CollectingTestListener());
-        }
         saveDmesgInfo(String.format("%s%s%d", DMESG_FILENAME, METRIC_KEY_SEPARATOR, iteration));
         saveLogcatInfo(iteration);
         // TODO(b/288323866): figure out why is the prop value null
@@ -221,17 +197,17 @@ public class BootTimeTest extends BaseHostJUnit4Test {
         testMetrics.addTestMetric(
                 String.format("%s%s%d", BOOT_TIME_PROP_KEY, METRIC_KEY_SEPARATOR, iteration),
                 bootLoaderVal == null ? "" : bootLoaderVal);
-        String perfettoTraceFilePath =
+        String perfettoTraceFilePAth =
                 processPerfettoFile(
                         String.format(
                                 "%s%s%d",
                                 BootTimeTest.class.getSimpleName(),
                                 METRIC_KEY_SEPARATOR,
                                 iteration));
-        if (perfettoTraceFilePath != null) {
+        if (perfettoTraceFilePAth != null) {
             testMetrics.addTestMetric(
                     String.format("%s%s%d", PERFETTO_FILE_PATH, METRIC_KEY_SEPARATOR, iteration),
-                    perfettoTraceFilePath);
+                    perfettoTraceFilePAth);
         }
     }
 
@@ -278,7 +254,8 @@ public class BootTimeTest extends BaseHostJUnit4Test {
             mRebootLogcatReceiver.stop();
             mRebootLogcatReceiver = null;
         }
-        mRebootLogcatReceiver = new LogcatReceiver(getDevice(), LOGCAT_CMD_ALL, LOGCAT_SIZE, 0);
+        String logcatCommand = mBootTimePatterns.isEmpty() ? LOGCAT_CMD_ALL : LOGCAT_CMD;
+        mRebootLogcatReceiver = new LogcatReceiver(getDevice(), logcatCommand, LOGCAT_SIZE, 0);
         mRebootLogcatReceiver.start();
     }
 
@@ -343,18 +320,5 @@ public class BootTimeTest extends BaseHostJUnit4Test {
 
     private boolean isBootCompleted() throws DeviceNotAvailableException {
         return "1".equals(getDevice().getProperty("sys.boot_completed"));
-    }
-
-    /**
-     * Method to create the runner with given testName
-     *
-     * @return the {@link IRemoteAndroidTestRunner} to use.
-     */
-    IRemoteAndroidTestRunner createRemoteAndroidTestRunner(String testName)
-            throws DeviceNotAvailableException {
-        RemoteAndroidTestRunner runner =
-                new RemoteAndroidTestRunner(PACKAGE_NAME, RUNNER, getDevice().getIDevice());
-        runner.setMethodName(CLASS_NAME, testName);
-        return runner;
     }
 }
