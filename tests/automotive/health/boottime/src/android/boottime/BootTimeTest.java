@@ -68,6 +68,8 @@ public class BootTimeTest extends BaseHostJUnit4Test {
     private static final String PERFETTO_TRACE_MV_CMD =
             "mv /data/misc/perfetto-traces/boottrace.perfetto-trace %s";
     private static final String PERFETTO_FILE_PATH = "perfetto_file_path";
+    private static final int BOOT_COMPLETE_POLL_INTERVAL = 1000;
+    private static final int BOOT_COMPLETE_POLL_RETRY_COUNT = 45;
 
     public static String getBootTimePropKey() {
         return BOOT_TIME_PROP_KEY;
@@ -185,7 +187,7 @@ public class BootTimeTest extends BaseHostJUnit4Test {
         }
         CLog.v("Waiting for %d msecs immediately after successive boot.", mAfterBootDelayTime);
         sleep(mAfterBootDelayTime);
-        getDevice().waitForBootComplete(mDeviceBootTime);
+        waitForBootComplete();
         saveDmesgInfo(String.format("%s%s%d", DMESG_FILENAME, METRIC_KEY_SEPARATOR, iteration));
         saveLogcatInfo(iteration);
         // TODO(b/288323866): figure out why is the prop value null
@@ -300,5 +302,23 @@ public class BootTimeTest extends BaseHostJUnit4Test {
             }
         }
         return null;
+    }
+
+    private void waitForBootComplete() throws DeviceNotAvailableException {
+        for (int i = 0; i < BOOT_COMPLETE_POLL_RETRY_COUNT; i++) {
+            if (isBootCompleted()) {
+                return;
+            }
+            CLog.v(String.format("waitForBootComplete %d", i));
+            sleep(BOOT_COMPLETE_POLL_INTERVAL);
+        }
+        throw new DeviceNotAvailableException(
+                "Can't confirm boot complete. Exhausted retries. sys.boot_completed property does"
+                        + " not equal 1.",
+                getDevice().getSerialNumber());
+    }
+
+    private boolean isBootCompleted() throws DeviceNotAvailableException {
+        return "1".equals(getDevice().getProperty("sys.boot_completed"));
     }
 }
