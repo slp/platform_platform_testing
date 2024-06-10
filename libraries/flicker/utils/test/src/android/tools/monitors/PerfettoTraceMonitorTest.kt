@@ -21,10 +21,12 @@ import android.tools.io.TraceType
 import android.tools.traces.monitors.PerfettoTraceMonitor
 import android.tools.traces.monitors.withSFTracing
 import android.tools.traces.monitors.withTransactionsTracing
+import android.tools.traces.parsers.WindowManagerStateHelper
 import android.tools.traces.parsers.perfetto.LayersTraceParser
 import android.tools.traces.parsers.perfetto.TraceProcessorSession
 import android.tools.traces.parsers.perfetto.TransitionsTraceParser
 import android.tools.utils.CleanFlickerEnvironmentRule
+import com.android.server.wm.flicker.helpers.ImeAppHelper
 import com.google.common.truth.Truth
 import org.junit.Assume.assumeTrue
 import org.junit.ClassRule
@@ -106,6 +108,49 @@ class PerfettoTraceMonitorTest : TraceMonitorTest<PerfettoTraceMonitor>() {
         Truth.assertWithMessage("Could not obtain transition trace")
             .that(trace.entries)
             .isNotEmpty()
+    }
+
+    @Test
+    fun imeTracingTest() {
+        assumeTrue("PerfettoIme flag should be enabled", android.tracing.Flags.perfettoIme())
+
+        val traceMonitor = PerfettoTraceMonitor.newBuilder().enableImeTrace().build()
+        val traceData = traceMonitor.withTracing {
+            val wmHelper = WindowManagerStateHelper()
+            val imeApp = ImeAppHelper(instrumentation)
+            imeApp.launchViaIntent(wmHelper)
+            imeApp.openIME(wmHelper)
+        }
+        assertTrace(traceData)
+
+        val queryRowsCount = { session: TraceProcessorSession, tableName: String ->
+            val sql =
+                "INCLUDE PERFETTO MODULE android.winscope.inputmethod;" +
+                        "SELECT COUNT(*) FROM $tableName;"
+            session.query(
+                sql,
+                { rows ->
+                    require(rows.size == 1)
+                    rows.get(0).get("COUNT(*)") as Long
+                }
+            )
+        }
+
+        val (countRowsClients, countRowsManagerService, countRowsService) =
+            TraceProcessorSession.loadPerfettoTrace(traceData) { session ->
+                Triple(
+                    queryRowsCount(session, "android_inputmethod_clients"),
+                    queryRowsCount(session, "android_inputmethod_manager_service"),
+                    queryRowsCount(session, "android_inputmethod_service")
+                )
+            }
+
+        Truth.assertWithMessage("TP doesn't contain IME client rows")
+            .that(countRowsClients).isGreaterThan(0L)
+        Truth.assertWithMessage("TP doesn't contain IME manager service rows")
+            .that(countRowsManagerService).isGreaterThan(0L)
+        Truth.assertWithMessage("TP doesn't contain IME service rows")
+            .that(countRowsService).isGreaterThan(0L)
     }
 
     @Test
