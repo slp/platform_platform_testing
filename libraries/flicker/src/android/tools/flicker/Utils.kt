@@ -43,11 +43,16 @@ object Utils {
         mutableListOf(
                 ScreenRecorder(InstrumentationRegistry.getInstrumentation().targetContext),
                 WindowManagerTraceMonitor(),
-                ViewTraceMonitor(),
             )
             .apply {
                 val perfettoMonitorBuilder = PerfettoTraceMonitor.newBuilder()
                 perfettoMonitorBuilder.enableLayersTrace().enableTransactionsTrace()
+
+                if (android.tracing.Flags.perfettoViewCaptureTracing()) {
+                    perfettoMonitorBuilder.enableViewCaptureTrace()
+                } else {
+                    this.add(ViewTraceMonitor())
+                }
 
                 if (android.tracing.Flags.perfettoTransitionTracing()) {
                     perfettoMonitorBuilder.enableTransitionsTrace()

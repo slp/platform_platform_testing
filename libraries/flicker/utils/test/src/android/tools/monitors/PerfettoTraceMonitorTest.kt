@@ -39,6 +39,7 @@ import org.junit.runners.MethodSorters
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class PerfettoTraceMonitorTest : TraceMonitorTest<PerfettoTraceMonitor>() {
     override val traceType = TraceType.PERFETTO
+
     override fun getMonitor() =
         PerfettoTraceMonitor.newBuilder().enableLayersTrace().enableTransactionsTrace().build()
 
@@ -105,6 +106,41 @@ class PerfettoTraceMonitorTest : TraceMonitorTest<PerfettoTraceMonitor>() {
         Truth.assertWithMessage("Could not obtain transition trace")
             .that(trace.entries)
             .isNotEmpty()
+    }
+
+    @Test
+    fun viewCaptureTracingTest() {
+        assumeTrue(
+            "PerfettoViewCaptureTracing flag should be enabled",
+            android.tracing.Flags.perfettoViewCaptureTracing()
+        )
+
+        val traceMonitor = PerfettoTraceMonitor.newBuilder().enableViewCaptureTrace().build()
+        val traceData =
+            traceMonitor.withTracing {
+                BrowserAppHelper().launchViaIntent()
+                device.pressHome()
+                device.pressRecentApps()
+            }
+        assertTrace(traceData)
+
+        val countRows =
+            TraceProcessorSession.loadPerfettoTrace(traceData) { session ->
+                val sql =
+                    "INCLUDE PERFETTO MODULE android.winscope.viewcapture;" +
+                        "SELECT COUNT(*) FROM android_viewcapture;"
+                session.query(
+                    sql,
+                    { rows ->
+                        require(rows.size == 1)
+                        rows.get(0).get("COUNT(*)") as Long
+                    }
+                )
+            }
+
+        Truth.assertWithMessage("TP doesn't contain ViewCapture rows")
+            .that(countRows)
+            .isGreaterThan(0L)
     }
 
     companion object {
