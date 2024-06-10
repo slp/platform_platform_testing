@@ -124,7 +124,9 @@ class AssertionsCheckerTest {
         val checker = AssertionsChecker<SimpleEntrySubject>()
         checker.add("isData42") { it.isData42() }
         checker.add("isData0") { it.isData0() }
-        assertFail("never failed: isData42") { checker.test(getTestEntries(42, 42, 42, 42, 42)) }
+        assertFail("Assertion isData42 (block 0) never became false") {
+            checker.test(getTestEntries(42, 42, 42, 42, 42))
+        }
     }
 
     @Test
@@ -165,6 +167,7 @@ class AssertionsCheckerTest {
                     SimpleEntry(Timestamps.from(elapsedNanos = it.toLong()), data[it])
                 )
             }
+
         @ClassRule @JvmField val ENV_CLEANUP = CleanFlickerEnvironmentRule()
     }
 }
