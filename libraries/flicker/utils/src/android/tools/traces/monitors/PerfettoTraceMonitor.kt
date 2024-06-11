@@ -94,6 +94,8 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
         private val dataSourceConfigs = mutableSetOf<DataSourceConfig>()
         private var incrementalTimeoutMs: Int? = null
 
+        fun enableImeTrace(): Builder = apply { enableCustomTrace(createImeDataSourceConfig()) }
+
         fun enableLayersTrace(flags: List<SurfaceFlingerLayersConfig.TraceFlag>? = null): Builder =
             apply {
                 enableCustomTrace(
@@ -128,6 +130,11 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
             enableCustomTrace(createProtoLogDataSourceConfig(logAll, groupOverrides))
         }
 
+        fun enableViewCaptureTrace(): Builder = apply {
+            val config = DataSourceConfig.newBuilder().setName(VIEWCAPTURE_DATA_SOURCE).build()
+            enableCustomTrace(config)
+        }
+
         fun enableCustomTrace(dataSourceConfig: DataSourceConfig): Builder = apply {
             dataSourceConfigs.add(dataSourceConfig)
         }
@@ -157,6 +164,10 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
             }
 
             return PerfettoTraceMonitor(config = configBuilder.build())
+        }
+
+        private fun createImeDataSourceConfig(): DataSourceConfig {
+            return DataSourceConfig.newBuilder().setName(IME_DATA_SOURCE).build()
         }
 
         private fun createLayersTraceDataSourceConfig(
@@ -243,10 +254,12 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
     companion object {
         private const val TRACE_BUFFER_SIZE_KB = 1024 * 1024
 
+        private const val IME_DATA_SOURCE = "android.inputmethod"
         private const val SF_LAYERS_DATA_SOURCE = "android.surfaceflinger.layers"
         private const val SF_TRANSACTIONS_DATA_SOURCE = "android.surfaceflinger.transactions"
         private const val TRANSITIONS_DATA_SOURCE = "com.android.wm.shell.transition"
         private const val PROTOLOG_DATA_SOURCE = "android.protolog"
+        private const val VIEWCAPTURE_DATA_SOURCE = "android.viewcapture"
 
         private val allPerfettoPids = mutableListOf<Int>()
         private val allPerfettoPidsLock = ReentrantLock()
