@@ -128,6 +128,11 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
             enableCustomTrace(createProtoLogDataSourceConfig(logAll, groupOverrides))
         }
 
+        fun enableViewCaptureTrace(): Builder = apply {
+            val config = DataSourceConfig.newBuilder().setName(VIEWCAPTURE_DATA_SOURCE).build()
+            enableCustomTrace(config)
+        }
+
         fun enableCustomTrace(dataSourceConfig: DataSourceConfig): Builder = apply {
             dataSourceConfigs.add(dataSourceConfig)
         }
@@ -247,6 +252,7 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
         private const val SF_TRANSACTIONS_DATA_SOURCE = "android.surfaceflinger.transactions"
         private const val TRANSITIONS_DATA_SOURCE = "com.android.wm.shell.transition"
         private const val PROTOLOG_DATA_SOURCE = "android.protolog"
+        private const val VIEWCAPTURE_DATA_SOURCE = "android.viewcapture"
 
         private val allPerfettoPids = mutableListOf<Int>()
         private val allPerfettoPidsLock = ReentrantLock()
