@@ -65,6 +65,10 @@ object Utils {
                     perfettoMonitorBuilder.enableProtoLog()
                 }
 
+                if (android.tracing.Flags.perfettoIme()) {
+                    perfettoMonitorBuilder.enableImeTrace()
+                }
+
                 this.add(perfettoMonitorBuilder.build())
             }
             .apply {
