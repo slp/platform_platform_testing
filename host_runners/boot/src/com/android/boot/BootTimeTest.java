@@ -415,7 +415,7 @@ public class BootTimeTest extends InstalledInstrumentationsTest
             throws DeviceNotAvailableException {
         mTestInfo = testInfo;
         long start = System.currentTimeMillis();
-        listener.testRunStarted(mTestRunName, 1);
+        listener.testRunStarted(mTestRunName, mBootCount + 1);
         for (IMetricCollector collector : mCollectors) {
             listener = collector.init(mInvocationContext, listener);
         }
