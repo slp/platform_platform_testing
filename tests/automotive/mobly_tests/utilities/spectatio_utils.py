@@ -361,6 +361,14 @@ class CallUtils:
         self.device.mbs.cancelBluetoothAudioConncetion()
         logging.info('Clicked on <Cancel> label present on bluetooth Audio page')
 
+    def handle_bluetooth_audio_pop_up(self):
+        """ Close on BT audio popup if present on bluetooth Audio page"""
+        is_bluetooth_media_popup_present = self.is_connect_to_bluetooth_label_visible_on_bluetooth_audio_page()
+        if is_bluetooth_media_popup_present:
+          logging.info('BT Audio popup present, cancelling that.')
+          self.click_cancel_label_visible_on_bluetooth_audio_page()
+
+
     def update_device_timezone(self, expected_timezone):
         logging.info('Update the device timezone to %s',
                      expected_timezone)

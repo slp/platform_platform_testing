@@ -22,7 +22,7 @@ from utilities.common_utils import CommonUtils
 from utilities.main_utils import common_main
 from utilities.video_utils_service import VideoRecording
 
-TIMESTAMP_MATCHER = "^([0-5]?[0-9]):([0-5][0-9])$"
+TIMESTAMP_MATCHER = "^([0-5]?[0-9]):([0-5][0-9]):([0-5]?[0-9])$"
 
 
 class IsMediaMetadataForNextAndPrevSongOnHuValid(bluetooth_base_test.BluetoothBaseTest):
@@ -44,6 +44,7 @@ class IsMediaMetadataForNextAndPrevSongOnHuValid(bluetooth_base_test.BluetoothBa
     def test_is_media_metadata_valid_on_hu(self):
         """Tests is media metadata on HU valid"""
         self.media_utils.open_media_app_on_hu()
+        self.call_utils.handle_bluetooth_audio_pop_up()
         self.media_utils.open_youtube_music_app()
         logging.info("Getting song title from phone device: %s", self.media_utils.get_song_title_from_phone())
         self.call_utils.wait_with_log(5)
@@ -128,6 +129,8 @@ class IsMediaMetadataForNextAndPrevSongOnHuValid(bluetooth_base_test.BluetoothBa
                                       '<' + actual_previous_current_song_max_playing_time + '>')
 
     def teardown_test(self):
+        # Minimize now_playing
+        self.media_utils.minimize_now_playing()
         #  Close YouTube Music app
         self.media_utils.close_youtube_music_app()
         self.call_utils.press_home()
