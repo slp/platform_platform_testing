@@ -16,8 +16,8 @@
 
 package android.tools.parsers.perfetto
 
+import android.tools.testutils.assertThrows
 import android.tools.traces.parsers.perfetto.Args
-import android.tools.utils.assertThrows
 import com.google.common.truth.Truth
 import java.lang.ClassCastException
 import org.junit.Test

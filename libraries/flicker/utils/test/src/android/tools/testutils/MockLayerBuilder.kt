@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package android.tools.utils
+package android.tools.testutils
 
 import android.graphics.Rect
 import android.graphics.Region

@@ -29,8 +29,8 @@ import android.tools.flicker.assertions.SubjectsParser
 import android.tools.flicker.subject.exceptions.FlickerAssertionError
 import android.tools.flicker.subject.exceptions.SimpleFlickerAssertionError
 import android.tools.io.Reader
-import android.tools.utils.KotlinMockito
-import android.tools.utils.assertThrows
+import android.tools.testutils.KotlinMockito
+import android.tools.testutils.assertThrows
 import com.google.common.truth.Truth
 import org.junit.AssumptionViolatedException
 import org.junit.Test

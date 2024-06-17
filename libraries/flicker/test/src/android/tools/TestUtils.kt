@@ -25,7 +25,12 @@ import android.tools.io.PERFETTO_EXT
 import android.tools.io.Reader
 import android.tools.io.WINSCOPE_EXT
 import android.tools.parsers.events.EventLogParser
-import android.tools.rules.DataStoreCleanupRule
+import android.tools.testrules.DataStoreCleanupRule
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.ParsedTracesReader
+import android.tools.testutils.TEST_SCENARIO
+import android.tools.testutils.TestArtifact
+import android.tools.testutils.readAsset
 import android.tools.traces.monitors.ITransitionMonitor
 import android.tools.traces.monitors.PerfettoTraceMonitor
 import android.tools.traces.monitors.wm.WindowManagerTraceMonitor
@@ -35,11 +40,6 @@ import android.tools.traces.parsers.perfetto.TraceProcessorSession
 import android.tools.traces.parsers.perfetto.TransactionsTraceParser
 import android.tools.traces.parsers.wm.LegacyTransitionTraceParser
 import android.tools.traces.parsers.wm.WindowManagerTraceParser
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.ParsedTracesReader
-import android.tools.utils.TEST_SCENARIO
-import android.tools.utils.TestArtifact
-import android.tools.utils.readAsset
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import java.io.File

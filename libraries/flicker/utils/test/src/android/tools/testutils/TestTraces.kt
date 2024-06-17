@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package android.tools.utils
+package android.tools.testutils
 
 import android.tools.Timestamps
 import android.tools.traces.TraceConfig
@@ -85,6 +85,7 @@ object TestTraces {
 
         val WM_FILE
             get() = readAssetAsFile(WM_ASSET)
+
         val SHELL_FILE
             get() = readAssetAsFile(SHELL_ASSET)
     }

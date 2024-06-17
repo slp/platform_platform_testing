@@ -22,12 +22,12 @@ import android.tools.flicker.FlickerServiceTracesCollector
 import android.tools.flicker.isShellTransitionsEnabled
 import android.tools.flicker.rules.ArtifactSaverRule
 import android.tools.io.TraceType
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.TEST_SCENARIO
+import android.tools.testutils.assertArchiveContainsFiles
+import android.tools.testutils.getLauncherPackageName
+import android.tools.testutils.getSystemUiUidName
 import android.tools.traces.parsers.WindowManagerStateHelper
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.TEST_SCENARIO
-import android.tools.utils.assertArchiveContainsFiles
-import android.tools.utils.getLauncherPackageName
-import android.tools.utils.getSystemUiUidName
 import androidx.test.platform.app.InstrumentationRegistry
 import com.android.systemui.Flags.enableViewCaptureTracing
 import com.google.common.truth.Truth

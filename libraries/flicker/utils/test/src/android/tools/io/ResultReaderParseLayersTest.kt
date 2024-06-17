@@ -17,19 +17,20 @@
 package android.tools.io
 
 import android.tools.Timestamp
+import android.tools.testutils.TestTraces
 import android.tools.traces.io.ResultReader
-import android.tools.utils.TestTraces
 
-/** Tests for [ResultReader] parsing [TraceType.WM] */
-class ResultReaderTestParseWM : BaseResultReaderTestParseTrace() {
-    override val assetFiles = mapOf(TraceType.WM to TestTraces.WMTrace.FILE)
-    override val traceName = "WM trace"
-    override val startTimeTrace = TestTraces.WMTrace.START_TIME
-    override val endTimeTrace = TestTraces.WMTrace.END_TIME
-    override val validSliceTime = TestTraces.WMTrace.SLICE_TIME
+/** Tests for [ResultReader] parsing [TraceType.SF] */
+class ResultReaderParseLayersTest : BaseResultReaderTestParseTrace() {
+    override val assetFiles = mapOf(TraceType.SF to TestTraces.LayerTrace.FILE)
+    override val traceName = "Layers trace"
+    override val startTimeTrace = TestTraces.LayerTrace.START_TIME
+    override val endTimeTrace = TestTraces.LayerTrace.END_TIME
+    override val validSliceTime = TestTraces.LayerTrace.SLICE_TIME
     override val invalidSliceTime = startTimeTrace
-    override val expectedSlicedTraceSize: Int = 2
+    override val expectedSlicedTraceSize = 2
 
-    override fun doParse(reader: ResultReader) = reader.readWmTrace()
-    override fun getTime(traceTime: Timestamp) = traceTime.elapsedNanos
+    override fun doParse(reader: ResultReader) = reader.readLayersTrace()
+
+    override fun getTime(traceTime: Timestamp) = traceTime.systemUptimeNanos
 }

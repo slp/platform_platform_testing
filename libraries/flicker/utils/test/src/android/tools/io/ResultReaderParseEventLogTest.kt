@@ -17,14 +17,14 @@
 package android.tools.io
 
 import android.tools.Timestamp
+import android.tools.testutils.TestTraces
 import android.tools.traces.io.ResultReader
-import android.tools.utils.TestTraces
 import org.junit.FixMethodOrder
 import org.junit.runners.MethodSorters
 
 /** Tests for [ResultReader] parsing event log */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-class ResultReaderTestParseEventLog : BaseResultReaderTestParseTrace() {
+class ResultReaderParseEventLogTest : BaseResultReaderTestParseTrace() {
     override val assetFiles = mapOf(TraceType.EVENT_LOG to TestTraces.EventLog.FILE)
     override val traceName = "Event Log"
     override val startTimeTrace = TestTraces.EventLog.START_TIME
@@ -35,5 +35,6 @@ class ResultReaderTestParseEventLog : BaseResultReaderTestParseTrace() {
     override val invalidSizeMessage: String = "'to' needs to be greater than 'from'"
 
     override fun doParse(reader: ResultReader) = reader.readEventLogTrace()
+
     override fun getTime(traceTime: Timestamp) = traceTime.unixNanos
 }

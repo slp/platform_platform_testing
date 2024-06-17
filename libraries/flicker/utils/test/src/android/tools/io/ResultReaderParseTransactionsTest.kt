@@ -17,11 +17,11 @@
 package android.tools.io
 
 import android.tools.Timestamp
+import android.tools.testutils.TestTraces
 import android.tools.traces.io.ResultReader
-import android.tools.utils.TestTraces
 
 /** Tests for [ResultReader] parsing [TraceType.TRANSACTION] */
-class ResultReaderTestParseTransactions : BaseResultReaderTestParseTrace() {
+class ResultReaderParseTransactionsTest : BaseResultReaderTestParseTrace() {
     override val assetFiles = mapOf(TraceType.TRANSACTION to TestTraces.TransactionTrace.FILE)
     override val traceName = "Transactions trace"
     override val startTimeTrace = TestTraces.TransactionTrace.START_TIME
@@ -32,5 +32,6 @@ class ResultReaderTestParseTransactions : BaseResultReaderTestParseTrace() {
     override val expectedSlicedTraceSize = 2
 
     override fun doParse(reader: ResultReader) = reader.readTransactionsTrace()
+
     override fun getTime(traceTime: Timestamp) = traceTime.elapsedNanos
 }

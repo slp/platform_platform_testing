@@ -19,10 +19,10 @@ package android.tools.parsers.wm
 import android.app.Instrumentation
 import android.tools.Cache
 import android.tools.device.apphelpers.MessagingAppHelper
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.readAsset
 import android.tools.traces.monitors.wm.LegacyShellTransitionTraceMonitor
 import android.tools.traces.parsers.wm.ShellTransitionTraceParser
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.readAsset
 import android.tracing.Flags
 import androidx.test.filters.FlakyTest
 import androidx.test.platform.app.InstrumentationRegistry

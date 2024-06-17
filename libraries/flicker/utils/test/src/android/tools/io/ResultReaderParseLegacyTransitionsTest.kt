@@ -17,15 +17,15 @@
 package android.tools.io
 
 import android.tools.Timestamp
+import android.tools.testutils.TestTraces
+import android.tools.testutils.readAssetAsFile
 import android.tools.traces.io.ResultReader
 import android.tools.traces.io.ResultWriter
-import android.tools.utils.TestTraces
-import android.tools.utils.readAssetAsFile
 import org.junit.Assume.assumeFalse
 import org.junit.Before
 
 /** Tests for [ResultReader] parsing [TraceType.TRANSITION] */
-class ResultReaderTestParseLegacyTransitions : BaseResultReaderTestParseTrace() {
+class ResultReaderParseLegacyTransitionsTest : BaseResultReaderTestParseTrace() {
     override val assetFiles =
         mapOf(
             TraceType.LEGACY_WM_TRANSITION to TestTraces.LegacyTransitionTrace.WM_FILE,
@@ -45,7 +45,9 @@ class ResultReaderTestParseLegacyTransitions : BaseResultReaderTestParseTrace() 
     }
 
     override fun doParse(reader: ResultReader) = reader.readTransitionsTrace()
+
     override fun getTime(traceTime: Timestamp) = traceTime.elapsedNanos
+
     override fun setupWriter(writer: ResultWriter): ResultWriter {
         return super.setupWriter(writer).also {
             val wmTransitionTrace = readAssetAsFile("wm_transition_trace.winscope")

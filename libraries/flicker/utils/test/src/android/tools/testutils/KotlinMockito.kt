@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package android.tools.utils
+package android.tools.testutils
 
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito

@@ -16,13 +16,12 @@
 
 package android.tools.integration
 
-import android.tools.flicker.datastore.CachedResultReader
 import android.tools.flicker.legacy.LegacyFlickerTest
 import android.tools.flicker.subject.exceptions.SimpleFlickerAssertionError
 import android.tools.io.RunStatus
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.TEST_SCENARIO
 import android.tools.traces.TRACE_CONFIG_REQUIRE_CHANGES
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.TEST_SCENARIO
 import com.google.common.truth.Truth
 import java.io.File
 import org.junit.Before
@@ -88,6 +87,7 @@ class AssertionErrorTest {
 
     companion object {
         private var transitionExecuted = false
+
         @BeforeClass
         @JvmStatic
         fun runTransition() = Utils.runTransition { transitionExecuted = true }

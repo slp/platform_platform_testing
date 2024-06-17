@@ -22,11 +22,11 @@ import android.media.MediaFormat
 import android.media.MediaParser
 import android.os.SystemClock
 import android.tools.io.TraceType
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.newTestResultWriter
 import android.tools.traces.TRACE_CONFIG_REQUIRE_CHANGES
 import android.tools.traces.io.ResultReader
 import android.tools.traces.monitors.ScreenRecorder
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.newTestResultWriter
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.google.common.truth.Truth

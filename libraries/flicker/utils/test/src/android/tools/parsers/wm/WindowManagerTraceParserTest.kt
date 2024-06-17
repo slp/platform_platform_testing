@@ -17,10 +17,10 @@
 package android.tools.parsers.wm
 
 import android.tools.Cache
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.readAsset
 import android.tools.traces.monitors.wm.WindowManagerTraceMonitor
 import android.tools.traces.parsers.wm.WindowManagerTraceParser
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.readAsset
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.google.common.truth.Truth

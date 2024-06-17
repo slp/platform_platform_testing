@@ -18,6 +18,8 @@ package android.tools.monitors.events
 
 import android.tools.io.TraceType
 import android.tools.monitors.TraceMonitorTest
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.newTestResultWriter
 import android.tools.traces.TRACE_CONFIG_REQUIRE_CHANGES
 import android.tools.traces.events.CujEvent
 import android.tools.traces.events.CujType
@@ -26,8 +28,6 @@ import android.tools.traces.events.FocusEvent
 import android.tools.traces.io.ResultReader
 import android.tools.traces.monitors.events.EventLogMonitor
 import android.tools.traces.now
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.newTestResultWriter
 import android.util.EventLog
 import com.android.internal.jank.EventLogTags
 import com.google.common.truth.Truth
@@ -42,6 +42,7 @@ import org.junit.Test
  */
 class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
     override val traceType = TraceType.EVENT_LOG
+
     override fun getMonitor(): EventLogMonitor = EventLogMonitor()
 
     override fun assertTrace(traceData: ByteArray) {

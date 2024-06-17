@@ -18,17 +18,17 @@ package android.tools.flicker.subject.wm
 
 import android.graphics.Region
 import android.tools.Cache
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.TestComponents
+import android.tools.testutils.assertFail
+import android.tools.testutils.assertThatErrorContainsDebugInfo
+import android.tools.testutils.assertThrows
+import android.tools.testutils.getWmDumpReaderFromAsset
+import android.tools.testutils.getWmTraceReaderFromAsset
+import android.tools.testutils.newEmptyRootContainer
 import android.tools.traces.component.ComponentNameMatcher
 import android.tools.traces.wm.KeyguardControllerState
 import android.tools.traces.wm.WindowManagerState
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.TestComponents
-import android.tools.utils.assertFail
-import android.tools.utils.assertThatErrorContainsDebugInfo
-import android.tools.utils.assertThrows
-import android.tools.utils.getWmDumpReaderFromAsset
-import android.tools.utils.getWmTraceReaderFromAsset
-import android.tools.utils.newEmptyRootContainer
 import com.google.common.truth.Truth
 import org.junit.Before
 import org.junit.ClassRule

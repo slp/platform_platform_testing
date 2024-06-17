@@ -18,11 +18,11 @@ package android.tools.flicker.subject.wm
 
 import android.tools.Cache
 import android.tools.CleanFlickerEnvironmentRuleWithDataStore
+import android.tools.testutils.TestComponents
+import android.tools.testutils.assertThatErrorContainsDebugInfo
+import android.tools.testutils.assertThrows
+import android.tools.testutils.getWmTraceReaderFromAsset
 import android.tools.traces.component.ComponentNameMatcher
-import android.tools.utils.TestComponents
-import android.tools.utils.assertThatErrorContainsDebugInfo
-import android.tools.utils.assertThrows
-import android.tools.utils.getWmTraceReaderFromAsset
 import com.google.common.truth.Truth
 import org.junit.Before
 import org.junit.ClassRule
@@ -40,6 +40,7 @@ class WindowManagerTraceSubjectTest {
         getWmTraceReaderFromAsset("wm_trace_openchrome.pb", legacyTrace = true)
     private val chromeTrace
         get() = chromeTraceReader.readWmTrace() ?: error("Unable to read WM trace")
+
     private val imeTraceReader = getWmTraceReaderFromAsset("wm_trace_ime.pb", legacyTrace = true)
     private val imeTrace = imeTraceReader.readWmTrace() ?: error("Unable to read WM trace")
 

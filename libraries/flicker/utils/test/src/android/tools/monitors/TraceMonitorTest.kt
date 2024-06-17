@@ -20,13 +20,13 @@ import android.app.Instrumentation
 import android.tools.Tag
 import android.tools.io.RunStatus
 import android.tools.io.TraceType
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.newTestResultWriter
+import android.tools.testutils.outputFileName
 import android.tools.traces.TRACE_CONFIG_REQUIRE_CHANGES
 import android.tools.traces.deleteIfExists
 import android.tools.traces.io.ResultReader
 import android.tools.traces.monitors.TraceMonitor
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.newTestResultWriter
-import android.tools.utils.outputFileName
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.google.common.truth.Truth
@@ -37,7 +37,9 @@ import org.junit.Test
 
 abstract class TraceMonitorTest<T : TraceMonitor> {
     abstract fun getMonitor(): T
+
     abstract fun assertTrace(traceData: ByteArray)
+
     abstract val traceType: TraceType
 
     protected open val tag = Tag.ALL

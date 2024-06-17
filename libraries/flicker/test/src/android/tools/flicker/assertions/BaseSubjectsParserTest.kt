@@ -20,22 +20,27 @@ import android.tools.Tag
 import android.tools.Timestamp
 import android.tools.flicker.subject.FlickerSubject
 import android.tools.flicker.subject.FlickerTraceSubject
+import android.tools.flicker.subject.events.EventLogSubject
+import android.tools.flicker.subject.layers.LayerTraceEntrySubject
+import android.tools.flicker.subject.layers.LayersTraceSubject
+import android.tools.flicker.subject.wm.WindowManagerStateSubject
+import android.tools.flicker.subject.wm.WindowManagerTraceSubject
 import android.tools.io.RunStatus
 import android.tools.io.TraceType
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.newTestResultWriter
+import android.tools.testutils.outputFileName
 import android.tools.traces.TRACE_CONFIG_REQUIRE_CHANGES
 import android.tools.traces.deleteIfExists
 import android.tools.traces.io.ResultReader
 import android.tools.traces.io.ResultWriter
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.newTestResultWriter
-import android.tools.utils.outputFileName
 import com.google.common.truth.Truth
 import java.io.File
 import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Test
 
-abstract class BaseSubjectsParserTestParse {
+abstract class BaseSubjectsParserTest {
     protected abstract val assetFile: File
     protected abstract val subjectName: String
     protected abstract val expectedStartTime: Timestamp
@@ -106,6 +111,23 @@ abstract class BaseSubjectsParserTestParse {
         Truth.assertWithMessage("$subjectName - $tag")
             .that(getTime(subject.timestamp))
             .isEqualTo(getTime(expectedTime))
+    }
+
+    /** Wrapper for [SubjectsParser] with looser visibility */
+    inner class TestSubjectsParser(resultReader: ResultReader) : SubjectsParser(resultReader) {
+        public override fun doGetEventLogSubject(): EventLogSubject? = super.doGetEventLogSubject()
+
+        public override fun doGetWmTraceSubject(): WindowManagerTraceSubject? =
+            super.doGetWmTraceSubject()
+
+        public override fun doGetLayersTraceSubject(): LayersTraceSubject? =
+            super.doGetLayersTraceSubject()
+
+        public override fun doGetLayerTraceEntrySubject(tag: String): LayerTraceEntrySubject? =
+            super.doGetLayerTraceEntrySubject(tag)
+
+        public override fun doGetWmStateSubject(tag: String): WindowManagerStateSubject? =
+            super.doGetWmStateSubject(tag)
     }
 
     companion object {

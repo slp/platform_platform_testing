@@ -17,7 +17,7 @@
 package android.tools.traces.events
 
 import android.tools.Timestamps
-import android.tools.utils.CleanFlickerEnvironmentRule
+import android.tools.testutils.CleanFlickerEnvironmentRule
 import com.google.common.truth.Truth
 import org.junit.ClassRule
 import org.junit.Test

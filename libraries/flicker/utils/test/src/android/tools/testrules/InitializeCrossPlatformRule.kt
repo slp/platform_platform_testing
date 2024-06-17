@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-package android.tools.rules
+package android.tools.testrules
 
-import android.tools.Cache
-import android.tools.ICache
-import org.junit.rules.TestWatcher
+import org.junit.rules.TestRule
 import org.junit.runner.Description
+import org.junit.runners.model.Statement
 
-class CacheCleanupRule : TestWatcher() {
-    private var cacheBackup: ICache.Backup? = null
-    override fun starting(description: Description?) {
-        super.starting(description)
-        cacheBackup = Cache.backup()
-        Cache.clear()
-    }
-
-    override fun finished(description: Description?) {
-        super.finished(description)
-        val cacheBackup = cacheBackup ?: return
-        Cache.restore(cacheBackup)
+class InitializeCrossPlatformRule : TestRule {
+    override fun apply(base: Statement?, description: Description?): Statement {
+        return object : Statement() {
+            override fun evaluate() {
+                base?.evaluate()
+            }
+        }
     }
 }

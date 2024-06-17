@@ -20,8 +20,8 @@ import android.tools.Timestamp
 import android.tools.Timestamps
 import android.tools.TraceEntry
 import android.tools.flicker.subject.FlickerSubject
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.assertFail
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.assertFail
 import org.junit.ClassRule
 import org.junit.FixMethodOrder
 import org.junit.Test

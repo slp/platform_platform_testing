@@ -25,6 +25,9 @@ import android.tools.Timestamps
 import android.tools.datatypes.ActiveBuffer
 import android.tools.datatypes.Matrix33
 import android.tools.datatypes.defaultColor
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.getWmDumpReaderFromAsset
+import android.tools.testutils.getWmTraceReaderFromAsset
 import android.tools.traces.ConditionsFactory
 import android.tools.traces.DeviceStateDump
 import android.tools.traces.component.ComponentNameMatcher
@@ -36,9 +39,6 @@ import android.tools.traces.surfaceflinger.LayerTraceEntryBuilder
 import android.tools.traces.surfaceflinger.Transform
 import android.tools.traces.wm.WindowManagerState
 import android.tools.traces.wm.WindowManagerTrace
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.getWmDumpReaderFromAsset
-import android.tools.utils.getWmTraceReaderFromAsset
 import androidx.core.graphics.toRect
 import androidx.test.filters.FlakyTest
 import androidx.test.platform.app.InstrumentationRegistry

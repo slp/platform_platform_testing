@@ -17,15 +17,15 @@
 package android.tools.io
 
 import android.tools.Timestamp
+import android.tools.testutils.TestTraces
 import android.tools.traces.io.ResultReader
-import android.tools.utils.TestTraces
 import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
 /** Tests for [ResultReader] parsing [TraceType.PROTOLOG] */
-class ResultReaderTestParseProtoLog : BaseResultReaderTestParseTrace() {
+class ResultReaderParseProtoLogTest : BaseResultReaderTestParseTrace() {
     override val assetFiles = mapOf(TraceType.PERFETTO to TestTraces.ProtoLogTrace.FILE)
     override val traceName = "ProtoLog trace"
     override val startTimeTrace = TestTraces.ProtoLogTrace.START_TIME
@@ -41,6 +41,7 @@ class ResultReaderTestParseProtoLog : BaseResultReaderTestParseTrace() {
     }
 
     override fun doParse(reader: ResultReader) = reader.readProtoLogTrace()
+
     override fun getTime(traceTime: Timestamp) = traceTime.elapsedNanos
 
     @Test

@@ -18,9 +18,9 @@ package android.tools.parsers
 
 import android.tools.Timestamp
 import android.tools.Timestamps
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.MockWindowManagerTraceBuilder
-import android.tools.utils.MockWindowStateBuilder
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.MockWindowManagerTraceBuilder
+import android.tools.testutils.MockWindowStateBuilder
 import com.google.common.truth.Truth
 import org.junit.ClassRule
 import org.junit.Test

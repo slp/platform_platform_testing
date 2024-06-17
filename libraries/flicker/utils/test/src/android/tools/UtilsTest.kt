@@ -17,10 +17,10 @@
 package android.tools
 
 import android.tools.io.TraceType
+import android.tools.testutils.CleanFlickerEnvironmentRule
 import android.tools.traces.NullableDeviceStateDump
 import android.tools.traces.getCurrentState
 import android.tools.traces.getCurrentStateDumpNullable
-import android.tools.utils.CleanFlickerEnvironmentRule
 import com.google.common.truth.Truth
 import org.junit.ClassRule
 import org.junit.FixMethodOrder

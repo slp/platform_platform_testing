@@ -40,7 +40,7 @@ java_defaults {
     ],
     data: [
         "trace_config/*",
-    ]
+    ],
 }
 
 android_test {
@@ -68,10 +68,10 @@ android_test {
     instrumentation_target_package: "android.tools.integration",
     srcs: [
         "src/android/tools/integration/**/*.kt",
-        "src/android/tools/rules/**/*.kt",
-        "src/android/tools/Utils.kt",
+        "src/android/tools/testrules/**/*.kt",
+        "src/android/tools/TestUtils.kt",
     ],
     static_libs: [
-            "//frameworks/base/packages/SystemUI/aconfig:com_android_systemui_flags_lib",
-        ],
+        "//frameworks/base/packages/SystemUI/aconfig:com_android_systemui_flags_lib",
+    ],
 }

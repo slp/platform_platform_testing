@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package android.tools.utils
+package android.tools.testutils
 
 import android.tools.Timestamp
 import android.tools.io.Reader

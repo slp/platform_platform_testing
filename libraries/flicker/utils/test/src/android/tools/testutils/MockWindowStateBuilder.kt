@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package android.tools.utils
+package android.tools.testutils
 
 import android.tools.traces.wm.KeyguardControllerState
 import android.tools.traces.wm.WindowManagerState

@@ -19,10 +19,10 @@ package android.tools.parsers.wm
 import android.app.Instrumentation
 import android.tools.Cache
 import android.tools.device.apphelpers.BrowserAppHelper
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.readAsset
 import android.tools.traces.monitors.wm.LegacyWmTransitionTraceMonitor
 import android.tools.traces.parsers.wm.WmTransitionTraceParser
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.readAsset
 import android.tracing.Flags
 import androidx.test.platform.app.InstrumentationRegistry
 import com.android.launcher3.tapl.LauncherInstrumentation
@@ -64,6 +64,7 @@ class LegacyWmLegacyTransitionTraceParserTest {
         val trace = WmTransitionTraceParser().parse(data, clearCache = false)
         Truth.assertThat(trace.entries).isNotEmpty()
     }
+
     companion object {
         @ClassRule @JvmField val ENV_CLEANUP = CleanFlickerEnvironmentRule()
     }

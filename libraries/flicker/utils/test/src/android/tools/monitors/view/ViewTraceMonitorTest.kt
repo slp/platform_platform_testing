@@ -18,14 +18,14 @@ package android.tools.monitors.view
 
 import android.tools.io.TraceType
 import android.tools.monitors.TraceMonitorTest
+import android.tools.testutils.assertArchiveContainsFiles
+import android.tools.testutils.getActualTraceFilesFromArchive
+import android.tools.testutils.getLauncherPackageName
+import android.tools.testutils.getSystemUiUidName
+import android.tools.testutils.newTestResultWriter
 import android.tools.traces.TRACE_CONFIG_REQUIRE_CHANGES
 import android.tools.traces.io.ResultReader
 import android.tools.traces.monitors.view.ViewTraceMonitor
-import android.tools.utils.assertArchiveContainsFiles
-import android.tools.utils.getActualTraceFilesFromArchive
-import android.tools.utils.getLauncherPackageName
-import android.tools.utils.getSystemUiUidName
-import android.tools.utils.newTestResultWriter
 import com.android.systemui.Flags.enableViewCaptureTracing
 import com.google.common.truth.Truth
 import java.io.File

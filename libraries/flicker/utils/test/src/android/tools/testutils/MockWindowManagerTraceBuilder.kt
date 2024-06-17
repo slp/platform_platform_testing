@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package android.tools.utils
+package android.tools.testutils
 
-import android.tools.traces.surfaceflinger.LayersTrace
+import android.tools.traces.wm.WindowManagerTrace
 
-class MockLayersTraceBuilder(
-    private var entries: MutableList<MockLayerTraceEntryBuilder> = mutableListOf()
+class MockWindowManagerTraceBuilder(
+    private var entries: MutableList<MockWindowStateBuilder> = mutableListOf()
 ) {
-    fun addEntry(entry: MockLayerTraceEntryBuilder) {
+    fun addEntry(entry: MockWindowStateBuilder) {
         entries.add(entry)
     }
 
@@ -29,12 +29,12 @@ class MockLayersTraceBuilder(
         entries.sortBy { it.timestamp }
     }
 
-    fun build(): LayersTrace {
+    fun build(): WindowManagerTrace {
         require(entries.zipWithNext { prev, cur -> prev.timestamp < cur.timestamp }.all { it }) {
             "Timestamps not strictly increasing between entries."
         }
 
         val entries = entries.map { it.build() }
-        return LayersTrace(entries)
+        return WindowManagerTrace(entries)
     }
 }

@@ -18,8 +18,8 @@ package android.tools.traces.wm
 
 import android.tools.Cache
 import android.tools.Timestamps
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.getWmTraceReaderFromAsset
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.getWmTraceReaderFromAsset
 import com.google.common.truth.Truth.assertThat
 import com.google.common.truth.Truth.assertWithMessage
 import java.lang.reflect.Modifier

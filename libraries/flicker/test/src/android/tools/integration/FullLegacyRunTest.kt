@@ -43,7 +43,7 @@ import org.junit.runners.Parameterized
 @FlickerServiceCompatible(expectedCujs = ["ENTIRE_TRACE"])
 @RunWith(Parameterized::class)
 @Parameterized.UseParametersRunnerFactory(FlickerParametersRunnerFactory::class)
-class FullLegacyTestRun(private val flicker: LegacyFlickerTest) {
+class FullLegacyRunTest(private val flicker: LegacyFlickerTest) {
     private val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
     private val testApp = MessagingAppHelper(instrumentation)
     private val tapl: LauncherInstrumentation = LauncherInstrumentation()

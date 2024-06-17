@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package android.tools.utils
+package android.tools.testutils
 
 import android.content.Context
 import android.tools.Scenario
@@ -25,9 +25,9 @@ import android.tools.Timestamps
 import android.tools.io.Reader
 import android.tools.io.ResultArtifactDescriptor
 import android.tools.io.RunStatus
-import android.tools.rules.CacheCleanupRule
-import android.tools.rules.InitializeCrossPlatformRule
 import android.tools.rules.StopAllTracesRule
+import android.tools.testrules.CacheCleanupRule
+import android.tools.testrules.InitializeCrossPlatformRule
 import android.tools.traces.io.ArtifactBuilder
 import android.tools.traces.io.ResultWriter
 import android.tools.traces.parsers.perfetto.LayersTraceParser
