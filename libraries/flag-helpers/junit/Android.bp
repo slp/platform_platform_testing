@@ -52,7 +52,7 @@ java_library {
     libs: [
         "framework-configinfrastructure",
     ],
-    sdk_version: "module_current",
+    sdk_version: "test_current",
 }
 
 java_library_host {
