@@ -22,6 +22,7 @@ import android.os.Environment;
 import android.os.SystemClock;
 import android.util.Log;
 
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
 
 import org.junit.After;
@@ -85,6 +86,7 @@ public final class LogcatCollectorTest {
 
     @After
     public void tearDown() {
+        mCollector.setInstrumentation(InstrumentationRegistry.getInstrumentation());
         mCollector.recursiveDelete(mLogDir);
     }
 

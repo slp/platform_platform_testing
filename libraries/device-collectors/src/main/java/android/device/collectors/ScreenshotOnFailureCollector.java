@@ -25,9 +25,7 @@ import androidx.test.uiautomator.UiDevice;
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
@@ -37,8 +35,9 @@ import java.util.HashMap;
 /**
  * A {@link BaseMetricListener} that captures screenshots when a test fails.
  *
- * <p>This class needs external storage permission. See {@link BaseMetricListener} how to grant
- * external storage permission, especially at install time.
+ * <p>Dumping the UI XML requires external storage permission. See {@link BaseMetricListener} how to
+ * grant external storage permission, especially at install time. Only collecting a screenshot does
+ * not require storage permissions.
  *
  * <p>Options: -e screenshot-quality [0-100]: set screenshot image quality. Default is 75. -e
  * include-ui-xml [true, false]: include the UI XML on failure too, if true.
@@ -138,19 +137,13 @@ public class ScreenshotOnFailureCollector extends BaseMetricListener {
     @VisibleForTesting
     public File takeScreenshot(String fileName) {
         File img = new File(mDestDir, fileName);
-        if (img.exists()) {
-            Log.w(getTag(), String.format("File exists: %s", img.getAbsolutePath()));
-            img.delete();
-        }
-        try (
-                OutputStream out = new BufferedOutputStream(new FileOutputStream(img))
-        ){
+        try (OutputStream out = getOutputStreamViaShell(img)) {
             screenshotToStream(out);
             out.flush();
             return img;
         } catch (Exception e) {
             Log.e(getTag(), "Unable to save screenshot", e);
-            img.delete();
+            recursiveDelete(img);
             return null;
         }
     }
