@@ -16,12 +16,14 @@
 
 package android.tools.traces.surfaceflinger
 
+import android.graphics.Color
+import android.graphics.RectF
+import android.graphics.Region
 import android.tools.datatypes.ActiveBuffer
-import android.tools.datatypes.Color
-import android.tools.datatypes.Rect
-import android.tools.datatypes.RectF
-import android.tools.datatypes.Region
+import android.tools.datatypes.containsWithThreshold
+import android.tools.datatypes.crop
 import android.tools.traces.component.ComponentName
+import androidx.core.graphics.toRect
 
 /**
  * Represents a single layer with links to its parent and child layers.
@@ -95,17 +97,18 @@ private constructor(
             val visibleRegion =
                 if (excludesCompositionState) {
                     // Doesn't include state sent during composition like visible region and
-                    // composition type, so we fallback on the bounds as the visible region
-                    Region.from(this.bounds)
+                    // composition type, so we fall back on the bounds as the visible region
+                    Region(this.bounds.toRect())
                 } else {
-                    this.visibleRegion ?: Region.EMPTY
+                    this.visibleRegion ?: Region()
                 }
             return when {
                 isHiddenByParent -> false
                 isHiddenByPolicy -> false
+                hasZeroAlpha -> false
                 isActiveBufferEmpty && !hasEffects -> false
                 occludedBy.isNotEmpty() -> false
-                else -> visibleRegion.isNotEmpty
+                else -> !visibleRegion.isEmpty
             }
         }
 
@@ -132,7 +135,7 @@ private constructor(
             if (isHiddenByPolicy) reasons.add("Flag is hidden")
             if (isHiddenByParent) reasons.add("Hidden by parent ${parent?.name}")
             if (isActiveBufferEmpty) reasons.add("Buffer is empty")
-            if (color.a == 0.0f) reasons.add("Alpha is 0")
+            if (color.alpha() == 0.0f) reasons.add("Alpha is 0")
             if (bounds.isEmpty) reasons.add("Bounds is 0x0")
             if (bounds.isEmpty && crop.isEmpty) reasons.add("Crop is 0x0")
             if (!transform.isValid) reasons.add("Transform is invalid")
@@ -173,13 +176,13 @@ private constructor(
      * Returns true iff the [innerLayer] screen bounds are inside or equal to this layer's
      * [screenBounds] and neither layers are rotating.
      */
-    fun contains(innerLayer: Layer, crop: RectF = RectF.EMPTY): Boolean {
+    fun contains(innerLayer: Layer, crop: RectF = RectF()): Boolean {
         return if (!this.transform.isSimpleRotation || !innerLayer.transform.isSimpleRotation) {
             false
         } else {
             val thisBounds: RectF
             val innerLayerBounds: RectF
-            if (crop.isNotEmpty) {
+            if (!crop.isEmpty) {
                 thisBounds = this.screenBounds.crop(crop)
                 innerLayerBounds = innerLayer.screenBounds.crop(crop)
             } else {
@@ -206,17 +209,17 @@ private constructor(
         _coveredBy.addAll(layers)
     }
 
-    fun overlaps(other: Layer, crop: RectF = RectF.EMPTY): Boolean {
+    fun overlaps(other: Layer, crop: RectF = RectF()): Boolean {
         val thisBounds: RectF
         val otherBounds: RectF
-        if (crop.isNotEmpty) {
+        if (!crop.isEmpty) {
             thisBounds = this.screenBounds.crop(crop)
             otherBounds = other.screenBounds.crop(crop)
         } else {
             thisBounds = this.screenBounds
             otherBounds = other.screenBounds
         }
-        return !thisBounds.intersection(otherBounds).isEmpty
+        return thisBounds.intersect(otherBounds)
     }
 
     override fun toString(): String {
@@ -330,7 +333,7 @@ private constructor(
             bufferTransform: Transform,
             hwcCompositionType: HwcCompositionType,
             backgroundBlurRadius: Int,
-            crop: Rect?,
+            crop: RectF?,
             isRelativeOf: Boolean,
             zOrderRelativeOfId: Int,
             stackId: Int,

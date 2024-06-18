@@ -78,6 +78,8 @@ class BTUtils:
     def pair_primary_to_secondary(self):
         """Enable discovery on the target so the discoverer can find it."""
         # Turn bluetooth on in both machines
+        logging.info('Enabling Bluetooth logs')
+        self.enable_bt_logs()
         logging.info('Enabling Bluetooth on both devices')
         self.discoverer.mbs.btEnable()
         self.target.mbs.btEnable()
@@ -146,3 +148,9 @@ class BTUtils:
     def click_on_use_bluetooth_toggle(self):
         logging.info('Click on Use Bluetooth toggle on HU')
         self.discoverer.mbs.clickOnBluetoothToggle()
+
+    def enable_bt_logs(self):
+        logging.info('Enable bluetooth logs')
+        self.media_utils.execute_shell_on_hu_device(constants.BLUETOOTH_TAG)
+        self.media_utils.execute_shell_on_hu_device(constants.BLUETOOTH_NOOPERABLE)
+        self.media_utils.execute_shell_on_hu_device(constants.BLUETOOTH_BTSNOOP_DEFAULT_MODE)

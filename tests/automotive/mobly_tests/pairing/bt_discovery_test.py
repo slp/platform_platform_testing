@@ -22,6 +22,10 @@ class MultiDeviceTest(bluetooth_base_test.BluetoothBaseTest):
     def test_bluetooth_pair(self):
         self.bt_utils.pair_primary_to_secondary()
 
+    def teardown_test(self):
+        self.bt_utils.unpair()
+        self.discoverer.mbs.btDisable()
+        self.target.mbs.btDisable()
 
 if __name__ == '__main__':
     common_main()

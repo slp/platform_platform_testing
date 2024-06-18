@@ -114,7 +114,7 @@ class ComponentNameMatcher(var component: ComponentName) : IComponentNameMatcher
 
         val PIP_MENU_OVERLAY = ComponentNameMatcher("", "PipMenuView")
 
-        val EDGE_BACK_GESTURE_HANDLER = ComponentNameMatcher("", "EdgeBackGestureHandler")
+        val EDGE_BACK_GESTURE_HANDLER = ComponentNameMatcher("", "EdgeBackGestureHandler0")
 
         val COLOR_FADE = ComponentNameMatcher("", "ColorFade")
 
@@ -125,6 +125,14 @@ class ComponentNameMatcher(var component: ComponentName) : IComponentNameMatcher
         val VOLUME_DIALOG = ComponentNameMatcher("", "VolumeDialog")
 
         val FLOATING_ROTATION_BUTTON = ComponentNameMatcher("", "FloatingRotationButton")
+
+        val SCREEN_DECOR_OVERLAY = ComponentNameMatcher("", "ScreenDecorHwcOverlay#")
+
+        val POINTER_LOCATION = ComponentNameMatcher("", "PointerLocation")
+
+        val WIRED_CHARGING_ANIMATION = ComponentNameMatcher("", "Wired Charging Animation#")
+
+        val SCREEN_RECORDING_OVERLAYS = SCREEN_DECOR_OVERLAY.or(POINTER_LOCATION)
 
         val LAUNCHER =
             ComponentNameMatcher(

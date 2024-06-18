@@ -1,0 +1,32 @@
+{
+  "frame_ids": [
+    "before",
+    0,
+    116,
+    132,
+    148,
+    164,
+    180,
+    196,
+    212,
+    "after"
+  ],
+  "features": [
+    {
+      "name": "pointerOffset",
+      "type": "offset",
+      "data_points": [
+        "unspecified",
+        "unspecified",
+        "unspecified",
+        "unspecified",
+        "unspecified",
+        "unspecified",
+        "unspecified",
+        "unspecified",
+        "unspecified",
+        "unspecified"
+      ]
+    }
+  ]
+}

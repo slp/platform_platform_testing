@@ -16,13 +16,13 @@
 
 package android.tools.flicker.extractors
 
-import android.tools.Logger
 import android.tools.Timestamp
 import android.tools.Timestamps
 import android.tools.io.Reader
 import android.tools.traces.events.Cuj
 import android.tools.traces.events.CujType
 import android.tools.traces.wm.Transition
+import android.util.Log
 import kotlin.math.max
 import kotlin.math.min
 
@@ -30,6 +30,7 @@ class TaggedScenarioExtractor(
     private val targetTag: CujType,
     private val transitionMatcher: TransitionMatcher?,
     private val adjustCuj: CujAdjust,
+    private val additionalCujFilter: ((Cuj) -> Boolean)? = null,
     private val ignoreIfNoMatchingTransition: Boolean = false,
 ) : ScenarioExtractor {
     companion object {
@@ -43,6 +44,7 @@ class TaggedScenarioExtractor(
             cujTrace.entries
                 .filter { it.cuj === targetTag }
                 .filter { !it.canceled }
+                .filter { additionalCujFilter?.invoke(it) ?: true }
                 .map { adjustCuj.adjustCuj(it, reader) }
 
         if (targetCujEntries.isEmpty()) {
@@ -54,7 +56,7 @@ class TaggedScenarioExtractor(
             val associatedTransitions = transitionMatcher?.getMatches(reader, cujEntry)
 
             if ((associatedTransitions?.size ?: 0) > 1) {
-                Logger.w(
+                Log.w(
                     LOG_TAG,
                     "Got more than one associated transition: " +
                         "[${associatedTransitions?.joinToString()}]. " +

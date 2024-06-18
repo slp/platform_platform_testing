@@ -17,7 +17,6 @@
 package android.tools.flicker
 
 import android.tools.FLICKER_TAG
-import android.tools.Logger
 import android.tools.Scenario
 import android.tools.flicker.Utils.ALL_MONITORS
 import android.tools.io.Reader
@@ -25,6 +24,7 @@ import android.tools.io.TraceType
 import android.tools.traces.SERVICE_TRACE_CONFIG
 import android.tools.traces.io.ResultReaderWithLru
 import android.tools.traces.io.ResultWriter
+import android.util.Log
 import java.io.File
 import kotlin.io.path.createTempDirectory
 
@@ -48,12 +48,12 @@ class FlickerServiceTracesCollector(
             val scenario = this.scenario
             require(scenario != null) { "Scenario not set - make sure trace was started properly" }
 
-            Logger.v(LOG_TAG, "Creating output directory for trace files")
+            Log.v(LOG_TAG, "Creating output directory for trace files")
             outputDir.mkdirs()
 
-            Logger.v(LOG_TAG, "Stopping trace monitors")
+            Log.v(LOG_TAG, "Stopping trace monitors")
             val writer = ResultWriter().forScenario(scenario).withOutputDir(outputDir)
-            traceMonitors.forEach { it.stop(writer) }
+            traceMonitors.reversed().forEach { it.stop(writer) }
             this.scenario = null
             val result = writer.write()
 
@@ -71,7 +71,7 @@ class FlickerServiceTracesCollector(
         try {
             return block()
         } catch (e: Throwable) {
-            Logger.e(LOG_TAG, msg, e)
+            Log.e(LOG_TAG, msg, e)
             throw e
         }
     }

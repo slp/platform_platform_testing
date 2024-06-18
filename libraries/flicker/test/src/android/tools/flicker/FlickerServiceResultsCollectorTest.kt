@@ -19,6 +19,8 @@ package android.tools.flicker
 import android.annotation.SuppressLint
 import android.device.collectors.DataRecord
 import android.tools.flicker.FlickerServiceResultsCollector.Companion.EXECUTION_ERROR_STATUS_CODE
+import android.tools.flicker.FlickerServiceResultsCollector.Companion.FAAS_RESULTS_FILE_PATH_KEY
+import android.tools.flicker.FlickerServiceResultsCollector.Companion.FAAS_STATUS_KEY
 import android.tools.flicker.FlickerServiceResultsCollector.Companion.FLICKER_ASSERTIONS_COUNT_KEY
 import android.tools.flicker.FlickerServiceResultsCollector.Companion.OK_STATUS_CODE
 import android.tools.flicker.FlickerServiceResultsCollector.Companion.WINSCOPE_FILE_PATH_KEY
@@ -38,6 +40,7 @@ import android.tools.utils.MockWindowManagerTraceBuilder
 import android.tools.utils.ParsedTracesReader
 import android.tools.utils.TestArtifact
 import com.google.common.truth.Truth
+import org.junit.AssumptionViolatedException
 import org.junit.ClassRule
 import org.junit.FixMethodOrder
 import org.junit.Test
@@ -301,6 +304,46 @@ class FlickerServiceResultsCollectorTest {
             .isEqualTo(EXECUTION_ERROR_STATUS_CODE.toString())
     }
 
+    @Test
+    fun handlesAssertionsWithAssumptionFailures() {
+        val assertionResults = listOf(mockAssumptionFailureAssertionResult)
+        val collector =
+            createCollector(assertionResults = assertionResults, serviceProcessingError = false)
+        val runData = DataRecord()
+        val runDescription = Description.createSuiteDescription(this::class.java)
+        val testData = SpyDataRecord()
+        val testDescription = Description.createTestDescription(this::class.java, "TestName")
+
+        collector.onTestRunStart(runData, runDescription)
+        collector.onTestStart(testData, testDescription)
+        collector.onTestEnd(testData, testDescription)
+        collector.onTestRunEnd(runData, Mockito.mock(org.junit.runner.Result::class.java))
+
+        Truth.assertThat(testData.hasMetrics()).isTrue()
+        Truth.assertThat(testData.stringMetrics).hasSize(4)
+
+        Truth.assertThat(testData.stringMetrics).containsKey(FAAS_STATUS_KEY)
+        Truth.assertThat(testData.stringMetrics[FAAS_STATUS_KEY])
+            .isEqualTo(OK_STATUS_CODE.toString())
+
+        Truth.assertThat(testData.stringMetrics).containsKey(FLICKER_ASSERTIONS_COUNT_KEY)
+        Truth.assertThat(testData.stringMetrics[FLICKER_ASSERTIONS_COUNT_KEY])
+            .isEqualTo(1.toString())
+
+        Truth.assertThat(testData.stringMetrics).containsKey(FAAS_RESULTS_FILE_PATH_KEY)
+
+        Truth.assertThat(collector.assertionResults).isNotEmpty()
+        Truth.assertThat(collector.assertionResults).hasSize(1)
+
+        val assertionResult = collector.assertionResults.first()
+        Truth.assertThat(assertionResult.status)
+            .isEqualTo(AssertionResult.Status.ASSUMPTION_VIOLATION)
+        Truth.assertThat(assertionResult.assumptionViolations).hasSize(1)
+        Truth.assertThat(assertionResult.assumptionViolations.first())
+            .hasMessageThat()
+            .isEqualTo("My assumption violation")
+    }
+
     private fun createCollector(
         assertionResults: Collection<AssertionResult> = listOf(mockSuccessfulAssertionResult),
         reportOnlyForPassingTests: Boolean = true,
@@ -362,7 +405,8 @@ class FlickerServiceResultsCollectorTest {
                     )
                 override val assertionErrors = listOf<FlickerAssertionError>()
                 override val stabilityGroup = AssertionInvocationGroup.BLOCKING
-                override val passed = true
+                override val assumptionViolations = emptyList<AssumptionViolatedException>()
+                override val status = AssertionResult.Status.PASS
             }
 
         val mockFailedAssertionResult =
@@ -376,11 +420,29 @@ class FlickerServiceResultsCollectorTest {
                             }
                         }
                     )
+                override val assumptionViolations = emptyList<AssumptionViolatedException>()
                 override val assertionErrors =
                     listOf<FlickerAssertionError>(SimpleFlickerAssertionError("Assertion failed"))
                 override val stabilityGroup = AssertionInvocationGroup.BLOCKING
-                override val passed = false
-                override val failed: Boolean = true
+                override val status = AssertionResult.Status.FAIL
+            }
+
+        val mockAssumptionFailureAssertionResult =
+            object : AssertionResult {
+                override val name: String = "MOCK_SCENARIO#mockAssumptionFailureAssertion"
+                override val assertionData =
+                    listOf<AssertionData>(
+                        object : AssertionData {
+                            override fun checkAssertion(run: SubjectsParser) {
+                                error("Unimplemented - shouldn't be called")
+                            }
+                        }
+                    )
+                override val assumptionViolations =
+                    listOf(AssumptionViolatedException("My assumption violation"))
+                override val assertionErrors = emptyList<FlickerAssertionError>()
+                override val stabilityGroup = AssertionInvocationGroup.BLOCKING
+                override val status = AssertionResult.Status.ASSUMPTION_VIOLATION
             }
 
         private class SpyDataRecord : DataRecord() {

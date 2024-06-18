@@ -20,9 +20,5 @@ object CrossPlatform {
     val timestamp: TimestampFactory
         get() = Timestamps
 
-    fun setLogger(logger: ILogger) = apply { Logger = logger }
-
-    fun setTimestampFactory(factory: TimestampFactory) = apply { Timestamps = factory }
-
     fun setCache(cache: ICache) = apply { Cache = cache }
 }

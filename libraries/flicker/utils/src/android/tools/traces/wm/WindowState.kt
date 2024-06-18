@@ -16,9 +16,9 @@
 
 package android.tools.traces.wm
 
+import android.graphics.Rect
+import android.graphics.Region
 import android.tools.PlatformConsts
-import android.tools.datatypes.Rect
-import android.tools.datatypes.Region
 import android.tools.datatypes.Size
 
 /**
@@ -56,7 +56,8 @@ class WindowState(
     val isDebuggerWindow: Boolean = windowType == PlatformConsts.WINDOW_TYPE_DEBUGGER
     val isValidNavBarType: Boolean = attributes.isValidNavBarType
 
-    val frameRegion: Region = Region.from(frame)
+    val frameRegion: Region
+        get() = Region(frame)
 
     private fun getWindowTypeSuffix(windowType: Int): String =
         when (windowType) {

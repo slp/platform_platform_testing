@@ -23,9 +23,9 @@ import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.media.MediaMuxer
 import android.os.SystemClock
-import android.tools.Logger
 import android.tools.traces.deleteIfExists
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.WindowManager
 import java.io.File
 import java.io.FileOutputStream
@@ -75,7 +75,7 @@ class ScreenRecordingRunnable(
     }
 
     override fun run() {
-        Logger.d(LOG_TAG, "Starting screen recording to file $outputFile")
+        Log.d(LOG_TAG, "Starting screen recording to file $outputFile")
 
         val timestampsMonotonicUs = mutableListOf<Long>()
         try {
@@ -157,11 +157,11 @@ class ScreenRecordingRunnable(
      */
     private fun writeMetadata(timestampsMonotonicUs: List<Long>) {
         if (timestampsMonotonicUs.isEmpty()) {
-            Logger.v(LOG_TAG, "Not writing winscope metadata (no frames/timestamps)")
+            Log.v(LOG_TAG, "Not writing winscope metadata (no frames/timestamps)")
             return
         }
 
-        Logger.v(
+        Log.v(
             LOG_TAG,
             "Writing winscope metadata (size=${timestampsMonotonicUs.size} " +
                 ", monotonic timestamps range [us] = " +

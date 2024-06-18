@@ -13,6 +13,7 @@
 // limitations under the License.
 
 package {
+    default_team: "trendy_team_responsible_apis",
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 
@@ -23,6 +24,8 @@ android_test {
         "androidx.test.runner",
         "sts-device-util",
         "junit",
+        "compatibility-device-util-axt",
+        "androidx.test.uiautomator_uiautomator",
     ],
 
     // tag this module as a test artifact

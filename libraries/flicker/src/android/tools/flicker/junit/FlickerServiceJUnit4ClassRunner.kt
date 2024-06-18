@@ -18,11 +18,8 @@ package android.tools.flicker.junit
 
 import android.os.Bundle
 import android.platform.test.util.TestFilter
-import android.tools.AndroidLogger
-import android.tools.CrossPlatform
+import android.tools.FLICKER_TAG
 import android.tools.Scenario
-import android.tools.TimestampFactory
-import android.tools.traces.formatRealTimestamp
 import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import java.util.Collections
@@ -72,9 +69,6 @@ constructor(
     private var initialized: Boolean? = null
 
     init {
-        CrossPlatform.setLogger(AndroidLogger())
-            .setTimestampFactory(TimestampFactory { formatRealTimestamp(it) })
-
         val errors = mutableListOf<Throwable>()
         flickerDecorator.doValidateInstanceMethods().let { errors.addAll(it) }
         flickerDecorator.doValidateConstructor().let { errors.addAll(it) }
@@ -158,6 +152,8 @@ constructor(
         } else {
             result.addAll(getTestMethods({} /* placeholder param */))
         }
+        Log.d(LOG_TAG, "Computed ${result.size} methods")
+        result.forEach { Log.v(LOG_TAG, "Computed method - $it") }
         return result
     }
 
@@ -340,7 +336,6 @@ constructor(
     override fun childrenInvoker(notifier: RunNotifier): Statement {
         return object : Statement() {
             override fun evaluate() {
-                Log.d("PAB", "RUNNING MY CHILD INVOKER")
                 runChildren(notifier)
             }
         }
@@ -431,6 +426,7 @@ constructor(
     }
 
     companion object {
+        private const val LOG_TAG = "$FLICKER_TAG-JunitRunner"
         private val CURRENT_RULE_CONTAINER = ThreadLocal<RuleContainer>()
     }
 

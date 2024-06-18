@@ -24,6 +24,7 @@ import android.app.role.RoleManager
 import android.os.Build
 import android.os.UserHandle
 import android.platform.helpers.notesrole.NotesRoleUtil
+import android.platform.uiautomator_helpers.DeviceHelpers
 import android.system.helpers.UserHelper
 import android.util.Log
 import androidx.core.content.getSystemService
@@ -81,6 +82,11 @@ constructor(
             userHelper.createSecondaryUser(SECONDARY_USER).also {
                 // Switch to the newly created user.
                 switchToUser(it)
+
+                // Install the required notes taking app on the new user.
+                DeviceHelpers.shell(
+                    "pm install-existing --user $it --wait $requiredNotesRoleHolderPackage"
+                )
 
                 // Update the secondary user's notes role holder.
                 notesRoleUtil.setRoleHolder(requiredNotesRoleHolderPackage, UserHandle.of(it))

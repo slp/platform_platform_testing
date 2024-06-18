@@ -16,8 +16,8 @@
 
 package android.tools.flicker.assertors.assertions
 
+import android.graphics.Region
 import android.tools.PlatformConsts
-import android.tools.datatypes.Region
 import android.tools.flicker.ScenarioInstance
 import android.tools.flicker.assertions.FlickerTest
 import android.tools.flicker.assertors.AssertionTemplate

@@ -20,10 +20,8 @@ import android.app.Instrumentation
 import android.platform.test.rule.NavigationModeRule
 import android.platform.test.rule.PressHomeRule
 import android.platform.test.rule.UnlockScreenRule
-import android.tools.Logger
 import android.tools.Scenario
 import android.tools.device.apphelpers.MessagingAppHelper
-import android.tools.flicker.datastore.CachedResultWriter
 import android.tools.flicker.legacy.FlickerTestData
 import android.tools.flicker.rules.ArtifactSaverRule
 import android.tools.flicker.rules.ChangeDisplayOrientationRule
@@ -32,6 +30,7 @@ import android.tools.flicker.rules.RemoveAllTasksButHomeRule
 import android.tools.rules.StopAllTracesRule
 import android.tools.traces.io.IResultData
 import android.tools.traces.io.ResultWriter
+import android.tools.withTracing
 import org.junit.rules.RuleChain
 import org.junit.runner.Description
 
@@ -46,7 +45,7 @@ class TransitionRunner(
 ) {
     /** Executes [flicker] transition and returns the result */
     fun execute(flicker: FlickerTestData, description: Description?): IResultData {
-        return Logger.withTracing("TransitionRunner:execute") {
+        return withTracing("TransitionRunner:execute") {
             resultWriter.forScenario(scenario).withOutputDir(flicker.outputDir)
 
             val ruleChain = buildTestRuleChain(flicker)
@@ -77,12 +76,17 @@ class TransitionRunner(
         val errorRule = ArtifactSaverRule()
         return RuleChain.outerRule(errorRule)
             .around(StopAllTracesRule())
+            .around(errorRule)
             .around(UnlockScreenRule())
+            .around(errorRule)
             .around(NavigationModeRule(scenario.navBarMode.value, false))
+            .around(errorRule)
             .around(
                 LaunchAppRule(MessagingAppHelper(instrumentation), clearCacheAfterParsing = false)
             )
+            .around(errorRule)
             .around(RemoveAllTasksButHomeRule())
+            .around(errorRule)
             .around(
                 ChangeDisplayOrientationRule(
                     scenario.startRotation,
@@ -90,7 +94,9 @@ class TransitionRunner(
                     clearCacheAfterParsing = false
                 )
             )
+            .around(errorRule)
             .around(PressHomeRule())
+            .around(errorRule)
             .around(
                 TraceMonitorRule(
                     flicker.traceMonitors,

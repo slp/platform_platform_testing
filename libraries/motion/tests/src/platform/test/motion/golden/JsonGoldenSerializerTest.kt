@@ -28,24 +28,22 @@ import org.junit.runner.RunWith
 import platform.test.motion.golden.DataPoint.Companion.notFound
 import platform.test.motion.golden.DataPoint.Companion.nullValue
 import platform.test.motion.golden.DataPoint.Companion.unknownType
-import platform.test.motion.golden.JsonSubject.Companion.json
+import platform.test.motion.testing.JsonSubject.Companion.json
 
 @RunWith(AndroidJUnit4::class)
 class JsonGoldenSerializerTest {
-
-    private val subject = JsonGoldenSerializer(DataPointTypes.allTypes)
 
     @get:Rule val expect: Expect = Expect.create()
     private fun assertConversions(timeSeries: TimeSeries, json: String) {
         expect
             .withMessage("serialize to JSON")
             .about(json())
-            .that(subject.toJson(timeSeries))
+            .that(JsonGoldenSerializer.toJson(timeSeries))
             .isEqualTo(JSONObject(json))
 
         expect
             .withMessage("deserialize from JSON")
-            .that(subject.fromJson(JSONObject(json)))
+            .that(JsonGoldenSerializer.fromJson(JSONObject(json), timeSeries.createTypeRegistry()))
             .isEqualTo(timeSeries)
     }
 
@@ -139,7 +137,7 @@ class JsonGoldenSerializerTest {
     @Test
     fun serialize_featureWithMultipleTypesPerDataPoint_throws() {
         assertThrows(JSONException::class.java) {
-            subject.toJson(
+            JsonGoldenSerializer.toJson(
                 TimeSeries(
                     listOf(TimestampFrameId(1), TimestampFrameId(2)),
                     listOf(Feature("foo", listOf(42.asDataPoint(), 42f.asDataPoint())))
@@ -151,7 +149,7 @@ class JsonGoldenSerializerTest {
     @Test
     fun serialize_featureWithUnknownDataPoints_throws() {
         assertThrows(JSONException::class.java) {
-            subject.toJson(
+            JsonGoldenSerializer.toJson(
                 TimeSeries(
                     listOf(TimestampFrameId(1), TimestampFrameId(2)),
                     listOf(Feature("foo", listOf(42.asDataPoint(), unknownType())))
@@ -163,13 +161,14 @@ class JsonGoldenSerializerTest {
     @Test
     fun deserialize_featureWithUnknownType_producesUnknown() {
         val timeSeries =
-            subject.fromJson(
+            JsonGoldenSerializer.fromJson(
                 JSONObject(
                     """{
                     "frame_ids":[1,2],
                     "features":[{"name":"foo","type":"bar","data_points":[null,43]}]
                 }"""
-                )
+                ),
+                emptyMap()
             )
 
         assertThat(timeSeries)

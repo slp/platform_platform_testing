@@ -18,12 +18,13 @@ package android.tools.flicker.legacy.runner
 
 import android.app.Instrumentation
 import android.tools.FLICKER_TAG
-import android.tools.Logger
 import android.tools.Scenario
 import android.tools.flicker.junit.Utils
 import android.tools.traces.io.ResultWriter
 import android.tools.traces.monitors.ITransitionMonitor
 import android.tools.traces.parsers.WindowManagerStateHelper
+import android.tools.withTracing
+import android.util.Log
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -50,7 +51,7 @@ class TraceMonitorRule(
                 try {
                     doStartMonitors(description)
                 } catch (e: Throwable) {
-                    Logger.e(
+                    Log.e(
                         FLICKER_TAG,
                         "Failed to start trace monitors" +
                             " - stopping all trace monitors to recover a clean state"
@@ -69,13 +70,13 @@ class TraceMonitorRule(
     }
 
     private fun doStartMonitors(description: Description?) {
-        Logger.withTracing("doStartMonitors") {
+        withTracing("doStartMonitors") {
             Utils.notifyRunnerProgress(scenario, "Starting traces for $description")
             traceMonitors.forEach {
                 try {
                     it.start()
                 } catch (e: Throwable) {
-                    Logger.e(FLICKER_TAG, "Unable to start $it", e)
+                    Log.e(FLICKER_TAG, "Unable to start $it", e)
                     throw e
                 }
             }
@@ -83,7 +84,7 @@ class TraceMonitorRule(
     }
 
     private fun doStopMonitors(description: Description?) {
-        Logger.withTracing("doStopMonitors") {
+        withTracing("doStopMonitors") {
             Utils.notifyRunnerProgress(scenario, "Stopping traces for $description")
             val errors =
                 traceMonitors.map {
@@ -91,7 +92,7 @@ class TraceMonitorRule(
                         try {
                             it.stop(resultWriter)
                         } catch (e: Throwable) {
-                            Logger.e(FLICKER_TAG, "Unable to stop $it", e)
+                            Log.e(FLICKER_TAG, "Unable to stop $it", e)
                             throw e
                         }
                     }

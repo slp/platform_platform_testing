@@ -27,13 +27,17 @@ import org.json.JSONObject
  * [NullDataPoint] allow to describe why [DataPoint] are absent in [TimeSeries], making the golden
  * tests more robust.
  */
-sealed interface DataPoint<in T> {
+sealed interface DataPoint<out T> {
 
     fun asJson(): Any
 
     companion object {
         fun <T> of(value: T?, type: DataPointType<T>): DataPoint<T> {
-            return if (value != null) ValueDataPoint(value, type) else nullValue()
+            return if (value != null) {
+                ValueDataPoint(type.ensureImmutable(value), type)
+            } else {
+                nullValue()
+            }
         }
 
         fun <T> notFound(): DataPoint<T> {
@@ -43,7 +47,7 @@ sealed interface DataPoint<in T> {
             @Suppress("UNCHECKED_CAST") return NullDataPoint.instance as NullDataPoint<T>
         }
 
-        internal fun <T> unknownType(): DataPoint<T> {
+        fun <T> unknownType(): DataPoint<T> {
             @Suppress("UNCHECKED_CAST") return UnknownType.instance as UnknownType<T>
         }
     }
@@ -54,8 +58,11 @@ sealed interface DataPoint<in T> {
  *
  * @see DataPoint.of
  */
-data class ValueDataPoint<T>(val value: T & Any, val type: DataPointType<T>) : DataPoint<T> {
+data class ValueDataPoint<T> internal constructor(val value: T & Any, val type: DataPointType<T>) :
+    DataPoint<T> {
     override fun asJson() = type.toJson(this.value)
+
+    override fun toString(): String = "$value (${type.typeName})"
 }
 
 /**
@@ -75,6 +82,8 @@ class NullDataPoint<T> private constructor() : DataPoint<T> {
             return jsonValue == JSONObject.NULL
         }
     }
+
+    override fun toString(): String = "null"
 }
 
 /**
@@ -89,11 +98,15 @@ class NotFoundDataPoint<T> private constructor() : DataPoint<T> {
 
     override fun asJson() = JSONObject().apply { put("type", "not_found") }
 
+    override fun toString(): String = "{{not_found}}"
+
     companion object {
         internal val instance = NotFoundDataPoint<Any>()
 
         fun isNotFoundValue(jsonValue: Any): Boolean {
-            return jsonValue is JSONObject && "not_found" == jsonValue.getString("type")
+            return jsonValue is JSONObject &&
+                jsonValue.has("type") &&
+                jsonValue.getString("type") == "not_found"
         }
     }
 }
@@ -103,11 +116,9 @@ class UnknownType<T> private constructor() : DataPoint<T> {
 
     override fun asJson() = throw JSONException("Feature must not contain UnknownDataPoints")
 
-    companion object {
-        fun isUnknownValue(jsonValue: Any): Boolean {
-            return jsonValue is JSONObject && "not_found" == jsonValue.getString("unknown")
-        }
+    override fun toString(): String = "{{unknown_type}}"
 
+    companion object {
         internal val instance = UnknownType<Any>()
     }
 }

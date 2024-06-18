@@ -16,7 +16,8 @@
 
 package android.platform.helpers;
 
-import android.support.test.uiautomator.Direction;
+import androidx.test.uiautomator.Direction;
+import androidx.test.uiautomator.UiObject2;
 
 public interface IPlayStoreHelper extends IAppHelper {
     /**
@@ -72,4 +73,11 @@ public interface IPlayStoreHelper extends IAppHelper {
      * @return true if scrollable view is findable, or false if not.
      */
     boolean scrollPage(Direction dir, float value);
+
+    /**
+     * Setup expectations: Play Store is on the Apps page.
+     *
+     * <p>This method will get a UiObject2 object for Play Store Apps page scroll container.
+     */
+    UiObject2 getScrollPageContainer();
 }

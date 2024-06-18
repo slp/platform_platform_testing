@@ -57,9 +57,10 @@ java_library {
     ],
     static_libs: [
         "androidx.benchmark_benchmark-macro",
+        "androidx.core_core-ktx",
         "perfetto_config-lite",
         "platformprotosnano",
-        "view_capture_proto",
+        "//frameworks/libs/systemui:view_capture_proto",
         "WindowManager-Shell-proto",
     ],
 }

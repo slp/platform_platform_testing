@@ -38,20 +38,29 @@ import platform.test.screenshot.matchers.BitmapMatcher
 /** A rule for View screenshot diff unit tests. */
 open class ViewScreenshotTestRule(
     private val emulationSpec: DeviceEmulationSpec,
-    pathManager: GoldenImagePathManager,
+    pathManager: GoldenPathManager,
     private val matcher: BitmapMatcher = UnitTestBitmapMatcher,
     private val decorFitsSystemWindows: Boolean = false,
     private val screenshotRule: ScreenshotTestRule = ScreenshotTestRule(pathManager)
 ) : TestRule, BitmapDiffer by screenshotRule, ScreenshotAsserterFactory by screenshotRule {
     private val colorsRule = MaterialYouColorsRule()
+    private val fontsRule = FontsRule()
     private val timeZoneRule = TimeZoneRule()
+    private val hardwareRenderingRule = HardwareRenderingRule()
     private val deviceEmulationRule = DeviceEmulationRule(emulationSpec)
     private val activityRule = ActivityScenarioRule(ScreenshotActivity::class.java)
     private val commonRule =
         RuleChain.outerRule(deviceEmulationRule).around(screenshotRule).around(activityRule)
+
+    // As denoted in `MaterialYouColorsRule` and `FontsRule`, these two rules need to come first,
+    // though their relative orders are not critical.
     private val deviceRule = RuleChain.outerRule(colorsRule).around(commonRule)
-    private val roboRule = RuleChain.outerRule(timeZoneRule).around(commonRule)
+    private val roboRule =
+        RuleChain.outerRule(colorsRule).around(fontsRule).around(timeZoneRule)
+            .around(hardwareRenderingRule).around(commonRule)
     private val isRobolectric = if (Build.FINGERPRINT.contains("robolectric")) true else false
+
+    var frameLimit = 10
 
     override fun apply(base: Statement, description: Description): Statement {
         val ruleToApply = if (isRobolectric) roboRule else deviceRule
@@ -61,22 +70,9 @@ open class ViewScreenshotTestRule(
     protected fun takeScreenshot(
         mode: Mode = Mode.WrapContent,
         viewProvider: (ComponentActivity) -> View,
-        /**
-         * Don't set it true unless you have to control MainLooper for the view creation.
-         *
-         * TODO(b/314985107) : remove when looper dependency is removed
-         */
-        inflateViewsInTestScope: Boolean = false,
-        beforeScreenshot: (ComponentActivity) -> Unit = {}
+        checkView: (ComponentActivity, View) -> Boolean = { _, _ -> false },
+        subviewId: Int? = null,
     ): Bitmap {
-        var inflatedView: View? = null
-
-        if (inflateViewsInTestScope) {
-            lateinit var componentActivity: ComponentActivity
-            activityRule.scenario.onActivity { activity -> componentActivity = activity }
-            inflatedView = viewProvider(componentActivity)
-        }
-
         activityRule.scenario.onActivity { activity ->
             // Make sure that the activity draws full screen and fits the whole display instead of
             // the system bars.
@@ -84,13 +80,7 @@ open class ViewScreenshotTestRule(
             window.setDecorFitsSystemWindows(decorFitsSystemWindows)
 
             // Set the content.
-            if (inflateViewsInTestScope) {
-                checkNotNull(inflatedView) {
-                    "The inflated view shouldn't be null when inflateViewsInTestScope is enabled"
-                }
-            } else {
-                inflatedView = viewProvider(activity)
-            }
+            val inflatedView = viewProvider(activity)
             activity.setContentView(inflatedView, mode.layoutParams)
 
             // Elevation/shadows is not deterministic when doing hardware rendering, so we disable
@@ -102,29 +92,35 @@ open class ViewScreenshotTestRule(
 
         // We call onActivity again because it will make sure that our Activity is done measuring,
         // laying out and drawing its content (that we set in the previous onActivity lambda).
-        var contentView: View? = null
-        activityRule.scenario.onActivity { activity ->
-            // Check that the content is what we expected.
-            val content = activity.requireViewById<ViewGroup>(android.R.id.content)
-            assertEquals(1, content.childCount)
-            contentView = content.getChildAt(0)
-            beforeScreenshot(activity)
+        var targetView: View? = null
+        var waitForActivity = true
+        var iterCount = 0
+        while (waitForActivity && iterCount < frameLimit) {
+            activityRule.scenario.onActivity { activity ->
+                // Check that the content is what we expected.
+                val content = activity.requireViewById<ViewGroup>(android.R.id.content)
+                assertEquals(1, content.childCount)
+                targetView =
+                    fetchTargetView(content, subviewId).also {
+                        waitForActivity = checkView(activity, it)
+                    }
+            }
+            iterCount++
         }
 
-        val originalBitmap = contentView?.captureToBitmapAsync()?.get(10, TimeUnit.SECONDS)
-        if (originalBitmap == null) {
-            error("timeout while trying to capture view to bitmap")
-        }
-        return if (isRobolectric) {
-            bitmapWithMaterialYouColorsSimulation(
-                originalBitmap,
-                emulationSpec.isDarkTheme,
-                /* doPixelAveraging= */ true
+        if (waitForActivity) {
+            throw IllegalStateException(
+                "checkView returned true but frameLimit was reached. Increase the frame limit if " +
+                    "more frames are required before the screenshot is taken."
             )
-        } else {
-            originalBitmap
         }
+
+        return targetView?.captureToBitmapAsync()?.get(10, TimeUnit.SECONDS)
+            ?: error("timeout while trying to capture view to bitmap")
     }
+
+    private fun fetchTargetView(parent: ViewGroup, subviewId: Int?): View =
+        if (subviewId != null) parent.requireViewById(subviewId) else parent.getChildAt(0)
 
     /**
      * Compare the content of the view provided by [viewProvider] with the golden image identified
@@ -133,21 +129,34 @@ open class ViewScreenshotTestRule(
     fun screenshotTest(
         goldenIdentifier: String,
         mode: Mode = Mode.WrapContent,
-        /**
-         * Don't set it true unless you have to control MainLooper for the view creation.
-         *
-         * TODO(b/314985107) : remove when looper dependency is removed
-         */
-        inflateViewInTestScope: Boolean = false,
         beforeScreenshot: (ComponentActivity) -> Unit = {},
+        subviewId: Int? = null,
+        viewProvider: (ComponentActivity) -> View,
+    ) =
+        screenshotTest(
+            goldenIdentifier,
+            mode,
+            checkView = { activity, _ ->
+                beforeScreenshot(activity)
+                false
+            },
+            subviewId,
+            viewProvider
+        )
+
+    /**
+     * Compare the content of the view provided by [viewProvider] with the golden image identified
+     * by [goldenIdentifier] in the context of [emulationSpec].
+     */
+    fun screenshotTest(
+        goldenIdentifier: String,
+        mode: Mode = Mode.WrapContent,
+        checkView: (ComponentActivity, View) -> Boolean,
+        subviewId: Int? = null,
         viewProvider: (ComponentActivity) -> View,
     ) {
-        val bitmap = takeScreenshot(mode, viewProvider, inflateViewInTestScope, beforeScreenshot)
-        screenshotRule.assertBitmapAgainstGolden(
-            bitmap,
-            goldenIdentifier,
-            matcher,
-        )
+        val bitmap = takeScreenshot(mode, viewProvider, checkView, subviewId)
+        screenshotRule.assertBitmapAgainstGolden(bitmap, goldenIdentifier, matcher)
     }
 
     /**
@@ -156,6 +165,7 @@ open class ViewScreenshotTestRule(
      */
     fun dialogScreenshotTest(
         goldenIdentifier: String,
+        waitForIdle: () -> Unit = {},
         dialogProvider: (Activity) -> Dialog,
     ) {
         dialogScreenshotTest(
@@ -163,7 +173,8 @@ open class ViewScreenshotTestRule(
             screenshotRule,
             matcher,
             goldenIdentifier,
-            dialogProvider = dialogProvider,
+            waitForIdle,
+            dialogProvider,
         )
     }
 

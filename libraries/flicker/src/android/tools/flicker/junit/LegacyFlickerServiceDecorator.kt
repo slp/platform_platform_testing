@@ -18,7 +18,6 @@ package android.tools.flicker.junit
 
 import android.os.Bundle
 import android.tools.FLICKER_TAG
-import android.tools.Logger
 import android.tools.Scenario
 import android.tools.flicker.FlickerConfig
 import android.tools.flicker.FlickerService
@@ -31,6 +30,8 @@ import android.tools.flicker.config.FlickerServiceConfig
 import android.tools.flicker.config.ScenarioId
 import android.tools.flicker.isShellTransitionsEnabled
 import android.tools.traces.TRACE_CONFIG_REQUIRE_CHANGES
+import android.tools.withTracing
+import android.util.Log
 import org.junit.runner.Description
 import org.junit.runners.model.FrameworkMethod
 import org.junit.runners.model.Statement
@@ -76,14 +77,14 @@ class LegacyFlickerServiceDecorator(
     override fun getTestMethods(test: Any): List<FrameworkMethod> {
         val result = inner?.getTestMethods(test)?.toMutableList() ?: mutableListOf()
         if (shouldComputeTestMethods()) {
-            Logger.withTracing(
-                "$FAAS_METRICS_PREFIX getTestMethods ${testClass.javaClass.simpleName}"
-            ) {
+            withTracing("$FAAS_METRICS_PREFIX getTestMethods ${testClass.javaClass.simpleName}") {
                 requireNotNull(scenario) { "Expected to have a scenario to run" }
                 result.addAll(computeFlickerServiceTests(test, scenario))
-                Logger.d(FLICKER_TAG, "Computed ${result.size} flicker tests")
+                Log.d(FLICKER_TAG, "Computed ${result.size} flicker tests")
             }
         }
+        Log.d(LOG_TAG, "Computed ${result.size} methods")
+        result.forEach { Log.v(LOG_TAG, "Computed method - $it") }
         return result
     }
 
@@ -141,7 +142,7 @@ class LegacyFlickerServiceDecorator(
         for (testFilter in testFilters.split(",")) {
             val filterComponents = testFilter.split("#")
             if (filterComponents.size != 2) {
-                Logger.e(
+                Log.e(
                     LOG_TAG,
                     "Invalid filter-tests instrumentation argument supplied, $testFilter."
                 )

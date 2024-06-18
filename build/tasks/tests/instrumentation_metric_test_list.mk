@@ -89,7 +89,37 @@ instrumentation_metric_tests := \
     trace_config_detailed.textproto \
     trace_config_multi_user.textproto \
     perfetto_trace_processor_shell \
-    RubidiumPerfTests
+    PermissionServicePerfTests \
+    UsePermissionApp0 \
+    UsePermissionApp1 \
+    UsePermissionApp2 \
+    UsePermissionApp3 \
+    UsePermissionApp4 \
+    UsePermissionApp5 \
+    UsePermissionApp6 \
+    UsePermissionApp7 \
+    UsePermissionApp8 \
+    UsePermissionApp9 \
+    UsePermissionApp10 \
+    UsePermissionApp11 \
+    UsePermissionApp12 \
+    UsePermissionApp13 \
+    UsePermissionApp14 \
+    UsePermissionApp15 \
+    UsePermissionApp16 \
+    UsePermissionApp17 \
+    UsePermissionApp18 \
+    UsePermissionApp19 \
+    UsePermissionApp20 \
+    UsePermissionApp21 \
+    UsePermissionApp22 \
+    UsePermissionApp23 \
+    UsePermissionApp24 \
+    UsePermissionApp25 \
+    UsePermissionApp26 \
+    UsePermissionApp27 \
+    UsePermissionApp28 \
+    UsePermissionApp29
 
     # TODO(b/72332760): Uncomment when fixed
     #DocumentsUIPerfTests

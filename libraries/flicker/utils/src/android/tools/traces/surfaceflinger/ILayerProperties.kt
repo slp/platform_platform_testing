@@ -16,11 +16,11 @@
 
 package android.tools.traces.surfaceflinger
 
+import android.graphics.Color
+import android.graphics.RectF
+import android.graphics.Region
 import android.tools.datatypes.ActiveBuffer
-import android.tools.datatypes.Color
-import android.tools.datatypes.Rect
-import android.tools.datatypes.RectF
-import android.tools.datatypes.Region
+import android.tools.datatypes.isNotEmpty
 
 /**
  * Common properties of a layer that are not related to their position in the hierarchy
@@ -43,7 +43,7 @@ interface ILayerProperties {
     val bufferTransform: Transform
     val hwcCompositionType: HwcCompositionType
     val backgroundBlurRadius: Int
-    val crop: Rect
+    val crop: RectF
     val isRelativeOf: Boolean
     val zOrderRelativeOfId: Int
     val stackId: Int
@@ -88,7 +88,7 @@ interface ILayerProperties {
      * @return
      */
     val fillsColor: Boolean
-        get() = color.isNotEmpty
+        get() = color.isNotEmpty()
 
     /**
      * Checks if the [Layer] draws a shadow
@@ -124,6 +124,15 @@ interface ILayerProperties {
     val hasEffects: Boolean
         get() {
             return fillsColor || drawsShadows
+        }
+    /**
+     * Checks if the [Layer] has zero requested or inherited alpha
+     *
+     * @return
+     */
+    val hasZeroAlpha: Boolean
+        get() {
+            return color.alpha() == 0f
         }
 
     fun isAnimating(prevLayerState: ILayerProperties?): Boolean =

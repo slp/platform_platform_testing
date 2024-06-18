@@ -38,7 +38,7 @@ import org.junit.runners.model.Statement
  */
 class ExternalViewScreenshotTestRule(
     emulationSpec: DeviceEmulationSpec,
-    pathManager: GoldenImagePathManager,
+    pathManager: GoldenPathManager,
     private val screenshotRule: ScreenshotTestRule = ScreenshotTestRule(pathManager)
 ) : TestRule, BitmapDiffer by screenshotRule, ScreenshotAsserterFactory by screenshotRule {
 

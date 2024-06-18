@@ -264,6 +264,16 @@ public class DialHelperImpl extends AbstractStandardAppHelper implements IAutoDi
         return dialedNumber.getText();
     }
 
+    @Override
+    public String getUserProfilePhoneNumber() {
+        BySelector phoneNumberSelector =
+                getUiElementFromConfig(AutomotiveConfigConstants.USER_PROFILE_PHONE_NUMBER);
+        UiObject2 phoneNumber = getSpectatioUiUtil().findUiObject(phoneNumberSelector);
+        getSpectatioUiUtil()
+                .validateUiObject(phoneNumber, AutomotiveConfigConstants.USER_PROFILE_PHONE_NUMBER);
+        return phoneNumber.getText();
+    }
+
     /** {@inheritDoc} */
     public String getDialedContactName() {
         BySelector dialedContactNameSelector =
@@ -599,10 +609,10 @@ public class DialHelperImpl extends AbstractStandardAppHelper implements IAutoDi
         searchBox.setText(contact);
 
         BySelector searchResultSelector =
-                getUiElementFromConfig(AutomotiveConfigConstants.SEARCH_RESULT);
+                getUiElementFromConfig(AutomotiveConfigConstants.CONTACT_SEARCH_RESULT);
         UiObject2 searchResult = getSpectatioUiUtil().findUiObject(searchResultSelector);
         getSpectatioUiUtil()
-                .validateUiObject(searchResult, AutomotiveConfigConstants.SEARCH_RESULT);
+                .validateUiObject(searchResult, AutomotiveConfigConstants.CONTACT_SEARCH_RESULT);
         getSpectatioUiUtil().clickAndWait(searchResult);
     }
 

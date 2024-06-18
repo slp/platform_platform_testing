@@ -38,37 +38,47 @@ import org.junit.runners.model.Statement
 import platform.test.screenshot.BitmapDiffer
 import platform.test.screenshot.DeviceEmulationRule
 import platform.test.screenshot.DeviceEmulationSpec
-import platform.test.screenshot.GoldenImagePathManager
+import platform.test.screenshot.FontsRule
+import platform.test.screenshot.GoldenPathManager
+import platform.test.screenshot.HardwareRenderingRule
 import platform.test.screenshot.MaterialYouColorsRule
 import platform.test.screenshot.ScreenshotActivity
 import platform.test.screenshot.ScreenshotAsserterFactory
 import platform.test.screenshot.ScreenshotTestRule
 import platform.test.screenshot.UnitTestBitmapMatcher
-import platform.test.screenshot.bitmapWithMaterialYouColorsSimulation
 import platform.test.screenshot.captureToBitmapAsync
 import platform.test.screenshot.dialogScreenshotTest
 
 /** A rule for Compose screenshot diff tests. */
 class ComposeScreenshotTestRule(
     private val emulationSpec: DeviceEmulationSpec,
-    pathManager: GoldenImagePathManager,
+    pathManager: GoldenPathManager,
     private val screenshotRule: ScreenshotTestRule = ScreenshotTestRule(pathManager)
 ) : TestRule, BitmapDiffer by screenshotRule, ScreenshotAsserterFactory by screenshotRule {
     private val colorsRule = MaterialYouColorsRule()
+    private val fontsRule = FontsRule()
+    private val hardwareRenderingRule = HardwareRenderingRule()
     private val deviceEmulationRule = DeviceEmulationRule(emulationSpec)
     val composeRule = createAndroidComposeRule<ScreenshotActivity>()
-    private val isRobolectric = Build.FINGERPRINT.contains("robolectric")
-    private val delegateRule =
-        RuleChain.outerRule(colorsRule)
-            .around(deviceEmulationRule)
+
+    private val commonRule =
+        RuleChain.outerRule(deviceEmulationRule)
             .around(screenshotRule)
             .around(composeRule)
+
+    // As denoted in `MaterialYouColorsRule` and `FontsRule`, these two rules need to come first,
+    // though their relative orders are not critical.
+    private val deviceRule = RuleChain.outerRule(colorsRule).around(commonRule)
     private val roboRule =
-        RuleChain.outerRule(deviceEmulationRule).around(screenshotRule).around(composeRule)
+        RuleChain.outerRule(fontsRule)
+            .around(colorsRule)
+            .around(hardwareRenderingRule)
+            .around(commonRule)
     private val matcher = UnitTestBitmapMatcher
+    private val isRobolectric = Build.FINGERPRINT.contains("robolectric")
 
     override fun apply(base: Statement, description: Description): Statement {
-        val ruleToApply = if (isRobolectric) roboRule else delegateRule
+        val ruleToApply = if (isRobolectric) roboRule else deviceRule
         return ruleToApply.apply(base, description)
     }
 
@@ -126,17 +136,7 @@ class ComposeScreenshotTestRule(
 
         val view = (viewFinder().fetchSemanticsNode().root as ViewRootForTest).view
         val bitmap = view.captureToBitmapAsync().get(10, TimeUnit.SECONDS)
-        val viewBitmap =
-            if (isRobolectric) {
-                bitmapWithMaterialYouColorsSimulation(
-                    bitmap,
-                    emulationSpec.isDarkTheme,
-                    /* doPixelAveraging= */ false
-                )
-            } else {
-                bitmap
-            }
-        screenshotRule.assertBitmapAgainstGolden(viewBitmap, goldenIdentifier, matcher)
+        screenshotRule.assertBitmapAgainstGolden(bitmap, goldenIdentifier, matcher)
     }
 
     fun dialogScreenshotTest(

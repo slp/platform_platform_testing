@@ -17,11 +17,7 @@
 package android.tools.flicker.junit
 
 import android.os.Bundle
-import android.tools.AndroidLogger
-import android.tools.CrossPlatform
-import android.tools.TimestampFactory
 import android.tools.flicker.legacy.LegacyFlickerTest
-import android.tools.traces.formatRealTimestamp
 import androidx.test.platform.app.InstrumentationRegistry
 import com.android.internal.annotations.VisibleForTesting
 import org.junit.runner.Runner
@@ -33,11 +29,6 @@ import org.junit.runners.parameterized.TestWithParameters
  * and executes assertions from a flicker DSL
  */
 class FlickerParametersRunnerFactory : ParametersRunnerFactory {
-    init {
-        CrossPlatform.setLogger(AndroidLogger())
-            .setTimestampFactory(TimestampFactory { formatRealTimestamp(it) })
-    }
-
     @VisibleForTesting
     fun createRunnerForTestWithParameters(test: TestWithParameters, arguments: Bundle): Runner {
         val simpleClassName = test.testClass.javaClass.simpleName

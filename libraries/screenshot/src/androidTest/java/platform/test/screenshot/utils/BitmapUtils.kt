@@ -18,6 +18,7 @@ package platform.test.screenshot.utils
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import androidx.test.platform.app.InstrumentationRegistry
 
 internal fun loadBitmap(imageName: String): Bitmap {
@@ -26,3 +27,10 @@ internal fun loadBitmap(imageName: String): Bitmap {
         return BitmapFactory.decodeStream(it)
     }
 }
+
+internal fun createBitmap(
+    color: Int,
+    width: Int = 100,
+    height: Int = 100,
+    bitmapConfig: Bitmap.Config = Bitmap.Config.ARGB_8888
+) = Bitmap.createBitmap(width, height, bitmapConfig).also { Canvas(it).drawColor(color) }

@@ -1,5 +1,0 @@
-+libraries/
-+tests/
-+utils/
--libraries/flicker/test/src/android/tools/device/flicker/legacy/runner/TransitionExecutionRuleTest.kt
--libraries/health/rules/src/android/platform/test/rule/EnsureKeepScreenAwakeSetRule.kt

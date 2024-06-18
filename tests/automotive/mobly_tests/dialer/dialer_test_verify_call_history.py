@@ -54,11 +54,11 @@ class VerifyCallHistory(bluetooth_base_test.BluetoothBaseTest):
 
         # Open up call history
         self.call_utils.press_home()
-        self.call_utils.wait_with_log(constants.WAIT_ONE_SEC)
+        self.call_utils.wait_with_log(1)
         self.call_utils.open_phone_app()
-        self.call_utils.wait_with_log(constants.WAIT_ONE_SEC)
+        self.call_utils.wait_with_log(1)
         self.call_utils.open_call_history()
-        self.call_utils.wait_with_log(constants.WAIT_ONE_SEC)
+        self.call_utils.wait_with_log(1)
 
         # TODO: This test may be upgraded to get the number of history entries from the
         # target device for comparison, and to compare call history type (i.e., 'correct arrows')
@@ -82,17 +82,9 @@ class VerifyCallHistory(bluetooth_base_test.BluetoothBaseTest):
     def teardown_test(self):
         # End call if test failed
         self.call_utils.end_call_using_adb_command(self.target)
+        self.call_utils.wait_with_log(5)
+        self.call_utils.press_home()
         super().teardown_test()
-
-"""
-        asserts.assert_true(
-            self.discoverer.mbs.hasElementWithText(str(primary_test_number)),
-            "Expected number %i in call history, but did not see it on screen"
-            % (self.primary_test_number)
-        )
-"""
-
-
 
 if __name__ == '__main__':
     common_main()

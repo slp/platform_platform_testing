@@ -16,11 +16,11 @@
 
 package android.tools.traces.surfaceflinger
 
+import android.graphics.RectF
+import android.graphics.Region
 import android.tools.Cache
 import android.tools.datatypes.ActiveBuffer
-import android.tools.datatypes.Color
-import android.tools.datatypes.RectF
-import android.tools.datatypes.Region
+import android.tools.datatypes.defaultColor
 import com.google.common.truth.Truth.assertThat
 import org.junit.Before
 import org.junit.FixMethodOrder
@@ -65,7 +65,7 @@ class LayerTest {
         assertThat(
                 makeLayerWithDefaults(
                         excludeCompositionState = false,
-                        visibleRegion = Region.EMPTY,
+                        visibleRegion = Region(),
                         activeBuffer = ActiveBuffer.from(100, 100, 1, 0)
                     )
                     .isVisible
@@ -74,7 +74,7 @@ class LayerTest {
         assertThat(
                 makeLayerWithDefaults(
                         excludeCompositionState = false,
-                        visibleRegion = Region.from(0, 0, 100, 100),
+                        visibleRegion = Region(0, 0, 100, 100),
                         activeBuffer = ActiveBuffer.from(100, 100, 1, 0)
                     )
                     .isVisible
@@ -87,7 +87,7 @@ class LayerTest {
         assertThat(
                 makeLayerWithDefaults(
                         excludeCompositionState = true,
-                        bounds = RectF.EMPTY,
+                        bounds = RectF(),
                         activeBuffer = ActiveBuffer.from(100, 100, 1, 0)
                     )
                     .isVisible
@@ -96,7 +96,7 @@ class LayerTest {
         assertThat(
                 makeLayerWithDefaults(
                         excludeCompositionState = true,
-                        bounds = RectF.from(0f, 0f, 100f, 100f),
+                        bounds = RectF(0f, 0f, 100f, 100f),
                         activeBuffer = ActiveBuffer.from(100, 100, 1, 0)
                     )
                     .isVisible
@@ -105,8 +105,8 @@ class LayerTest {
         assertThat(
                 makeLayerWithDefaults(
                         excludeCompositionState = true,
-                        visibleRegion = Region.from(0, 0, 100, 100),
-                        bounds = RectF.EMPTY,
+                        visibleRegion = Region(0, 0, 100, 100),
+                        bounds = RectF(),
                         activeBuffer = ActiveBuffer.from(100, 100, 1, 0)
                     )
                     .isVisible
@@ -117,8 +117,8 @@ class LayerTest {
     private fun makeLayerWithDefaults(
         flags: Int = 0x0,
         excludeCompositionState: Boolean = false,
-        visibleRegion: Region = Region.EMPTY,
-        bounds: RectF = RectF.EMPTY,
+        visibleRegion: Region = Region(),
+        bounds: RectF = RectF(),
         activeBuffer: ActiveBuffer = ActiveBuffer.EMPTY
     ): Layer {
         return Layer.from(
@@ -130,11 +130,11 @@ class LayerTest {
             activeBuffer,
             flags,
             bounds,
-            Color.EMPTY,
+            defaultColor(),
             false,
             -1f,
             -1f,
-            RectF.EMPTY,
+            RectF(),
             Transform.EMPTY,
             -1,
             -1,

@@ -16,37 +16,37 @@
 
 package android.tools.traces.surfaceflinger
 
+import android.graphics.Color
+import android.graphics.RectF
+import android.graphics.Region
 import android.tools.datatypes.ActiveBuffer
-import android.tools.datatypes.Color
-import android.tools.datatypes.Rect
-import android.tools.datatypes.RectF
-import android.tools.datatypes.Region
+import android.tools.datatypes.emptyColor
 import android.tools.withCache
 
 /** {@inheritDoc} */
 class LayerProperties
 private constructor(
-    override val visibleRegion: Region = Region.EMPTY,
+    override val visibleRegion: Region = Region(),
     override val activeBuffer: ActiveBuffer = ActiveBuffer.EMPTY,
     override val flags: Int = 0,
-    override val bounds: RectF = RectF.EMPTY,
-    override val color: Color = Color.EMPTY,
+    override val bounds: RectF = RectF(),
+    override val color: Color = emptyColor(),
     private val _isOpaque: Boolean = false,
     override val shadowRadius: Float = 0f,
     override val cornerRadius: Float = 0f,
-    override val screenBounds: RectF = RectF.EMPTY,
+    override val screenBounds: RectF = RectF(),
     override val transform: Transform = Transform.EMPTY,
     override val effectiveScalingMode: Int = 0,
     override val bufferTransform: Transform = Transform.EMPTY,
     override val hwcCompositionType: HwcCompositionType = HwcCompositionType.HWC_TYPE_UNSPECIFIED,
     override val backgroundBlurRadius: Int = 0,
-    override val crop: Rect = Rect.EMPTY,
+    override val crop: RectF = RectF(),
     override val isRelativeOf: Boolean = false,
     override val zOrderRelativeOfId: Int = 0,
     override val stackId: Int = 0,
     override val excludesCompositionState: Boolean = false
 ) : ILayerProperties {
-    override val isOpaque: Boolean = if (color.a != 1.0f) false else _isOpaque
+    override val isOpaque: Boolean = if (color.alpha() != 1.0f) false else _isOpaque
 
     override fun hashCode(): Int {
         var result = visibleRegion.hashCode()
@@ -134,7 +134,7 @@ private constructor(
             bufferTransform: Transform,
             hwcCompositionType: HwcCompositionType,
             backgroundBlurRadius: Int,
-            crop: Rect?,
+            crop: RectF?,
             isRelativeOf: Boolean,
             zOrderRelativeOfId: Int,
             stackId: Int,
@@ -156,7 +156,7 @@ private constructor(
                     bufferTransform,
                     hwcCompositionType,
                     backgroundBlurRadius,
-                    crop ?: Rect.EMPTY,
+                    crop ?: RectF(),
                     isRelativeOf,
                     zOrderRelativeOfId,
                     stackId,

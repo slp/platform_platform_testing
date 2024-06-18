@@ -16,9 +16,9 @@
 
 package android.tools.traces.wm
 
+import android.graphics.Rect
 import android.tools.PlatformConsts
 import android.tools.Rotation
-import android.tools.datatypes.Rect
 import android.tools.traces.component.IComponentMatcher
 import android.tools.traces.wm.Utils.collectDescendants
 import kotlin.math.min
@@ -56,7 +56,7 @@ class DisplayContent(
     val isTablet: Boolean
         get() {
             val smallestWidth =
-                dpiFromPx(min(displayRect.width.toFloat(), displayRect.height.toFloat()), dpi)
+                dpiFromPx(min(displayRect.width().toFloat(), displayRect.height().toFloat()), dpi)
             return smallestWidth >= PlatformConsts.TABLET_MIN_DPS
         }
 

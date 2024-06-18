@@ -16,15 +16,15 @@
 
 package android.tools.traces.parsers.perfetto
 
-import android.tools.Logger
+import android.graphics.Color
+import android.graphics.Rect
+import android.graphics.RectF
+import android.graphics.Region
 import android.tools.Timestamp
 import android.tools.datatypes.ActiveBuffer
-import android.tools.datatypes.Color
 import android.tools.datatypes.Matrix33
-import android.tools.datatypes.Rect
-import android.tools.datatypes.RectF
-import android.tools.datatypes.Region
 import android.tools.datatypes.Size
+import android.tools.datatypes.emptyColor
 import android.tools.parsers.AbstractTraceParser
 import android.tools.traces.surfaceflinger.Display
 import android.tools.traces.surfaceflinger.HwcCompositionType
@@ -35,6 +35,8 @@ import android.tools.traces.surfaceflinger.LayersTrace
 import android.tools.traces.surfaceflinger.Transform
 import android.tools.traces.surfaceflinger.Transform.Companion.isFlagClear
 import android.tools.traces.surfaceflinger.Transform.Companion.isFlagSet
+import android.tools.withCache
+import android.tools.withTracing
 
 /** Parser for [LayersTrace] */
 class LayersTraceParser(
@@ -64,12 +66,12 @@ class LayersTraceParser(
             val snapshotGroups = snapshotsRows.groupBy { it["snapshot_id"] }
 
             for (snapshotId in 0L until snapshotGroups.size) {
-                Logger.withTracing("query + build entry") {
+                withTracing("query + build entry") {
                     val layerRows =
-                        Logger.withTracing("query layer rows") {
+                        withTracing("query layer rows") {
                             input.query(getSqlQueryLayers(snapshotId)) { it }
                         }
-                    Logger.withTracing("build entry") {
+                    withTracing("build entry") {
                         val snapshotRows = snapshotGroups[snapshotId]!!
                         val entry =
                             buildTraceEntry(snapshotRows, layerRows, realToMonotonicTimeOffsetNs)
@@ -95,11 +97,15 @@ class LayersTraceParser(
     ): LayerTraceEntry {
         val snapshotArgs = Args.build(snapshotRows)
         val displays = snapshotArgs.getChildren("displays")?.map { newDisplay(it) } ?: emptyList()
+        val excludesCompositionState =
+            snapshotArgs.getChild("excludes_composition_state")?.getBoolean() ?: false
 
         val idAndLayers =
             layersRows
                 .groupBy { it["layer_id"].toString() }
-                .map { (layerId, layerRows) -> Pair(layerId, newLayer(Args.build(layerRows))) }
+                .map { (layerId, layerRows) ->
+                    Pair(layerId, newLayer(Args.build(layerRows), excludesCompositionState))
+                }
                 .toMutableList()
         idAndLayers.sortBy { it.first.toLong() }
 
@@ -150,11 +156,11 @@ class LayersTraceParser(
                 .trimIndent()
         }
 
-        private fun newLayer(layer: Args, excludeCompositionState: Boolean = false): Layer {
+        private fun newLayer(layer: Args, excludesCompositionState: Boolean): Layer {
             // Differentiate between the cases when there's no HWC data on
             // the trace, and when the visible region is actually empty
             val activeBuffer = newActiveBuffer(layer.getChild("active_buffer"))
-            val visibleRegion = newRegion(layer.getChild("visible_region")) ?: Region.EMPTY
+            val visibleRegion = newRegion(layer.getChild("visible_region")) ?: Region()
             val crop = newCropRect(layer.getChild("crop"))
             return Layer.from(
                 layer.getChild("name")?.getString() ?: "",
@@ -180,7 +186,7 @@ class LayersTraceParser(
                 layer.getChild("is_relative_of")?.getBoolean() ?: false,
                 layer.getChild("z_order_relative_of")?.getInt() ?: 0,
                 layer.getChild("layer_stack")?.getInt() ?: 0,
-                excludeCompositionState
+                excludesCompositionState
             )
         }
 
@@ -200,13 +206,13 @@ class LayersTraceParser(
 
         private fun newRectF(rectf: Args?): RectF {
             if (rectf == null) {
-                return RectF.EMPTY
+                return RectF()
             }
-            return RectF.from(
-                left = rectf.getChild("left")?.getFloat() ?: 0f,
-                top = rectf.getChild("top")?.getFloat() ?: 0f,
-                right = rectf.getChild("right")?.getFloat() ?: 0f,
-                bottom = rectf.getChild("bottom")?.getFloat() ?: 0f
+            return RectF(
+                /* left */ rectf.getChild("left")?.getFloat() ?: 0f,
+                /* top */ rectf.getChild("top")?.getFloat() ?: 0f,
+                /* right */ rectf.getChild("right")?.getFloat() ?: 0f,
+                /* bottom */ rectf.getChild("bottom")?.getFloat() ?: 0f
             )
         }
 
@@ -222,14 +228,16 @@ class LayersTraceParser(
 
         private fun newColor(color: Args?): Color {
             if (color == null) {
-                return Color.EMPTY
+                return emptyColor()
             }
-            return Color.from(
-                color.getChild("r")?.getFloat() ?: 0f,
-                color.getChild("g")?.getFloat() ?: 0f,
-                color.getChild("b")?.getFloat() ?: 0f,
-                color.getChild("a")?.getFloat() ?: 0f
-            )
+            return withCache {
+                Color.valueOf(
+                    color.getChild("r")?.getFloat() ?: 0f,
+                    color.getChild("g")?.getFloat() ?: 0f,
+                    color.getChild("b")?.getFloat() ?: 0f,
+                    color.getChild("a")?.getFloat() ?: 0f
+                )
+            }
         }
 
         private fun newActiveBuffer(buffer: Args?): ActiveBuffer {
@@ -251,9 +259,9 @@ class LayersTraceParser(
             return HwcCompositionType.valueOf(value.getString())
         }
 
-        private fun newCropRect(crop: Args?): Rect? {
+        private fun newCropRect(crop: Args?): RectF? {
             if (crop == null) {
-                return Rect.EMPTY
+                return RectF()
             }
 
             val right = crop.getChild("right")?.getInt() ?: 0
@@ -266,19 +274,21 @@ class LayersTraceParser(
                 return null
             }
 
-            return Rect.from(left, top, right, bottom)
+            return RectF(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat())
         }
 
         private fun newRegion(region: Args?): Region? {
             if (region == null) {
                 return null
             }
+            val result = Region()
             val rects = region.getChildren("rect")?.map { newRect(it) } ?: emptyList()
-            return Region(rects.toTypedArray())
+            rects.forEach { rect -> result.op(rect, Region.Op.UNION) }
+            return result
         }
 
         private fun newRect(rect: Args?): Rect =
-            Rect.from(
+            Rect(
                 rect?.getChild("left")?.getInt() ?: 0,
                 rect?.getChild("top")?.getInt() ?: 0,
                 rect?.getChild("right")?.getInt() ?: 0,

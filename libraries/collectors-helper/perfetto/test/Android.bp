@@ -28,7 +28,7 @@ java_library {
         "perfetto-helper",
         "junit",
         "mockito-target-minus-junit4",
-
+        "collector-helper-utilities",
     ],
 
     sdk_version: "current",

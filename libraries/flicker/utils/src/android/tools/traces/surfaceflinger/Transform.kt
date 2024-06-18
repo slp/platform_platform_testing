@@ -16,9 +16,9 @@
 
 package android.tools.traces.surfaceflinger
 
+import android.graphics.RectF
 import android.tools.Rotation
 import android.tools.datatypes.Matrix33
-import android.tools.datatypes.RectF
 import android.tools.withCache
 
 /**
@@ -132,7 +132,7 @@ class Transform private constructor(val type: Int?, val matrix: Matrix33) {
     }
 
     fun apply(bounds: RectF?): RectF {
-        return multiplyRect(matrix, bounds ?: RectF.EMPTY)
+        return multiplyRect(matrix, bounds ?: RectF())
     }
 
     private data class Vec2(val x: Float, val y: Float)
@@ -147,11 +147,14 @@ class Transform private constructor(val type: Int?, val matrix: Matrix33) {
         val leftBottom = multiplyVec2(matrix, rect.left, rect.bottom)
         val rightBottom = multiplyVec2(matrix, rect.right, rect.bottom)
 
-        return RectF.from(
-            left = arrayOf(leftTop.x, rightTop.x, leftBottom.x, rightBottom.x).minOrNull() ?: 0f,
-            top = arrayOf(leftTop.y, rightTop.y, leftBottom.y, rightBottom.y).minOrNull() ?: 0f,
-            right = arrayOf(leftTop.x, rightTop.x, leftBottom.x, rightBottom.x).minOrNull() ?: 0f,
-            bottom = arrayOf(leftTop.y, rightTop.y, leftBottom.y, rightBottom.y).minOrNull() ?: 0f
+        return RectF(
+            /* left */ arrayOf(leftTop.x, rightTop.x, leftBottom.x, rightBottom.x).minOrNull()
+                ?: 0f,
+            /* top */ arrayOf(leftTop.y, rightTop.y, leftBottom.y, rightBottom.y).minOrNull() ?: 0f,
+            /* right */ arrayOf(leftTop.x, rightTop.x, leftBottom.x, rightBottom.x).minOrNull()
+                ?: 0f,
+            /* bottom */ arrayOf(leftTop.y, rightTop.y, leftBottom.y, rightBottom.y).minOrNull()
+                ?: 0f
         )
     }
 

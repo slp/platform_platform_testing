@@ -1,0 +1,207 @@
+{
+  "frame_ids": [
+    "before",
+    0,
+    32,
+    48,
+    64,
+    80,
+    96,
+    112,
+    128,
+    144,
+    160,
+    176,
+    192,
+    208,
+    224,
+    240,
+    256,
+    272,
+    288,
+    304,
+    336,
+    352,
+    368,
+    384,
+    400,
+    416,
+    432,
+    448,
+    464,
+    480,
+    496,
+    512,
+    528,
+    544,
+    560,
+    576,
+    592,
+    608,
+    "after"
+  ],
+  "features": [
+    {
+      "name": "size",
+      "type": "dpSize",
+      "data_points": [
+        {
+          "width": 20,
+          "height": 20
+        },
+        {
+          "width": 20,
+          "height": 20
+        },
+        {
+          "width": 20,
+          "height": 20
+        },
+        {
+          "width": 20,
+          "height": 20
+        },
+        {
+          "width": 20,
+          "height": 20
+        },
+        {
+          "width": 22.571428,
+          "height": 20
+        },
+        {
+          "width": 27.142857,
+          "height": 20
+        },
+        {
+          "width": 31.142857,
+          "height": 20
+        },
+        {
+          "width": 34.285713,
+          "height": 20
+        },
+        {
+          "width": 36.285713,
+          "height": 20
+        },
+        {
+          "width": 37.714287,
+          "height": 20
+        },
+        {
+          "width": 38.57143,
+          "height": 20
+        },
+        {
+          "width": 39.142857,
+          "height": 20
+        },
+        {
+          "width": 39.42857,
+          "height": 20
+        },
+        {
+          "width": 39.714287,
+          "height": 20
+        },
+        {
+          "width": 39.714287,
+          "height": 20
+        },
+        {
+          "width": 40,
+          "height": 20
+        },
+        {
+          "width": 40,
+          "height": 20
+        },
+        {
+          "width": 40,
+          "height": 20
+        },
+        {
+          "width": 40,
+          "height": 20
+        },
+        {
+          "width": 40,
+          "height": 20
+        },
+        {
+          "width": 40,
+          "height": 20
+        },
+        {
+          "width": 40,
+          "height": 20
+        },
+        {
+          "width": 42.57143,
+          "height": 20
+        },
+        {
+          "width": 47.142857,
+          "height": 20
+        },
+        {
+          "width": 51.142857,
+          "height": 20
+        },
+        {
+          "width": 54.285713,
+          "height": 20
+        },
+        {
+          "width": 56.285713,
+          "height": 20
+        },
+        {
+          "width": 57.714287,
+          "height": 20
+        },
+        {
+          "width": 58.57143,
+          "height": 20
+        },
+        {
+          "width": 59.142857,
+          "height": 20
+        },
+        {
+          "width": 59.42857,
+          "height": 20
+        },
+        {
+          "width": 59.714287,
+          "height": 20
+        },
+        {
+          "width": 59.714287,
+          "height": 20
+        },
+        {
+          "width": 60,
+          "height": 20
+        },
+        {
+          "width": 60,
+          "height": 20
+        },
+        {
+          "width": 60,
+          "height": 20
+        },
+        {
+          "width": 60,
+          "height": 20
+        },
+        {
+          "width": 60,
+          "height": 20
+        }
+      ]
+    }
+  ]
+}

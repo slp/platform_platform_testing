@@ -16,9 +16,9 @@
 
 package android.tools.flicker.subject.surfaceflinger
 
+import android.graphics.Rect
+import android.graphics.Region
 import android.tools.Cache
-import android.tools.datatypes.Rect
-import android.tools.datatypes.Region
 import android.tools.flicker.subject.layers.LayerTraceEntrySubject
 import android.tools.flicker.subject.layers.LayersTraceSubject
 import android.tools.traces.component.ComponentNameMatcher
@@ -85,7 +85,7 @@ class LayerTraceEntrySubjectTest {
     fun canDetectUncoveredRegion() {
         val reader = getLayerTraceReaderFromAsset("layers_trace_emptyregion.perfetto-trace")
         val trace = reader.readLayersTrace() ?: error("Unable to read layers trace")
-        val expectedRegion = Region.from(0, 0, 1440, 2960)
+        val expectedRegion = Region(0, 0, 1440, 2960)
         assertFail("SkRegion((0,0,1440,1440)) should cover at least SkRegion((0,0,1440,2960))") {
             LayersTraceSubject(trace, reader)
                 .getEntryBySystemUpTime(935346112030, byElapsedTimestamp = true)
@@ -99,7 +99,7 @@ class LayerTraceEntrySubjectTest {
     fun canTestLayerVisibleRegion_layerDoesNotExist() {
         val reader = getLayerTraceReaderFromAsset("layers_trace_emptyregion.perfetto-trace")
         val trace = reader.readLayersTrace() ?: error("Unable to read layers trace")
-        val expectedVisibleRegion = Region.from(0, 0, 1, 1)
+        val expectedVisibleRegion = Region(0, 0, 1, 1)
         assertFail(TestComponents.IMAGINARY.toWindowIdentifier()) {
             LayersTraceSubject(trace, reader)
                 .getEntryBySystemUpTime(937229257165, byElapsedTimestamp = true)
@@ -112,8 +112,8 @@ class LayerTraceEntrySubjectTest {
     fun canTestLayerVisibleRegion_layerDoesNotHaveExpectedVisibleRegion() {
         val reader = getLayerTraceReaderFromAsset("layers_trace_emptyregion.perfetto-trace")
         val trace = reader.readLayersTrace() ?: error("Unable to read layers trace")
-        val expectedVisibleRegion = Region.from(0, 0, 1, 1)
-        assertFail("[empty] should cover exactly SkRegion((0,0,1,1))") {
+        val expectedVisibleRegion = Region(0, 0, 1, 1)
+        assertFail("SkRegion() should cover exactly SkRegion((0,0,1,1))") {
             LayersTraceSubject(trace, reader)
                 .getEntryBySystemUpTime(937126074082, byElapsedTimestamp = true)
                 .visibleRegion(TestComponents.DOCKER_STACK_DIVIDER)
@@ -125,8 +125,8 @@ class LayerTraceEntrySubjectTest {
     fun canTestLayerVisibleRegion_layerIsHiddenByParent() {
         val reader = getLayerTraceReaderFromAsset("layers_trace_emptyregion.perfetto-trace")
         val trace = reader.readLayersTrace() ?: error("Unable to read layers trace")
-        val expectedVisibleRegion = Region.from(0, 0, 1, 1)
-        assertFail("[empty] should cover exactly SkRegion((0,0,1,1))") {
+        val expectedVisibleRegion = Region(0, 0, 1, 1)
+        assertFail("SkRegion() should cover exactly SkRegion((0,0,1,1))") {
             LayersTraceSubject(trace, reader)
                 .getEntryBySystemUpTime(935346112030, byElapsedTimestamp = true)
                 .visibleRegion(TestComponents.SIMPLE_APP)
@@ -138,7 +138,7 @@ class LayerTraceEntrySubjectTest {
     fun canTestLayerVisibleRegion_incorrectRegionSize() {
         val reader = getLayerTraceReaderFromAsset("layers_trace_emptyregion.perfetto-trace")
         val trace = reader.readLayersTrace() ?: error("Unable to read layers trace")
-        val expectedVisibleRegion = Region.from(0, 0, 1440, 99)
+        val expectedVisibleRegion = Region(0, 0, 1440, 99)
         assertFail("SkRegion((0,0,1440,171)) should cover exactly SkRegion((0,0,1440,99))") {
             LayersTraceSubject(trace, reader)
                 .getEntryBySystemUpTime(937126074082, byElapsedTimestamp = true)
@@ -151,7 +151,7 @@ class LayerTraceEntrySubjectTest {
     fun canTestLayerVisibleRegion() {
         val reader = getLayerTraceReaderFromAsset("layers_trace_launch_split_screen.perfetto-trace")
         val trace = reader.readLayersTrace() ?: error("Unable to read layers trace")
-        val expectedVisibleRegion = Region.from(0, 0, 1080, 145)
+        val expectedVisibleRegion = Region(0, 0, 1080, 145)
         LayersTraceSubject(trace, reader)
             .getEntryBySystemUpTime(90480846872160, byElapsedTimestamp = true)
             .visibleRegion(ComponentNameMatcher.STATUS_BAR)
@@ -245,11 +245,11 @@ class LayerTraceEntrySubjectTest {
                         listOf(
                             MockLayerBuilder(app1Name)
                                 .setContainerLayer()
-                                .setAbsoluteBounds(Rect.from(0, 0, 200, 200))
+                                .setAbsoluteBounds(Rect(0, 0, 200, 200))
                                 .addChild(MockLayerBuilder("$app1Name child").setVisible()),
                             MockLayerBuilder(app2Name)
                                 .setContainerLayer()
-                                .setAbsoluteBounds(Rect.from(200, 200, 400, 400))
+                                .setAbsoluteBounds(Rect(200, 200, 400, 400))
                                 .addChild(MockLayerBuilder("$app2Name child").setVisible()),
                         )
                 )

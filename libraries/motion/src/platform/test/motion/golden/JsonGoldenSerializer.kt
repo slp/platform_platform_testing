@@ -28,32 +28,25 @@ import org.json.JSONObject
  * Note that this intentionally does not use protocol buffers, since the text format is not
  * available for the "Protobuf Java Lite Runtime". See http://shortn/_dx5ldOga8s for details.
  */
-class JsonGoldenSerializer(
-    /**
-     * [DataPointType] implementations used to de-serialize structured JSON values to golden values.
-     *
-     * @see DataPointTypes
-     */
-    dataPointTypes: List<DataPointType<*>>
-) {
-    private val typeRegistry = dataPointTypes.associateBy { it.typeName }
-
+object JsonGoldenSerializer {
     /**
      * Reads a previously JSON serialized [TimeSeries] data.
      *
-     * Golden data types not supported by construction-time specified `dataPointTypes` will produce
-     * an [UnknownType].
+     * Golden data types not included in the `typeRegistry` will produce an [UnknownType].
      *
+     * @param typeRegistry [DataPointType] implementations used to de-serialize structured JSON
+     *   values to golden values. See [TimeSeries.createTypeRegistry] for creating the registry
+     *   based on the currently produced timeseries.
      * @throws JSONException if the JSON data does not match the expected schema.
      */
-    fun fromJson(jsonObject: JSONObject): TimeSeries {
+    fun fromJson(jsonObject: JSONObject, typeRegistry: Map<String, DataPointType<*>>): TimeSeries {
         val frameIds =
             jsonObject.getJSONArray(KEY_FRAME_IDS).convert(JSONArray::get, ::frameIdFromJson)
 
         val features =
-            jsonObject
-                .getJSONArray(KEY_FEATURES)
-                .convert(JSONArray::getJSONObject, ::featureFromJson)
+            jsonObject.getJSONArray(KEY_FEATURES).convert(JSONArray::getJSONObject) {
+                featureFromJson(it, typeRegistry)
+            }
 
         return TimeSeries(frameIds, features)
     }
@@ -67,7 +60,7 @@ class JsonGoldenSerializer(
             )
             put(
                 KEY_FEATURES,
-                JSONArray().apply { golden.features.map(::featureToJson).forEach(this::put) }
+                JSONArray().apply { golden.features.values.map(::featureToJson).forEach(this::put) }
             )
         }
 
@@ -78,13 +71,17 @@ class JsonGoldenSerializer(
             else -> throw JSONException("Unknown FrameId type")
         }
     }
+
     private fun frameIdToJson(frameId: FrameId) =
         when (frameId) {
             is TimestampFrameId -> frameId.milliseconds
             is SupplementalFrameId -> frameId.label
         }
 
-    private fun featureFromJson(jsonObject: JSONObject): Feature<*> {
+    private fun featureFromJson(
+        jsonObject: JSONObject,
+        typeRegistry: Map<String, DataPointType<*>>
+    ): Feature<*> {
         val name = jsonObject.getString(KEY_FEATURE_NAME)
         val type = typeRegistry[jsonObject.optString(KEY_FEATURE_TYPE)] ?: unknownType
 
@@ -116,19 +113,34 @@ class JsonGoldenSerializer(
                 JSONArray().apply { feature.dataPoints.map { it.asJson() }.forEach(this::put) }
             )
         }
-    companion object {
-        private const val KEY_FRAME_IDS = "frame_ids"
-        private const val KEY_FEATURES = "features"
-        private const val KEY_FEATURE_NAME = "name"
-        private const val KEY_FEATURE_TYPE = "type"
-        private const val KEY_FEATURE_DATAPOINTS = "data_points"
+    private const val KEY_FRAME_IDS = "frame_ids"
+    private const val KEY_FEATURES = "features"
+    private const val KEY_FEATURE_NAME = "name"
+    private const val KEY_FEATURE_TYPE = "type"
+    private const val KEY_FEATURE_DATAPOINTS = "data_points"
 
-        private val unknownType: DataPointType<Any> =
-            DataPointType(
-                "unknown",
-                jsonToValue = { throw UnknownTypeException() },
-                valueToJson = { throw AssertionError() }
-            )
+    private val unknownType: DataPointType<Any> =
+        DataPointType(
+            "unknown",
+            jsonToValue = { throw UnknownTypeException() },
+            valueToJson = { throw AssertionError() }
+        )
+}
+
+/** Creates a type registry from the types used in the [TimeSeries]. */
+fun TimeSeries.createTypeRegistry(): Map<String, DataPointType<*>> = buildMap {
+    for (feature in features.values) {
+        for (dataPoint in feature.dataPoints) {
+            if (dataPoint is ValueDataPoint) {
+                val type = dataPoint.type
+                val alreadyRegisteredType = put(type.typeName, type)
+                if (alreadyRegisteredType != null && alreadyRegisteredType != type) {
+                    throw AssertionError(
+                        "Type [${type.typeName}] with multiple different implementations"
+                    )
+                }
+            }
+        }
     }
 }
 

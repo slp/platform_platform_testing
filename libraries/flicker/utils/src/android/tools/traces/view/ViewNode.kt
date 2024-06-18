@@ -16,9 +16,9 @@
 
 package android.tools.traces.view
 
-import android.tools.datatypes.Point
-import android.tools.datatypes.PointF
-import android.tools.datatypes.Rect
+import android.graphics.Point
+import android.graphics.PointF
+import android.graphics.Rect
 import android.tools.withCache
 
 /**
