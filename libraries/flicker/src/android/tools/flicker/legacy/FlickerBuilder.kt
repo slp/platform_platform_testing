@@ -25,6 +25,7 @@ import android.tools.traces.monitors.NoTraceMonitor
 import android.tools.traces.monitors.ScreenRecorder
 import android.tools.traces.parsers.WindowManagerStateHelper
 import androidx.test.uiautomator.UiDevice
+import org.junit.rules.TestRule
 import java.io.File
 
 /** Build Flicker tests using Flicker DSL */
@@ -38,6 +39,7 @@ class FlickerBuilder(
     private val transitionCommands: MutableList<FlickerTestData.() -> Any> = mutableListOf(),
     private val teardownCommands: MutableList<FlickerTestData.() -> Any> = mutableListOf(),
     val device: UiDevice = UiDevice.getInstance(instrumentation),
+    private val rules: MutableList<TestRule> = mutableListOf(),
     private val traceMonitors: MutableList<ITransitionMonitor> = ALL_MONITORS.toMutableList()
 ) {
     private var usingExistingTraces = false
@@ -72,6 +74,11 @@ class FlickerBuilder(
             "Can't update transition after calling usingExistingTraces"
         }
         transitionCommands.add(command)
+    }
+
+    /** Adds JUnit rules to be executed with the provided transitions.*/
+    fun withRules(vararg rules: TestRule) {
+        this.rules.addAll(rules)
     }
 
     data class TraceFiles(
@@ -117,6 +124,7 @@ class FlickerBuilder(
             setupCommands,
             transitionCommands,
             teardownCommands,
+            rules,
             wmHelper
         )
     }
@@ -124,15 +132,16 @@ class FlickerBuilder(
     /** Returns a copy of the current builder with the changes of [block] applied */
     fun copy(block: FlickerBuilder.() -> Unit) =
         FlickerBuilder(
-                instrumentation,
-                outputDir.absoluteFile,
-                wmHelper,
-                setupCommands.toMutableList(),
-                transitionCommands.toMutableList(),
-                teardownCommands.toMutableList(),
-                device,
-                traceMonitors.toMutableList(),
-            )
+            instrumentation,
+            outputDir.absoluteFile,
+            wmHelper,
+            setupCommands.toMutableList(),
+            transitionCommands.toMutableList(),
+            teardownCommands.toMutableList(),
+            device,
+            rules.toMutableList(),
+            traceMonitors.toMutableList(),
+        )
             .apply(block)
 
     private fun addMonitor(newMonitor: ITransitionMonitor?) {

@@ -22,6 +22,7 @@ import android.tools.traces.parsers.WindowManagerStateHelper
 import android.tools.traces.surfaceflinger.LayersTrace
 import android.tools.traces.wm.WindowManagerTrace
 import androidx.test.uiautomator.UiDevice
+import org.junit.rules.TestRule
 import java.io.File
 
 /**
@@ -45,6 +46,8 @@ open class FlickerTestDataImpl(
     override val transitions: List<FlickerTestData.() -> Any>,
     /** Commands to be executed after the transition */
     override val transitionTeardown: List<FlickerTestData.() -> Any>,
+    /** JUnit rules to be executed around transition */
+    override val rules: List<TestRule>,
     /** Helper object for WM Synchronization */
     override val wmHelper: WindowManagerStateHelper
 ) : AbstractFlickerTestData()
