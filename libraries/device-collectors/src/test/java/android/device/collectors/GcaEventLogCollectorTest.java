@@ -26,7 +26,6 @@ import android.os.Bundle;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.Description;
@@ -51,28 +50,19 @@ public class GcaEventLogCollectorTest {
     private static final Description TEST_FAILURE_DESCRIPTION =
             Description.createTestDescription("TestClass", "testCaseFailed");
     @Mock private Instrumentation mMockInstrumentation;
-    private File mEventLogDir;
-    private File mDestDir;
     private GcaEventLogCollector mCollector;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        mEventLogDir = new File("/sdcard", "camera_events");
-        mDestDir = new File("/sdcard", "camera_events_dest");
-    }
-
-    @After
-    public void tearDown() {
-        mCollector.recursiveDelete(mEventLogDir);
-        mCollector.recursiveDelete(mDestDir);
     }
 
     private GcaEventLogCollector initListener(Bundle bundle) {
         mCollector = new GcaEventLogCollector(bundle);
         GcaEventLogCollector listener = Mockito.spy(mCollector);
         listener.setInstrumentation(mMockInstrumentation);
-        Mockito.doReturn(mDestDir).when(listener).createAndEmptyDirectory(Mockito.anyString());
+        Mockito.doReturn(new File("/sdcard", "camera_events_dest"))
+                .when(listener).createAndEmptyDirectory(Mockito.anyString());
         Mockito.doReturn(new byte[10]).when(listener).executeCommandBlocking(Mockito.anyString());
         Mockito.doNothing().when(listener).copyEventLogToSharedStorage(Mockito.anyString());
         return listener;
