@@ -41,6 +41,8 @@ android_robolectric_test {
     instrumentation_for: "MyRoboApplication",
 
     upstream: true,
+
+    strict_mode: false,
 }
 
 android_robolectric_test {
@@ -63,6 +65,4 @@ android_robolectric_test {
     instrumentation_for: "MyRoboApplication",
 
     upstream: true,
-
-    strict_mode: true,
 }
