@@ -635,6 +635,7 @@ class CallUtils:
     # End call on IVI using adb shell command
     def end_call_using_adb_command(self, device_target):
         self.execute_shell_on_device(device_target, 'input keyevent KEYCODE_ENDCALL')
+        self.execute_shell_on_device(device_target, 'input keyevent KEYCODE_POWER')
 
     # Make a call most recent history
     def call_most_recent_call_history(self):
