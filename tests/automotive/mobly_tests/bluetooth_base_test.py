@@ -44,6 +44,11 @@ class BluetoothBaseTest(base_test.BaseTestClass):
         logging.info("Enabling video recording for Discoverer device")
         self.video_utils_service.enable_screen_recording()
 
+        logging.info("\tInitializing video services")
+        self.video_utils_service_target = VideoRecording(self.target, self.__class__.__name__)
+        logging.info("Enabling video recording for Target device")
+        self.video_utils_service_target.enable_screen_recording()
+
     def setup_test(self):
         # Make sure bluetooth is on.
         self.call_utils.press_home()
@@ -70,6 +75,14 @@ class BluetoothBaseTest(base_test.BaseTestClass):
         self.video_utils_service.pull_recording_file(self.log_path)
         logging.info("delete the screen recording from the Discoverer device")
         self.video_utils_service.delete_screen_recording_from_device()
+
+        logging.info("Stopping the screen recording on Target Device")
+        self.video_utils_service_target.stop_screen_recording()
+        logging.info("Pull the screen recording from Target device")
+        self.video_utils_service_target.pull_recording_file(self.log_path)
+        logging.info("delete the screen recording from the Target device")
+        self.video_utils_service_target.delete_screen_recording_from_device()
+
 
 
 if __name__ == '__main__':
