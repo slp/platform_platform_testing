@@ -26,9 +26,12 @@ import android.tools.testutils.newTestResultWriter
 import android.tools.traces.TRACE_CONFIG_REQUIRE_CHANGES
 import android.tools.traces.io.ResultReader
 import android.tools.traces.monitors.view.ViewTraceMonitor
+import android.tracing.Flags
 import com.android.systemui.Flags.enableViewCaptureTracing
 import com.google.common.truth.Truth
 import java.io.File
+import org.junit.Assume
+import org.junit.Before
 import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runners.MethodSorters
@@ -42,6 +45,12 @@ class ViewTraceMonitorTest : TraceMonitorTest<ViewTraceMonitor>() {
 
     override fun assertTrace(traceData: ByteArray) {
         Truth.assertThat(traceData.size).isGreaterThan(0)
+    }
+
+    @Before
+    override fun before() {
+        Assume.assumeFalse(Flags.perfettoViewCaptureTracing())
+        super.before()
     }
 
     @Test

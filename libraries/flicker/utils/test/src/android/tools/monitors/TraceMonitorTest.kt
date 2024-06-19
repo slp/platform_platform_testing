@@ -48,7 +48,7 @@ abstract class TraceMonitorTest<T : TraceMonitor> {
     protected val traceMonitor by lazy { getMonitor() }
 
     @Before
-    fun before() {
+    open fun before() {
         Truth.assertWithMessage("Trace already enabled before starting test")
             .that(traceMonitor.isEnabled)
             .isFalse()
