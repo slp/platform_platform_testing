@@ -118,6 +118,8 @@ KEYCODE_MEDIA_PREVIOUS = 'input keyevent KEYCODE_MEDIA_PREVIOUS'
 KEYCODE_MEDIA_PAUSE = 'input keyevent KEYCODE_MEDIA_PAUSE'
 KEYCODE_MEDIA_PLAY = 'input keyevent KEYCODE_MEDIA_PLAY'
 KEYCODE_MEDIA_STOP = 'input keyevent KEYCODE_MEDIA_STOP'
+KEYCODE_WAKEUP = 'input keyevent KEYCODE_WAKEUP'
+DUMPSYS_POWER= 'dumpsys power|grep mWakefulness'
 
 # YouTube Media
 YOUTUBE_MUSIC_PACKAGE = 'com.google.android.apps.youtube.music'
