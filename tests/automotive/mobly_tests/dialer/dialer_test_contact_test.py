@@ -47,10 +47,10 @@ class CallContactTest(bluetooth_base_test.BluetoothBaseTest):
         self.call_utils.open_contacts()
         self.call_utils.wait_with_log(5)
 
-        contactToCall = super.discoverer.mbs.getFirstContactFromContactList()
+        contactToCall = self.discoverer.mbs.getFirstContactFromContactList()
         logging.info("Attempting to call contact: %s", contactToCall)
 
-        super.discoverer.mbs.callContact(contactToCall)
+        self.discoverer.mbs.callContact(contactToCall)
 
         # end_call() acts as an automatic verifying that a call is underway
         # since end_call() will throw an exception if no end_call button is available.
