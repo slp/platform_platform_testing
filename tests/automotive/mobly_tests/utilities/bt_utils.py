@@ -82,6 +82,7 @@ class BTUtils:
         self.enable_bt_logs()
         logging.info('Enabling Bluetooth on both devices')
         self.discoverer.mbs.btEnable()
+        self.wakeup_target_device_screen()
         self.target.mbs.btEnable()
         self.disable_android_auto_popup_on_hu()
         logging.info('Setting devices to be discoverable')
@@ -154,3 +155,13 @@ class BTUtils:
         self.media_utils.execute_shell_on_hu_device(constants.BLUETOOTH_TAG)
         self.media_utils.execute_shell_on_hu_device(constants.BLUETOOTH_NOOPERABLE)
         self.media_utils.execute_shell_on_hu_device(constants.BLUETOOTH_BTSNOOP_DEFAULT_MODE)
+
+
+    def is_target_device_screen_on(self):
+        logging.info('Checking the target screen state')
+        return 'Awake' in self.media_utils.execute_shell_on_device(constants.DUMPSYS_POWER).decode('utf8')
+
+    def wakeup_target_device_screen(self):
+        if not self.is_target_device_screen_on():
+          logging.info('Target screen is off, waking it up')
+          self.media_utils.execute_shell_on_device(constants.KEYCODE_WAKEUP)
