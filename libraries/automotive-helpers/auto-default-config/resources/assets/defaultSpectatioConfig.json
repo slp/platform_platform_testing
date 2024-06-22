@@ -1850,7 +1850,7 @@
     },
     "TOGGLE_LOCATION": {
       "TYPE": "TEXT",
-      "VALUE": "Use location"
+      "VALUE": "Infotainment apps"
     },
     "LOCATION_SWITCH": {
       "TYPE": "CLASS",

@@ -24,6 +24,7 @@ android_test {
         "androidx.test.rules",
         "automotive-settings-app-helper",
         "app-helpers-auto-interfaces",
+        "com_android_car_settings_flags_lib",
         "platform-test-junit-rules",
         "platform-test-options",
     ],
