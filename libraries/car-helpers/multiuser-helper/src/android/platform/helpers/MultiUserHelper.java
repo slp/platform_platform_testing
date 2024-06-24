@@ -18,8 +18,11 @@ package android.platform.helpers;
 import android.annotation.Nullable;
 import android.app.ActivityManager;
 import android.car.Car;
+import android.car.SyncResultCallback;
 import android.car.user.CarUserManager;
 import android.car.user.CarUserManager.UserLifecycleListener;
+import android.car.user.UserCreationRequest;
+import android.car.user.UserCreationResult;
 import android.car.user.UserSwitchResult;
 import android.car.util.concurrent.AsyncFuture;
 import android.content.Context;
@@ -43,12 +46,14 @@ import java.util.concurrent.TimeUnit;
  * {@link CarUserManager}, {@link UserManager} to expose functions for user switch end-to-end tests.
  */
 public class MultiUserHelper {
+    private static final int CREATE_USER_TIMEOUT_MS = 20_000;
     private static final String LOG_TAG = MultiUserHelper.class.getSimpleName();
 
     /** For testing purpose we allow a wide range of switching time. */
     private static final int USER_SWITCH_TIMEOUT_SECOND = 300;
 
     private static final String SWITCH_USER_COMMAND = "cmd car_service switch-user ";
+    private static final String CREATE_USER_COMMAND = "cmd car_service create-user ";
 
     private static MultiUserHelper sMultiUserHelper;
     private CarUserManager mCarUserManager;
@@ -81,11 +86,64 @@ public class MultiUserHelper {
      * @return User Id for newly created user
      */
     public int createUser(String name, boolean isGuestUser) throws Exception {
-        if (isGuestUser) {
-            return mUserManager.createUser(name, UserManager.USER_TYPE_FULL_GUEST, /* flags= */ 0)
-                    .id;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            Log.d(
+                    LOG_TAG,
+                    "An Android version earlier than UDC is detected. Using the shell for user "
+                            + "creation");
+            return createUserUsingShell(name, isGuestUser);
         }
-        return mUserManager.createUser(name, /* flags= */ 0).id;
+        Log.d(
+                LOG_TAG,
+                "Creating new "
+                        + (isGuestUser ? "guest" : "user")
+                        + " with name '"
+                        + name
+                        + "' using CarUserManager");
+        SyncResultCallback<UserCreationResult> userCreationResultCallback =
+                new SyncResultCallback<>();
+        if (isGuestUser) {
+            // Create a new guest
+            mCarUserManager.createUser(
+                    new UserCreationRequest.Builder().setName(name).setGuest().build(),
+                    Runnable::run,
+                    userCreationResultCallback);
+        } else {
+            // Create a new user
+            mCarUserManager.createUser(
+                    new UserCreationRequest.Builder().setName(name).build(),
+                    Runnable::run,
+                    userCreationResultCallback);
+        }
+        UserCreationResult result =
+                userCreationResultCallback.get(CREATE_USER_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        return result.getUser().getIdentifier();
+    }
+
+    private int createUserUsingShell(String name, boolean isGuest) throws Exception {
+        String retStr;
+        Log.d(
+                LOG_TAG,
+                "Creating new " + (isGuest ? "guest" : "user") + " with name '" + name + "'");
+        if (isGuest) {
+            retStr = SystemUtil.runShellCommand(CREATE_USER_COMMAND + "--guest " + name);
+        } else {
+            retStr = SystemUtil.runShellCommand(CREATE_USER_COMMAND + name);
+        }
+        if (!retStr.contains("STATUS_SUCCESSFUL")) {
+            throw new Exception(
+                    "failed to create a new user: "
+                            + name
+                            + ". User creation shell command output: "
+                            + retStr);
+        }
+        // Extract the user ID out and return it
+        String userIdPattern = "id=";
+        int newUserId = -1;
+        if (retStr.contains(userIdPattern) && retStr.split(userIdPattern).length > 1) {
+            newUserId = Integer.parseInt(retStr.split(userIdPattern)[1].trim());
+        }
+        return newUserId;
     }
 
     /**
@@ -110,7 +168,7 @@ public class MultiUserHelper {
      * @param id Id of the user to switch to
      */
     public void switchToUserId(int id) throws Exception {
-        Log.v(
+        Log.d(
                 LOG_TAG,
                 String.format(
                         "Switching from user %d to user %d",
@@ -199,7 +257,11 @@ public class MultiUserHelper {
     private void switchUserUsingShell(int userId) throws Exception {
         String retStr = SystemUtil.runShellCommand(SWITCH_USER_COMMAND + userId);
         if (!retStr.contains("STATUS_SUCCESSFUL")) {
-            throw new Exception("failed to switch to user: " + userId);
+            throw new Exception(
+                    "failed to switch to user: "
+                            + userId
+                            + ". User switch shell command output: "
+                            + retStr);
         }
     }
 }
