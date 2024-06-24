@@ -1410,7 +1410,7 @@
     },
     "ARTIST_TITLE": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "artist",
+      "VALUE": "subtitle",
       "PACKAGE": "com.android.car.media"
     },
     "ALBUM_TITLE": {
