@@ -1130,7 +1130,7 @@
     },
     "DATE_TIME_SETTINGS_SET_TIME": {
       "TYPE": "TEXT",
-      "VALUE": "Set time"
+      "VALUE": "Set clock"
     },
     "DATE_TIME_SETTINGS_USE_24_HOUR_FORMAT": {
       "TYPE": "TEXT",
