@@ -36,6 +36,8 @@ class IsTreeDisplayedTest(bluetooth_base_test.BluetoothBaseTest):
 
     def test_media_is_tree_displayed(self):
         """Tests validating is AVRCP Tree - Displayed"""
+        self.media_utils.open_media_app_on_hu()
+        self.call_utils.handle_bluetooth_audio_pop_up()
         self.media_utils.open_youtube_music_app()
         current_phone_song_title = self.media_utils.get_song_title_from_phone()
         self.media_utils.open_media_app_on_hu()
