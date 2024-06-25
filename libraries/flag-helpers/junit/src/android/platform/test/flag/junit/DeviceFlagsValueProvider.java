@@ -38,6 +38,7 @@ public class DeviceFlagsValueProvider implements IFlagsValueProvider {
     private static final Set<String> VALID_BOOLEAN_VALUE = Set.of("true", "false");
 
     private final UiAutomation mUiAutomation;
+    private Set<String> mSavedPermissions;
 
     public static CheckFlagsRule createCheckFlagsRule() {
         return new CheckFlagsRule(new DeviceFlagsValueProvider());
@@ -55,7 +56,7 @@ public class DeviceFlagsValueProvider implements IFlagsValueProvider {
     }
 
     public DeviceFlagsValueProvider() {
-        mUiAutomation = InstrumentationRegistry.getInstrumentation().getUiAutomation();
+        this(InstrumentationRegistry.getInstrumentation().getUiAutomation());
     }
 
     private DeviceFlagsValueProvider(UiAutomation uiAutomation) {
@@ -64,6 +65,7 @@ public class DeviceFlagsValueProvider implements IFlagsValueProvider {
 
     @Override
     public void setUp() {
+        mSavedPermissions = mUiAutomation.getAdoptedShellPermissions();
         mUiAutomation.adoptShellPermissionIdentity(READ_DEVICE_CONFIG_PERMISSION);
     }
 
@@ -135,6 +137,13 @@ public class DeviceFlagsValueProvider implements IFlagsValueProvider {
 
     @Override
     public void tearDownBeforeTest() {
-        mUiAutomation.dropShellPermissionIdentity();
+        if (UiAutomation.ALL_PERMISSIONS.equals(mSavedPermissions)) {
+            mUiAutomation.adoptShellPermissionIdentity();
+        } else if (mSavedPermissions.size() == 0) {
+            mUiAutomation.dropShellPermissionIdentity();
+        } else {
+            String[] permissions = mSavedPermissions.toArray(new String[mSavedPermissions.size()]);
+            mUiAutomation.adoptShellPermissionIdentity(permissions);
+        }
     }
 }
