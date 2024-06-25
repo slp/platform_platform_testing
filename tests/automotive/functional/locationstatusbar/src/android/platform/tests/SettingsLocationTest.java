@@ -16,7 +16,6 @@
 
 package android.platform.tests;
 
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 import android.platform.helpers.HelperAccessor;
@@ -58,12 +57,17 @@ public class SettingsLocationTest {
             com.android.car.settings.Flags.FLAG_REQUIRED_INFOTAINMENT_APPS_SETTINGS_PAGE)
     public void testToVerifyToggleLocation() {
         mSettingLocationHelper.get().locationAccess();
-        mSettingLocationHelper.get().isLocationOn();
-        mSettingLocationHelper.get().toggleLocation(false);
-        assertFalse("Location widget is displayed ", mSettingLocationHelper.get().hasMapsWidget());
-        mSettingLocationHelper.get().toggleLocation(true);
+        boolean defaultState = mSettingLocationHelper.get().isLocationOn();
+        String widgetShownMessage = "Location widget is displayed ";
+        String widgetNotShownMessage = "Location widget is not displayed ";
+        mSettingLocationHelper.get().toggleLocation(!defaultState);
         assertTrue(
-                "Location widget is not displayed ", mSettingLocationHelper.get().hasMapsWidget());
+                defaultState ? widgetShownMessage : widgetNotShownMessage,
+                mSettingLocationHelper.get().hasMapsWidget() != defaultState);
+        mSettingLocationHelper.get().toggleLocation(defaultState);
+        assertTrue(
+                defaultState ? widgetShownMessage : widgetNotShownMessage,
+                mSettingLocationHelper.get().hasMapsWidget() == defaultState);
     }
 
     @Test
