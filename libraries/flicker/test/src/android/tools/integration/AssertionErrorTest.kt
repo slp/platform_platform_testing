@@ -54,7 +54,7 @@ class AssertionErrorTest {
         val result = runCatching {
             testParam.assertLayers {
                 assertionExecuted = true
-                throw SimpleFlickerAssertionError(Utils.FAILURE)
+                throw SimpleFlickerAssertionError(TestUtils.FAILURE)
             }
         }
 
@@ -63,7 +63,7 @@ class AssertionErrorTest {
         Truth.assertWithMessage("Expected exception")
             .that(result.exceptionOrNull())
             .hasMessageThat()
-            .contains(Utils.FAILURE)
+            .contains(TestUtils.FAILURE)
         val reader =
             android.tools.flicker.datastore.CachedResultReader(
                 TEST_SCENARIO,
@@ -90,7 +90,7 @@ class AssertionErrorTest {
 
         @BeforeClass
         @JvmStatic
-        fun runTransition() = Utils.runTransition { transitionExecuted = true }
+        fun runTransition() = TestUtils.runTransition { transitionExecuted = true }
 
         @ClassRule @JvmField val ENV_CLEANUP = CleanFlickerEnvironmentRule()
     }

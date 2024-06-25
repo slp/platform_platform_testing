@@ -27,7 +27,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.runner.Description
 
 @SuppressLint("VisibleForTests")
-object Utils {
+object TestUtils {
     private val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
     internal const val TAG = "tag"
     internal const val FAILURE = "Expected failure"

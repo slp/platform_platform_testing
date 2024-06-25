@@ -61,11 +61,13 @@ class NoErrorTest {
                 require(
                     this.subjects.none {
                         it.wmState
-                            .getActivitiesForWindow(Utils.setupAndTearDownTestApp.componentMatcher)
+                            .getActivitiesForWindow(
+                                TestUtils.setupAndTearDownTestApp.componentMatcher
+                            )
                             .isNotEmpty()
                     }
                 ) {
-                    "${Utils.setupAndTearDownTestApp.appName} window existed at some point " +
+                    "${TestUtils.setupAndTearDownTestApp.appName} window existed at some point " +
                         "but shouldn't have."
                 }
             }
@@ -80,11 +82,11 @@ class NoErrorTest {
                 require(
                     this.subjects.any {
                         it.wmState
-                            .getActivitiesForWindow(Utils.transitionTestApp.componentMatcher)
+                            .getActivitiesForWindow(TestUtils.transitionTestApp.componentMatcher)
                             .isNotEmpty()
                     }
                 ) {
-                    "${Utils.transitionTestApp.appName} window didn't exist at any point " +
+                    "${TestUtils.transitionTestApp.appName} window didn't exist at any point " +
                         "but should have."
                 }
             }
@@ -98,23 +100,23 @@ class NoErrorTest {
                 assertionExecuted = true
                 require(
                     this.subjects.none {
-                        Utils.setupAndTearDownTestApp.componentMatcher.layerMatchesAnyOf(
+                        TestUtils.setupAndTearDownTestApp.componentMatcher.layerMatchesAnyOf(
                             it.entry.flattenedLayers.filter { layer -> layer.isVisible }
                         )
                     }
                 ) {
-                    "${Utils.setupAndTearDownTestApp.appName} layer was visible at some point " +
-                        "but shouldn't have."
+                    "${TestUtils.setupAndTearDownTestApp.appName} layer was visible at some " +
+                        "point but shouldn't have."
                 }
 
                 require(
                     this.subjects.none {
-                        Utils.setupAndTearDownTestApp.componentMatcher.layerMatchesAnyOf(
+                        TestUtils.setupAndTearDownTestApp.componentMatcher.layerMatchesAnyOf(
                             it.entry.flattenedLayers
                         )
                     }
                 ) {
-                    "${Utils.setupAndTearDownTestApp.appName} layer existed at some point " +
+                    "${TestUtils.setupAndTearDownTestApp.appName} layer existed at some point " +
                         "but shouldn't have."
                 }
             }
@@ -128,12 +130,12 @@ class NoErrorTest {
                 assertionExecuted = true
                 require(
                     this.subjects.any {
-                        Utils.transitionTestApp.componentMatcher.layerMatchesAnyOf(
+                        TestUtils.transitionTestApp.componentMatcher.layerMatchesAnyOf(
                             it.entry.flattenedLayers
                         )
                     }
                 ) {
-                    "${Utils.transitionTestApp.appName} layer didn't exist at any point " +
+                    "${TestUtils.transitionTestApp.appName} layer didn't exist at any point " +
                         "but should have."
                 }
             }
@@ -183,7 +185,7 @@ class NoErrorTest {
     @Test
     fun assertTagStateLayersIsNotEmpty() {
         assertPredicatePasses {
-            testParam.assertLayersTag(Utils.TAG) {
+            testParam.assertLayersTag(TestUtils.TAG) {
                 assertionExecuted = true
                 isNotEmpty()
             }
@@ -193,7 +195,7 @@ class NoErrorTest {
     @Test
     fun assertTagStateWmIsNotEmpty() {
         assertPredicatePasses {
-            testParam.assertWmTag(Utils.TAG) {
+            testParam.assertWmTag(TestUtils.TAG) {
                 assertionExecuted = true
                 isNotEmpty()
             }
@@ -234,7 +236,7 @@ class NoErrorTest {
 
         @BeforeClass
         @JvmStatic
-        fun runTransition() = Utils.runTransition { transitionExecuted = true }
+        fun runTransition() = TestUtils.runTransition { transitionExecuted = true }
 
         @ClassRule @JvmField val ENV_CLEANUP = CleanFlickerEnvironmentRule()
     }
