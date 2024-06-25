@@ -665,6 +665,7 @@ public class AutomotiveConfigConstants {
 
     // Phone Device Identifiers
     public static final String MOBILE_CALL_BUTTON = "MOBILE_CALL_BUTTON";
+    public static final String MOBILE_DIALPAD = "MOBILE_DIALPAD";
     public static final String MOBILE_DIAL_PAD_ICON = "MOBILE_DIALPAD_ICON";
     public static final String MOBILE_PHONE_ICON = "MOBILE_PHONE_ICON";
     public static final String PHONE_DEVICE_PACKAGE = "PHONE_DEVICE_PACAKAGE";

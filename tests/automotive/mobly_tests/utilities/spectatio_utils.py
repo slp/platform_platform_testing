@@ -424,6 +424,7 @@ class CallUtils:
     def verify_dialing_number(self, expected_dialing_number):
         """Replace all non-digits characters to null"""
         actual_dialing_number = re.sub(r'\D', '', str(self.get_dialing_number()))
+        logging.info('dialing number: %s',self.get_dialing_number())
         logging.info(
             'Expected dialing number: %s, Actual: %s',
             expected_dialing_number,
@@ -640,6 +641,7 @@ class CallUtils:
     def delete_dialed_number_on_dial_pad(self):
         logging.info('Deleting dialed number on Dial Pad')
         self.device.mbs.deleteDialedNumber()
+
     # End call on IVI using adb shell command
     def end_call_using_adb_command(self, device_target):
         self.execute_shell_on_device(device_target, 'input keyevent KEYCODE_ENDCALL')
@@ -661,9 +663,11 @@ class CallUtils:
         self.device.mbs.changeAudioSourceToCarSpeakers()
 
     def enable_driving_mode(self):
+        logging.info('Enabling the drive mode')
         self.device.mbs.enableDrivingMode()
 
     def disable_driving_mode(self):
+        logging.info('Disabling the drive mode')
         self.device.mbs.disableDrivingMode()
 
     # Check if microphone chip is displayed on status bar

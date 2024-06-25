@@ -56,7 +56,7 @@ class DialerActiveCallOn(bluetooth_sms_base_test.BluetoothSMSBaseTest):
 
         # Receive and answer the call
         self.call_utils.wait_with_log(10)
-        self.discoverer.mbs.clickUIElementWithText(constants.ACCEPT_CALL_TEXT)
+        self.discoverer.mbs.clickUIElementWithText(constants.ANSWER_CALL_TEXT)
         self.call_utils.wait_with_log(2)
         # Verify that the in-progress call is displayed in full-screen view.
         asserts.assert_true(

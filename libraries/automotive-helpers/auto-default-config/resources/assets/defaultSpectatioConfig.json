@@ -62,7 +62,7 @@
   "COMMANDS": {
     "OPEN_DIAL_PAD_COMMAND": "am start -a android.intent.action.DIAL",
     "OPEN_PHONE_ACTIVITY_COMMAND": "am start -n com.android.car.dialer/.ui.TelecomActivity",
-    "OPEN_SMS_ACTIVITY_COMMAND": "am start -n com.android.car.messenger/.core.ui.launcher.MessageLauncherActivity",
+    "OPEN_SMS_ACTIVITY_COMMAND": "am start -n com.android.car.messenger/com.android.car.messenger.ui.launcher.MessageLauncherActivity",
     "OPEN_APP_GRID_COMMAND": "am start -n com.android.car.carlauncher/.GASAppGridActivity",
     "OPEN_NOTIFICATIONS_COMMAND": "service call statusbar 1",
     "STOP_SETTING_APP_COMMAND": "am force-stop com.android.car.settings",
@@ -100,6 +100,10 @@
     "MOBILE_DIALPAD_ICON": {
       "TYPE": "RESOURCE_ID",
       "VALUE": "dialpad_fab"
+    },
+    "MOBILE_DIALPAD": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "dialpad"
     },
     "MOBILE_DIALPAD_INPUT": {
       "TYPE": "CLASS",

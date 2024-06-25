@@ -46,7 +46,7 @@ class UxRestrictionSMSDBTest(bluetooth_sms_base_test.BluetoothSMSBaseTest):
         self.call_utils.clear_sms_app(self.target)
         # Reboot Phone
         self.target.unload_snippet('mbs')
-        self.call_utils.reboot_device(self.target)
+        self.target.reboot()
         self.call_utils.wait_with_log(30)
         self.target.load_snippet('mbs', android_device.MBS_PACKAGE)
 
@@ -58,7 +58,7 @@ class UxRestrictionSMSDBTest(bluetooth_sms_base_test.BluetoothSMSBaseTest):
         # set driving mode
         self.call_utils.enable_driving_mode()
 
-    def test_call_from_dialer_during_drive_mode(self):
+    def test_sms_db_sync_during_drive_mode(self):
         # to test that the unread sms appears on phone during drive mode
 
         # Open the sms app

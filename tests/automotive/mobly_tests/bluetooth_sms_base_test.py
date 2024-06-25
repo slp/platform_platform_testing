@@ -51,6 +51,8 @@ class BluetoothSMSBaseTest(bluetooth_base_test.BluetoothBaseTest):
         logging.info("Enabling video recording for Target device")
         self.video_utils_service_target.enable_screen_recording()
 
+        self.call_utils.press_phone_home_icon_using_adb_command(self.phone_notpaired)
+
 
 if __name__ == '__main__':
     common_main()
