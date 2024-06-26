@@ -36,6 +36,7 @@ class IsNowPlayingLabelDisplayed(bluetooth_base_test.BluetoothBaseTest):
     def test_is_now_paying_label_displayed(self):
         """Tests is Now Playing label displayed on HU"""
         self.media_utils.open_media_app_on_hu()
+        self.call_utils.handle_bluetooth_audio_pop_up()
         self.media_utils.open_youtube_music_app()
         self.call_utils.wait_with_log(5)
         logging.info("Getting song title from phone device: %s", self.media_utils.get_song_title_from_phone())

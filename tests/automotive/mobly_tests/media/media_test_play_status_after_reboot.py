@@ -60,6 +60,7 @@ class IsSongPLayingAfterRebootTest(bluetooth_base_test.BluetoothBaseTest):
         self.video_utils_service.enable_screen_recording()
 
         self.media_utils.open_media_app_on_hu()
+        self.call_utils.handle_bluetooth_audio_pop_up()
         # Assert song is playing after HU reboot
         asserts.assert_true(self.media_utils.is_song_playing_on_hu(),
                             'Song should be playing after HU reboot')
