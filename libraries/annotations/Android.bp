@@ -32,3 +32,13 @@ java_library_host {
     name: "platform-test-annotations-host",
     static_libs: ["platform-test-annotations"],
 }
+
+python_library {
+    name: "platform-test-py-annotations",
+    host_supported: true,
+    srcs: [
+        "__init__.py",
+        "src/**/*.py",
+    ],
+    pkg_path: "android/platform/test/annotations",
+}
