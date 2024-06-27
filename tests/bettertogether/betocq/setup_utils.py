@@ -18,7 +18,6 @@ import base64
 import dataclasses
 import datetime
 import time
-from typing import Mapping
 
 from mobly.controllers import android_device
 from mobly.controllers.android_device_lib import adb
@@ -37,7 +36,7 @@ _DISABLE_ENABLE_GMS_UPDATE_WAIT_TIME_SEC = 2
 
 read_ph_flag_failed = False
 
-LOG_TAGS = [
+NEARBY_LOG_TAGS = [
     'Nearby',
     'NearbyMessages',
     'NearbyDiscovery',
@@ -48,7 +47,9 @@ LOG_TAGS = [
 
 
 def set_country_code(
-    ad: android_device.AndroidDevice, country_code: str
+    ad: android_device.AndroidDevice,
+    country_code: str,
+    force_telephony_cc: bool = False,
 ) -> None:
   """Sets Wi-Fi and Telephony country code.
 
@@ -61,9 +62,10 @@ def set_country_code(
   Args:
     ad: AndroidDevice, Mobly Android Device.
     country_code: WiFi and Telephony Country Code.
+    force_telephony_cc: True to force Telephony Country Code.
   """
   try:
-    _do_set_country_code(ad, country_code)
+    _do_set_country_code(ad, country_code, force_telephony_cc)
   except adb.AdbError:
     ad.log.exception(
         f'Failed to set country code on device "{ad.serial}, try again.'
@@ -73,7 +75,9 @@ def set_country_code(
 
 
 def _do_set_country_code(
-    ad: android_device.AndroidDevice, country_code: str
+    ad: android_device.AndroidDevice,
+    country_code: str,
+    force_telephony_cc: bool = False,
 ) -> None:
   """Sets Wi-Fi and Telephony country code."""
   if not ad.is_adb_root:
@@ -83,31 +87,42 @@ def _do_set_country_code(
     )
     return
 
-  ad.log.info(f'Set Wi-Fi and Telephony country code to {country_code}.')
+  ad.log.info(f'Set Wi-Fi country code to {country_code}.')
   ad.adb.shell('cmd wifi set-wifi-enabled disabled')
   time.sleep(WIFI_COUNTRYCODE_CONFIG_TIME_SEC)
-  ad.adb.shell(
-      'am broadcast -a com.android.internal.telephony.action.COUNTRY_OVERRIDE'
-      f' --es country {country_code}'
-  )
+  if force_telephony_cc:
+    ad.log.info(f'Set Telephony country code to {country_code}.')
+    ad.adb.shell(
+        'am broadcast -a com.android.internal.telephony.action.COUNTRY_OVERRIDE'
+        f' --es country {country_code}'
+    )
+    toggle_airplane_mode(ad)
   ad.adb.shell(f'cmd wifi force-country-code enabled {country_code}')
-  enable_airplane_mode(ad)
-  time.sleep(WIFI_COUNTRYCODE_CONFIG_TIME_SEC)
-  disable_airplane_mode(ad)
   ad.adb.shell('cmd wifi set-wifi-enabled enabled')
-  telephony_country_code = (
-      ad.adb.shell('dumpsys wifi | grep mTelephonyCountryCode')
-      .decode('utf-8')
-      .strip()
-  )
-  ad.log.info(f'Telephony country code: {telephony_country_code}')
+  if force_telephony_cc:
+    telephony_country_code = (
+        ad.adb.shell('dumpsys wifi | grep mTelephonyCountryCode')
+        .decode('utf-8')
+        .strip()
+    )
+    ad.log.info(f'Telephony country code: {telephony_country_code}')
 
 
 def enable_logs(ad: android_device.AndroidDevice) -> None:
-  """Enables Nearby related logs."""
+  """Enables Nearby, WiFi and BT detailed logs."""
   ad.log.info('Enable Nearby loggings.')
-  for tag in LOG_TAGS:
+  for tag in NEARBY_LOG_TAGS:
     ad.adb.shell(f'setprop log.tag.{tag} VERBOSE')
+
+  # Enable WiFi verbose logging.
+  ad.adb.shell('cmd wifi set-verbose-logging enabled')
+
+  # Enable Bluetooth HCI logs.
+  ad.adb.shell('setprop persist.bluetooth.btsnooplogmode full')
+
+  # Enable Bluetooth verbose logs.
+  ad.adb.shell('setprop persist.log.tag.bluetooth VERBOSE')
+
 
 
 def grant_manage_external_storage_permission(
@@ -138,7 +153,7 @@ def _do_grant_manage_external_storage_permission(
   _grant_manage_external_storage_permission(ad, package_name)
 
 
-def dump_gms_version(ad: android_device.AndroidDevice) -> Mapping[str, str]:
+def dump_gms_version(ad: android_device.AndroidDevice) -> int:
   """Dumps GMS version from dumpsys to sponge properties."""
   try:
     gms_version = _do_dump_gms_version(ad)
@@ -151,7 +166,7 @@ def dump_gms_version(ad: android_device.AndroidDevice) -> Mapping[str, str]:
   return gms_version
 
 
-def _do_dump_gms_version(ad: android_device.AndroidDevice) -> Mapping[str, str]:
+def _do_dump_gms_version(ad: android_device.AndroidDevice) -> int:
   """Dumps GMS version from dumpsys to sponge properties."""
   out = (
       ad.adb.shell(
@@ -160,7 +175,11 @@ def _do_dump_gms_version(ad: android_device.AndroidDevice) -> Mapping[str, str]:
       .decode('utf-8')
       .strip()
   )
-  return {f'GMS core version on {ad.serial}': out}
+  ad.log.info(f'GMS version: {out}')
+  prefix = 'versionCode='
+  postfix = 'minSdk'
+  search_last = False
+  return get_int_between_prefix_postfix(out, prefix, postfix, search_last)
 
 
 def toggle_airplane_mode(ad: android_device.AndroidDevice) -> None:
@@ -392,7 +411,7 @@ def enable_dfs_scc(ad: android_device.AndroidDevice) -> None:
 
 
 def disable_wlan_deny_list(ad: android_device.AndroidDevice) -> None:
-  """Enable WFD/WIFI_HOTSPOT in a STA-associated DFS channel."""
+  """Disable wlan deny list on the given device."""
   pname = 'com.google.android.gms.nearby'
   flag_name = 'wifi_lan_blacklist_verify_bssid_interval_hours'
   flag_type = 'long'
@@ -497,11 +516,16 @@ def get_wifi_sta_max_link_speed(ad: android_device.AndroidDevice) -> int:
 
 
 def get_int_between_prefix_postfix(
-    string: str, prefix: str, postfix: str
+    string: str, prefix: str, postfix: str, search_last: bool = True
 ) -> int:
-  left_index = string.rfind(prefix)
-  right_index = string.rfind(postfix)
-  if left_index > 0 and right_index > left_index:
+  """Get int between prefix and postfix by searching prefix and then postfix."""
+  if search_last:
+    left_index = string.rfind(prefix)
+    right_index = string.rfind(postfix)
+  else:
+    left_index = string.find(prefix)
+    right_index = string.find(postfix)
+  if left_index >= 0 and right_index > left_index:
     try:
       return int(string[left_index + len(prefix): right_index].strip())
     except ValueError:
