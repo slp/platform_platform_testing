@@ -35,9 +35,6 @@ from mobly import test_runner
 from betocq import d2d_performance_test_base
 from betocq import nc_constants
 
-_PERFORMANCE_TEST_COUNT = 100
-_PERFORMANCE_TEST_MAX_CONSECUTIVE_ERROR = 10
-
 
 class Bt2gWifiCoexTest(d2d_performance_test_base.D2dPerformanceTestBase):
   """Test class for BT and 2G wifi coex with a complicated stress test."""
@@ -58,8 +55,8 @@ class Bt2gWifiCoexTest(d2d_performance_test_base.D2dPerformanceTestBase):
     )
 
   @base_test.repeat(
-      count=_PERFORMANCE_TEST_COUNT,
-      max_consecutive_error=_PERFORMANCE_TEST_MAX_CONSECUTIVE_ERROR,
+      count=nc_constants.BT_COEX_PERFORMANCE_TEST_COUNT,
+      max_consecutive_error=nc_constants.BT_COEX_PERFORMANCE_TEST_MAX_CONSECUTIVE_ERROR,
   )
   def test_bt_2g_wifi_coex(self):
     """Test the BT and 2G wifi coex with a stress test."""

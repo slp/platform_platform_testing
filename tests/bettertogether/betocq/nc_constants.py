@@ -28,8 +28,13 @@ SCC_PERFORMANCE_TEST_COUNT = 10
 SCC_PERFORMANCE_TEST_MAX_CONSECUTIVE_ERROR = 2
 BT_PERFORMANCE_TEST_COUNT = 100
 BT_PERFORMANCE_TEST_MAX_CONSECUTIVE_ERROR = 5
-
+BT_COEX_PERFORMANCE_TEST_COUNT = 100
+BT_COEX_PERFORMANCE_TEST_MAX_CONSECUTIVE_ERROR = 5
 TARGET_POST_WIFI_CONNECTION_IDLE_TIME_SEC = 10
+
+CHANNEL_2G = 6
+CHANNEL_5G = 36
+CHANNEL_5G_DFS = 52
 
 NEARBY_RESET_WAIT_TIME = datetime.timedelta(seconds=2)
 WIFI_DISCONNECTION_DELAY = datetime.timedelta(seconds=1)
@@ -83,8 +88,11 @@ TRANSFER_FILE_SIZE_20MB = 20 * 1024  # kB
 TRANSFER_FILE_SIZE_1MB = 1024  # kB
 TRANSFER_FILE_SIZE_500KB = 512  # kB
 TRANSFER_FILE_SIZE_1KB = 1  # kB
+TRANSFER_FILE_SIZE_20KB = 20  # kB
+TRANSFER_FILE_SIZE_10KB = 10  # kB
 
 TARGET_CUJ_QUICK_START = 'quick_start'
+TARGET_CUJ_NEARBY_CONNECTIONS_FUNCTION = 'nearby_connections_function'
 TARGET_CUJ_ESIM = 'setting_based_esim_transfer'
 TARGET_CUJ_QUICK_SHARE = 'quick_share'
 
@@ -152,10 +160,13 @@ class TestParameters:
   run_directed_test: bool = True
   run_compound_test: bool = True
   run_aware_test: bool = False
-  run_iperf_test: bool = True
+  run_iperf_test: bool = False
+  run_iperf_test_if_nc_speed_is_low: bool = True
   run_nearby_connections_function_tests: bool = False
   skip_test_if_wifi_chipset_is_empty: bool = True
   skip_bug_report: bool = False
+  force_telephony_cc: bool = False
+  bypass_airplane_mode_toggling: bool = False
 
   @classmethod
   def from_user_params(
@@ -324,7 +335,10 @@ COMMON_TRIAGE_TIP: dict[SingleTestFailureReason, str] = {
 }
 
 COMMON_WFD_UPGRADE_FAILURE_REASONS = '\n'.join([
-    'If WFD GO fails to start, check your factory build to ensure that',
+    (
+        'If WFD group owner fails to start, check your factory build to ensure'
+        ' that'
+    ),
     (
         ' 1) includes the wpa_supplicant patch to avoid scan before starting GO'
         ' https://w1.fi/cgit/hostap/commit/?id=b18d95759375834b6ca6f864c898f27d161b14ca.'
@@ -343,7 +357,12 @@ COMMON_WFD_UPGRADE_FAILURE_REASONS = '\n'.join([
     ),
     (
         'Also check if BT socket is still connected and read/write is normal'
-        ' when the upgrade failure happens'
+        ' when the upgrade failure happens.'
+    ),
+    (
+        ' If WFD group client fails to connect, check if the devices are too'
+        ' close to each other. The recommended minimum device is 10cm (4'
+        ' inches).'
     ),
 ])
 
