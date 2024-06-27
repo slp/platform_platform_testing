@@ -41,7 +41,7 @@ class UxRestrictionPlayUnreadMessageWhileDrivingTest(bluetooth_sms_base_test.Blu
 
     # Reboot Phone
     self.target.unload_snippet('mbs')
-    self.call_utils.reboot_device(self.target)
+    self.target.reboot()
     self.call_utils.wait_with_log(30)
     self.target.load_snippet('mbs', android_device.MBS_PACKAGE)
 

@@ -60,13 +60,14 @@ class BluetoothBaseTest(base_test.BaseTestClass):
     def teardown_test(self):
         # Turn Bluetooth off on both devices.
         logging.info("Running basic test teardown.")
+        self.call_utils.press_home()
+        self.call_utils.press_phone_home_icon_using_adb_command(self.target)
+        self.hu_recording_handler()
         self.bt_utils.unpair()
         logging.info("Disable Bluetooth on Discoverer device")
         self.discoverer.mbs.btDisable()
         logging.info("Disable Bluetooth on Target device")
         self.target.mbs.btDisable()
-        self.call_utils.press_home()
-        self.hu_recording_handler()
 
     def hu_recording_handler(self):
         logging.info("Stopping the screen recording on Discoverer Device")

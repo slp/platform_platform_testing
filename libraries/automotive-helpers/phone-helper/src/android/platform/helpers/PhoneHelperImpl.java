@@ -39,6 +39,13 @@ public class PhoneHelperImpl extends AbstractStandardAppHelper implements IAutoP
         pressUIElement(AutomotiveConfigConstants.MOBILE_DIAL_PAD_ICON);
     }
 
+    @Override
+    public boolean isDialPadOpen() {
+        BySelector dialPadSelector =
+                getUiElementFromConfig(AutomotiveConfigConstants.MOBILE_DIALPAD);
+        return getSpectatioUiUtil().hasUiElement(dialPadSelector);
+    }
+
     /** {@inheritDoc} */
     @Override
     public void pressPhoneIcon() {
