@@ -21,7 +21,7 @@
 * Add an option to run iperf test only if NC speed is low.
 * Disable iperf speed test by default.
 * Disable iperf speed check even if the test is done.
-
+* Disable max_link_speed check in AP frequency check.
 
 ## 2.3 (05/28/2024)
 
