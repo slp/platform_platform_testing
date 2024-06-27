@@ -57,6 +57,8 @@ class BlePerformanceTest(d2d_performance_test_base.D2dPerformanceTestBase):
         upgrade_medium_under_test=nc_constants.NearbyMedium.BLE_ONLY,
         force_disable_bt_multiplex=True,
         connection_medium=nc_constants.NearbyMedium.BLE_ONLY,
+        keep_alive_timeout_ms=nc_constants.KEEP_ALIVE_TIMEOUT_BT_MS,
+        keep_alive_interval_ms=nc_constants.KEEP_ALIVE_INTERVAL_BT_MS,
     )
 
   def _get_transfer_file_size(self) -> int:
