@@ -32,6 +32,8 @@ class PhoneDeviceUtils:
         """Assumes the phone is on its home screen.
         Opens the phone app, then dial pad, enters the given number, and starts a call"""
         self.phone_device.mbs.pressPhoneIcon()
+        logging.info("Close the video call popup on Phone")
+        self.phone_device.mbs.clickUIElementWithText(constants.NOT_NOW_TEXT)
         isDialPadOpen = self.phone_device.mbs.isDialPadOpen()
         logging.info("Check if the dial pad is already open: %s", isDialPadOpen)
         if not isDialPadOpen :
