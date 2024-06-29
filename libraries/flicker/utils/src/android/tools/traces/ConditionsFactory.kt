@@ -16,7 +16,11 @@
 
 package android.tools.traces
 
+import android.content.Context
 import android.content.res.Resources
+import android.hardware.devicestate.DeviceState.PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_OUTER_PRIMARY
+import android.hardware.devicestate.DeviceStateManager
+import android.hardware.devicestate.feature.flags.Flags as DeviceStateManagerFlags
 import android.tools.PlatformConsts
 import android.tools.Rotation
 import android.tools.traces.component.ComponentNameMatcher
@@ -26,7 +30,7 @@ import android.tools.traces.surfaceflinger.Transform
 import android.tools.traces.surfaceflinger.Transform.Companion.isFlagSet
 import android.tools.traces.wm.WindowManagerState
 import android.tools.traces.wm.WindowState
-
+import androidx.test.platform.app.InstrumentationRegistry
 import com.android.wm.shell.Flags
 
 object ConditionsFactory {
@@ -34,14 +38,24 @@ object ConditionsFactory {
     /** Check if this is a phone device instead of a folded foldable. */
     fun isPhoneNavBar(): Boolean {
         val isPhone: Boolean
-        val foldedDeviceStatesId: Int =
-            Resources.getSystem().getIdentifier("config_foldedDeviceStates", "array", "android")
-        isPhone =
-            if (foldedDeviceStatesId != 0) {
-                Resources.getSystem().getIntArray(foldedDeviceStatesId).isEmpty()
-            } else {
-                true
-            }
+        if (DeviceStateManagerFlags.deviceStatePropertyMigration()) {
+            val context = InstrumentationRegistry.getInstrumentation().context
+            val deviceStateManager =
+                context.getSystemService(Context.DEVICE_STATE_SERVICE) as DeviceStateManager?
+            isPhone =
+                deviceStateManager?.supportedDeviceStates?.any {
+                    it.hasProperty(PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_OUTER_PRIMARY)
+                } ?: true
+        } else {
+            val foldedDeviceStatesId: Int =
+                Resources.getSystem().getIdentifier("config_foldedDeviceStates", "array", "android")
+            isPhone =
+                if (foldedDeviceStatesId != 0) {
+                    Resources.getSystem().getIntArray(foldedDeviceStatesId).isEmpty()
+                } else {
+                    true
+                }
+        }
         return isPhone
     }
 
@@ -318,8 +332,7 @@ object ConditionsFactory {
             val pipWindow =
                 it.wmState.pinnedWindows.firstOrNull { pinnedWindow ->
                     pinnedWindow.layerId == layerId
-                }
-                    ?: error("Unable to find window with layerId $layerId")
+                } ?: error("Unable to find window with layerId $layerId")
             val windowHeight = pipWindow.frame.height().toFloat()
             val windowWidth = pipWindow.frame.width().toFloat()
 

@@ -16,11 +16,13 @@
 package android.platform.test.rule
 
 import android.app.Instrumentation
+import android.hardware.devicestate.DeviceState.PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_OUTER_PRIMARY
+import android.hardware.devicestate.DeviceStateManager
+import android.hardware.devicestate.feature.flags.Flags as DeviceStateManagerFlags
 import android.os.Build
 import androidx.test.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.android.internal.R
-import java.lang.RuntimeException
 import kotlin.annotation.AnnotationRetention.RUNTIME
 import kotlin.annotation.AnnotationTarget.ANNOTATION_CLASS
 import kotlin.annotation.AnnotationTarget.CLASS
@@ -107,11 +109,19 @@ class DeviceTypeRule : TestRule {
 }
 
 internal fun isFoldable(): Boolean {
-    return getInstrumentation()
-        .targetContext
-        .resources
-        .getIntArray(R.array.config_foldedDeviceStates)
-        .isNotEmpty()
+    if (DeviceStateManagerFlags.deviceStatePropertyMigration()) {
+        val dm: DeviceStateManager =
+            getInstrumentation().targetContext.getSystemService(DeviceStateManager::class.java)
+        return dm.supportedDeviceStates.any { state ->
+            state.hasProperty(PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_OUTER_PRIMARY)
+        }
+    } else {
+        return getInstrumentation()
+            .targetContext
+            .resources
+            .getIntArray(R.array.config_foldedDeviceStates)
+            .isNotEmpty()
+    }
 }
 
 private val isCuttlefish get() = Build.BOARD == "cutf"
