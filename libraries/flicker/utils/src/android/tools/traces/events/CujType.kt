@@ -100,6 +100,12 @@ enum class CujType(val id: Int) {
     CUJ_SHADE_EXPAND_FROM_STATUS_BAR(79),
     CUJ_IME_INSETS_SHOW_ANIMATION(80),
     CUJ_IME_INSETS_HIDE_ANIMATION(81),
+    CUJ_DESKTOP_MODE_MAXIMIZE_WINDOW(104),
+    CUJ_FOLD_ANIM(105),
+    CUJ_DESKTOP_MODE_RESIZE_WINDOW(106),
+    CUJ_DESKTOP_MODE_ENTER_MODE(107),
+    CUJ_DESKTOP_MODE_EXIT_MODE(108),
+    CUJ_DESKTOP_MODE_DRAG_WINDOW(110),
 
     // KEEP AS LAST TYPE
     // used to handle new types that haven't been added here yet but might be dumped by the platform
