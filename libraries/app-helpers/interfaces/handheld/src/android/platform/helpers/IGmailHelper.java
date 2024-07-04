@@ -312,4 +312,11 @@ public interface IGmailHelper extends IAppHelper {
      * <p>This method will check if the current view is on Gmail list page.
      */
     public boolean isOnGmailListPage();
+
+    /**
+     * Setup expectations: Gmail is open and an email is open.
+     *
+     * <p>This method will check if the search mail is found or not.
+     */
+    boolean isSearchMailFound();
 }
