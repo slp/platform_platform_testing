@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 The Android Open Source Project
+ * Copyright (C) 2024 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,22 @@
 
 package android.tools.flicker.assertors.assertions
 
+import android.graphics.Region
 import android.tools.flicker.ScenarioInstance
 import android.tools.flicker.assertions.FlickerTest
 import android.tools.flicker.assertors.ComponentTemplate
 
-/**
- * Checks that [component] window remains inside the display bounds throughout the whole animation
- */
-class AppWindowRemainInsideDisplayBounds(private val component: ComponentTemplate) :
-    AssertionTemplateWithComponent(component) {
+class AppWindowHasSizeOfAtLeast(
+    private val component: ComponentTemplate,
+    private val minimumWidth: Int,
+    private val minimumHeight: Int
+) : AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
-        flicker.assertWm {
-            containsAtLeastOneDisplay().invoke("appWindowRemainInsideDisplayBounds") { entry ->
-                val display = entry.wmState.getDefaultDisplay()!!
-                entry
-                    .visibleRegion(component.build(scenarioInstance))
-                    .coversAtMost(display.displayRect)
-            }
+        flicker.assertLayersEnd {
+            val minimumSize = Region(0, 0, minimumWidth, minimumHeight)
+
+            visibleRegion(component.build(scenarioInstance)).notSmallerThan(minimumSize)
         }
     }
 }

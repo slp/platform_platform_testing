@@ -54,6 +54,7 @@ object Components {
             ScenarioId("CLOSE_APP") -> true
             ScenarioId("CLOSE_LAST_APP") -> true
             ScenarioId("CORNER_RESIZE") -> true
+            ScenarioId("CORNER_RESIZE_TO_MINIMUM_SIZE") -> true
             else -> false
         }
     }
