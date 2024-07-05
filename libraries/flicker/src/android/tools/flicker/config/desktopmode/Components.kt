@@ -40,6 +40,13 @@ object Components {
                 error("Unsupported transition type")
             }
         }
+    val DESKTOP_WALLPAPER =
+        ComponentTemplate("DesktopWallpaper") {
+            ComponentNameMatcher(
+                SYSTEMUI_PACKAGE,
+                "com.android.wm.shell.desktopmode.DesktopWallpaperActivity"
+            )
+        }
 
     private fun isSupported(type: ScenarioId): Boolean {
         return when (type) {
