@@ -19,6 +19,7 @@ package android.platform.helpers;
 import static junit.framework.Assert.assertTrue;
 
 import android.app.Instrumentation;
+import android.app.time.Capabilities;
 import android.app.time.TimeManager;
 import android.platform.helpers.ScrollUtility.ScrollActions;
 import android.platform.helpers.ScrollUtility.ScrollDirection;
@@ -597,8 +598,18 @@ public class SettingsDateTimeHelperImpl extends AbstractStandardAppHelper
         try {
             status = timeManager
                             .getTimeCapabilitiesAndConfig()
+                            .getCapabilities()
+                            .getConfigureAutoDetectionEnabledCapability()
+                                    == Capabilities.CAPABILITY_POSSESSED
+                    && timeManager
+                            .getTimeCapabilitiesAndConfig()
                             .getConfiguration()
                             .isAutoDetectionEnabled()
+                    && timeManager
+                            .getTimeZoneCapabilitiesAndConfig()
+                            .getCapabilities()
+                            .getConfigureAutoDetectionEnabledCapability()
+                                    == Capabilities.CAPABILITY_POSSESSED
                     && timeManager
                             .getTimeZoneCapabilitiesAndConfig()
                             .getConfiguration()
