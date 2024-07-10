@@ -18,11 +18,16 @@ package android.platform.tests;
 
 import static junit.framework.Assert.assertTrue;
 
+import static org.junit.Assume.assumeFalse;
+
+import android.app.time.Capabilities;
+import android.app.time.TimeManager;
 import android.platform.helpers.HelperAccessor;
 import android.platform.helpers.IAutoDateTimeSettingsHelper;
 import android.platform.helpers.IAutoSettingHelper;
 import android.platform.helpers.SettingsConstants;
 
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
 
 import org.junit.After;
@@ -36,6 +41,7 @@ import java.time.LocalDate;
 public class DateTimeSettingTest {
     private HelperAccessor<IAutoDateTimeSettingsHelper> mDateTimeSettingsHelper;
     private HelperAccessor<IAutoSettingHelper> mSettingHelper;
+    private TimeManager mTimeManager;
 
     private static final boolean IS_AM = true;
     private static final int DEFAULT_WAIT_TIME = 5000;
@@ -54,45 +60,60 @@ public class DateTimeSettingTest {
     public DateTimeSettingTest() throws Exception {
         mDateTimeSettingsHelper = new HelperAccessor<>(IAutoDateTimeSettingsHelper.class);
         mSettingHelper = new HelperAccessor<>(IAutoSettingHelper.class);
+        mTimeManager =
+                InstrumentationRegistry.getInstrumentation()
+                        .getContext()
+                        .getSystemService(TimeManager.class);
     }
 
 
     @Before
     public void openDateTimeFacet() {
+        InstrumentationRegistry.getInstrumentation()
+                .getUiAutomation()
+                .adoptShellPermissionIdentity("android.permission.MANAGE_TIME_AND_ZONE_DETECTION");
         mSettingHelper.get().openSetting(SettingsConstants.DATE_AND_TIME_SETTINGS);
     }
 
     @After
     public void goBackToSettingsScreen() {
+        InstrumentationRegistry.getInstrumentation()
+                .getUiAutomation()
+                .dropShellPermissionIdentity();
         mSettingHelper.get().goBackToSettingsScreen();
     }
 
     @Test
     public void testSetDate() {
+        assumeFalse(checkCapabilitiesNotPossessedAndAutoLocalTimeEnabled());
         mDateTimeSettingsHelper.get().setDate(DATE);
         assertTrue(mDateTimeSettingsHelper.get().getDate().equals(DATE));
     }
 
     @Test
     public void testSetTimeTwelveHourFormat() {
+        assumeFalse(checkCapabilitiesNotPossessedAndAutoLocalTimeEnabled());
         mDateTimeSettingsHelper.get().setTimeInTwelveHourFormat(HOUR, MINUTE, IS_AM);
         assertTrue(mDateTimeSettingsHelper.get().getTime().matches(FULL_TIME_TWELVE_REGEX));
     }
 
     @Test
     public void testSetTimeTwentyFourHourFormat() {
+        assumeFalse(checkCapabilitiesNotPossessedAndAutoLocalTimeEnabled());
         mDateTimeSettingsHelper.get().setTimeInTwentyFourHourFormat(HOUR, MINUTE);
         assertTrue(mDateTimeSettingsHelper.get().getTime().equals(FULL_TIME_TWENTYFOUR));
     }
 
     @Test
     public void testSetTimeZone() {
+        assumeFalse(checkCapabilitiesNotPossessedAndAutoLocalTimeEnabled());
         mDateTimeSettingsHelper.get().setTimeZone(TIME_ZONE);
         assertTrue(mDateTimeSettingsHelper.get().getTimeZone().equals(TIME_ZONE_FULL));
     }
 
     @Test
     public void testSetTwentyFourHourFormat() {
+        assumeFalse(checkCapabilitiesNotPossessedAndAutoLocalTimeEnabled());
         if (!mDateTimeSettingsHelper.get().isTwentyFourHourFormatEnabled()) {
             mDateTimeSettingsHelper.get().toggleTwentyFourHourFormatSwitch();
         }
@@ -102,10 +123,28 @@ public class DateTimeSettingTest {
 
     @Test
     public void testSetTwelveHourFormat() {
+        assumeFalse(checkCapabilitiesNotPossessedAndAutoLocalTimeEnabled());
         if (mDateTimeSettingsHelper.get().isTwentyFourHourFormatEnabled()) {
             mDateTimeSettingsHelper.get().toggleTwentyFourHourFormatSwitch();
         }
         String currentUiTime = mDateTimeSettingsHelper.get().getTime();
         assertTrue(currentUiTime.indexOf("AM") != -1 || currentUiTime.indexOf("PM") != -1);
+    }
+
+    private boolean checkCapabilitiesNotPossessedAndAutoLocalTimeEnabled() {
+        return (mTimeManager.getTimeCapabilitiesAndConfig()
+                                        .getCapabilities()
+                                        .getConfigureAutoDetectionEnabledCapability()
+                                != Capabilities.CAPABILITY_POSSESSED
+                        && mTimeManager.getTimeCapabilitiesAndConfig()
+                                .getConfiguration()
+                                .isAutoDetectionEnabled())
+                || (mTimeManager.getTimeZoneCapabilitiesAndConfig()
+                                        .getCapabilities()
+                                        .getConfigureAutoDetectionEnabledCapability()
+                                != Capabilities.CAPABILITY_POSSESSED
+                        && mTimeManager.getTimeZoneCapabilitiesAndConfig()
+                                .getConfiguration()
+                                .isAutoDetectionEnabled());
     }
 }
