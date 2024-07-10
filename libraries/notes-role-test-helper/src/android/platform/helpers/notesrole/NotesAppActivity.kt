@@ -136,7 +136,7 @@ class NotesAppActivity : ComponentActivity() {
     }
 
     companion object {
-        private const val PADDING = 20
+        private const val PADDING = 50
 
         const val FINISH_NOTES_APP_ACTIVITY_ACTION: String = "FINISH_NOTES_APP_ACTIVITY_ACTION"
         const val APP_CLIPS_BUTTON_TEXT: String = "TRIGGER APP CLIPS"
