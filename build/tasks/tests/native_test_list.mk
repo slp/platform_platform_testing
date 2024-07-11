@@ -38,7 +38,6 @@ native_tests := \
     boringssl_crypto_test \
     boringssl_ssl_test \
     bsdiff_unittest \
-    buffer_hub-test \
     bugreportz_test \
     bytes_test_tests_test_buf \
     bytes_test_tests_test_buf_mut \
