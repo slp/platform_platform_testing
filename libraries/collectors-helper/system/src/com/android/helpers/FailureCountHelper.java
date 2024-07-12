@@ -68,6 +68,7 @@ public class FailureCountHelper implements ICollectorHelper<Integer> {
         String testClass = description.getClassName();
         String testMethod = description.getMethodName();
         // The iteration count must be removed if it exists.
-        return String.format("%s.%s", testClass.split("\\$")[0], testMethod.split("\\$")[0]);
+        return String.format(
+                "failure_count_%s.%s", testClass.split("\\$")[0], testMethod.split("\\$")[0]);
     }
 }

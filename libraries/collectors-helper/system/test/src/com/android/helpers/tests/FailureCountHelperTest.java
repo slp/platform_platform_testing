@@ -84,7 +84,8 @@ public class FailureCountHelperTest {
                 Description.createTestDescription(
                         "android.platform.test.scenario.youtube.PlayVideo", "testPlayVideo");
 
-        String expectedKey = "android.platform.test.scenario.youtube.PlayVideo.testPlayVideo";
+        String expectedKey =
+                "failure_count_android.platform.test.scenario.youtube.PlayVideo.testPlayVideo";
         assertEquals(expectedKey, mHelper.convertTestDescriptionToKey(testDesc1));
         assertEquals(expectedKey, mHelper.convertTestDescriptionToKey(testDesc2));
     }
