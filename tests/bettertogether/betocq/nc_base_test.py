@@ -161,22 +161,30 @@ class NCBaseTestClass(base_test.BaseTestClass):
     if not self.user_params.get('use_auto_controlled_wifi_ap', False):
       return
 
-    self.openwrt = self.register_controller(openwrt_device)[0]
+    openwrt_devices = self.register_controller(openwrt_device)
+    if len(openwrt_devices) >= 2:
+      self.openwrt, self.sniffer = openwrt_devices[:2]
+      logging.debug(
+          'Using device %s as AP and %s as sniffer.',
+          self.openwrt,
+          self.sniffer,
+      )
+    else:
+      self.openwrt = openwrt_devices[0]
+      logging.debug('Using device %s as router.', self.openwrt)
+
     if 'wifi_channel' in self.user_params:
       wifi_channel = self.user_params['wifi_channel']
-      self.wifi_info = self.openwrt.start_wifi(
-          config=wifi_configs.WiFiConfig(
-              channel=wifi_channel,
-              country_code=self._get_country_code(),
-          )
+      self.openwrt_wifi_config = wifi_configs.WiFiConfig(
+          channel=wifi_channel,
+          country_code=self._get_country_code(),
       )
     else:
       wifi_channel = None
-      self.wifi_info = self.openwrt.start_wifi(
-          config=wifi_configs.WiFiConfig(
-              country_code=self._get_country_code(),
-          )
+      self.openwrt_wifi_config = wifi_configs.WiFiConfig(
+          country_code=self._get_country_code(),
       )
+    self.wifi_info = self.openwrt.start_wifi(config=self.openwrt_wifi_config)
 
     if wifi_channel is None:
       self.test_parameters.wifi_ssid = self.wifi_info.ssid
@@ -297,6 +305,19 @@ class NCBaseTestClass(base_test.BaseTestClass):
         },
     })
     self._reset_nearby_connection()
+    self._stop_packet_capture(ignore_packets=True)
+    self._start_packet_capture()
+
+  def _start_packet_capture(self) -> None:
+    """Starts packet capture if this test is using a sniffer."""
+    if hasattr(self, 'sniffer'):
+      self.sniffer.start_packet_capture(wifi_config=self.openwrt_wifi_config)
+
+  def _stop_packet_capture(self, ignore_packets: bool):
+    """Stops packet capture if this test is using a sniffer."""
+    if hasattr(self, 'sniffer'):
+      test_info = None if ignore_packets else self.current_test_info
+      self.sniffer.stop_packet_capture(test_info)
 
   def _reset_wifi_connection(self) -> None:
     """Resets wifi connections on both devices."""
@@ -420,6 +441,7 @@ class NCBaseTestClass(base_test.BaseTestClass):
     if self.__skipped_test_class:
       logging.info('Skipping on_fail.')
       return
+    self._stop_packet_capture(ignore_packets=False)
     if self.test_parameters.skip_bug_report:
       logging.info('Skipping bug report.')
       return
@@ -430,3 +452,6 @@ class NCBaseTestClass(base_test.BaseTestClass):
           self.ads,
           destination=self.current_test_info.output_path,
       )
+
+  def on_pass(self, record: records.TestResultRecord) -> None:
+    self._stop_packet_capture(ignore_packets=True)
