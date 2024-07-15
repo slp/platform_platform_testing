@@ -53,7 +53,8 @@ object Utils {
 
     fun interpolateFinishTimestampFromTransition(
         transition: Transition,
-        reader: Reader
+        reader: Reader,
+        debugString: String? = null,
     ): Timestamp {
         val layersTrace = reader.readLayersTrace() ?: error("Missing layers trace")
         val wmTrace = reader.readWmTrace() ?: error("Missing WM trace")
@@ -93,8 +94,7 @@ object Utils {
                     val closestWmEntry =
                         wmTrace.entries.minByOrNull {
                             abs(it.timestamp.elapsedNanos - transition.finishTime.elapsedNanos)
-                        }
-                            ?: error("WM entry was unexpectedly empty!")
+                        } ?: error("WM entry was unexpectedly empty!")
                     val offset =
                         closestWmEntry.timestamp.unixNanos - closestWmEntry.timestamp.elapsedNanos
                     transition.finishTime.elapsedNanos + offset
@@ -109,7 +109,13 @@ object Utils {
                 (wmTrace.entries.firstOrNull { it.timestamp >= finishTransactionAppliedTimestamp }
                         ?: error(
                             "No WM trace entry with timestamp greater than or equal to the " +
-                                "layers trace the finish transaction was applied in"
+                                "timestamp ($finishTransactionAppliedTimestamp) in the layers " +
+                                "trace the finish transaction was applied in.\n\n" +
+                                "Processing transition: $transition\n\n" +
+                                "Computed finish transaction applied ts: " +
+                                "$finishTransactionAppliedTimestamp\n\n" +
+                                "Last WM entry ts: ${wmTrace.entries.last().timestamp}\n\n" +
+                                (if (debugString != null) "DEBUG: $debugString" else "")
                         ))
                     .timestamp
                     .elapsedNanos
