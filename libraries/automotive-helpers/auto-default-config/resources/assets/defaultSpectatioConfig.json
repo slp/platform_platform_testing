@@ -1726,7 +1726,7 @@
     },
     "TOGGLE_MICROPHONE": {
       "TYPE": "TEXT",
-      "VALUE": "Use microphone"
+      "VALUE": "Infotainment apps"
     },
     "MICRO_PHONE_MUTED_CHIP_STATUS_BAR": {
       "TYPE": "RESOURCE_ID",
