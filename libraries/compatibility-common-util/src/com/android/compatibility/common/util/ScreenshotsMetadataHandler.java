@@ -38,6 +38,7 @@ public class ScreenshotsMetadataHandler {
     private static final String CASE_TAG = "TestCase";
     private static final String MODULE_TAG = "Module";
     private static final String NAME_ATTR = "name";
+    private static final String ABI_ATTR = "abi";
     private static final String RESULT_TAG = "Result";
     private static final String TEST_TAG = "Test";
 
@@ -61,6 +62,7 @@ public class ScreenshotsMetadataHandler {
         for (IModuleResult module : result.getModules()) {
             serializer.startTag(NS, MODULE_TAG);
             serializer.attribute(NS, NAME_ATTR, module.getName());
+            serializer.attribute(NS, ABI_ATTR, module.getAbi());
             for (ICaseResult cr : module.getResults()) {
                 serializer.startTag(NS, CASE_TAG);
                 serializer.attribute(NS, NAME_ATTR, cr.getName());
