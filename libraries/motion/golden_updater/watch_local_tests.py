@@ -33,6 +33,8 @@ import mimetypes
 import hashlib
 import shutil
 import secrets
+import datetime
+
 
 from collections import defaultdict
 
@@ -55,23 +57,9 @@ def main():
     )
 
     parser.add_argument(
-        "--watch",
-        nargs="*",
-        action="append",
-        help="package:subdirectory where motion goldens are expected.",
-    )
-
-    parser.add_argument(
         "--android_build_top",
         default=os.environ.get("ANDROID_BUILD_TOP"),
         help="The root directory of the android checkout.",
-    )
-
-    parser.add_argument(
-        "--clean",
-        default=False,
-        type=bool,
-        help="Whether to clean the golden directory on device at startup.",
     )
 
     parser.add_argument(
@@ -114,23 +102,6 @@ def main():
         global golden_watcher, this_server_address
         golden_watcher = GoldenFileWatcher(tmpdir, adb_client)
 
-        for dir in golden_watcher.list_golden_output_directories():
-            golden_watcher.add_remote_dir(dir)
-
-        if args.watch is not None:
-            for watching in args.watch:
-                parts = watching.split(":", 1)
-                package, output_dir = parts
-                if len(parts) == 2:
-                    golden_watcher.add_remote_dir(
-                        f"/data/user/0/{package}/files/{output_dir}/"
-                    )
-                else:
-                    print(f"skipping wrongly formatted watch arg [{watching}]")
-
-        if args.clean:
-            golden_watcher.clean()
-
         this_server_address = f"http://localhost:{args.port}"
 
         with socketserver.TCPServer(
@@ -142,6 +113,7 @@ def main():
             try:
                 httpd.serve_forever()
             except KeyboardInterrupt:
+                httpd.shutdown()
                 print("Shutting down")
 
 
@@ -181,13 +153,28 @@ class WatchWebAppRequestHandler(http.server.BaseHTTPRequestHandler):
 
         if parsed.path == "/service/list":
             self.service_list_goldens()
+            return
         elif parsed.path.startswith("/golden/"):
             requested_file_start_index = parsed.path.find("/", len("/golden/") + 1)
             requested_file = parsed.path[requested_file_start_index + 1 :]
             print(requested_file)
             self.serve_file(golden_watcher.temp_dir, requested_file)
-        else:
-            self.send_error(404)
+            return
+        elif parsed.path.startswith("/expected/"):
+            golden_id = parsed.path[len("/expected/") :]
+            print(golden_id)
+
+            goldens = golden_watcher.cached_goldens.values()
+            for golden in goldens:
+                if golden.id != golden_id:
+                    continue
+
+                self.serve_file(
+                    android_build_top, golden.golden_repo_path, "application/json"
+                )
+                return
+
+        self.send_error(404)
 
     def do_POST(self):
         if not self.verify_access_token():
@@ -221,7 +208,7 @@ class WatchWebAppRequestHandler(http.server.BaseHTTPRequestHandler):
         else:
             self.send_error(404)
 
-    def serve_file(self, root_directory, file_relative_to_root):
+    def serve_file(self, root_directory, file_relative_to_root, mime_type=None):
         resolved_path = path.abspath(path.join(root_directory, file_relative_to_root))
 
         print(resolved_path)
@@ -231,12 +218,9 @@ class WatchWebAppRequestHandler(http.server.BaseHTTPRequestHandler):
             [resolved_path, root_directory]
         ) == root_directory and path.isfile(resolved_path):
             self.send_response(200)
-            self.send_header("Content-type", mimetypes.guess_type(resolved_path)[0])
-            # Accept-ranges: bytes is needed for chrome to allow seeking the
-            # video. At this time, won't handle ranges on subsequent gets,
-            # but that is likely OK given the size of these videos and that
-            # its local only.
-            self.send_header("Accept-ranges", "bytes")
+            self.send_header(
+                "Content-type", mime_type or mimetypes.guess_type(resolved_path)[0]
+            )
             self.add_standard_headers()
             self.end_headers()
             with open(resolved_path, "rb") as f:
@@ -259,34 +243,22 @@ class WatchWebAppRequestHandler(http.server.BaseHTTPRequestHandler):
             golden_data["label"] = golden.golden_identifier
             golden_data["goldenRepoPath"] = golden.golden_repo_path
             golden_data["updated"] = golden.updated
+            golden_data["testClassName"] = golden.test_class_name
+            golden_data["testMethodName"] = golden.test_method_name
+            golden_data["testTime"] = golden.test_time
 
-            if isinstance(golden, CachedMotionGolden):
-                golden_data["type"] = "motion"
-                golden_data["actualUrl"] = (
-                    f"{this_server_address}/golden/{golden.checksum}/{golden.local_file[len(golden_watcher.temp_dir) + 1 :]}"
+            golden_data["actualUrl"] = (
+                f"{this_server_address}/golden/{golden.checksum}/{golden.local_file[len(golden_watcher.temp_dir) + 1 :]}"
+            )
+            expected_file = path.join(android_build_top, golden.golden_repo_path)
+            if os.path.exists(expected_file):
+                golden_data["expectedUrl"] = (
+                    f"{this_server_address}/expected/{golden.id}"
                 )
-                golden_data["videoUrl"] = (
-                    f"{this_server_address}/golden/{golden.checksum}/{golden.video_location}"
-                )
 
-            elif isinstance(golden, CachedScreenshotGolden):
-                golden_data["type"] = "screenshot"
-
-                golden_data["label"] = golden.golden_identifier
-                golden_data["actualUrl"] = (
-                    f"{this_server_address}/golden/{golden.checksum}/{golden.actual_image}"
-                )
-                if golden.expected_image:
-                    golden_data["expectedUrl"] = (
-                        f"{this_server_address}/golden/{golden.checksum}/{golden.expected_image}"
-                    )
-                if golden.diff_image:
-                    golden_data["diffUrl"] = (
-                        f"{this_server_address}/golden/{golden.checksum}/{golden.diff_image}"
-                    )
-
-            else:
-                continue
+            golden_data["videoUrl"] = (
+                f"{this_server_address}/golden/{golden.checksum}/{golden.video_location}"
+            )
 
             goldens_list.append(golden_data)
 
@@ -295,9 +267,7 @@ class WatchWebAppRequestHandler(http.server.BaseHTTPRequestHandler):
     def service_refresh_goldens(self, clear):
         if clear:
             golden_watcher.clean()
-        for dir in golden_watcher.list_golden_output_directories():
-            golden_watcher.add_remote_dir(dir)
-        golden_watcher.refresh_all_golden_files()
+        golden_watcher.refresh_golden_files()
         self.service_list_goldens()
 
     def service_update_golden(self, id):
@@ -307,24 +277,14 @@ class WatchWebAppRequestHandler(http.server.BaseHTTPRequestHandler):
                 print("skip", golden.id)
                 continue
 
-            if isinstance(golden, CachedMotionGolden):
-                shutil.copyfile(
-                    golden.local_file,
-                    path.join(android_build_top, golden.golden_repo_path),
-                )
+            shutil.copyfile(
+                golden.local_file,
+                path.join(android_build_top, golden.golden_repo_path),
+            )
 
-                golden.updated = True
-                self.send_json({"result": "OK"})
-                return
-            elif isinstance(golden, CachedScreenshotGolden):
-                shutil.copyfile(
-                    path.join(golden_watcher.temp_dir, golden.actual_image),
-                    path.join(android_build_top, golden.golden_repo_path),
-                )
-
-                golden.updated = True
-                self.send_json({"result": "OK"})
-                return
+            golden.updated = True
+            self.send_json({"result": "OK"})
+            return
 
         self.send_error(400)
 
@@ -338,14 +298,18 @@ class WatchWebAppRequestHandler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(data_encoded)
 
     def add_standard_headers(self):
-        self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS")
         self.send_header(
             "Access-Control-Allow-Headers",
-            GOLDEN_ACCESS_TOKEN_HEADER + ", Content-Type, Content-Length",
+            GOLDEN_ACCESS_TOKEN_HEADER
+            + ", Content-Type, Content-Length, Range, Accept-ranges",
         )
-        self.send_header("Access-Control-Expose-Headers", "Winscope-Proxy-Version")
+        # Accept-ranges: bytes is needed for chrome to allow seeking the
+        # video. At this time, won't handle ranges on subsequent gets,
+        # but that is likely OK given the size of these videos and that
+        # its local only.
+        self.send_header("Accept-ranges", "bytes")
 
 
 class GoldenFileWatcher:
@@ -353,93 +317,32 @@ class GoldenFileWatcher:
     def __init__(self, temp_dir, adb_client):
         self.temp_dir = temp_dir
         self.adb_client = adb_client
-        self.remote_dirs = set()
 
         # name -> CachedGolden
         self.cached_goldens = {}
-
-    def add_remote_dir(self, remote_dir):
-        self.remote_dirs.add(remote_dir)
-        self.refresh_golden_files(remote_dir)
-
-    def list_golden_output_directories(self):
-        marker_name = ".motion_test_output_marker"
-        command = f"find /data/user/0/ -type f -name {marker_name}"
-
-        files = self.run_adb_command(["shell", command]).splitlines()
-        print(f"Found {len(files)} motion directories")
-
-        return [name[: -len(marker_name)] for name in files]
+        self.refresh_golden_files()
 
     def clean(self):
         self.cached_goldens = {}
-        for remote_path in self.remote_dirs:
-            self.run_adb_command(["shell", f"rm -rf {remote_path}"])
 
-    def refresh_all_golden_files(self):
-        for remote_path in self.remote_dirs:
-            self.refresh_golden_files(remote_path)
-
-    def refresh_golden_files(self, remote_dir):
-
-        updated_goldens = self.list_golden_files(remote_dir)
+    def refresh_golden_files(self):
+        command = f"find /data/user/0/ -type f -name *.actual.json"
+        updated_goldens = self.run_adb_command(["shell", command]).splitlines()
+        print(f"Updating goldens - found {len(updated_goldens)} files")
 
         for golden_remote_file in updated_goldens:
-
             local_file = self.adb_pull(golden_remote_file)
 
-            golden = None
-            if local_file.endswith(".json"):
-                golden = self.motion_golden(remote_dir, golden_remote_file, local_file)
-            elif local_file.endswith("goldResult.textproto"):
-                golden = self.screenshot_golden(
-                    remote_dir, golden_remote_file, local_file
-                )
+            golden = CachedGolden(golden_remote_file, local_file)
+            if golden.video_location:
+                self.adb_pull_image(golden.device_local_path, golden.video_location)
 
-            if golden != None:
-                self.cached_goldens[golden_remote_file] = golden
-            else:
-                print(f"skipping unknonwn golden ")
-
-    def motion_golden(self, remote_dir, remote_file, local_file):
-
-        golden = CachedMotionGolden(remote_file, local_file)
-        golden.checksum = hashlib.md5(open(local_file, "rb").read()).hexdigest()
-
-        if golden.video_location:
-            self.adb_pull_image(remote_dir, golden.video_location)
-
-        return golden
-
-    def screenshot_golden(self, remote_dir, remote_file, local_file):
-        golden = CachedScreenshotGolden(remote_file, local_file)
-
-        if golden.actual_image:
-            local_actual_image = self.adb_pull_image(remote_dir, golden.actual_image)
-            golden.checksum = hashlib.md5(
-                open(local_actual_image, "rb").read()
-            ).hexdigest()
-        if golden.expected_image:
-            self.adb_pull_image(remote_dir, golden.expected_image)
-        if golden.diff_image:
-            self.adb_pull_image(remote_dir, golden.diff_image)
-
-        return golden
-
-    def list_golden_files(self, remote_dir):
-        print(f"Polling for updated goldens")
-
-        command = f"find {remote_dir} -type f \\( -name *.json -o -name *.textproto \\)"
-
-        files = self.run_adb_command(["shell", command]).splitlines()
-        print(f"Found {len(files)} files")
-
-        return files
+            self.cached_goldens[golden_remote_file] = golden
 
     def adb_pull(self, remote_file):
         local_file = os.path.join(self.temp_dir, os.path.basename(remote_file))
         self.run_adb_command(["pull", remote_file, local_file])
-        # self.run_adb_command(["shell", "rm", remote_file])
+        self.run_adb_command(["shell", "rm", remote_file])
         return local_file
 
     def adb_pull_image(self, remote_dir, remote_file):
@@ -447,7 +350,7 @@ class GoldenFileWatcher:
         local_path = os.path.join(self.temp_dir, remote_file)
         os.makedirs(os.path.dirname(local_path), exist_ok=True)
         self.run_adb_command(["pull", remote_path, local_path])
-        # self.run_adb_command(["shell", "rm", remote_path])
+        self.run_adb_command(["shell", "rm", remote_path])
         return local_path
 
     def run_adb_command(self, args):
@@ -461,12 +364,11 @@ class CachedGolden:
         self.remote_file = remote_file
         self.local_file = local_file
         self.updated = False
-        self.checksum = "0"
+        self.test_time = datetime.datetime.now().isoformat()
+        # Checksum is the time the test data was loaded, forcing unique URLs
+        # every time the golden is reloaded
+        self.checksum = hashlib.md5(self.test_time.encode("utf-8")).hexdigest()
 
-
-class CachedMotionGolden(CachedGolden):
-
-    def __init__(self, remote_file, local_file):
         motion_golden_data = None
         with open(local_file, "r") as json_file:
             motion_golden_data = json.load(json_file)
@@ -475,37 +377,16 @@ class CachedMotionGolden(CachedGolden):
         self.result = metadata["result"]
         self.golden_repo_path = metadata["goldenRepoPath"]
         self.golden_identifier = metadata["goldenIdentifier"]
+        self.test_class_name = metadata["testClassName"]
+        self.test_method_name = metadata["testMethodName"]
+        self.device_local_path = metadata["deviceLocalPath"]
         self.video_location = None
         if "videoLocation" in metadata:
-          self.video_location = metadata["videoLocation"]
-
-        self.test_identifier = metadata["filmstripTestIdentifier"]
+            self.video_location = metadata["videoLocation"]
 
         with open(local_file, "w") as json_file:
             del motion_golden_data["//metadata"]
             json.dump(motion_golden_data, json_file, indent=2)
-
-        super().__init__(remote_file, local_file)
-
-
-class CachedScreenshotGolden(CachedGolden):
-
-    def __init__(self, remote_file, local_file):
-
-        metadata = parse_text_proto(local_file)
-
-        self.golden_repo_path = metadata["image_location_golden"]
-        self.actual_image = metadata["image_location_test"]
-
-        match = re.search(r"_actual_(.*?)\.png$", self.actual_image)
-        if match:
-            self.golden_identifier = match.group(1)
-
-        self.expected_image = metadata["image_location_reference"]
-        self.diff_image = metadata["image_location_diff"]
-        self.result = metadata["result_type"]
-
-        super().__init__(remote_file, local_file)
 
 
 class AdbClient:
@@ -540,40 +421,6 @@ def find_free_port():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind(("", 0))  # Bind to a random free port provided by the OS
         return s.getsockname()[1]  # Get the port number
-
-
-def parse_text_proto(filename):
-    data = defaultdict(dict)
-    level = 0
-
-    with open(filename, "r") as file:
-        for line in file:
-            line = line.strip()
-
-            if line.endswith("{"):
-                level += 1
-                continue
-
-            if line == "}":
-                level -= 1
-                continue
-
-            # not consuming nested messages for now
-            if not line or line.startswith("#") or level > 0:
-                continue
-
-            key, value = line.split(":", 1)
-            if not key or not value:
-                continue
-
-            key, value = key.strip(), value.strip()
-
-            if value.startswith('"') and value.endswith('"'):
-                value = value[1:-1]
-
-            data[key] = value
-
-    return data
 
 
 def get_token() -> str:
