@@ -25,9 +25,12 @@ import com.android.server.wm.nano.WindowManagerTraceFileProto
 import com.android.server.wm.nano.WindowManagerTraceProto
 
 /** Parser for [WindowManagerTrace] objects containing traces */
-open class WindowManagerTraceParser(private val legacyTrace: Boolean = false) :
+open class LegacyWindowManagerTraceParser(private val legacyTrace: Boolean = false) :
     AbstractTraceParser<
-        WindowManagerTraceFileProto, WindowManagerTraceProto, WindowManagerState, WindowManagerTrace
+        WindowManagerTraceFileProto,
+        WindowManagerTraceProto,
+        WindowManagerState,
+        WindowManagerTrace
     >() {
     private var realToElapsedTimeOffsetNanos = 0L
 

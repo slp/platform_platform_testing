@@ -32,8 +32,8 @@ import android.tools.traces.io.ArtifactBuilder
 import android.tools.traces.io.ResultWriter
 import android.tools.traces.parsers.perfetto.LayersTraceParser
 import android.tools.traces.parsers.perfetto.TraceProcessorSession
+import android.tools.traces.parsers.wm.LegacyWindowManagerTraceParser
 import android.tools.traces.parsers.wm.WindowManagerDumpParser
-import android.tools.traces.parsers.wm.WindowManagerTraceParser
 import android.tools.traces.wm.ConfigurationContainerImpl
 import android.tools.traces.wm.RootWindowContainer
 import android.tools.traces.wm.WindowContainerImpl
@@ -142,7 +142,7 @@ fun getWmTraceReaderFromAsset(
     return ParsedTracesReader(
         artifact = TestArtifact(relativePath),
         wmTrace =
-            WindowManagerTraceParser(legacyTrace)
+            LegacyWindowManagerTraceParser(legacyTrace)
                 .parse(
                     readAsset(relativePath),
                     Timestamps.from(elapsedNanos = from),

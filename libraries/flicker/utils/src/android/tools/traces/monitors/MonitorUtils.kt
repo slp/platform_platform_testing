@@ -32,7 +32,7 @@ import android.tools.traces.monitors.wm.WindowManagerTraceMonitor
 import android.tools.traces.parsers.perfetto.LayersTraceParser
 import android.tools.traces.parsers.perfetto.TraceProcessorSession
 import android.tools.traces.parsers.perfetto.TransactionsTraceParser
-import android.tools.traces.parsers.wm.WindowManagerTraceParser
+import android.tools.traces.parsers.wm.LegacyWindowManagerTraceParser
 import android.tools.traces.surfaceflinger.LayersTrace
 import android.tools.traces.surfaceflinger.TransactionsTrace
 import android.tools.traces.wm.WindowManagerTrace
@@ -47,7 +47,7 @@ import perfetto.protos.PerfettoConfig.SurfaceFlingerLayersConfig
  * @throws UnsupportedOperationException If tracing is already activated
  */
 fun withWMTracing(predicate: () -> Unit): WindowManagerTrace {
-    return WindowManagerTraceParser()
+    return LegacyWindowManagerTraceParser()
         .parse(WindowManagerTraceMonitor().withTracing(Tag.ALL, predicate))
 }
 

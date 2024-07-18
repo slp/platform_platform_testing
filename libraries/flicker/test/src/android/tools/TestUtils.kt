@@ -39,7 +39,7 @@ import android.tools.traces.parsers.perfetto.LayersTraceParser
 import android.tools.traces.parsers.perfetto.TraceProcessorSession
 import android.tools.traces.parsers.perfetto.TransactionsTraceParser
 import android.tools.traces.parsers.wm.LegacyTransitionTraceParser
-import android.tools.traces.parsers.wm.WindowManagerTraceParser
+import android.tools.traces.parsers.wm.LegacyWindowManagerTraceParser
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import java.io.File
@@ -62,7 +62,7 @@ internal fun getTraceReaderFromScenario(scenario: String): Reader {
 
     return ParsedTracesReader(
         artifact = TestArtifact(scenario),
-        wmTrace = WindowManagerTraceParser().parse(scenarioTraces.wmTrace.readBytes()),
+        wmTrace = LegacyWindowManagerTraceParser().parse(scenarioTraces.wmTrace.readBytes()),
         layersTrace = layersTrace,
         transitionsTrace =
             LegacyTransitionTraceParser()

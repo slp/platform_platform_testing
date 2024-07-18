@@ -34,8 +34,8 @@ import android.tools.traces.parsers.perfetto.TraceProcessorSession
 import android.tools.traces.parsers.perfetto.TransactionsTraceParser
 import android.tools.traces.parsers.perfetto.TransitionsTraceParser
 import android.tools.traces.parsers.wm.LegacyTransitionTraceParser
+import android.tools.traces.parsers.wm.LegacyWindowManagerTraceParser
 import android.tools.traces.parsers.wm.WindowManagerDumpParser
-import android.tools.traces.parsers.wm.WindowManagerTraceParser
 import android.tools.traces.protolog.ProtoLogTrace
 import android.tools.traces.surfaceflinger.LayersTrace
 import android.tools.traces.surfaceflinger.TransactionsTrace
@@ -56,15 +56,20 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
     @VisibleForTesting
     var result = _result
         internal set
+
     override val artifact: Artifact = result.artifact
     override val artifactPath: String
         get() = result.artifact.absolutePath
+
     override val runStatus
         get() = result.runStatus
+
     internal val transitionTimeRange
         get() = result.transitionTimeRange
+
     override val isFailure
         get() = runStatus.isFailure
+
     override val executionError
         get() = result.executionError
 
@@ -97,7 +102,7 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
             val descriptor = ResultArtifactDescriptor(TraceType.WM)
             artifact.readBytes(descriptor)?.let {
                 val trace =
-                    WindowManagerTraceParser()
+                    LegacyWindowManagerTraceParser()
                         .parse(
                             it,
                             from = transitionTimeRange.start,

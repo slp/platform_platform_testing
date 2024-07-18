@@ -20,7 +20,7 @@ import android.tools.Cache
 import android.tools.testutils.CleanFlickerEnvironmentRule
 import android.tools.testutils.readAsset
 import android.tools.traces.monitors.wm.WindowManagerTraceMonitor
-import android.tools.traces.parsers.wm.WindowManagerTraceParser
+import android.tools.traces.parsers.wm.LegacyWindowManagerTraceParser
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.google.common.truth.Truth
@@ -28,8 +28,8 @@ import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Test
 
-/** Tests for [WindowManagerTraceParser] */
-class WindowManagerTraceParserTest {
+/** Tests for [LegacyWindowManagerTraceParser] */
+class LegacyWindowManagerTraceParserTest {
     @Before
     fun before() {
         Cache.clear()
@@ -38,7 +38,7 @@ class WindowManagerTraceParserTest {
     @Test
     fun canParseAllEntriesFromStoredTrace() {
         val trace =
-            WindowManagerTraceParser(legacyTrace = true)
+            LegacyWindowManagerTraceParser(legacyTrace = true)
                 .parse(readAsset("wm_trace_openchrome.pb"), clearCache = false)
         val firstEntry = trace.entries.first()
         Truth.assertThat(firstEntry.timestamp.elapsedNanos).isEqualTo(9213763541297L)
@@ -55,7 +55,7 @@ class WindowManagerTraceParserTest {
                 device.pressHome()
                 device.pressRecentApps()
             }
-        val trace = WindowManagerTraceParser().parse(data, clearCache = false)
+        val trace = LegacyWindowManagerTraceParser().parse(data, clearCache = false)
         Truth.assertThat(trace.entries).isNotEmpty()
     }
 
