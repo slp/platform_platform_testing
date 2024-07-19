@@ -1,7 +1,0 @@
-{
-    "auto-postsubmit": [
-        {
-            "name": "CarPropertyStressTestDeviceApp"
-        }
-    ]
-}
