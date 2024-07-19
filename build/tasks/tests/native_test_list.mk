@@ -93,6 +93,7 @@ native_tests := \
     libnativehelper_tests \
     libnetworkstats_test \
     libprocinfo_test \
+    librenderengine_test \
     libtextclassifier_tests-tplus \
     libtextclassifier_tests-sminus \
     libsurfaceflinger_unittest \
