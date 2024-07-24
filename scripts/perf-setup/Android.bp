@@ -1,0 +1,88 @@
+//
+// Copyright (C) 2016 The Android Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Rules to generate setup script for device perf tests
+// Different devices may share the same script. To add a new script, define a
+// new variable named <device name>_script, pointing at the script in current
+// source folder.
+// At execution time, scripts will be pushed onto device and run with root
+// identity.
+
+// Only define the target if a perf setup script is defined by the BoardConfig
+// of the device we are building.
+//
+// To add a new script:
+// 1. add a new setup script suitable for the device at:
+//    platform_testing/scripts/perf-setup/
+// 2. modify BoardConfig.mk of the corresponding device under:
+//    device/<OEM name>/<device name/
+// 3. add variable "BOARD_PERFSETUP_SCRIPT", and point it at the path to the new
+//    perf setup script; the path should be relative to the build root
+// 4. add below soong config setting below the line added on step 3:
+//    $(call soong_config_set,perf,board_perfsetup_script,$(notdir $(BOARD_PERFSETUP_SCRIPT)))
+
+package {
+    // See: http://go/android-license-faq
+    default_applicable_licenses: [
+        "Android-Apache-2.0",
+    ],
+    default_team: "trendy_team_performance",
+}
+
+soong_config_module_type {
+    name: "perf_script_filegroup",
+    module_type: "filegroup",
+    config_namespace: "perf",
+    value_variables: [
+        "board_perfsetup_script",
+    ],
+    properties: [
+        "srcs",
+    ],
+}
+
+perf_script_filegroup {
+    name: "perf-setup-script",
+    soong_config_variables: {
+        board_perfsetup_script: {
+            srcs: ["%s"],
+            conditions_default: {
+                srcs: ["empty-setup.sh"],
+            },
+        },
+    },
+}
+
+sh_test {
+    name: "perf-setup",
+    src: ":perf-setup-script",
+    filename: "perf-setup.sh",
+    test_suites: ["device-tests"],
+    auto_gen_config: false,
+    product_variables: {
+        debuggable: {
+            required: [
+                "perf-setup-sh",
+            ],
+        },
+    },
+}
+
+sh_binary {
+    name: "perf-setup-sh",
+    src: ":perf-setup-script",
+    filename: "perf-setup.sh",
+    soc_specific: true,
+}
