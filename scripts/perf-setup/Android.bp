@@ -69,7 +69,10 @@ sh_test {
     name: "perf-setup",
     src: ":perf-setup-script",
     filename: "perf-setup.sh",
-    test_suites: ["device-tests"],
+    test_suites: [
+        "device-tests",
+        "device-pixel-tests",
+    ],
     auto_gen_config: false,
     product_variables: {
         debuggable: {
