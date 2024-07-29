@@ -53,7 +53,7 @@ java_library {
         "src/android/tools/**/*.kt",
     ],
     exclude_srcs: [
-        ":flickerlib-helpers-src",    
+        ":flickerlib-helpers-src",
     ],
     static_libs: [
         "androidx.benchmark_benchmark-macro",
@@ -62,5 +62,6 @@ java_library {
         "platformprotosnano",
         "//frameworks/libs/systemui:view_capture_proto",
         "WindowManager-Shell-proto",
+        "com_android_wm_shell_flags_lib",
     ],
 }
