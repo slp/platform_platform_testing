@@ -16,15 +16,62 @@
 
 package android.platform.helpers.notesrole
 
+import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT
+import android.content.Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+import android.content.Intent.FLAG_ACTIVITY_NEW_DOCUMENT
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import android.content.IntentFilter
+import android.os.Bundle
 import androidx.activity.ComponentActivity
 
 /** Empty activity for app clips screenshots. */
 class AppClipsScreenshotActivity : ComponentActivity() {
+
+    private val launchSplitScreenReceiver: BroadcastReceiver =
+        object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                launchInSplitScreen()
+            }
+        }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        registerReceiver(
+            launchSplitScreenReceiver,
+            IntentFilter(LAUNCH_IN_SPLIT_SCREEN_ACTION),
+            RECEIVER_EXPORTED
+        )
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(launchSplitScreenReceiver)
+    }
+
+    private fun launchInSplitScreen() =
+        startActivity(
+            Intent().apply {
+                setComponent(ComponentName(packageName, SPLIT_ACTIVITY_NAME))
+                addFlags(
+                    FLAG_ACTIVITY_NEW_TASK or
+                        FLAG_ACTIVITY_LAUNCH_ADJACENT or
+                        FLAG_ACTIVITY_MULTIPLE_TASK or
+                        FLAG_ACTIVITY_NEW_DOCUMENT
+                )
+            }
+        )
+
     companion object {
+        const val LAUNCH_IN_SPLIT_SCREEN_ACTION: String = "LAUNCH_IN_SPLIT_SCREEN_ACTION"
+        private const val SPLIT_ACTIVITY_NAME: String =
+            "android.platform.helpers.notesrole.AppClipsScreenshotActivity.Split"
+
         fun getIntent(context: Context): Intent =
-            Intent(context, AppClipsScreenshotActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            Intent(context, AppClipsScreenshotActivity::class.java).addFlags(FLAG_ACTIVITY_NEW_TASK)
     }
 }
