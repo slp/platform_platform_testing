@@ -113,7 +113,14 @@ fun assertArchiveContainsFiles(archivePath: File, possibleExpectedFiles: List<Li
         }
     }
 
-    Truth.assertWithMessage("Trace archive doesn't contain all expected traces")
+    val messageActualFiles = "[${actualFiles.joinToString(", ")}]"
+    val messageExpectedFiles =
+        "${possibleExpectedFiles.map { "[${it.joinToString(", ")}]"}.joinToString(", ")}"
+    Truth.assertWithMessage(
+            "Trace archive doesn't contain expected traces." +
+                "\n Actual: $messageActualFiles" +
+                "\n Expected: $messageExpectedFiles"
+        )
         .that(isActualTraceAsExpected)
         .isTrue()
 }
