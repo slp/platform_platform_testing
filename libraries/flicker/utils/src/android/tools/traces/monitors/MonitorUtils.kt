@@ -102,10 +102,23 @@ fun withTransactionsTracing(predicate: () -> Unit): TransactionsTrace {
  */
 fun withTracing(
     traceMonitors: List<TraceMonitor> =
-        listOf(
-            WindowManagerTraceMonitor(),
-            PerfettoTraceMonitor.newBuilder().enableLayersTrace().enableTransactionsTrace().build(),
-        ),
+        mutableListOf<TraceMonitor>()
+            .apply {
+                if (!android.tracing.Flags.perfettoWmTracing()) {
+                    this.add(WindowManagerTraceMonitor())
+                }
+            }
+            .apply {
+                val monitorBuilder =
+                    PerfettoTraceMonitor.newBuilder().enableLayersTrace().enableTransactionsTrace()
+
+                if (android.tracing.Flags.perfettoWmTracing()) {
+                    monitorBuilder.enableWindowManagerTrace()
+                }
+
+                this.add(monitorBuilder.build())
+            }
+            .toList(),
     predicate: () -> Unit
 ): Reader {
     val tmpFile = File.createTempFile("recordTraces", "")
