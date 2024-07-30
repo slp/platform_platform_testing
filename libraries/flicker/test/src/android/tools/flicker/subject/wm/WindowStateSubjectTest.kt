@@ -33,7 +33,7 @@ class WindowStateSubjectTest {
 
     @Test
     fun exceptionContainsDebugInfoImaginary() {
-        val reader = getWmTraceReaderFromAsset("wm_trace_openchrome.pb", legacyTrace = true)
+        val reader = getWmTraceReaderFromAsset("wm_trace_openchrome", legacyTrace = true)
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val foundWindow =
             WindowManagerTraceSubject(trace, reader)

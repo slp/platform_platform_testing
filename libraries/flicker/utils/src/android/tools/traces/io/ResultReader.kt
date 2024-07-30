@@ -33,6 +33,7 @@ import android.tools.traces.parsers.perfetto.ProtoLogTraceParser
 import android.tools.traces.parsers.perfetto.TraceProcessorSession
 import android.tools.traces.parsers.perfetto.TransactionsTraceParser
 import android.tools.traces.parsers.perfetto.TransitionsTraceParser
+import android.tools.traces.parsers.perfetto.WindowManagerTraceParser
 import android.tools.traces.parsers.wm.LegacyTransitionTraceParser
 import android.tools.traces.parsers.wm.LegacyWindowManagerTraceParser
 import android.tools.traces.parsers.wm.WindowManagerDumpParser
@@ -99,17 +100,13 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
     @Throws(IOException::class)
     override fun readWmTrace(): WindowManagerTrace? {
         return withTracing("readWmTrace") {
-            val descriptor = ResultArtifactDescriptor(TraceType.WM)
-            artifact.readBytes(descriptor)?.let {
-                val trace =
-                    LegacyWindowManagerTraceParser()
-                        .parse(
-                            it,
-                            from = transitionTimeRange.start,
-                            to = transitionTimeRange.end,
-                            addInitialEntry = true,
-                            clearCache = true
-                        )
+            val trace =
+                if (android.tracing.Flags.perfettoWmTracing()) {
+                    readPerfettoWindowManagerTrace()
+                } else {
+                    readLegacyWindowManagerTrace()
+                }
+            if (trace != null) {
                 val minimumEntries = minimumTraceEntriesForConfig(traceConfig.wmTrace)
                 require(trace.entries.size >= minimumEntries) {
                     "WM trace contained ${trace.entries.size} entries, " +
@@ -117,8 +114,8 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
                         "transition starts at ${transitionTimeRange.start} and " +
                         "ends at ${transitionTimeRange.end}."
                 }
-                trace
             }
+            trace
         }
     }
 
@@ -245,6 +242,32 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
                         )
                 }
             }
+        }
+    }
+
+    private fun readPerfettoWindowManagerTrace(): WindowManagerTrace? {
+        val traceData = artifact.readBytes(ResultArtifactDescriptor(TraceType.PERFETTO))
+
+        return traceData?.let {
+            TraceProcessorSession.loadPerfettoTrace(traceData) { session ->
+                WindowManagerTraceParser()
+                    .parse(session, from = transitionTimeRange.start, to = transitionTimeRange.end)
+            }
+        }
+    }
+
+    private fun readLegacyWindowManagerTrace(): WindowManagerTrace? {
+        val traceData = artifact.readBytes(ResultArtifactDescriptor(TraceType.WM))
+
+        return traceData?.let {
+            LegacyWindowManagerTraceParser()
+                .parse(
+                    it,
+                    from = transitionTimeRange.start,
+                    to = transitionTimeRange.end,
+                    addInitialEntry = true,
+                    clearCache = true
+                )
         }
     }
 

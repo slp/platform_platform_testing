@@ -22,7 +22,11 @@ import android.tools.traces.io.ResultReader
 
 /** Tests for [ResultReader] parsing [TraceType.WM] */
 class ResultReaderParseWMTest : BaseResultReaderTestParseTrace() {
-    override val assetFiles = mapOf(TraceType.WM to TestTraces.WMTrace.FILE)
+    override val assetFiles =
+        mapOf(
+            TraceType.PERFETTO to TestTraces.WMTrace.FILE,
+            TraceType.WM to TestTraces.LegacyWMTrace.FILE
+        )
     override val traceName = "WM trace"
     override val startTimeTrace = TestTraces.WMTrace.START_TIME
     override val endTimeTrace = TestTraces.WMTrace.END_TIME
