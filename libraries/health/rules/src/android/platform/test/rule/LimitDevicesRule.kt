@@ -162,6 +162,8 @@ class LimitDevicesRule(
             return isRunning
         }
 
+        @JvmOverloads
+        @JvmStatic
         fun readParamsFromInstrumentation(thisDevice: String = Build.PRODUCT) =
             LimitDevicesRule(thisDevice, isRunningFlakyTests())
 
