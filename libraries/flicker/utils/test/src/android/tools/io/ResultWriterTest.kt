@@ -121,7 +121,8 @@ class ResultWriterTest {
 
     @Test
     fun writeWMTrace() {
-        val writer = newTestResultWriter().addTraceResult(TraceType.WM, TestTraces.WMTrace.FILE)
+        val writer =
+            newTestResultWriter().addTraceResult(TraceType.WM, TestTraces.LegacyWMTrace.FILE)
         val result = writer.write()
         val reader = ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)
         Truth.assertWithMessage("File count").that(reader.countFiles()).isEqualTo(1)
@@ -181,7 +182,7 @@ class ResultWriterTest {
     fun writeAllTraces() {
         val writer =
             newTestResultWriter()
-                .addTraceResult(TraceType.WM, TestTraces.WMTrace.FILE)
+                .addTraceResult(TraceType.WM, TestTraces.LegacyWMTrace.FILE)
                 .addTraceResult(TraceType.SF, TestTraces.LayerTrace.FILE)
                 .addTraceResult(TraceType.TRANSACTION, TestTraces.TransactionTrace.FILE)
                 .addTraceResult(

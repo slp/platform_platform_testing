@@ -116,12 +116,14 @@ class FlickerServiceTracesCollectorTest {
     companion object {
         val EXPECTED_TRACES_LAUNCHER_ONLY =
             mutableListOf(
-                    TraceType.WM.fileName,
-                    TraceType.PROTOLOG.fileName,
                     TraceType.EVENT_LOG.fileName,
                     TraceType.PERFETTO.fileName,
                 )
                 .also {
+                    if (!android.tracing.Flags.perfettoProtologTracing()) {
+                        it.add(TraceType.PROTOLOG.fileName)
+                    }
+
                     if (!android.tracing.Flags.perfettoTransitionTracing()) {
                         it.add(TraceType.LEGACY_WM_TRANSITION.fileName)
                         it.add(TraceType.LEGACY_SHELL_TRANSITION.fileName)
@@ -129,6 +131,10 @@ class FlickerServiceTracesCollectorTest {
 
                     if (!android.tracing.Flags.perfettoViewCaptureTracing()) {
                         it.add("${getLauncherPackageName()}_0.vc__view_capture_trace.winscope")
+                    }
+
+                    if (!android.tracing.Flags.perfettoWmTracing()) {
+                        it.add(TraceType.WM.fileName)
                     }
                 }
                 .toList()

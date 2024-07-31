@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 The Android Open Source Project
+ * Copyright (C) 2024 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package android.tools.parsers.wm
+package android.tools.parsers.perfetto
 
 import android.tools.Cache
 import android.tools.testutils.CleanFlickerEnvironmentRule
 import android.tools.testutils.readAsset
-import android.tools.traces.monitors.wm.WindowManagerTraceMonitor
-import android.tools.traces.parsers.wm.WindowManagerTraceParser
+import android.tools.traces.monitors.PerfettoTraceMonitor
+import android.tools.traces.parsers.perfetto.TraceProcessorSession
+import android.tools.traces.parsers.perfetto.WindowManagerTraceParser
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.google.common.truth.Truth
+import org.junit.Assume
 import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Test
@@ -38,8 +40,11 @@ class WindowManagerTraceParserTest {
     @Test
     fun canParseAllEntriesFromStoredTrace() {
         val trace =
-            WindowManagerTraceParser(legacyTrace = true)
-                .parse(readAsset("wm_trace_openchrome.pb"), clearCache = false)
+            TraceProcessorSession.loadPerfettoTrace(
+                readAsset("wm_trace_openchrome.perfetto-trace")
+            ) { session ->
+                WindowManagerTraceParser().parse(session)
+            }
         val firstEntry = trace.entries.first()
         Truth.assertThat(firstEntry.timestamp.elapsedNanos).isEqualTo(9213763541297L)
         Truth.assertThat(firstEntry.windowStates.size).isEqualTo(10)
@@ -49,13 +54,19 @@ class WindowManagerTraceParserTest {
 
     @Test
     fun canParseAllEntriesFromNewTrace() {
+        Assume.assumeTrue(android.tracing.Flags.perfettoWmTracing())
+
         val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        val monitor = PerfettoTraceMonitor.Builder().enableWindowManagerTrace().build()
         val data =
-            WindowManagerTraceMonitor().withTracing {
+            monitor.withTracing {
                 device.pressHome()
                 device.pressRecentApps()
             }
-        val trace = WindowManagerTraceParser().parse(data, clearCache = false)
+        val trace =
+            TraceProcessorSession.loadPerfettoTrace(data) { session ->
+                WindowManagerTraceParser().parse(session)
+            }
         Truth.assertThat(trace.entries).isNotEmpty()
     }
 

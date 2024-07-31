@@ -25,6 +25,8 @@ import android.tools.traces.io.ResultReader
 import android.tools.traces.monitors.wm.WindowManagerTraceMonitor
 import com.android.server.wm.nano.WindowManagerTraceFileProto
 import com.google.common.truth.Truth
+import org.junit.Assume
+import org.junit.Before
 import org.junit.ClassRule
 import org.junit.FixMethodOrder
 import org.junit.Test
@@ -47,8 +49,15 @@ class WindowManagerTraceMonitorTest : TraceMonitorTest<WindowManagerTraceMonitor
             )
     }
 
+    @Before
+    override fun before() {
+        Assume.assumeFalse(android.tracing.Flags.perfettoWmTracing())
+    }
+
     @Test
     fun includesProtologTrace() {
+        Assume.assumeFalse(android.tracing.Flags.perfettoProtologTracing())
+
         val monitor = getMonitor()
         monitor.start()
         val writer = newTestResultWriter()

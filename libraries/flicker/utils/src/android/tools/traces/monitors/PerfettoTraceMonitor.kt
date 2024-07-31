@@ -27,6 +27,7 @@ import perfetto.protos.PerfettoConfig.DataSourceConfig
 import perfetto.protos.PerfettoConfig.SurfaceFlingerLayersConfig
 import perfetto.protos.PerfettoConfig.SurfaceFlingerTransactionsConfig
 import perfetto.protos.PerfettoConfig.TraceConfig
+import perfetto.protos.PerfettoConfig.WindowManagerConfig
 
 /* Captures traces from Perfetto. */
 open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
@@ -132,6 +133,21 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
 
         fun enableViewCaptureTrace(): Builder = apply {
             val config = DataSourceConfig.newBuilder().setName(VIEWCAPTURE_DATA_SOURCE).build()
+            enableCustomTrace(config)
+        }
+
+        fun enableWindowManagerTrace(): Builder = apply {
+            val config =
+                DataSourceConfig.newBuilder()
+                    .setName(WINDOWMANAGER_DATA_SOURCE)
+                    .setWindowmanagerConfig(
+                        WindowManagerConfig.newBuilder()
+                            .setLogLevel(WindowManagerConfig.LogLevel.LOG_LEVEL_VERBOSE)
+                            .setLogFrequency(WindowManagerConfig.LogFrequency.LOG_FREQUENCY_FRAME)
+                            .build()
+                    )
+                    .build()
+
             enableCustomTrace(config)
         }
 
@@ -260,6 +276,7 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
         private const val TRANSITIONS_DATA_SOURCE = "com.android.wm.shell.transition"
         private const val PROTOLOG_DATA_SOURCE = "android.protolog"
         private const val VIEWCAPTURE_DATA_SOURCE = "android.viewcapture"
+        private const val WINDOWMANAGER_DATA_SOURCE = "android.windowmanager"
 
         private val allPerfettoPids = mutableListOf<Int>()
         private val allPerfettoPidsLock = ReentrantLock()

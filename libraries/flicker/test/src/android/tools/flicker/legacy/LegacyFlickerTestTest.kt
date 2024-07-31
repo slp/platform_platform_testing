@@ -116,9 +116,10 @@ class LegacyFlickerTestTest {
     fun executesWm() {
         val predicate: (FlickerTest) -> Unit = { it.assertWm { executionCount++ } }
         doWriteTraceExecuteAssertionAndVerify(
-            TraceType.WM,
+            if (android.tracing.Flags.perfettoWmTracing()) TraceType.PERFETTO else TraceType.WM,
             predicate,
-            TestTraces.WMTrace.FILE,
+            if (android.tracing.Flags.perfettoWmTracing()) TestTraces.WMTrace.FILE
+            else TestTraces.LegacyWMTrace.FILE,
             expectedExecutionCount = 2
         )
     }
@@ -127,9 +128,10 @@ class LegacyFlickerTestTest {
     fun executesWmStart() {
         val predicate: (FlickerTest) -> Unit = { it.assertWmStart { executionCount++ } }
         doWriteTraceExecuteAssertionAndVerify(
-            TraceType.WM,
+            if (android.tracing.Flags.perfettoWmTracing()) TraceType.PERFETTO else TraceType.WM,
             predicate,
-            TestTraces.WMTrace.FILE,
+            if (android.tracing.Flags.perfettoWmTracing()) TestTraces.WMTrace.FILE
+            else TestTraces.LegacyWMTrace.FILE,
             expectedExecutionCount = 2
         )
     }
@@ -138,9 +140,10 @@ class LegacyFlickerTestTest {
     fun executesWmEnd() {
         val predicate: (FlickerTest) -> Unit = { it.assertWmEnd { executionCount++ } }
         doWriteTraceExecuteAssertionAndVerify(
-            TraceType.WM,
+            if (android.tracing.Flags.perfettoWmTracing()) TraceType.PERFETTO else TraceType.WM,
             predicate,
-            TestTraces.WMTrace.FILE,
+            if (android.tracing.Flags.perfettoWmTracing()) TestTraces.WMTrace.FILE
+            else TestTraces.LegacyWMTrace.FILE,
             expectedExecutionCount = 2
         )
     }
@@ -148,28 +151,38 @@ class LegacyFlickerTestTest {
     @Test
     fun doesNotExecuteWmWithoutTrace() {
         val predicate: (FlickerTest) -> Unit = { it.assertWm { executionCount++ } }
-        doExecuteAssertionWithoutTraceAndVerifyNotExecuted(TraceType.WM, predicate)
+        doExecuteAssertionWithoutTraceAndVerifyNotExecuted(
+            if (android.tracing.Flags.perfettoWmTracing()) TraceType.PERFETTO else TraceType.WM,
+            predicate
+        )
     }
 
     @Test
     fun doesNotExecuteWmStartWithoutTrace() {
         val predicate: (FlickerTest) -> Unit = { it.assertWmStart { executionCount++ } }
-        doExecuteAssertionWithoutTraceAndVerifyNotExecuted(TraceType.WM, predicate)
+        doExecuteAssertionWithoutTraceAndVerifyNotExecuted(
+            if (android.tracing.Flags.perfettoWmTracing()) TraceType.PERFETTO else TraceType.WM,
+            predicate
+        )
     }
 
     @Test
     fun doesNotExecuteWmEndWithoutTrace() {
         val predicate: (FlickerTest) -> Unit = { it.assertWmEnd { executionCount++ } }
-        doExecuteAssertionWithoutTraceAndVerifyNotExecuted(TraceType.WM, predicate)
+        doExecuteAssertionWithoutTraceAndVerifyNotExecuted(
+            if (android.tracing.Flags.perfettoWmTracing()) TraceType.PERFETTO else TraceType.WM,
+            predicate
+        )
     }
 
     @Test
     fun doesNotExecuteWmTagWithoutTag() {
         val predicate: (FlickerTest) -> Unit = { it.assertWmTag("tag") { executionCount++ } }
         doWriteTraceExecuteAssertionAndVerify(
-            TraceType.WM,
+            if (android.tracing.Flags.perfettoWmTracing()) TraceType.PERFETTO else TraceType.WM,
             predicate,
-            TestTraces.WMTrace.FILE,
+            if (android.tracing.Flags.perfettoWmTracing()) TestTraces.WMTrace.FILE
+            else TestTraces.LegacyWMTrace.FILE,
             expectedExecutionCount = 0
         )
     }

@@ -26,6 +26,12 @@ fun queryRealToMonotonicTimeOffsetNs(session: TraceProcessorSession, tableName: 
     return real - monotonic
 }
 
+fun queryRealToElapsedTimeOffsetNs(session: TraceProcessorSession, tableName: String): Long {
+    val elapsed = queryLastEntryTimestamp(session, tableName) ?: return 0L
+    val real = queryToRealtime(session, elapsed)
+    return real - elapsed
+}
+
 fun queryLastEntryTimestamp(session: TraceProcessorSession, tableName: String): Long? {
     val sql =
         """

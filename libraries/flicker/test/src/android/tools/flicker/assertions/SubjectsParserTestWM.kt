@@ -25,11 +25,21 @@ import android.tools.testutils.TestTraces
 
 @SuppressLint("VisibleForTests")
 class SubjectsParserTestWM : BaseSubjectsParserTest() {
-    override val assetFile = TestTraces.WMTrace.FILE
-    override val expectedStartTime = TestTraces.WMTrace.START_TIME
-    override val expectedEndTime = TestTraces.WMTrace.END_TIME
+    override val assetFile =
+        if (android.tracing.Flags.perfettoWmTracing()) {
+            TestTraces.WMTrace.FILE
+        } else {
+            TestTraces.LegacyWMTrace.FILE
+        }
+    override val expectedStartTime = TestTraces.LegacyWMTrace.START_TIME
+    override val expectedEndTime = TestTraces.LegacyWMTrace.END_TIME
     override val subjectName = "WM Trace"
-    override val traceType = TraceType.WM
+    override val traceType =
+        if (android.tracing.Flags.perfettoWmTracing()) {
+            TraceType.PERFETTO
+        } else {
+            TraceType.WM
+        }
 
     override fun getTime(timestamp: Timestamp) = timestamp.elapsedNanos
 

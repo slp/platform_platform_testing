@@ -31,6 +31,15 @@ object TestTraces {
     }
 
     object WMTrace {
+        private const val ASSET = "wm_trace.perfetto-trace"
+        val START_TIME = Timestamps.from(elapsedNanos = 1618650751245)
+        val SLICE_TIME = Timestamps.from(elapsedNanos = 1618730362295)
+        val END_TIME = Timestamps.from(elapsedNanos = 1620756218174)
+        val FILE
+            get() = readAssetAsFile(ASSET)
+    }
+
+    object LegacyWMTrace {
         private const val ASSET = "wm_trace.winscope"
         val START_TIME = Timestamps.from(elapsedNanos = 1618650751245)
         val SLICE_TIME = Timestamps.from(elapsedNanos = 1618730362295)
