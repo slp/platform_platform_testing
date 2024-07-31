@@ -2140,6 +2140,46 @@
       "TYPE": "RESOURCE_ID",
       "VALUE": "clock",
       "PACKAGE": "com.android.systemui"
+    },
+    "LANGUAGES_INPUT_IN_SYSTEM": {
+      "TYPE": "TEXT",
+      "VALUE": "Languages & input"
+    },
+    "SYSTEM_SETTINGS_UNITS": {
+      "TYPE": "TEXT",
+      "VALUE": "Units"
+    },
+    "LANGUAGE_SYSTEM_SETTINGS_AUTOFILL_SERVICE": {
+      "TYPE": "TEXT",
+      "VALUE": "Autofill service"
+    },
+    "LANGUAGE_SYSTEM_SETTINGS_KEYBOARD": {
+      "TYPE": "TEXT",
+      "VALUE": "Keyboard"
+    },
+    "LANGUAGE_SYSTEM_SETTINGS_TEXT_TO_SPEECH_OUTPUT": {
+      "TYPE": "TEXT",
+      "VALUE": "Text-to-speech output"
+    },
+    "UNIT_SYSTEM_SETTINGS_SPEED": {
+      "TYPE": "TEXT",
+      "VALUE": "Speed"
+    },
+    "UNIT_SYSTEM_SETTINGS_DISTANCE": {
+      "TYPE": "TEXT",
+      "VALUE": "Distance"
+    },
+    "UNIT_SYSTEM_SETTINGS_TEMPERATURE": {
+      "TYPE": "TEXT",
+      "VALUE": "Temperature"
+    },
+    "UNIT_SYSTEM_SETTINGS_PRESSURE": {
+      "TYPE": "TEXT",
+      "VALUE": "Pressure"
+    },
+    "USER_SETTINGS_USER_AVATAR": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "user_avatar"
     }
   },
   "WORKFLOWS": {
