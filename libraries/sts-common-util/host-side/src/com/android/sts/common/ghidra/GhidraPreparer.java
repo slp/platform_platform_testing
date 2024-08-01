@@ -74,6 +74,9 @@ public class GhidraPreparer extends BaseTargetPreparer {
             description = "Overrides 'gitReleaseAssetName' of GhidraBusinessLogicHandler.")
     private String mAssetName = null;
 
+    @Option(name = "ghidra-url", description = "Custom url for Ghidra zip download.")
+    private String mCustomGhidraUri = null;
+
     /** {@inheritDoc} */
     @Override
     public void setUp(TestInformation testInformation)
@@ -91,9 +94,13 @@ public class GhidraPreparer extends BaseTargetPreparer {
                 // directories, download ghidra and extract the zip at
                 // /tmp/tradefed_ghidra/<mGhidraZipDir>/<ghidra_zip_here>
                 if (!Paths.get("/tmp/tradefed_ghidra", ghidraZipName).toFile().exists()) {
-                    Map.Entry<String, URI> assetNameToUri = getZipNameAndUri();
-                    ghidraZipName = assetNameToUri.getKey();
-                    mGhidraZipUri = assetNameToUri.getValue();
+                    if (mCustomGhidraUri == null) {
+                        Map.Entry<String, URI> assetNameToUri = getZipNameAndUri();
+                        ghidraZipName = assetNameToUri.getKey();
+                        mGhidraZipUri = assetNameToUri.getValue();
+                    } else {
+                        mGhidraZipUri = new URI(mCustomGhidraUri);
+                    }
                     mGhidraZipDir =
                             createNamedTempDir(
                                     Paths.get("tradefed_ghidra", ghidraZipName).toString());
