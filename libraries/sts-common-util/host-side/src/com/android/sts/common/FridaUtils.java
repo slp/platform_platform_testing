@@ -29,6 +29,7 @@ import com.android.tradefed.build.FileDownloadCache;
 import com.android.tradefed.build.FileDownloadCacheFactory;
 import com.android.tradefed.build.IBuildInfo;
 import com.android.tradefed.build.IFileDownloader;
+import com.android.tradefed.config.Option;
 import com.android.tradefed.config.OptionClass;
 import com.android.tradefed.device.DeviceNotAvailableException;
 import com.android.tradefed.device.ITestDevice;
@@ -91,6 +92,9 @@ public class FridaUtils extends BaseTargetPreparer implements AutoCloseable {
     private String mFridaVersion;
     private Map<Integer, Integer> mTargetPidsToFridaPids = new HashMap<>();
 
+    @Option(name = "frida-url", description = "Custom url for frida-inject xz download.")
+    private String mCustomFridaUrl = null;
+
     @Override
     public void setUp(TestInformation testInformation) throws TargetSetupError {
         ITestDevice device = testInformation.getDevice();
@@ -122,7 +126,14 @@ public class FridaUtils extends BaseTargetPreparer implements AutoCloseable {
             // Figure out which Frida arch we should be using for our device
             mFridaAbi = getFridaAbiFor(device);
 
-            String fridaUrl = getFridaDownloadUrl(releaseTagName);
+            // Get Frida download url
+            String fridaUrl;
+            if (mCustomFridaUrl != null) {
+                mFridaVersion = "custom";
+                fridaUrl = mCustomFridaUrl;
+            } else {
+                fridaUrl = getFridaDownloadUrl(releaseTagName);
+            }
             String fridaExeName =
                     String.format("%s-%s-%s-%s", FRIDA_PACKAGE, mFridaVersion, FRIDA_OS, mFridaAbi);
 
