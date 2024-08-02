@@ -107,16 +107,7 @@ object Utils {
         } else {
             elapsedNanos =
                 (wmTrace.entries.firstOrNull { it.timestamp >= finishTransactionAppliedTimestamp }
-                        ?: error(
-                            "No WM trace entry with timestamp greater than or equal to the " +
-                                "timestamp ($finishTransactionAppliedTimestamp) in the layers " +
-                                "trace the finish transaction was applied in.\n\n" +
-                                "Processing transition: $transition\n\n" +
-                                "Computed finish transaction applied ts: " +
-                                "$finishTransactionAppliedTimestamp\n\n" +
-                                "Last WM entry ts: ${wmTrace.entries.last().timestamp}\n\n" +
-                                (if (debugString != null) "DEBUG: $debugString" else "")
-                        ))
+                        ?: wmTrace.entries.last())
                     .timestamp
                     .elapsedNanos
             systemUptimeNanos =
