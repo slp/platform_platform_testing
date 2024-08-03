@@ -23,7 +23,11 @@ import android.car.user.CarUserManager;
 import android.car.user.CarUserManager.UserLifecycleListener;
 import android.car.user.UserCreationRequest;
 import android.car.user.UserCreationResult;
+import android.car.user.UserStartResponse;
+import android.car.user.UserStartRequest;
 import android.car.user.UserSwitchResult;
+import android.car.user.UserStopRequest;
+import android.car.user.UserStopResponse;
 import android.car.util.concurrent.AsyncFuture;
 import android.content.Context;
 import android.content.pm.UserInfo;
@@ -58,12 +62,14 @@ public class MultiUserHelper {
     private static MultiUserHelper sMultiUserHelper;
     private CarUserManager mCarUserManager;
     private UserManager mUserManager;
+    private ActivityManager mActivityManager;
 
     private MultiUserHelper() {
         Context context = InstrumentationRegistry.getTargetContext();
         mUserManager = UserManager.get(context);
         Car car = Car.createCar(context);
         mCarUserManager = (CarUserManager) car.getCarManager(Car.CAR_USER_SERVICE);
+        mActivityManager = context.getSystemService(ActivityManager.class);
     }
 
     /**
@@ -76,6 +82,21 @@ public class MultiUserHelper {
             sMultiUserHelper = new MultiUserHelper();
         }
         return sMultiUserHelper;
+    }
+
+    /**
+     * Creates a user if it does not exist already.
+     *
+     * @param name the name of the user or guest
+     * @param isGuestUser true if want to create a guest, otherwise create a regular user
+     * @return User Id for newly created user or existing user if it already exists
+     */
+    public int createUserIfDoesNotExist(String name, boolean isGuestUser) throws Exception {
+        UserInfo userInfo = getUserByName(name);
+        if (userInfo != null) {
+            return userInfo.id;
+        }
+        return createUser(name, isGuestUser);
     }
 
     /**
@@ -117,6 +138,9 @@ public class MultiUserHelper {
         }
         UserCreationResult result =
                 userCreationResultCallback.get(CREATE_USER_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        if (!result.isSuccess()) {
+            throw new Exception(String.format("The user was not created successfully: %s", result));
+        }
         return result.getUser().getIdentifier();
     }
 
@@ -212,13 +236,83 @@ public class MultiUserHelper {
     }
 
     /**
+     * Starts a user on a display. Awaits {@link CarUserManager#USER_LIFECYCLE_EVENT_TYPE_STARTING} event.
+     *
+     * <p>User start complete only means the user ready at API level. It doesn't mean the UI is
+     * completely ready for the target user. It doesn't include unlocking user data and loading car
+     * launcher page
+     *
+     * @param id Id of the user to start
+     * @param displayId Id of the display to start the user on
+     */
+    public void startUser(int id, int displayId) throws Exception {
+        final CountDownLatch latch = new CountDownLatch(1);
+        UserLifecycleListener userStartListener =
+                e -> {
+                    if (e.getEventType() == CarUserManager.USER_LIFECYCLE_EVENT_TYPE_STARTING) {
+                        latch.countDown();
+                    }
+                };
+        mCarUserManager.addListener(Runnable::run, userStartListener);
+        UserStartRequest userStartRequest =
+                new UserStartRequest.Builder(mUserManager.getUserInfo(id).getUserHandle())
+                        .setDisplayId(displayId)
+                        .build();
+        Log.d(LOG_TAG, String.format("Starting a user with id %d on display %d", id, displayId));
+        SyncResultCallback<UserStartResponse> userStartResponseCallback =
+                new SyncResultCallback<>();
+        mCarUserManager.startUser(userStartRequest, Runnable::run, userStartResponseCallback);
+        UserStartResponse response =
+                userStartResponseCallback.get(USER_SWITCH_TIMEOUT_SECOND, TimeUnit.SECONDS);
+        if (!response.isSuccess()) {
+            throw new Exception(
+                    String.format(
+                            "Failed to start user %d on display %d: %s", id, displayId, response));
+        }
+        if (!latch.await(USER_SWITCH_TIMEOUT_SECOND, TimeUnit.SECONDS)) {
+            throw new Exception(
+                    String.format(
+                            "Timeout while starting user %d after %d seconds",
+                            id, USER_SWITCH_TIMEOUT_SECOND));
+        }
+        mCarUserManager.removeListener(userStartListener);
+    }
+
+    /**
+     * Stops a user.
+     *
+     * @param id Id of the user to stop
+     */
+    public void stopUser(int id) throws Exception {
+        UserStopRequest userStopRequest =
+                new UserStopRequest.Builder(mUserManager.getUserInfo(id).getUserHandle()).build();
+        SyncResultCallback<UserStopResponse> userStopResponseCallback = new SyncResultCallback<>();
+        mCarUserManager.stopUser(userStopRequest, Runnable::run, userStopResponseCallback);
+        UserStopResponse response =
+                userStopResponseCallback.get(USER_SWITCH_TIMEOUT_SECOND, TimeUnit.SECONDS);
+        if (!response.isSuccess()) {
+            throw new Exception(String.format("Failed to stop user %d: %s", id, response));
+        }
+    }
+
+    /**
      * Removes the target user. For now it is a non-blocking call.
      *
      * @param userInfo info of the user to be removed
      * @return true if removed successfully
      */
     public boolean removeUser(UserInfo userInfo) {
-        return mUserManager.removeUser(userInfo.id);
+        return removeUser(userInfo.id);
+    }
+
+    /**
+     * Removes the target user. For now it is a non-blocking call.
+     *
+     * @param userId id of the user to be removed
+     * @return true if removed successfully
+     */
+    public boolean removeUser(int userId) {
+        return mUserManager.removeUser(userId);
     }
 
     public UserInfo getCurrentForegroundUserInfo() {
@@ -252,6 +346,15 @@ public class MultiUserHelper {
                 .filter(user -> user.name.equals(name))
                 .findFirst()
                 .orElse(null);
+    }
+
+    /**
+     * Returns the list of displays that are available for starting visible background users.
+     *
+     * @return The list of displays that are available for starting visible background users.
+     */
+    public int[] getDisplayIdsForStartingVisibleBackgroundUsers() {
+        return mActivityManager.getDisplayIdsForStartingVisibleBackgroundUsers();
     }
 
     private void switchUserUsingShell(int userId) throws Exception {

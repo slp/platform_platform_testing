@@ -18,7 +18,7 @@ package {
 
 java_library_static {
     name: "automotive-multiuser-scenarios",
-    min_sdk_version: "24",
+    min_sdk_version: "29",
     srcs: ["src/**/*.java"],
     libs: [
         "androidx.test.runner",
