@@ -27,6 +27,8 @@
     "SECURITY_SETTINGS_SCROLL_DIRECTION": "VERTICAL",
     "NOTIFICATION_LIST_SCROLL_ACTION": "USE_GESTURE",
     "NOTIFICATION_LIST_SCROLL_DIRECTION": "VERTICAL",
+    "SETTINGS_SCROLL_ACTION": "USE_GESTURE",
+    "SETTINGS_SCROLL_DIRECTION": "VERTICAL",
     "SYSTEM_SETTINGS_SCROLL_ACTION": "USE_GESTURE",
     "SYSTEM_SETTINGS_SCROLL_DIRECTION": "VERTICAL",
     "SYSTEM_SETTINGS_SCROLL_MARGIN": "6",
@@ -1624,6 +1626,21 @@
       "TYPE": "TEXT",
       "VALUE": "Settings"
     },
+    "SETTINGS_SCROLL_FORWARD_BUTTON": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "car_ui_scrollbar_page_down",
+      "PACKAGE": "com.android.car.ui.sharedlibrary"
+    },
+    "SETTINGS_SCROLL_BACKWARD_BUTTON": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "car_ui_scrollbar_page_up",
+      "PACKAGE": "com.android.car.ui.sharedlibrary"
+    },
+    "SETTINGS_SCROLL_ELEMENT": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "top_level_recycler_view",
+      "PACKAGE": "com.android.car.settings"
+    },
     "SETTINGS_SUB_SETTING_SCROLL_BACKWARD_BUTTON": {
       "TYPE": "DESCRIPTION",
       "VALUE": "Scroll up"
@@ -2736,5 +2753,3 @@
     ]
   }
 }
-
-
