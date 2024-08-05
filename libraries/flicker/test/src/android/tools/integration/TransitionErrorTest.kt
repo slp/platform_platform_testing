@@ -66,7 +66,7 @@ class TransitionErrorTest {
             Truth.assertWithMessage("Expected exception")
                 .that(result.exceptionOrNull())
                 .hasMessageThat()
-                .contains(Utils.FAILURE)
+                .contains(TestUtils.FAILURE)
         }
         val reader =
             android.tools.flicker.datastore.CachedResultReader(
@@ -90,7 +90,9 @@ class TransitionErrorTest {
     companion object {
         private const val WRONG_EXCEPTION = "Wrong exception"
 
-        @BeforeClass @JvmStatic fun runTransition() = Utils.runTransition { error(Utils.FAILURE) }
+        @BeforeClass
+        @JvmStatic
+        fun runTransition() = TestUtils.runTransition { error(TestUtils.FAILURE) }
 
         @ClassRule @JvmField val ENV_CLEANUP = CleanFlickerEnvironmentRule()
     }
