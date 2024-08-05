@@ -24,9 +24,7 @@ import com.android.tradefed.result.LogFile;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class CarPropertyManagerStressTestLogPostProcessor extends BasePostProcessor {
@@ -38,29 +36,25 @@ public class CarPropertyManagerStressTestLogPostProcessor extends BasePostProces
             HashMap<String, MetricMeasurement.Metric> rawMetrics, Map<String, LogFile> runLogs) {
         Map<String, MetricMeasurement.Metric.Builder> metrics = new HashMap<>();
         for (String key : runLogs.keySet()) {
-            List<Long> logValues = new ArrayList<>();
             try (BufferedReader br =
                     new BufferedReader(new FileReader(runLogs.get(key).getPath()))) {
                 String line = br.readLine();
                 while (line != null) {
-                    logValues.add(Long.parseLong(line));
+                    MetricMeasurement.Measurements.Builder measurement =
+                            MetricMeasurement.Measurements.newBuilder()
+                                    .setSingleInt(Long.parseLong(line));
+                    MetricMeasurement.Metric.Builder metric =
+                            MetricMeasurement.Metric.newBuilder().setMeasurements(measurement);
+                    metrics.put(METRIC_NAME + "-" + line, metric);
+
                     line = br.readLine();
                 }
             } catch (IOException e) {
                 LogUtil.CLog.e("Unable to open buffered reader");
                 throw new RuntimeException(e);
             }
-            MetricMeasurement.NumericValues values =
-                    MetricMeasurement.NumericValues.newBuilder()
-                            .addAllNumericValue(logValues)
-                            .build();
-
-            MetricMeasurement.Measurements.Builder measurement =
-                    MetricMeasurement.Measurements.newBuilder().setNumericValues(values);
-            MetricMeasurement.Metric.Builder metric =
-                    MetricMeasurement.Metric.newBuilder().setMeasurements(measurement);
-            metrics.put(METRIC_NAME + "-" + key, metric);
         }
+        LogUtil.CLog.i("returning metrics %s", metrics);
         return metrics;
     }
 }
