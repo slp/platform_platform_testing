@@ -54,6 +54,20 @@ fun executeShellCommand(cmd: String): ByteArray {
     }
 }
 
+fun executeShellCommand(cmd: String, stdin: ByteArray): ByteArray {
+    Log.d(LOG_TAG, "Executing shell command $cmd")
+    val uiAutomation: UiAutomation = InstrumentationRegistry.getInstrumentation().uiAutomation
+    val fileDescriptors = uiAutomation.executeShellCommandRw(cmd)
+    val stdoutFileDescriptor = fileDescriptors[0]
+    val stdinFileDescriptor = fileDescriptors[1]
+
+    ParcelFileDescriptor.AutoCloseOutputStream(stdinFileDescriptor).use { it.write(stdin) }
+
+    ParcelFileDescriptor.AutoCloseInputStream(stdoutFileDescriptor).use {
+        return it.readBytes()
+    }
+}
+
 private fun doBinderDump(name: String): ByteArray {
     // create an fd for the binder transaction
     val pipe = ParcelFileDescriptor.createPipe()

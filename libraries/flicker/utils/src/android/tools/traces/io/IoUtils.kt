@@ -16,7 +16,6 @@
 
 package android.tools.traces.io
 
-import android.os.SystemClock
 import android.tools.traces.executeShellCommand
 import java.io.File
 import java.nio.file.Files
@@ -40,25 +39,6 @@ object IoUtils {
         //       in b/162072200, to prevent this, ensure the files are readable after copying
         copyFile(src, dst)
         executeShellCommand("rm $src")
-    }
-
-    fun waitFileExists(file: File, timeoutMs: Long) {
-        val sleepIncrementMs = 50L
-        var elapsedMs = 0L
-
-        while (elapsedMs < timeoutMs) {
-            val out = String(executeShellCommand("ls $file")).trim()
-            val configFileInPerfettoDirExists = out == file.toString()
-
-            if (configFileInPerfettoDirExists) {
-                return
-            }
-
-            SystemClock.sleep(sleepIncrementMs)
-            elapsedMs += sleepIncrementMs
-        }
-
-        error("Failed to wait for file to exist: $file. Timed out after $timeoutMs ms.")
     }
 
     private fun moveDirectory(src: File, dst: File) {

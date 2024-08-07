@@ -36,35 +36,21 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
         get() = perfettoPid != null
 
     private var perfettoPid: Int? = null
-    private var configFileInPerfettoDir: File? = null
     private var traceFile: File? = null
     private var traceFileInPerfettoDir: File? = null
-    private val PERFETTO_CONFIGS_DIR = File("/data/misc/perfetto-configs")
     private val PERFETTO_TRACES_DIR = File("/data/misc/perfetto-traces")
 
     override fun doStart() {
-        val configFile = File.createTempFile("flickerlib-config-", ".cfg")
-        configFileInPerfettoDir = PERFETTO_CONFIGS_DIR.resolve(requireNotNull(configFile).name)
-
         traceFile = File.createTempFile(traceType.fileName, "")
         traceFileInPerfettoDir = PERFETTO_TRACES_DIR.resolve(requireNotNull(traceFile).name)
 
-        configFile.writeBytes(config.toByteArray())
-
-        // Experiment for sporadic failures like b/333220956.
-        // The perfetto command below sometimes fails to find the config file on disk,
-        // so let's try to wait till the file exists on disk.
-        IoUtils.waitFileExists(configFile, 2000)
-
-        IoUtils.moveFile(configFile, requireNotNull(configFileInPerfettoDir))
-        IoUtils.waitFileExists(requireNotNull(configFileInPerfettoDir), 2000)
-
         val command =
             "perfetto --background-wait" +
-                " --config ${configFileInPerfettoDir?.absolutePath}" +
+                " --config -" +
                 " --out ${traceFileInPerfettoDir?.absolutePath}"
-        val stdout = String(executeShellCommand(command))
+        val stdout = String(executeShellCommand(command, config.toByteArray()))
         val pid = stdout.trim().toInt()
+
         perfettoPid = pid
         allPerfettoPidsLock.lock()
         try {
@@ -79,7 +65,6 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
         killPerfettoProcess(requireNotNull(perfettoPid))
         waitPerfettoProcessExits(requireNotNull(perfettoPid))
         IoUtils.moveFile(requireNotNull(traceFileInPerfettoDir), requireNotNull(traceFile))
-        executeShellCommand("rm ${configFileInPerfettoDir?.absolutePath}")
         perfettoPid = null
         return requireNotNull(traceFile)
     }
