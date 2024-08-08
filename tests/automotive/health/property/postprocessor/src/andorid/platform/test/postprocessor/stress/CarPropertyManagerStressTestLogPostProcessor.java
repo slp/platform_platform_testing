@@ -36,6 +36,7 @@ public class CarPropertyManagerStressTestLogPostProcessor extends BasePostProces
             HashMap<String, MetricMeasurement.Metric> rawMetrics, Map<String, LogFile> runLogs) {
         Map<String, MetricMeasurement.Metric.Builder> metrics = new HashMap<>();
         for (String key : runLogs.keySet()) {
+            LogUtil.CLog.i("Reading file: %s", key);
             try (BufferedReader br =
                     new BufferedReader(new FileReader(runLogs.get(key).getPath()))) {
                 String line = br.readLine();
