@@ -139,6 +139,23 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
             enableCustomTrace(config)
         }
 
+        fun enableWindowManagerDump(): Builder = apply {
+            val config =
+                DataSourceConfig.newBuilder()
+                    .setName(WINDOWMANAGER_DATA_SOURCE)
+                    .setWindowmanagerConfig(
+                        WindowManagerConfig.newBuilder()
+                            .setLogLevel(WindowManagerConfig.LogLevel.LOG_LEVEL_VERBOSE)
+                            .setLogFrequency(
+                                WindowManagerConfig.LogFrequency.LOG_FREQUENCY_SINGLE_DUMP
+                            )
+                            .build()
+                    )
+                    .build()
+
+            enableCustomTrace(config)
+        }
+
         fun enableCustomTrace(dataSourceConfig: DataSourceConfig): Builder = apply {
             dataSourceConfigs.add(dataSourceConfig)
         }
