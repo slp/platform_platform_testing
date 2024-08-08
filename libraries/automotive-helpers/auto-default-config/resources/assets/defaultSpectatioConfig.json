@@ -269,7 +269,6 @@
             }
           }
         }
-
       ]
     },
     "CONTACT_DETAIL": {
@@ -281,7 +280,6 @@
       "TYPE": "DESCRIPTION",
       "VALUE": "com.android.car.ui.utils.ROTARY_CONTAINER"
     },
-
     "CALL_HISTORY_INFO": {
       "TYPE": "RESOURCE_ID",
       "VALUE": "call_action_id",
@@ -1293,7 +1291,6 @@
         }
       ]
     },
-
     "USER_SETTINGS_MAKE_TIME_PATTERN": {
       "TYPE": "TEXT",
       "VALUE": "(1[012]|[1-9]):[0-5][0-9](\\s)?.*"
@@ -1608,7 +1605,8 @@
         {
           "TYPE": "DESCRIPTION",
           "VALUE": "com.android.car.ui.utils.ROTARY_CONTAINER"
-        },{
+        },
+        {
           "TYPE": "CLASS",
           "VALUE": "androidx.recyclerview.widget.RecyclerView"
         }
@@ -1985,7 +1983,7 @@
       "VALUE": "radio_button",
       "PACKAGE": "com.android.permissioncontroller"
     },
-    "PRIVACY_PERMISSION_MANAGER":{
+    "PRIVACY_PERMISSION_MANAGER": {
       "TYPE": "TEXT",
       "VALUE": "Permission manager"
     },
@@ -2141,6 +2139,30 @@
       "VALUE": "clock",
       "PACKAGE": "com.android.systemui"
     },
+    "STATUS_BAR_SOUND_BUTTON": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "volume_panel"
+    },
+    "SOUND_PALETTE_INCALL": {
+      "TYPE": "TEXT",
+      "VALUE": "In-call volume"
+    },
+    "SOUND_PALETTE_MEDIA": {
+      "TYPE": "TEXT",
+      "VALUE": "Media volume"
+    },
+    "SOUND_PALETTE_NAVIGATION": {
+      "TYPE": "TEXT",
+      "VALUE": "Navigation volume"
+    },
+    "SOUND_PALETTE_SOUND_SETTINGS": {
+      "TYPE": "TEXT",
+      "VALUE": "Sound settings"
+    },
+    "SOUND_PALETTE_SOUND_SETTINGS_PAGE_TITLE": {
+      "TYPE": "TEXT",
+      "VALUE": "Sound"
+},
     "LANGUAGES_INPUT_IN_SYSTEM": {
       "TYPE": "TEXT",
       "VALUE": "Languages & input"
