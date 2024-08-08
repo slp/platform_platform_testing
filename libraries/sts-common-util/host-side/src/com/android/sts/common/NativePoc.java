@@ -202,13 +202,9 @@ public abstract class NativePoc {
             } else {
                 newVal = "/system/lib64:/system/lib";
             }
-            Map<String, String> newMap =
-                    new HashMap<>() {
-                        {
-                            putAll(envVars());
-                            put(key, newVal);
-                        }
-                    };
+            Map<String, String> newMap = new HashMap<>();
+            newMap.putAll(envVars());
+            newMap.put(key, newVal);
             envVars(ImmutableMap.copyOf(newMap));
         }
     }
