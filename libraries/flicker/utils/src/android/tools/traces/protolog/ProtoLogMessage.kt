@@ -26,6 +26,7 @@ class ProtoLogMessage(
     val tag: String,
     val message: String,
     val stacktrace: String?,
+    val location: String?,
 ) : TraceEntry {
     override val timestamp = Timestamps.from(elapsedNanos = elapsedTimestamp)
 }
