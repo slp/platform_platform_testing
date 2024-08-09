@@ -19,9 +19,11 @@ package android.platform.tests;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
+import android.platform.helpers.AutomotiveConfigConstants;
 import android.platform.helpers.HelperAccessor;
 import android.platform.helpers.IAutoPrivacySettingsHelper;
 import android.platform.helpers.IAutoSettingHelper;
+import android.platform.helpers.IAutoUISettingsHelper;
 import android.platform.helpers.SettingsConstants;
 
 import androidx.test.runner.AndroidJUnit4;
@@ -35,10 +37,12 @@ import org.junit.runner.RunWith;
 public class PrivacySettingTest {
     private HelperAccessor<IAutoSettingHelper> mSettingHelper;
     private HelperAccessor<IAutoPrivacySettingsHelper> mPrivacySettingsHelper;
+    private HelperAccessor<IAutoUISettingsHelper> mSettingsUIHelper;
 
     public PrivacySettingTest() throws Exception {
         mSettingHelper = new HelperAccessor<>(IAutoSettingHelper.class);
         mPrivacySettingsHelper = new HelperAccessor<>(IAutoPrivacySettingsHelper.class);
+        mSettingsUIHelper = new HelperAccessor<>(IAutoUISettingsHelper.class);
     }
 
     @Before
@@ -46,7 +50,7 @@ public class PrivacySettingTest {
         mSettingHelper.get().openSetting(SettingsConstants.PRIVACY_SETTINGS);
         assertTrue(
                 "Privacy settings did not open",
-                mSettingHelper.get().checkMenuExists("Microphone"));
+                mSettingsUIHelper.get().hasUIElement(AutomotiveConfigConstants.MICROPHONE));
     }
 
     @After
