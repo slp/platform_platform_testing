@@ -29,6 +29,7 @@ import java.util.Map;
 
 public class CarPropertyManagerStressTestLogPostProcessor extends BasePostProcessor {
     private static final String METRIC_NAME = "GET_PROPERTY_TIMING";
+    private static final String FILE_NAME = "values_for_test";
 
     /** {@inheritDoc} */
     @Override
@@ -37,6 +38,9 @@ public class CarPropertyManagerStressTestLogPostProcessor extends BasePostProces
         Map<String, MetricMeasurement.Metric.Builder> metrics = new HashMap<>();
         for (String key : runLogs.keySet()) {
             LogUtil.CLog.i("Reading file: %s", key);
+            if (!key.contains(FILE_NAME)) {
+                continue;
+            }
             try (BufferedReader br =
                     new BufferedReader(new FileReader(runLogs.get(key).getPath()))) {
                 String line = br.readLine();
