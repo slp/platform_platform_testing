@@ -32,6 +32,7 @@ class IsNowPlayingLabelDisplayed(bluetooth_base_test.BluetoothBaseTest):
         self.common_utils.grant_local_mac_address_permission()
         self.common_utils.enable_wifi_on_phone_device()
         self.bt_utils.pair_primary_to_secondary()
+        super().enable_recording()
 
     def test_is_now_paying_label_displayed(self):
         """Tests is Now Playing label displayed on HU"""

@@ -56,6 +56,7 @@ class SMSNewUnreadSMSAutoSyncTest(bluetooth_sms_base_test.BluetoothSMSBaseTest):
         self.target.reboot()
         self.call_utils.wait_with_log(30)
         self.target.load_snippet('mbs', android_device.MBS_PACKAGE)
+        super().enable_recording()
 
     def test_new_unread_sms_auto_sync(self):
         # To test that new unread sms appear on HU

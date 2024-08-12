@@ -49,6 +49,7 @@ class BluetoothConnectionStatusOnLevelTwo(bluetooth_base_test.BluetoothBaseTest)
 
         self.bt_utils.pair_primary_to_secondary()
         self.call_utils.wait_with_log(constants.DEVICE_CONNECT_WAIT_TIME)
+        super().enable_recording()
 
     def test_connection_status_displayed_on_device_screen(self):
         # Open bluetooth settings.

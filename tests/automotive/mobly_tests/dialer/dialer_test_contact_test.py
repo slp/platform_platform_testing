@@ -40,6 +40,7 @@ class CallContactTest(bluetooth_base_test.BluetoothBaseTest):
 
         # Pair the devices
         self.bt_utils.pair_primary_to_secondary()
+        super().enable_recording()
 
     def test_call_contact(self):
         # Navigate to the Contacts page

@@ -34,6 +34,7 @@ class IsDeviceSyncedAfterHuStart(bluetooth_base_test.BluetoothBaseTest):
         self.common_utils.grant_local_mac_address_permission()
         self.common_utils.enable_wifi_on_phone_device()
         self.bt_utils.pair_primary_to_secondary()
+        super().enable_recording()
 
     def test_is_hu_synced_after_hu_start(self):
         """Tests validating is media synced after HU start"""

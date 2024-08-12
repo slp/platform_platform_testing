@@ -37,6 +37,7 @@ class EnableDisableBluetoothAudioViaMusicButton(bluetooth_base_test.BluetoothBas
   def setup_class(self):
     super().setup_class()
     self.common_utils = CommonUtils(self.target, self.discoverer)
+    super().enable_recording()
 
   def setup_test(self):
     """Setup steps before any test is executed."""

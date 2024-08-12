@@ -33,6 +33,7 @@ class IsTreeDisplayedTest(bluetooth_base_test.BluetoothBaseTest):
         self.common_utils.grant_local_mac_address_permission()
         self.common_utils.enable_wifi_on_phone_device()
         self.bt_utils.pair_primary_to_secondary()
+        super().enable_recording()
 
     def test_media_is_tree_displayed(self):
         """Tests validating is AVRCP Tree - Displayed"""

@@ -35,6 +35,7 @@ class DialerPageRefresh(bluetooth_base_test.BluetoothBaseTest):
     def setup_test(self):
         # Pair the devices
         self.bt_utils.pair_primary_to_secondary()
+        super().enable_recording()
 
     def test_dialer_page_refresh(self):
 

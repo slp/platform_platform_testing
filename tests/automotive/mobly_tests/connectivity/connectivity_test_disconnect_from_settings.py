@@ -37,6 +37,7 @@ class BluetoothDisconnectFromSettingsTest(bluetooth_base_test.BluetoothBaseTest)
         super().setup_test()
         # Pair the devices
         self.bt_utils.pair_primary_to_secondary()
+        super().enable_recording()
 
     def test_disconnect_from_settings(self):
         # Allow time for connection to fully sync.

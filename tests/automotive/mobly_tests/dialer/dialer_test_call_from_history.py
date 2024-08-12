@@ -20,6 +20,8 @@ class MakeCallFromHistotyTest(bluetooth_base_test.BluetoothBaseTest):
 
     # Pair the devices
     self.bt_utils.pair_primary_to_secondary()
+    super().enable_recording()
+
   def test_dial_large_digits_number(self):
     """Tests the calling tten digits number functionality."""
     #Variable

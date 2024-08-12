@@ -23,6 +23,7 @@ class DeviceNotPairedTest(bluetooth_base_test.BluetoothBaseTest):
     def setup_test(self):
         """Enable and disable BT on Head unit"""
         super().setup_test()
+        super().enable_recording()
 
     def test_device_not_paired(self):
         """Tests lunch Bluetooth Audio app and verify <Bluetooth Disconnected> displayed."""

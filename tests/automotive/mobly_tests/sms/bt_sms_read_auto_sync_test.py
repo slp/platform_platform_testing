@@ -57,6 +57,7 @@ class SMSReadAutoSync(bluetooth_sms_base_test.BluetoothSMSBaseTest):
         target_phone_number = self.target.mbs.getPhoneNumber()
         self.phone_notpaired.mbs.sendSms(target_phone_number,constants.SMS_TEXT)
         self.call_utils.wait_with_log(10)
+        super().enable_recording()
 
     def test_read_sms_auto_sync(self):
 
