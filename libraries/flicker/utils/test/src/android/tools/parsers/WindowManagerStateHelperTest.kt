@@ -376,7 +376,7 @@ class WindowManagerStateHelperTest {
 
     @Test
     fun canDetectResumedActivitiesInStacks() {
-        val reader = getWmDumpReaderFromAsset("wm_trace_resumed_activities_in_stack.pb")
+        val reader = getWmDumpReaderFromAsset("wm_trace_resumed_activities_in_stack")
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val entry = trace.entries.first()
         Truth.assertWithMessage("Trace should have a resumed activity in stacks")

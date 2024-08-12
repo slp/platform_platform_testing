@@ -23,6 +23,7 @@ import android.tools.testutils.readAsset
 import android.tools.traces.getCurrentState
 import android.tools.traces.parsers.wm.WindowManagerDumpParser
 import com.google.common.truth.Truth
+import org.junit.Assume
 import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Test
@@ -31,6 +32,7 @@ import org.junit.Test
 class WindowManagerDumpParserTest {
     @Before
     fun before() {
+        Assume.assumeFalse(android.tracing.Flags.perfettoWmTracing())
         Cache.clear()
     }
 

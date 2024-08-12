@@ -182,10 +182,31 @@ fun getWmTraceReaderFromAsset(
     )
 }
 
-fun getWmDumpReaderFromAsset(relativePath: String): Reader {
+fun getWmDumpReaderFromAsset(relativePathWithoutExtension: String): Reader {
+    fun parseDump(): WindowManagerTrace {
+        val traceData = readAsset("$relativePathWithoutExtension.perfetto-trace")
+        return TraceProcessorSession.loadPerfettoTrace(traceData) { session ->
+            WindowManagerTraceParser().parse(session)
+        }
+    }
+
+    fun parseLegacyDump(): WindowManagerTrace {
+        val traceData =
+            runCatching { readAsset("$relativePathWithoutExtension.pb") }.getOrNull()
+                ?: runCatching { readAsset("$relativePathWithoutExtension.winscope") }.getOrNull()
+                ?: error("Can't find legacy trace file $relativePathWithoutExtension")
+        return WindowManagerDumpParser().parse(traceData, clearCache = false)
+    }
+
+    val wmTrace =
+        if (android.tracing.Flags.perfettoWmTracing()) {
+            parseDump()
+        } else {
+            parseLegacyDump()
+        }
     return ParsedTracesReader(
-        artifact = TestArtifact(relativePath),
-        wmTrace = WindowManagerDumpParser().parse(readAsset(relativePath), clearCache = false)
+        artifact = TestArtifact(relativePathWithoutExtension),
+        wmTrace = wmTrace
     )
 }
 

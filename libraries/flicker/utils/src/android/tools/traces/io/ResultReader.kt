@@ -88,7 +88,15 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
             val descriptor = ResultArtifactDescriptor(TraceType.WM_DUMP, tag)
             Log.d(FLICKER_IO_TAG, "Reading WM trace descriptor=$descriptor from $result")
             val traceData = artifact.readBytes(descriptor)
-            traceData?.let { WindowManagerDumpParser().parse(it, clearCache = true) }
+            traceData?.let {
+                if (android.tracing.Flags.perfettoWmTracing()) {
+                    TraceProcessorSession.loadPerfettoTrace(it) { session ->
+                        WindowManagerTraceParser().parse(session)
+                    }
+                } else {
+                    WindowManagerDumpParser().parse(it, clearCache = true)
+                }
+            }
         }
     }
 
