@@ -37,6 +37,7 @@ class BluetoothDisableEnableMediaTest(bluetooth_base_test.BluetoothBaseTest):
         self.bt_utils.pair_primary_to_secondary()
         self.call_utils.wait_with_log(constants.DEVICE_CONNECT_WAIT_TIME)
         self.target_name = self.target.mbs.btGetName()
+        super().enable_recording()
 
     def test_disable_enable_media(self):
         # Navigate to the bluetooth settings page

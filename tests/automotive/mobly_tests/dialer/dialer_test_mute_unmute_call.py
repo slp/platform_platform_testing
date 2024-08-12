@@ -33,6 +33,7 @@ class BluetoothMuteUnmuteCallTest(bluetooth_base_test.BluetoothBaseTest):
     def setup_test(self):
         # Pair the devices
         self.bt_utils.pair_primary_to_secondary()
+        super().enable_recording()
 
     def test_dial_phone_number(self):
         """Tests mute and unmute during phone call functionality."""

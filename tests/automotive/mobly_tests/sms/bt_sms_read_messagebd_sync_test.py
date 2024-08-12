@@ -52,6 +52,7 @@ class SMSReadMessageDBSync(bluetooth_sms_base_test.BluetoothSMSBaseTest):
         self.target.reboot()
         self.call_utils.wait_with_log(30)
         self.target.load_snippet('mbs', android_device.MBS_PACKAGE)
+        super().enable_recording()
 
     def test_read_sms_messagedb_sync(self):
         # Open the sms app

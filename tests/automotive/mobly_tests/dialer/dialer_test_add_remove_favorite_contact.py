@@ -42,6 +42,7 @@ class AddRemoveFavoriteContact(bluetooth_base_test.BluetoothBaseTest):
     self.call_utils.wait_with_log(5)
     # Pair caller phone with automotive device
     self.bt_utils.pair_primary_to_secondary()
+    super().enable_recording()
 
   def test_add_remove_favorite_contact(self):
     """Tests add remove favorite contact."""
