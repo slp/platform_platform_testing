@@ -167,6 +167,18 @@ public class AutoNotificationHelperImpl extends AbstractStandardAppHelper
         return postedNotification != null;
     }
 
+    @Override
+    public boolean checkAppPermissionsExists(String title) {
+        return getSpectatioUiUtil().hasUiElement(title);
+    }
+
+    @Override
+    public void clickOnCheckRecentPermissions(String title) {
+        BySelector notificationSelector = By.text(title);
+        UiObject2 notification = getSpectatioUiUtil().findUiObject(notificationSelector);
+        getSpectatioUiUtil().clickAndWait(notification);
+    }
+
     /** {@inheritDoc} */
     @Override
     public void removeNotification(String title) {

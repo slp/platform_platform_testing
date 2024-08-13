@@ -43,6 +43,7 @@ public class DrivingOptimizedAppsTest {
     private HelperAccessor<IAutoNotificationHelper> mNotificationHelper;
 
     private static final String NOTIFICATION_TITLE = "Check recent permissions";
+    private static final String APP_PERMISSIONS = "App permissions";
     private static final int SPEED_TWENTY = 20;
 
     public DrivingOptimizedAppsTest() throws Exception {
@@ -118,5 +119,9 @@ public class DrivingOptimizedAppsTest {
         assertTrue(
                 "Recent Permission is not Notified",
                 mNotificationHelper.get().checkNotificationExists(NOTIFICATION_TITLE));
+        mNotificationHelper.get().clickOnCheckRecentPermissions(NOTIFICATION_TITLE);
+        assertTrue(
+                "App Permissions page is not launched",
+                mNotificationHelper.get().checkAppPermissionsExists(APP_PERMISSIONS));
     }
 }

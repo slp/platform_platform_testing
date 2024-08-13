@@ -68,4 +68,18 @@ public interface IAutoNotificationHelper extends Scrollable, IAppHelper {
      * <p>Checks if notification are received under older category.
      */
     boolean isOlderNotification();
+
+    /**
+     * Setup expectations: A notification is received.
+     *
+     * <p>Clicks in check recent permissions
+     */
+    void clickOnCheckRecentPermissions(String title);
+
+    /**
+     * Setup expectations: Check recent permission is launched.
+     *
+     * <p>Checks App Permissions is present
+     */
+    boolean checkAppPermissionsExists(String title);
 }
