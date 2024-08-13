@@ -20,8 +20,9 @@ import java.util.Optional;
 
 /** GCL-accessible Business Logic utility for GhidraPreparer */
 public class GhidraBusinessLogicHandler {
-    private static String gitReleaseTagName; // eg. "Ghidra_11.0.1_build"
-    private static String gitReleaseAssetName; // eg. "ghidra_11.0.1_PUBLIC_20240130.zip"
+    private static String gitReleaseTagName; // eg. "Ghidra_11.1.2_build"
+    private static String gitReleaseAssetName; // eg. "ghidra_11.1.2_PUBLIC_20240709.zip"
+    private static String versionThreshold; // eg. 11.1.2
 
     public static Optional<String> getGitReleaseTagName() {
         return Optional.ofNullable(gitReleaseTagName);
@@ -34,5 +35,13 @@ public class GhidraBusinessLogicHandler {
     public void setGitReleaseTagName(String tagName, String assetName) {
         gitReleaseTagName = tagName;
         gitReleaseAssetName = assetName;
+    }
+
+    public void setMinGhidraVersion(String version) {
+        versionThreshold = version;
+    }
+
+    public static Optional<String> getMinGhidraVersion() {
+        return Optional.ofNullable(versionThreshold);
     }
 }
