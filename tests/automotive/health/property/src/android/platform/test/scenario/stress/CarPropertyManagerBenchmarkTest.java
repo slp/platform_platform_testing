@@ -84,7 +84,7 @@ public class CarPropertyManagerBenchmarkTest {
 
     private File writeToFile(String fileName, ConcurrentLinkedQueue<Long> valuesToWrite)
             throws Exception {
-        File file = new File(mContext.getFilesDir() + fileName);
+        File file = new File(mContext.getFilesDir() + "/" + fileName);
         if (!file.exists()) {
             file.createNewFile();
         }
