@@ -22,10 +22,15 @@ import com.android.tradefed.postprocessor.BasePostProcessor;
 import com.android.tradefed.result.LogFile;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 public class CarPropertyManagerStressTestLogPostProcessor extends BasePostProcessor {
     private static final String METRIC_NAME = "GET_PROPERTY_TIMING";
@@ -41,8 +46,19 @@ public class CarPropertyManagerStressTestLogPostProcessor extends BasePostProces
             if (!key.contains(FILE_NAME)) {
                 continue;
             }
-            try (BufferedReader br =
-                    new BufferedReader(new FileReader(runLogs.get(key).getPath()))) {
+            BufferedReader br;
+            try {
+                File file = new File(runLogs.get(key).getPath());
+                if (isGZipped(file)) {
+                    LogUtil.CLog.i("File %s is gzipped", file);
+                    br =
+                            new BufferedReader(
+                                    new InputStreamReader(
+                                            new GZIPInputStream(new FileInputStream(file))));
+                } else {
+                    LogUtil.CLog.i("File %s is not gzipped", file);
+                    br = new BufferedReader(new FileReader(file));
+                }
                 String line = br.readLine();
                 while (line != null) {
                     MetricMeasurement.Measurements.Builder measurement =
@@ -61,5 +77,23 @@ public class CarPropertyManagerStressTestLogPostProcessor extends BasePostProces
         }
         LogUtil.CLog.i("returning metrics %s", metrics);
         return metrics;
+    }
+
+    /**
+     * Checks if a file is gzipped.
+     *
+     * @param f File to check if its is gzipped
+     * @return True if it is gzipped false otherwise
+     */
+    public static boolean isGZipped(File f) {
+        int magic = 0;
+        try {
+            RandomAccessFile raf = new RandomAccessFile(f, "r");
+            magic = (raf.read() & 0xff) | ((raf.read() << 8) & 0xff00);
+            raf.close();
+        } catch (Throwable e) {
+            e.printStackTrace(System.err);
+        }
+        return magic == GZIPInputStream.GZIP_MAGIC;
     }
 }
