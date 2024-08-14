@@ -17,6 +17,7 @@
 package com.android.sts.common;
 
 import static com.android.sts.common.CommandUtil.runAndCheck;
+import static com.android.sts.common.SystemUtil.poll;
 import static com.android.tradefed.util.FileUtil.createNamedTempDir;
 
 import static java.util.stream.Collectors.toList;
@@ -78,6 +79,7 @@ public class FridaUtils extends BaseTargetPreparer implements AutoCloseable {
     private static final String FRIDA_OS = "android";
     private static final String TMP_PATH = "/data/local/tmp/";
     private static final String FRIDA_OWNER_AND_REPO = "frida";
+    private static final String VERSION_THRESHOLD = "16.4.8";
 
     // Default value as per fridaAssetTemplate.gcl
     private static final String FRIDA_FILE_NAME_TEMPLATE = "{0}-{1}-{2}-{3}.xz";
@@ -89,7 +91,9 @@ public class FridaUtils extends BaseTargetPreparer implements AutoCloseable {
     private ITestDevice mDevice;
     private CompatibilityBuildHelper mBuildHelper;
     private String mRemoteFridaExeName;
-    private String mFridaVersion;
+    private String mFridaVersion =
+            "version"; // Hardcoding the Frida version to avoid confusion with version naming during
+    // manual downloads.
     private Map<Integer, Integer> mTargetPidsToFridaPids = new HashMap<>();
 
     @Option(name = "frida-url", description = "Custom url for frida-inject xz download.")
@@ -119,61 +123,71 @@ public class FridaUtils extends BaseTargetPreparer implements AutoCloseable {
         synchronized (LOCK_SETUP) {
             this.mDevice = device;
             this.mBuildHelper = new CompatibilityBuildHelper(buildInfo);
+            String fridaUrl = null;
 
             // Figure out which version we should be using
             Optional<String> releaseTagName = FridaUtilsBusinessLogicHandler.getFridaVersion();
 
             // Figure out which Frida arch we should be using for our device
             mFridaAbi = getFridaAbiFor(device);
-
-            // Get Frida download url
-            String fridaUrl;
-            if (mCustomFridaUrl != null) {
-                mFridaVersion = "custom";
-                fridaUrl = mCustomFridaUrl;
-            } else {
-                fridaUrl = getFridaDownloadUrl(releaseTagName);
-            }
             String fridaExeName =
                     String.format("%s-%s-%s-%s", FRIDA_PACKAGE, mFridaVersion, FRIDA_OS, mFridaAbi);
 
-            // Download Frida if needed
-            File localFridaExe;
+            // Preference order for sourcing frida binary:
+            // pre-existing or manually downloaded > custom url > GitHub.
+            File localFridaExe = null;
             try {
+                // Check for an existing Frida binary.
                 localFridaExe = mBuildHelper.getTestFile(fridaExeName);
                 CLog.d("%s found at %s", fridaExeName, localFridaExe.getAbsolutePath());
-            } catch (FileNotFoundException e) {
-                CLog.d("%s not found.", fridaExeName);
-                CLog.d("Downloading Frida from %s", fridaUrl);
+
+                // Throw if the version threshold is not met
+                pushAndCheckVersion(localFridaExe);
+            } catch (Exception e) {
                 try {
+                    CLog.d("Downloading Frida due to Exception: %s", e);
+
+                    // Fetch Frida download url from GitHub if a custom URL is not provided.
+                    fridaUrl =
+                            mCustomFridaUrl != null
+                                    ? mCustomFridaUrl
+                                    : getFridaDownloadUrl(releaseTagName);
+                    CLog.d(
+                            "Downloading Frida from %s url = %s",
+                            mCustomFridaUrl != null ? "custom" : "latest", fridaUrl);
                     localFridaExe = new File(mBuildHelper.getTestsDir(), fridaExeName);
                     FileDownloadCache fileDownloadCache =
                             FileDownloadCacheFactory.getInstance()
                                     .getCache(createNamedTempDir("frida_cache"));
                     fileDownloadCache.fetchRemoteFile(
                             new FridaFileDownloader(), fridaUrl, localFridaExe);
+
+                    // Throw if the version threshold is not met
+                    pushAndCheckVersion(localFridaExe);
                 } catch (Exception e2) {
-                    throw new TargetSetupError(
-                            String.format(
-                                    "Could not download Frida. Please manually download '%s' and"
-                                            + " extract to '%s', renaming the file to '%s' as"
-                                            + " necessary.",
-                                    fridaUrl, mBuildHelper.getTestsDir(), fridaExeName),
-                            e2,
-                            device.getDeviceDescriptor(),
-                            false /* deviceSide */);
+                    // In case download fails, provide instructions for manual setup.
+                    showManualSetupInstructions(e2, fridaUrl);
                 }
             }
-
-            // Upload Frida binary to device
-            mRemoteFridaExeName = new File(TMP_PATH, localFridaExe.getName()).getAbsolutePath();
-            device.pushFile(localFridaExe, mRemoteFridaExeName);
-            runAndCheck(device, String.format("chmod a+x '%s'", mRemoteFridaExeName));
-            mFridaFiles.add(mRemoteFridaExeName);
-            if (!device.doesFileExist(mRemoteFridaExeName.toString())) {
-                throw new TargetSetupError("Failed to push frida into the device");
-            }
         }
+    }
+
+    private void pushAndCheckVersion(File localFridaExe)
+            throws DeviceNotAvailableException, IOException, TargetSetupError {
+        // Upload Frida binary to device
+        mRemoteFridaExeName = new File(TMP_PATH, localFridaExe.getName()).getAbsolutePath();
+        mDevice.pushFile(localFridaExe, mRemoteFridaExeName);
+        runAndCheck(mDevice, String.format("chmod a+x '%s'", mRemoteFridaExeName));
+        mFridaFiles.add(mRemoteFridaExeName);
+        if (!mDevice.doesFileExist(mRemoteFridaExeName.toString())) {
+            throw new TargetSetupError("Failed to push Frida into the device");
+        }
+
+        // Throw if the version threshold is not met
+        meetsVersionThreshold();
+        CLog.d(
+                "Frida is installed at %s in the device:%s",
+                mRemoteFridaExeName, mDevice.getSerialNumber());
     }
 
     /**
@@ -239,20 +253,14 @@ public class FridaUtils extends BaseTargetPreparer implements AutoCloseable {
         mFridaFiles.add(remoteFridaJsScriptName);
 
         // Execute Frida, binding to given PID, in the background
-        List<String> cmd =
-                List.of(
-                        "adb",
-                        "-s",
-                        mDevice.getSerialNumber(),
-                        "shell",
-                        mRemoteFridaExeName,
-                        "-p",
-                        String.valueOf(targetProcessPid),
-                        "-s",
-                        remoteFridaJsScriptName,
-                        "--runtime=v8");
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        RunUtil.getDefault().runCmdInBackground(cmd, output);
+        ByteArrayOutputStream output =
+                runFrida(
+                        List.of(
+                                "-p",
+                                String.valueOf(targetProcessPid),
+                                "-s",
+                                remoteFridaJsScriptName,
+                                "--runtime=v8"));
 
         // Frida can fail to attach after a short pause so wait for that
         TimeUnit.SECONDS.sleep(5);
@@ -339,6 +347,101 @@ public class FridaUtils extends BaseTargetPreparer implements AutoCloseable {
                 .collect(toList());
     }
 
+    private ByteArrayOutputStream runFrida(List<String> args)
+            throws DeviceNotAvailableException, IOException {
+        mDevice.enableAdbRoot();
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        List<String> cmd =
+                new ArrayList<>(
+                        List.of(
+                                "adb",
+                                "-s",
+                                mDevice.getSerialNumber(),
+                                "shell",
+                                mRemoteFridaExeName));
+        cmd.addAll(args);
+        RunUtil.getDefault().runCmdInBackground(cmd, output);
+        return output;
+    }
+
+    private void meetsVersionThreshold()
+            throws IOException, IllegalArgumentException, DeviceNotAvailableException,
+                    TargetSetupError {
+        // Get version from Frida binary
+        ByteArrayOutputStream output = runFrida(List.of("--version"));
+        poll(() -> output.size() > 0);
+        String version = output.toString(StandardCharsets.UTF_8).trim();
+        CLog.d("Current version is: %s", version);
+
+        // Get version threshold
+        Optional<String> minVersionFromBl = FridaUtilsBusinessLogicHandler.getFridaVersion();
+        String versionThreshold =
+                minVersionFromBl.isPresent() ? minVersionFromBl.get() : VERSION_THRESHOLD;
+
+        // Throw if threshold is not met
+        if (compareVersion(version, versionThreshold) < 0) {
+            throw new TargetSetupError(
+                    String.format(
+                            "Minimum version required is %s. Current version is %s.",
+                            versionThreshold.toString(), version.toString()));
+        }
+    }
+
+    /** Helper method to parse version parts and default missing parts to 0 */
+    private int[] parseVersion(String version) {
+        String[] parts = version.split("\\.");
+        int major = (parts.length > 0) ? Integer.parseInt(parts[0]) : 0;
+        int minor = (parts.length > 1) ? Integer.parseInt(parts[1]) : 0;
+        int patch = (parts.length > 2) ? Integer.parseInt(parts[2]) : 0;
+        return new int[] {major, minor, patch};
+    }
+
+    /** Helper method to compare versions */
+    private int compareVersion(String version, String otherVersion) {
+        // Parse the version, defaulting missing parts to 0
+        int[] versionParts = parseVersion(version);
+        int major = versionParts[0];
+        int minor = versionParts[1];
+        int patch = versionParts[2];
+
+        // Parse the other version, defaulting missing parts to 0
+        int[] otherVersionParts = parseVersion(otherVersion);
+        int otherMajor = otherVersionParts[0];
+        int otherMinor = otherVersionParts[1];
+        int otherPatch = otherVersionParts[2];
+
+        // Compare versions
+        int res = Integer.compare(major, otherMajor);
+        if (res == 0) {
+            res = Integer.compare(minor, otherMinor);
+            if (res == 0) {
+                res = Integer.compare(patch, otherPatch);
+            }
+        }
+        return res;
+    }
+
+    private void showManualSetupInstructions(Exception e, String fridaUrl)
+            throws FileNotFoundException, TargetSetupError {
+        throw new TargetSetupError(
+                String.format(
+                        "Could not download Frida. Please manually download %s and"
+                                + " extract to '%s' renaming the extracted file to '%s' exactly."
+                                + " Incorrect naming will cause a setup failure.",
+                        fridaUrl != null
+                                ? fridaUrl
+                                : String.format(
+                                        "the latest '%s-x.x.x-%s-%s.xz' from"
+                                                + " https://github.com/%4$s/%4$s/releases",
+                                        FRIDA_PACKAGE, FRIDA_OS, mFridaAbi, FRIDA_OWNER_AND_REPO),
+                        mBuildHelper.getTestsDir(),
+                        String.format(
+                                "%s-%s-%s-%s", FRIDA_PACKAGE, mFridaVersion, FRIDA_OS, mFridaAbi)),
+                e,
+                mDevice.getDeviceDescriptor(),
+                false /* deviceSide */);
+    }
+
     private String getFridaDownloadUrl(Optional<String> releaseTagName)
             throws IOException, JsonParseException, MalformedURLException, URISyntaxException {
         String fridaFileNameTemplate = FridaUtilsBusinessLogicHandler.getFridaFilenameTemplate();
@@ -361,8 +464,6 @@ public class FridaUtils extends BaseTargetPreparer implements AutoCloseable {
         for (Map.Entry<String, URI> entry : fridaAssetNameToUri.entrySet()) {
             Matcher matcher = Pattern.compile(name).matcher(entry.getKey());
             if (matcher.matches()) {
-                mFridaVersion =
-                        releaseTagName.isPresent() ? releaseTagName.get() : matcher.group(1);
                 return entry.getValue().toString();
             }
         }
