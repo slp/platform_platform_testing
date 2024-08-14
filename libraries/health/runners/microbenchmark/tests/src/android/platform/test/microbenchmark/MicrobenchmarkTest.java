@@ -25,6 +25,8 @@ import static org.mockito.Mockito.verify;
 
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.platform.test.microbenchmark.Microbenchmark.NoMetricAfter;
+import android.platform.test.microbenchmark.Microbenchmark.NoMetricBefore;
 import android.platform.test.microbenchmark.Microbenchmark.TerminateEarlyException;
 import android.platform.test.rule.TestWatcher;
 import android.platform.test.rule.TracePointRule;
@@ -111,6 +113,7 @@ public final class MicrobenchmarkTest {
         assertThat(result.wasSuccessful()).isTrue();
         assertThat(sLogs)
                 .containsExactly(
+                        "no metric before",
                         "before",
                         "tight before",
                         "begin: testMethod("
@@ -119,8 +122,43 @@ public final class MicrobenchmarkTest {
                         "test",
                         "end",
                         "tight after",
-                        "after")
+                        "after",
+                        "no metric after")
                 .inOrder();
+    }
+
+    @Test
+    public void testNoMetricBeforeFailure_reportsFailedTest() throws InitializationError {
+        LoggingMicrobenchmark loggingRunner = new LoggingMicrobenchmark(
+                LoggingNoMetricBeforeFailure.class);
+
+        Result result = new JUnitCore().run(loggingRunner);
+
+        assertThat(result.wasSuccessful()).isFalse();
+        assertThat(result.getRunCount()).isEqualTo(1);
+        assertThat(sLogs).isEmpty();
+    }
+
+    @Test
+    public void testNoMetricAfterFailure_runsTestBodyAndReportsFailedTest() throws InitializationError {
+        LoggingMicrobenchmark loggingRunner = new LoggingMicrobenchmark(
+                LoggingNoMetricAfterFailure.class);
+
+        Result result = new JUnitCore().run(loggingRunner);
+
+        assertThat(result.wasSuccessful()).isFalse();
+        assertThat(result.getRunCount()).isEqualTo(1);
+        assertThat(sLogs)
+                .containsExactly(
+                        "no metric before",
+                        "before",
+                        "tight before",
+                        "begin: testMethod(android.platform.test.microbenchmark.MicrobenchmarkTest$LoggingNoMetricAfterFailure)",
+                        "test",
+                        "end",
+                        "tight after",
+                        "after",
+                        "no metric after");
     }
 
     /**
@@ -140,6 +178,7 @@ public final class MicrobenchmarkTest {
         assertThat(result.wasSuccessful()).isTrue();
         assertThat(sLogs)
                 .containsExactly(
+                        "no metric before",
                         "before",
                         "tight before",
                         "begin: testMethod$1("
@@ -149,6 +188,8 @@ public final class MicrobenchmarkTest {
                         "end",
                         "tight after",
                         "after",
+                        "no metric after",
+                        "no metric before",
                         "before",
                         "tight before",
                         "begin: testMethod$2("
@@ -157,7 +198,8 @@ public final class MicrobenchmarkTest {
                         "test",
                         "end",
                         "tight after",
-                        "after")
+                        "after",
+                        "no metric after")
                 .inOrder();
     }
 
@@ -179,6 +221,7 @@ public final class MicrobenchmarkTest {
         assertThat(result.wasSuccessful()).isTrue();
         assertThat(sLogs)
                 .containsExactly(
+                        "no metric before",
                         "before",
                         "tight before",
                         "begin: testMethod--1("
@@ -188,6 +231,8 @@ public final class MicrobenchmarkTest {
                         "end",
                         "tight after",
                         "after",
+                        "no metric after",
+                        "no metric before",
                         "before",
                         "tight before",
                         "begin: testMethod--2("
@@ -196,7 +241,8 @@ public final class MicrobenchmarkTest {
                         "test",
                         "end",
                         "tight after",
-                        "after")
+                        "after",
+                        "no metric after")
                 .inOrder();
     }
 
@@ -216,6 +262,7 @@ public final class MicrobenchmarkTest {
         assertThat(result.wasSuccessful()).isTrue();
         assertThat(sLogs)
                 .containsExactly(
+                        "no metric before",
                         "before",
                         "tight before",
                         "begin: testMethod("
@@ -224,7 +271,8 @@ public final class MicrobenchmarkTest {
                         "test",
                         "end",
                         "tight after",
-                        "after")
+                        "after",
+                        "no metric after")
                 .inOrder();
     }
 
@@ -245,6 +293,7 @@ public final class MicrobenchmarkTest {
         assertThat(result.wasSuccessful()).isTrue();
         assertThat(sLogs)
                 .containsExactly(
+                        "no metric before",
                         "before",
                         "tight before",
                         "begin: testMethod("
@@ -262,7 +311,8 @@ public final class MicrobenchmarkTest {
                         "test",
                         "end",
                         "tight after",
-                        "after")
+                        "after",
+                        "no metric after")
                 .inOrder();
     }
 
@@ -397,13 +447,15 @@ public final class MicrobenchmarkTest {
         assertThat(result.wasSuccessful()).isFalse();
         assertThat(sLogs)
                 .containsExactly(
+                        "no metric before",
                         "before",
                         "tight before",
                         "begin: testMethod("
                                 + "android.platform.test.microbenchmark.MicrobenchmarkTest"
                                 + "$LoggingFailedTest)",
                         "end",
-                        "after")
+                        "after",
+                        "no metric after")
                 .inOrder();
     }
 
@@ -423,6 +475,7 @@ public final class MicrobenchmarkTest {
         assertThat(result.wasSuccessful()).isFalse();
         assertThat(sLogs)
                 .containsExactly(
+                        "no metric before",
                         "before",
                         "tight before",
                         "begin: testMethod("
@@ -430,14 +483,49 @@ public final class MicrobenchmarkTest {
                                 + "$LoggingFailedTest)",
                         "end",
                         "after",
+                        "no metric after",
+                        "no metric before",
                         "before",
                         "tight before",
                         "begin: testMethod("
                                 + "android.platform.test.microbenchmark.MicrobenchmarkTest"
                                 + "$LoggingFailedTest)",
                         "end",
-                        "after")
+                        "after",
+                        "no metric after")
                 .inOrder();
+    }
+
+    @Test
+    public void testCreationFailed_terminateOnFailEnabled_testIsNotExecuted() throws InitializationError {
+        Bundle args = new Bundle();
+        args.putString("iterations", "2");
+        args.putString("rename-iterations", "false");
+        args.putString("terminate-on-test-fail", "true");
+        LoggingMicrobenchmark loggingRunner = new LoggingMicrobenchmark(
+                LoggingTestCreationFailure.class, args);
+
+        Result result = new JUnitCore().run(loggingRunner);
+
+        assertThat(result.wasSuccessful()).isFalse();
+        assertThat(result.getFailureCount()).isEqualTo(2);
+        assertThat(sLogs).isEmpty();
+    }
+
+    @Test
+    public void testCreationFailed_terminateOnFailDisabled_testIsNotExecuted() throws InitializationError {
+        Bundle args = new Bundle();
+        args.putString("iterations", "2");
+        args.putString("rename-iterations", "false");
+        args.putString("terminate-on-test-fail", "false");
+        LoggingMicrobenchmark loggingRunner = new LoggingMicrobenchmark(
+                LoggingTestCreationFailure.class, args);
+
+        Result result = new JUnitCore().run(loggingRunner);
+
+        assertThat(result.wasSuccessful()).isFalse();
+        assertThat(result.getFailureCount()).isEqualTo(2);
+        assertThat(sLogs).isEmpty();
     }
 
     /** Test dynamic test rule injection. */
@@ -457,6 +545,7 @@ public final class MicrobenchmarkTest {
         assertThat(sLogs)
                 .containsExactly(
                         "hardcoded class rule starting",
+                        "no metric before",
                         "logging rule 2 starting",
                         "hardcoded test rule starting",
                         "logging rule 1 starting",
@@ -472,6 +561,8 @@ public final class MicrobenchmarkTest {
                         "logging rule 1 finished",
                         "hardcoded test rule finished",
                         "logging rule 2 finished",
+                        "no metric after",
+                        "no metric before",
                         "logging rule 2 starting",
                         "hardcoded test rule starting",
                         "logging rule 1 starting",
@@ -487,6 +578,7 @@ public final class MicrobenchmarkTest {
                         "logging rule 1 finished",
                         "hardcoded test rule finished",
                         "logging rule 2 finished",
+                        "no metric after",
                         "hardcoded class rule finished")
                 .inOrder();
     }
@@ -510,6 +602,7 @@ public final class MicrobenchmarkTest {
                         "logging rule 2 starting",
                         "hardcoded class rule starting",
                         "logging rule 1 starting",
+                        "no metric before",
                         "hardcoded test rule starting",
                         "before",
                         "tight before",
@@ -521,6 +614,8 @@ public final class MicrobenchmarkTest {
                         "tight after",
                         "after",
                         "hardcoded test rule finished",
+                        "no metric after",
+                        "no metric before",
                         "hardcoded test rule starting",
                         "before",
                         "tight before",
@@ -532,6 +627,7 @@ public final class MicrobenchmarkTest {
                         "tight after",
                         "after",
                         "hardcoded test rule finished",
+                        "no metric after",
                         "logging rule 1 finished",
                         "hardcoded class rule finished",
                         "logging rule 2 finished")
@@ -563,6 +659,7 @@ public final class MicrobenchmarkTest {
         assertThat(result.wasSuccessful()).isTrue();
         assertThat(sLogs)
                 .containsExactly(
+                        "no metric before",
                         "before",
                         "tight before",
                         "begin: testMethod$1("
@@ -572,6 +669,8 @@ public final class MicrobenchmarkTest {
                         "end",
                         "tight after",
                         "after",
+                        "no metric after",
+                        "no metric before",
                         "before",
                         "tight before",
                         "begin: testMethod$2("
@@ -580,7 +679,8 @@ public final class MicrobenchmarkTest {
                         "test",
                         "end",
                         "tight after",
-                        "after")
+                        "after",
+                        "no metric after")
                 .inOrder();
     }
 
@@ -655,6 +755,11 @@ public final class MicrobenchmarkTest {
         @Microbenchmark.TightMethodRule
         public TightRule orderRule = new TightRule();
 
+        @NoMetricBefore
+        public void noMetricBeforeMethod() {
+            sLogs.add("no metric before");
+        }
+
         @Before
         public void beforeMethod() {
             sLogs.add("before");
@@ -668,6 +773,11 @@ public final class MicrobenchmarkTest {
         @After
         public void afterMethod() {
             sLogs.add("after");
+        }
+
+        @NoMetricAfter
+        public void noMetricAfterMethod() {
+            sLogs.add("no metric after");
         }
 
         class TightRule implements TestRule {
@@ -726,6 +836,26 @@ public final class MicrobenchmarkTest {
     public static class LoggingFailedTest extends LoggingTest {
         @Test
         public void testMethod() {
+            throw new RuntimeException("I failed.");
+        }
+    }
+
+    public static class LoggingTestCreationFailure extends LoggingTest {
+        public LoggingTestCreationFailure() {
+            throw new RuntimeException("I failed.");
+        }
+    }
+
+    public static class LoggingNoMetricBeforeFailure extends LoggingTest {
+        @NoMetricBefore
+        public void noMetricBeforeFailure() {
+            throw new RuntimeException("I failed.");
+        }
+    }
+
+    public static class LoggingNoMetricAfterFailure extends LoggingTest {
+        @NoMetricAfter
+        public void noMetricAfterFailure() {
             throw new RuntimeException("I failed.");
         }
     }
