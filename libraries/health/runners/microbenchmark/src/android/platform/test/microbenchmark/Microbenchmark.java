@@ -42,6 +42,8 @@ import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
+import org.junit.runners.model.MemberValueConsumer;
+import org.junit.runners.model.MultipleFailureException;
 import org.junit.runners.model.Statement;
 
 import java.lang.annotation.Annotation;
@@ -373,17 +375,11 @@ public class Microbenchmark extends BlockJUnit4ClassRunner {
                                 return createTest();
                             }
                         }.run();
-
-                // Run {@code NoMetricBefore} methods first. Fail fast if they fail.
-                for (FrameworkMethod noMetricBefore :
-                        getTestClass().getAnnotatedMethods(NoMetricBefore.class)) {
-                    noMetricBefore.invokeExplosively(test);
-                }
             } catch (Throwable e) {
                 eachNotifier.fireTestStarted();
                 eachNotifier.addFailure(e);
                 eachNotifier.fireTestFinished();
-                if(mTerminateOnTestFailure) {
+                if (mTerminateOnTestFailure) {
                     throw new TerminateEarlyException("test failed.");
                 }
                 return;
@@ -396,40 +392,96 @@ public class Microbenchmark extends BlockJUnit4ClassRunner {
             statement = withAfters(method, test, statement);
             statement = withRules(method, test, statement);
 
-            boolean testFailed = false;
             // Fire test events from inside to exclude "no metric" methods.
-            eachNotifier.fireTestStarted();
+            statement = withTestEventsNotifier(eachNotifier, statement);
+
+            statement = withNoMetricsAfters(eachNotifier, test, statement);
+            statement = withNoMetricsBefores(eachNotifier, test, statement);
+
+            boolean testFailed = false;
+
             try {
                 statement.evaluate();
-            } catch (AssumptionViolatedException e) {
-                eachNotifier.addFailedAssumption(e);
-                testFailed = true;
             } catch (Throwable e) {
-                eachNotifier.addFailure(e);
-                testFailed = true;
-            } finally {
-                eachNotifier.fireTestFinished();
-            }
-
-            try {
-                // Run {@code NoMetricAfter} methods last, reporting all errors.
-                List<FrameworkMethod> afters =
-                        getTestClass().getAnnotatedMethods(NoMetricAfter.class);
-                if (!afters.isEmpty()) {
-                    new RunAfters(EMPTY_STATEMENT, afters, test).evaluate();
-                }
-            } catch (AssumptionViolatedException e) {
-                eachNotifier.addFailedAssumption(e);
-                testFailed = true;
-            } catch (Throwable e) {
-                eachNotifier.addFailure(e);
                 testFailed = true;
             }
 
-            if(mTerminateOnTestFailure && testFailed) {
+            if (mTerminateOnTestFailure && testFailed) {
                 throw new TerminateEarlyException("test failed.");
             }
         }
+    }
+
+    private Statement withNoMetricsBefores(EachTestNotifier eachNotifier, Object test,
+            Statement next) {
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                try {
+                    for (FrameworkMethod noMetricBefore :
+                            getTestClass().getAnnotatedMethods(NoMetricBefore.class)) {
+                        noMetricBefore.invokeExplosively(test);
+                    }
+                } catch (Throwable e) {
+                    eachNotifier.fireTestStarted();
+                    eachNotifier.addFailure(e);
+                    eachNotifier.fireTestFinished();
+                    throw e;
+                }
+
+                next.evaluate();
+            }
+        };
+    }
+
+    private Statement withNoMetricsAfters(EachTestNotifier eachNotifier, Object test,
+            Statement next) {
+        final List<FrameworkMethod> afters = getTestClass()
+                .getAnnotatedMethods(NoMetricAfter.class);
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                final List<Throwable> errors = new ArrayList<Throwable>();
+                try {
+                    next.evaluate();
+                } catch (Throwable e) {
+                    errors.add(e);
+                } finally {
+                    for (FrameworkMethod each : afters) {
+                        try {
+                            each.invokeExplosively(test);
+                        } catch (AssumptionViolatedException e) {
+                            eachNotifier.addFailedAssumption(e);
+                            errors.add(e);
+                        } catch (Throwable e) {
+                            eachNotifier.addFailure(e);
+                            errors.add(e);
+                        }
+                    }
+                }
+                MultipleFailureException.assertEmpty(errors);
+            }
+        };
+    }
+
+    private Statement withTestEventsNotifier(EachTestNotifier eachNotifier, Statement next) {
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                eachNotifier.fireTestStarted();
+                try {
+                    next.evaluate();
+                } catch (AssumptionViolatedException e) {
+                    eachNotifier.addFailedAssumption(e);
+                    throw e;
+                } catch (Throwable e) {
+                    eachNotifier.addFailure(e);
+                    throw e;
+                } finally {
+                    eachNotifier.fireTestFinished();
+                }
+            }
+        };
     }
 
     /* Checks if the battery level is below the specified level where the test should terminate. */
