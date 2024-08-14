@@ -113,17 +113,19 @@ public final class MicrobenchmarkTest {
         assertThat(result.wasSuccessful()).isTrue();
         assertThat(sLogs)
                 .containsExactly(
-                        "no metric before",
-                        "before",
-                        "tight before",
+                        "@NoMetricRule starting",
+                        "@NoMetricBefore",
+                        "@Before",
+                        "@TightMethodRule before",
                         "begin: testMethod("
                                 + "android.platform.test.microbenchmark.MicrobenchmarkTest$"
                                 + "LoggingTest)",
-                        "test",
+                        "@Test method body",
                         "end",
-                        "tight after",
-                        "after",
-                        "no metric after")
+                        "@TightMethodRule after",
+                        "@After",
+                        "@NoMetricAfter",
+                        "@NoMetricRule finished")
                 .inOrder();
     }
 
@@ -136,7 +138,11 @@ public final class MicrobenchmarkTest {
 
         assertThat(result.wasSuccessful()).isFalse();
         assertThat(result.getRunCount()).isEqualTo(1);
-        assertThat(sLogs).isEmpty();
+        assertThat(sLogs)
+                .containsExactly(
+                        "@NoMetricRule starting",
+                        "@NoMetricRule finished")
+                .inOrder();
     }
 
     @Test
@@ -150,15 +156,18 @@ public final class MicrobenchmarkTest {
         assertThat(result.getRunCount()).isEqualTo(1);
         assertThat(sLogs)
                 .containsExactly(
-                        "no metric before",
-                        "before",
-                        "tight before",
+                        "@NoMetricRule starting",
+                        "@NoMetricBefore",
+                        "@Before",
+                        "@TightMethodRule before",
                         "begin: testMethod(android.platform.test.microbenchmark.MicrobenchmarkTest$LoggingNoMetricAfterFailure)",
-                        "test",
+                        "@Test method body",
                         "end",
-                        "tight after",
-                        "after",
-                        "no metric after");
+                        "@TightMethodRule after",
+                        "@After",
+                        "@NoMetricAfter",
+                        "@NoMetricRule finished")
+                .inOrder();
     }
 
     /**
@@ -178,28 +187,32 @@ public final class MicrobenchmarkTest {
         assertThat(result.wasSuccessful()).isTrue();
         assertThat(sLogs)
                 .containsExactly(
-                        "no metric before",
-                        "before",
-                        "tight before",
+                        "@NoMetricRule starting",
+                        "@NoMetricBefore",
+                        "@Before",
+                        "@TightMethodRule before",
                         "begin: testMethod$1("
                                 + "android.platform.test.microbenchmark.MicrobenchmarkTest$"
                                 + "LoggingTest)",
-                        "test",
+                        "@Test method body",
                         "end",
-                        "tight after",
-                        "after",
-                        "no metric after",
-                        "no metric before",
-                        "before",
-                        "tight before",
+                        "@TightMethodRule after",
+                        "@After",
+                        "@NoMetricAfter",
+                        "@NoMetricRule finished",
+                        "@NoMetricRule starting",
+                        "@NoMetricBefore",
+                        "@Before",
+                        "@TightMethodRule before",
                         "begin: testMethod$2("
                                 + "android.platform.test.microbenchmark.MicrobenchmarkTest$"
                                 + "LoggingTest)",
-                        "test",
+                        "@Test method body",
                         "end",
-                        "tight after",
-                        "after",
-                        "no metric after")
+                        "@TightMethodRule after",
+                        "@After",
+                        "@NoMetricAfter",
+                        "@NoMetricRule finished")
                 .inOrder();
     }
 
@@ -221,28 +234,32 @@ public final class MicrobenchmarkTest {
         assertThat(result.wasSuccessful()).isTrue();
         assertThat(sLogs)
                 .containsExactly(
-                        "no metric before",
-                        "before",
-                        "tight before",
+                        "@NoMetricRule starting",
+                        "@NoMetricBefore",
+                        "@Before",
+                        "@TightMethodRule before",
                         "begin: testMethod--1("
                                 + "android.platform.test.microbenchmark.MicrobenchmarkTest$"
                                 + "LoggingTest)",
-                        "test",
+                        "@Test method body",
                         "end",
-                        "tight after",
-                        "after",
-                        "no metric after",
-                        "no metric before",
-                        "before",
-                        "tight before",
+                        "@TightMethodRule after",
+                        "@After",
+                        "@NoMetricAfter",
+                        "@NoMetricRule finished",
+                        "@NoMetricRule starting",
+                        "@NoMetricBefore",
+                        "@Before",
+                        "@TightMethodRule before",
                         "begin: testMethod--2("
                                 + "android.platform.test.microbenchmark.MicrobenchmarkTest$"
                                 + "LoggingTest)",
-                        "test",
+                        "@Test method body",
                         "end",
-                        "tight after",
-                        "after",
-                        "no metric after")
+                        "@TightMethodRule after",
+                        "@After",
+                        "@NoMetricAfter",
+                        "@NoMetricRule finished")
                 .inOrder();
     }
 
@@ -262,17 +279,19 @@ public final class MicrobenchmarkTest {
         assertThat(result.wasSuccessful()).isTrue();
         assertThat(sLogs)
                 .containsExactly(
-                        "no metric before",
-                        "before",
-                        "tight before",
+                        "@NoMetricRule starting",
+                        "@NoMetricBefore",
+                        "@Before",
+                        "@TightMethodRule before",
                         "begin: testMethod("
                                 + "android.platform.test.microbenchmark.MicrobenchmarkTest"
                                 + "$LoggingTest)",
-                        "test",
+                        "@Test method body",
                         "end",
-                        "tight after",
-                        "after",
-                        "no metric after")
+                        "@TightMethodRule after",
+                        "@After",
+                        "@NoMetricAfter",
+                        "@NoMetricRule finished")
                 .inOrder();
     }
 
@@ -293,26 +312,28 @@ public final class MicrobenchmarkTest {
         assertThat(result.wasSuccessful()).isTrue();
         assertThat(sLogs)
                 .containsExactly(
-                        "no metric before",
-                        "before",
-                        "tight before",
+                        "@NoMetricRule starting",
+                        "@NoMetricBefore",
+                        "@Before",
+                        "@TightMethodRule before",
                         "begin: testMethod("
                                 + "android.platform.test.microbenchmark.MicrobenchmarkTest"
                                 + "$LoggingTest)",
-                        "test",
-                        "test",
-                        "test",
-                        "test",
-                        "test",
-                        "test",
-                        "test",
-                        "test",
-                        "test",
-                        "test",
+                        "@Test method body",
+                        "@Test method body",
+                        "@Test method body",
+                        "@Test method body",
+                        "@Test method body",
+                        "@Test method body",
+                        "@Test method body",
+                        "@Test method body",
+                        "@Test method body",
+                        "@Test method body",
                         "end",
-                        "tight after",
-                        "after",
-                        "no metric after")
+                        "@TightMethodRule after",
+                        "@After",
+                        "@NoMetricAfter",
+                        "@NoMetricRule finished")
                 .inOrder();
     }
 
@@ -447,15 +468,17 @@ public final class MicrobenchmarkTest {
         assertThat(result.wasSuccessful()).isFalse();
         assertThat(sLogs)
                 .containsExactly(
-                        "no metric before",
-                        "before",
-                        "tight before",
+                        "@NoMetricRule starting",
+                        "@NoMetricBefore",
+                        "@Before",
+                        "@TightMethodRule before",
                         "begin: testMethod("
                                 + "android.platform.test.microbenchmark.MicrobenchmarkTest"
                                 + "$LoggingFailedTest)",
                         "end",
-                        "after",
-                        "no metric after")
+                        "@After",
+                        "@NoMetricAfter",
+                        "@NoMetricRule finished")
                 .inOrder();
     }
 
@@ -475,24 +498,28 @@ public final class MicrobenchmarkTest {
         assertThat(result.wasSuccessful()).isFalse();
         assertThat(sLogs)
                 .containsExactly(
-                        "no metric before",
-                        "before",
-                        "tight before",
+                        "@NoMetricRule starting",
+                        "@NoMetricBefore",
+                        "@Before",
+                        "@TightMethodRule before",
                         "begin: testMethod("
                                 + "android.platform.test.microbenchmark.MicrobenchmarkTest"
                                 + "$LoggingFailedTest)",
                         "end",
-                        "after",
-                        "no metric after",
-                        "no metric before",
-                        "before",
-                        "tight before",
+                        "@After",
+                        "@NoMetricAfter",
+                        "@NoMetricRule finished",
+                        "@NoMetricRule starting",
+                        "@NoMetricBefore",
+                        "@Before",
+                        "@TightMethodRule before",
                         "begin: testMethod("
                                 + "android.platform.test.microbenchmark.MicrobenchmarkTest"
                                 + "$LoggingFailedTest)",
                         "end",
-                        "after",
-                        "no metric after")
+                        "@After",
+                        "@NoMetricAfter",
+                        "@NoMetricRule finished")
                 .inOrder();
     }
 
@@ -544,42 +571,46 @@ public final class MicrobenchmarkTest {
         new JUnitCore().run(loggingRunner);
         assertThat(sLogs)
                 .containsExactly(
-                        "hardcoded class rule starting",
-                        "no metric before",
-                        "logging rule 2 starting",
-                        "hardcoded test rule starting",
-                        "logging rule 1 starting",
-                        "before",
-                        "tight before",
+                        "@ClassRule hardcoded starting",
+                        "@NoMetricRule starting",
+                        "@NoMetricBefore",
+                        "@Rule rule 2 starting",
+                        "@Rule hardcoded starting",
+                        "@Rule rule 1 starting",
+                        "@Before",
+                        "@TightMethodRule before",
                         "begin: testMethod("
                                 + "android.platform.test.microbenchmark.MicrobenchmarkTest"
                                 + "$LoggingTestWithRules)",
-                        "test",
+                        "@Test method body",
                         "end",
-                        "tight after",
-                        "after",
-                        "logging rule 1 finished",
-                        "hardcoded test rule finished",
-                        "logging rule 2 finished",
-                        "no metric after",
-                        "no metric before",
-                        "logging rule 2 starting",
-                        "hardcoded test rule starting",
-                        "logging rule 1 starting",
-                        "before",
-                        "tight before",
+                        "@TightMethodRule after",
+                        "@After",
+                        "@Rule rule 1 finished",
+                        "@Rule hardcoded finished",
+                        "@Rule rule 2 finished",
+                        "@NoMetricAfter",
+                        "@NoMetricRule finished",
+                        "@NoMetricRule starting",
+                        "@NoMetricBefore",
+                        "@Rule rule 2 starting",
+                        "@Rule hardcoded starting",
+                        "@Rule rule 1 starting",
+                        "@Before",
+                        "@TightMethodRule before",
                         "begin: testMethod("
                                 + "android.platform.test.microbenchmark.MicrobenchmarkTest"
                                 + "$LoggingTestWithRules)",
-                        "test",
+                        "@Test method body",
                         "end",
-                        "tight after",
-                        "after",
-                        "logging rule 1 finished",
-                        "hardcoded test rule finished",
-                        "logging rule 2 finished",
-                        "no metric after",
-                        "hardcoded class rule finished")
+                        "@TightMethodRule after",
+                        "@After",
+                        "@Rule rule 1 finished",
+                        "@Rule hardcoded finished",
+                        "@Rule rule 2 finished",
+                        "@NoMetricAfter",
+                        "@NoMetricRule finished",
+                        "@ClassRule hardcoded finished")
                 .inOrder();
     }
 
@@ -599,38 +630,42 @@ public final class MicrobenchmarkTest {
         new JUnitCore().run(loggingRunner);
         assertThat(sLogs)
                 .containsExactly(
-                        "logging rule 2 starting",
-                        "hardcoded class rule starting",
-                        "logging rule 1 starting",
-                        "no metric before",
-                        "hardcoded test rule starting",
-                        "before",
-                        "tight before",
+                        "@Rule rule 2 starting",
+                        "@ClassRule hardcoded starting",
+                        "@Rule rule 1 starting",
+                        "@NoMetricRule starting",
+                        "@NoMetricBefore",
+                        "@Rule hardcoded starting",
+                        "@Before",
+                        "@TightMethodRule before",
                         "begin: testMethod("
                                 + "android.platform.test.microbenchmark.MicrobenchmarkTest"
                                 + "$LoggingTestWithRules)",
-                        "test",
+                        "@Test method body",
                         "end",
-                        "tight after",
-                        "after",
-                        "hardcoded test rule finished",
-                        "no metric after",
-                        "no metric before",
-                        "hardcoded test rule starting",
-                        "before",
-                        "tight before",
+                        "@TightMethodRule after",
+                        "@After",
+                        "@Rule hardcoded finished",
+                        "@NoMetricAfter",
+                        "@NoMetricRule finished",
+                        "@NoMetricRule starting",
+                        "@NoMetricBefore",
+                        "@Rule hardcoded starting",
+                        "@Before",
+                        "@TightMethodRule before",
                         "begin: testMethod("
                                 + "android.platform.test.microbenchmark.MicrobenchmarkTest"
                                 + "$LoggingTestWithRules)",
-                        "test",
+                        "@Test method body",
                         "end",
-                        "tight after",
-                        "after",
-                        "hardcoded test rule finished",
-                        "no metric after",
-                        "logging rule 1 finished",
-                        "hardcoded class rule finished",
-                        "logging rule 2 finished")
+                        "@TightMethodRule after",
+                        "@After",
+                        "@Rule hardcoded finished",
+                        "@NoMetricAfter",
+                        "@NoMetricRule finished",
+                        "@Rule rule 1 finished",
+                        "@ClassRule hardcoded finished",
+                        "@Rule rule 2 finished")
                 .inOrder();
     }
 
@@ -659,28 +694,32 @@ public final class MicrobenchmarkTest {
         assertThat(result.wasSuccessful()).isTrue();
         assertThat(sLogs)
                 .containsExactly(
-                        "no metric before",
-                        "before",
-                        "tight before",
+                        "@NoMetricRule starting",
+                        "@NoMetricBefore",
+                        "@Before",
+                        "@TightMethodRule before",
                         "begin: testMethod$1("
                                 + "android.platform.test.microbenchmark.MicrobenchmarkTest$"
                                 + "AnnotatedLoggingTest)",
-                        "test",
+                        "@Test method body",
                         "end",
-                        "tight after",
-                        "after",
-                        "no metric after",
-                        "no metric before",
-                        "before",
-                        "tight before",
+                        "@TightMethodRule after",
+                        "@After",
+                        "@NoMetricAfter",
+                        "@NoMetricRule finished",
+                        "@NoMetricRule starting",
+                        "@NoMetricBefore",
+                        "@Before",
+                        "@TightMethodRule before",
                         "begin: testMethod$2("
                                 + "android.platform.test.microbenchmark.MicrobenchmarkTest$"
                                 + "AnnotatedLoggingTest)",
-                        "test",
+                        "@Test method body",
                         "end",
-                        "tight after",
-                        "after",
-                        "no metric after")
+                        "@TightMethodRule after",
+                        "@After",
+                        "@NoMetricAfter",
+                        "@NoMetricRule finished")
                 .inOrder();
     }
 
@@ -755,29 +794,32 @@ public final class MicrobenchmarkTest {
         @Microbenchmark.TightMethodRule
         public TightRule orderRule = new TightRule();
 
+        @Microbenchmark.NoMetricRule
+        public NoMetricRule noMetricRule = new NoMetricRule();
+
         @NoMetricBefore
         public void noMetricBeforeMethod() {
-            sLogs.add("no metric before");
+            sLogs.add("@NoMetricBefore");
         }
 
         @Before
         public void beforeMethod() {
-            sLogs.add("before");
+            sLogs.add("@Before");
         }
 
         @Test
         public void testMethod() {
-            sLogs.add("test");
+            sLogs.add("@Test method body");
         }
 
         @After
         public void afterMethod() {
-            sLogs.add("after");
+            sLogs.add("@After");
         }
 
         @NoMetricAfter
         public void noMetricAfterMethod() {
-            sLogs.add("no metric after");
+            sLogs.add("@NoMetricAfter");
         }
 
         class TightRule implements TestRule {
@@ -786,9 +828,9 @@ public final class MicrobenchmarkTest {
                 return new Statement() {
                     @Override
                     public void evaluate() throws Throwable {
-                        sLogs.add("tight before");
+                        sLogs.add("@TightMethodRule before");
                         base.evaluate();
-                        sLogs.add("tight after");
+                        sLogs.add("@TightMethodRule after");
                     }
                 };
             }
@@ -809,12 +851,12 @@ public final class MicrobenchmarkTest {
                 new TestWatcher() {
                     @Override
                     public void starting(Description description) {
-                        sLogs.add("hardcoded class rule starting");
+                        sLogs.add("@ClassRule hardcoded starting");
                     }
 
                     @Override
                     public void finished(Description description) {
-                        sLogs.add("hardcoded class rule finished");
+                        sLogs.add("@ClassRule hardcoded finished");
                     }
                 };
 
@@ -823,12 +865,12 @@ public final class MicrobenchmarkTest {
                 new TestWatcher() {
                     @Override
                     public void starting(Description description) {
-                        sLogs.add("hardcoded test rule starting");
+                        sLogs.add("@Rule hardcoded starting");
                     }
 
                     @Override
                     public void finished(Description description) {
-                        sLogs.add("hardcoded test rule finished");
+                        sLogs.add("@Rule hardcoded finished");
                     }
                 };
     }
@@ -863,24 +905,36 @@ public final class MicrobenchmarkTest {
     public static class LoggingRule1 extends TestWatcher {
         @Override
         public void starting(Description description) {
-            sLogs.add("logging rule 1 starting");
+            sLogs.add("@Rule rule 1 starting");
         }
 
         @Override
         public void finished(Description description) {
-            sLogs.add("logging rule 1 finished");
+            sLogs.add("@Rule rule 1 finished");
         }
     }
 
     public static class LoggingRule2 extends TestWatcher {
         @Override
         public void starting(Description description) {
-            sLogs.add("logging rule 2 starting");
+            sLogs.add("@Rule rule 2 starting");
         }
 
         @Override
         public void finished(Description description) {
-            sLogs.add("logging rule 2 finished");
+            sLogs.add("@Rule rule 2 finished");
+        }
+    }
+
+    public static class NoMetricRule extends TestWatcher {
+        @Override
+        public void starting(Description description) {
+            sLogs.add("@NoMetricRule starting");
+        }
+
+        @Override
+        public void finished(Description description) {
+            sLogs.add("@NoMetricRule finished");
         }
     }
 }
