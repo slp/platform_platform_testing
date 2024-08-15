@@ -227,6 +227,36 @@ class PerfettoTraceMonitorTest : TraceMonitorTest<PerfettoTraceMonitor>() {
             .isGreaterThan(0L)
     }
 
+    @Test
+    fun windowManagerDumpTest() {
+        assumeTrue(
+            "PerfettoWmTracing flag should be enabled",
+            android.tracing.Flags.perfettoWmTracing()
+        )
+
+        val traceData =
+            PerfettoTraceMonitor.newBuilder().enableWindowManagerDump().build().withTracing {}
+        assertTrace(traceData)
+
+        val countRows =
+            TraceProcessorSession.loadPerfettoTrace(traceData) { session ->
+                val sql =
+                    "INCLUDE PERFETTO MODULE android.winscope.windowmanager;" +
+                        "SELECT COUNT(*) FROM android_windowmanager;"
+                session.query(
+                    sql,
+                    { rows ->
+                        require(rows.size == 1)
+                        rows.get(0).get("COUNT(*)") as Long
+                    }
+                )
+            }
+
+        Truth.assertWithMessage("TP doesn't contain WindowManager dump rows")
+            .that(countRows)
+            .isEqualTo(1L)
+    }
+
     companion object {
         @ClassRule @JvmField val ENV_CLEANUP = CleanFlickerEnvironmentRule()
     }

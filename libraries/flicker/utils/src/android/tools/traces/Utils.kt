@@ -115,7 +115,11 @@ fun getCurrentState(
     Log.d(LOG_TAG, "Requesting new device state dump")
     val wmTraceData =
         if (dumpTypes.contains(TraceType.WM_DUMP)) {
-            getCurrentWindowManagerState()
+            if (android.tracing.Flags.perfettoWmTracing()) {
+                PerfettoTraceMonitor.newBuilder().enableWindowManagerDump().build().withTracing {}
+            } else {
+                getCurrentWindowManagerState()
+            }
         } else {
             ByteArray(0)
         }

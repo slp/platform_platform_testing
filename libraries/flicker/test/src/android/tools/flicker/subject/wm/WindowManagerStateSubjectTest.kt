@@ -369,7 +369,7 @@ class WindowManagerStateSubjectTest {
     @Test
     fun canDetectTaskFragment() {
         // Verify if parser can read a dump file with 2 TaskFragments showed side-by-side.
-        val reader = getWmDumpReaderFromAsset("wm_trace_taskfragment.winscope")
+        val reader = getWmDumpReaderFromAsset("wm_trace_taskfragment")
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         // There's only one entry in dump file.
         val entry = WindowManagerTraceSubject(trace, reader).first()
@@ -379,7 +379,7 @@ class WindowManagerStateSubjectTest {
 
     @Test
     fun canDetectIsHomeActivityVisibleTablet() {
-        val reader = getWmDumpReaderFromAsset("tablet/wm_dump_home_screen.winscope")
+        val reader = getWmDumpReaderFromAsset("tablet/wm_dump_home_screen")
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         // There's only one entry in dump file.
         val entry = WindowManagerTraceSubject(trace, reader).first()
@@ -391,7 +391,7 @@ class WindowManagerStateSubjectTest {
 
     @Test
     fun canDetectTaskBarIsVisible() {
-        val reader = getWmDumpReaderFromAsset("tablet/wm_dump_home_screen.winscope")
+        val reader = getWmDumpReaderFromAsset("tablet/wm_dump_home_screen")
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         // There's only one entry in dump file.
         val entry = WindowManagerTraceSubject(trace, reader).first()
