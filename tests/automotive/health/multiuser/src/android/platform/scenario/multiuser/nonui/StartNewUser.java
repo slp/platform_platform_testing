@@ -29,6 +29,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import java.util.ArrayList;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -117,6 +118,12 @@ public class StartNewUser {
         mMultiUserHelper.startUser(userId, mDisplayUnderTest);
         // TODO(ivankozlov): instead of sleep, wait for an event(carlauncher drawn or smth else)
         SystemClock.sleep(WAIT_FOR_USER_START_TIME_MS);
+        int actualUserId = mMultiUserHelper.getUserForDisplayId(mDisplayUnderTest);
+        Assert.assertEquals(
+            String.format(Locale.US, "User %d is not started on display %d", userId, mDisplayUnderTest),
+            userId,
+            actualUserId
+        );
     }
 
     @After
