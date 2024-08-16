@@ -16,6 +16,7 @@
 
 package android.platform.helpers
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
@@ -23,6 +24,10 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
+import androidx.test.ext.junit.rules.ActivityScenarioRule
+import org.junit.rules.TestRule
+import org.junit.runner.Description
+import org.junit.runners.model.Statement
 import java.time.Duration
 
 /** Utilities to launch an [App]. */
@@ -57,6 +62,21 @@ object LaunchAppUtils {
 
     private val device: UiDevice
         get() = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+}
+
+/**
+ * Rule that launches specified app and closes it after the test execution
+ */
+class LaunchAppRule(private val app: App) : TestRule {
+
+    override fun apply(base: Statement?, description: Description?): Statement {
+        val appIntent = InstrumentationRegistry.getInstrumentation()
+                .targetContext
+                .packageManager
+                .getLaunchIntentForPackage(app.packageName)
+                ?: error("Package ${app.packageName} not available")
+        return ActivityScenarioRule<Activity>(appIntent).apply(base, description)
+    }
 }
 
 /** Describes an app that can be launched with [LaunchAppUtils]. */
