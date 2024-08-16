@@ -24,6 +24,9 @@ import android.platform.helpers.IAutoSettingsLocationHelper;
 import android.platform.helpers.SettingsConstants;
 import android.platform.test.annotations.RequiresFlagsEnabled;
 import android.platform.test.flag.junit.SetFlagsRule;
+import android.platform.test.rules.ConditionalIgnore;
+import android.platform.test.rules.ConditionalIgnoreRule;
+import android.platform.test.rules.IgnoreOnPortrait;
 
 import androidx.test.runner.AndroidJUnit4;
 
@@ -34,6 +37,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class SettingsLocationTest {
+    @Rule public ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     private HelperAccessor<IAutoSettingsLocationHelper> mSettingLocationHelper;
     private HelperAccessor<IAutoSettingHelper> mSettingHelper;
@@ -53,6 +57,7 @@ public class SettingsLocationTest {
     }
 
     @Test
+    @ConditionalIgnore(condition = IgnoreOnPortrait.class)
     @RequiresFlagsEnabled(
             com.android.car.settings.Flags.FLAG_REQUIRED_INFOTAINMENT_APPS_SETTINGS_PAGE)
     public void testToVerifyToggleLocation() {
