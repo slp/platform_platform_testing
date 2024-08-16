@@ -31,10 +31,10 @@ import android.util.Log;
 import androidx.annotation.VisibleForTesting;
 import androidx.test.InstrumentationRegistry;
 
+import org.junit.Rule;
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.internal.runners.model.EachTestNotifier;
 import org.junit.internal.runners.model.ReflectiveCallable;
-import org.junit.internal.runners.statements.RunAfters;
 import org.junit.rules.RunRules;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -69,6 +69,41 @@ import java.util.Map;
  * modified behaviors related to running repeated methods. These are documented separately below
  * with the corresponding annotations, {@link @NoMetricBefore}, {@link @NoMetricAfter}, and
  * {@link @TightMethodRule}.
+ *
+ * The order of the execution for 2 iterations of a test with single test method:
+ *  - @ClassRule before
+ *      *iteration 1*
+ *      - @NoMetricRule before
+ *      - @NoMetricBefore method
+ *          - *starts tracing*
+ *              - @Rule before
+ *              - @Before method
+ *              - @TightMethodRule before
+ *                  - Test method body
+ *              - @TightMethodRule after
+ *              - @After method
+ *              - @Rule after
+ *          - *ends tracing*
+ *      - @NoMetricAfter method
+ *      - @NoMetricRule after
+ *      *iteration 2*
+ *      - @NoMetricRule before
+ *      - @NoMetricBefore method
+ *          - *starts tracing*
+ *              - @Rule before
+ *              - @Before method
+ *              - @TightMethodRule before
+ *                  - Test method body
+ *              - @TightMethodRule after
+ *              - @After method
+ *              - @Rule after
+ *          - *ends tracing*
+ *      - @NoMetricAfter method
+ *      - @NoMetricRule after
+ *   - @ClassRule after
+ *
+ * Note: the order of the execution is different from Functional runner.
+ * See documentation for {@link Functional} for details.
  *
  * <p>Finally, this runner supports some power-specific testing features used to denoise (also
  * documented below), and can be configured to terminate early if the battery drops too low or if
@@ -281,6 +316,11 @@ public class Microbenchmark extends BlockJUnit4ClassRunner {
     @Target({ElementType.FIELD, ElementType.METHOD})
     public @interface NoMetricAfter {}
 
+    /** A temporary annotation, same as the above, but for replacing JUnit {@code @Rule}. */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.FIELD, ElementType.METHOD})
+    public @interface NoMetricRule {}
+
     /**
      * Rename the child class name to add iterations if the renaming iteration option is enabled.
      *
@@ -322,6 +362,23 @@ public class Microbenchmark extends BlockJUnit4ClassRunner {
         }
         // Apply modern, method-level TestRules in outer statements.
         result = new RunRules(result, testRules, describeChild(method));
+        return result;
+    }
+
+    /**
+     * @param target the test case instance
+     * @return a list of NoMetricTestRules that should be applied when executing this
+     *         test
+     */
+    private List<TestRule> getNoMetricTestRules(Object target) {
+        final List<TestRule> result = new ArrayList<>();
+        final MemberValueConsumer<TestRule> collector = (member, value) -> result.add(value);
+
+        getTestClass().collectAnnotatedMethodValues(target, NoMetricRule.class, TestRule.class,
+                collector);
+        getTestClass().collectAnnotatedFieldValues(target, NoMetricRule.class, TestRule.class,
+                collector);
+
         return result;
     }
 
@@ -397,6 +454,7 @@ public class Microbenchmark extends BlockJUnit4ClassRunner {
 
             statement = withNoMetricsAfters(eachNotifier, test, statement);
             statement = withNoMetricsBefores(eachNotifier, test, statement);
+            statement = withNoMetricsRules(method, test, statement);
 
             boolean testFailed = false;
 
@@ -482,6 +540,11 @@ public class Microbenchmark extends BlockJUnit4ClassRunner {
                 }
             }
         };
+    }
+
+    private Statement withNoMetricsRules(FrameworkMethod method, Object target,
+            Statement next) {
+        return new RunRules(next, getNoMetricTestRules(target), describeChild(method));
     }
 
     /* Checks if the battery level is below the specified level where the test should terminate. */
