@@ -128,6 +128,7 @@ enum class CujType(val id: Int) {
     CUJ_DESKTOP_MODE_EXIT_MODE(108),
     CUJ_DESKTOP_MODE_MINIMIZE_WINDOW(109),
     CUJ_DESKTOP_MODE_DRAG_WINDOW(110),
+    CUJ_DESKTOP_MODE_SNAP_RESIZE(118),
 
     // KEEP AS LAST TYPE
     // used to handle new types that haven't been added here yet but might be dumped by the platform
