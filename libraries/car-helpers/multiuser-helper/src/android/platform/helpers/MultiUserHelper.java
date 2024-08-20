@@ -18,6 +18,7 @@ package android.platform.helpers;
 import android.annotation.Nullable;
 import android.app.ActivityManager;
 import android.car.Car;
+import android.car.CarOccupantZoneManager;
 import android.car.SyncResultCallback;
 import android.car.user.CarUserManager;
 import android.car.user.CarUserManager.UserLifecycleListener;
@@ -63,6 +64,7 @@ public class MultiUserHelper {
     private CarUserManager mCarUserManager;
     private UserManager mUserManager;
     private ActivityManager mActivityManager;
+    private CarOccupantZoneManager mCarOccupantZoneManager;
 
     private MultiUserHelper() {
         Context context = InstrumentationRegistry.getTargetContext();
@@ -70,6 +72,7 @@ public class MultiUserHelper {
         Car car = Car.createCar(context);
         mCarUserManager = (CarUserManager) car.getCarManager(Car.CAR_USER_SERVICE);
         mActivityManager = context.getSystemService(ActivityManager.class);
+        mCarOccupantZoneManager = car.getCarManager(CarOccupantZoneManager.class);
     }
 
     /**
@@ -355,6 +358,16 @@ public class MultiUserHelper {
      */
     public int[] getDisplayIdsForStartingVisibleBackgroundUsers() {
         return mActivityManager.getDisplayIdsForStartingVisibleBackgroundUsers();
+    }
+
+    /**
+     * Returns the user id for the given display id.
+     *
+     * @param displayId The display id.
+     * @return The user id for the given display id.
+     */
+    public int getUserForDisplayId(int displayId) {
+        return mCarOccupantZoneManager.getUserForDisplayId(displayId);
     }
 
     private void switchUserUsingShell(int userId) throws Exception {
