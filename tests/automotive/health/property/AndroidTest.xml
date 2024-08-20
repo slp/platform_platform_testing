@@ -32,6 +32,9 @@
         <option name="pull-pattern-keys" value="getPropertySync_latency_in_nanos"/>
         <option name="collect-on-run-ended-only" value="true" />
     </metrics_collector>
+    <metric_post_processor class="com.android.tradefed.postprocessor.MetricFilePostProcessor">
+        <option name="aggregate-run-metrics" value="true" />
+    </metric_post_processor>
     <metric_post_processor class="android.platform.test.stress.postprocessor.CarPropertyManagerStressTestLogPostProcessor">
     </metric_post_processor>
 </configuration>
