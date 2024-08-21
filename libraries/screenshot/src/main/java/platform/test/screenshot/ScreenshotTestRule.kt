@@ -190,6 +190,11 @@ internal constructor(
             )
         }
 
+        if (expected.sameAs(actual)) {
+            expected.recycle()
+            return
+        }
+
         if (actual.width != expected.width || actual.height != expected.height) {
             val comparisonResult =
                 matcher.compareBitmaps(
