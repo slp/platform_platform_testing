@@ -196,6 +196,11 @@ open class ScreenshotTestRule(val goldenImagePathManager: GoldenImagePathManager
             )
         }
 
+        if (expected.sameAs(actual)) {
+            expected.recycle()
+            return
+        }
+
         if (actual.width != expected.width || actual.height != expected.height) {
             reportResult(
                 status = ScreenshotResultProto.DiffResult.Status.FAILED,
