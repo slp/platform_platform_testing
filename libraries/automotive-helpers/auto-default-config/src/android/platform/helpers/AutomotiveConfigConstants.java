@@ -674,6 +674,15 @@ public class AutomotiveConfigConstants {
     // Phone Card Identifiers
     public static final String PHONE_CARD_DIALER_BUTTON = "PHONE_CARD_DIALER_BUTTON";
 
+    // Sound Palette
+    public static final String STATUS_BAR_SOUND_BUTTON = "STATUS_BAR_SOUND_BUTTON";
+    public static final String SOUND_PALETTE_INCALL = "SOUND_PALETTE_INCALL";
+    public static final String SOUND_PALETTE_MEDIA = "SOUND_PALETTE_MEDIA";
+    public static final String SOUND_PALETTE_NAVIGATION = "SOUND_PALETTE_NAVIGATION";
+    public static final String SOUND_PALETTE_SOUND_SETTINGS = "SOUND_PALETTE_SOUND_SETTINGS";
+    public static final String SOUND_PALETTE_SOUND_SETTINGS_PAGE_TITLE =
+            "SOUND_PALETTE_SOUND_SETTINGS_PAGE_TITLE";
+
     // System Setting UI elements
     public static final String SYSTEM_SETTINGS_UNITS = "SYSTEM_SETTINGS_UNITS";
     public static final String LANGUAGE_SYSTEM_SETTINGS_AUTOFILL_SERVICE =
