@@ -82,6 +82,22 @@ object Components {
                 val change = associatedTransition.changes.first()
                 FullComponentIdMatcher(change.windowId, change.layerId)
             }
+            ScenarioId("SNAP_RESIZE_LEFT_WITH_DRAG") -> {
+                val change = associatedTransition.changes.first()
+                FullComponentIdMatcher(change.windowId, change.layerId)
+            }
+            ScenarioId("SNAP_RESIZE_RIGHT_WITH_DRAG") -> {
+                val change = associatedTransition.changes.first()
+                FullComponentIdMatcher(change.windowId, change.layerId)
+            }
+            ScenarioId("SNAP_RESIZE_LEFT_WITH_BUTTON") -> {
+                val change = associatedTransition.changes.first()
+                FullComponentIdMatcher(change.windowId, change.layerId)
+            }
+            ScenarioId("SNAP_RESIZE_RIGHT_WITH_BUTTON") -> {
+                val change = associatedTransition.changes.first()
+                FullComponentIdMatcher(change.windowId, change.layerId)
+            }
             else -> error("Unsupported transition type")
         }
     }
