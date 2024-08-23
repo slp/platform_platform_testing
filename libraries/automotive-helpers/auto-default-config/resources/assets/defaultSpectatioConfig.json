@@ -1991,13 +1991,16 @@
       "TYPE": "MULTIPLE",
       "SPECIFIERS": [
         {
+          "TYPE": "HAS_ANCESTOR",
+          "ANCESTOR": {
+            "TYPE": "CLASS",
+            "VALUE": "android.view.ViewGroup"
+          }
+          },
+        {
           "TYPE": "RESOURCE_ID",
           "VALUE": "qc_summary",
           "PACKAGE": "com.android.systemui"
-        },
-        {
-          "TYPE": "CLASS",
-          "VALUE": "android.widget.TextView"
         }
       ]
     },
