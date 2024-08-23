@@ -51,6 +51,7 @@ class DisplayContent(
     val rotation: Rotation,
     val lastOrientation: Int,
     val cutout: DisplayCutout?,
+    val insetsSourceProviders: Array<InsetsSourceProvider>,
     private val windowContainer: WindowContainer
 ) : WindowContainer by windowContainer {
     override val name: String = displayId.toString()

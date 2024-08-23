@@ -29,6 +29,8 @@ import android.tools.traces.wm.ConfigurationContainerImpl
 import android.tools.traces.wm.DisplayArea
 import android.tools.traces.wm.DisplayContent
 import android.tools.traces.wm.DisplayCutout
+import android.tools.traces.wm.InsetsSource
+import android.tools.traces.wm.InsetsSourceProvider
 import android.tools.traces.wm.KeyguardControllerState
 import android.tools.traces.wm.PixelFormat
 import android.tools.traces.wm.RootWindowContainer
@@ -361,6 +363,10 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
                 buildDisplayCutout(
                     displayContentProto.getChild("display_info")?.getChild("cutout")
                 ),
+            insetsSourceProviders =
+                buildInsetsSourceProviders(
+                    displayContentProto.getChildren("insets_source_providers"),
+                ),
             windowContainer =
                 buildWindowContainer(
                     windowContainerProto =
@@ -610,6 +616,31 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
             buildRect(displayCutoutProto.getChild("bound_bottom")),
             buildInsets(displayCutoutProto.getChild("waterfall_insets"))
         )
+    }
+
+    private fun buildInsetsSource(insetsSourceProto: Args?): InsetsSource? {
+        if (insetsSourceProto == null) {
+            return null
+        }
+
+        return InsetsSource.from(
+            type = insetsSourceProto.getChild("type_number")?.getInt() ?: -1,
+            frame = buildRect(insetsSourceProto.getChild("frame")),
+            visible = insetsSourceProto.getChild("visible")?.getBoolean() ?: false,
+        )
+    }
+
+    private fun buildInsetsSourceProviders(
+        insetsProvidersProto: List<Args>?
+    ): Array<InsetsSourceProvider> {
+        return insetsProvidersProto
+            ?.map {
+                InsetsSourceProvider(
+                    buildRect(it.getChild("frame")),
+                    buildInsetsSource(it.getChild("source"))
+                )
+            }
+            ?.toTypedArray() ?: emptyArray<InsetsSourceProvider>()
     }
 
     private fun buildWindowLayoutParams(windowLayoutParamsProto: Args?): WindowLayoutParams {

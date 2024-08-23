@@ -44,6 +44,12 @@ object WindowUtils {
             return currState.layerState.physicalDisplay?.layerStackSpace ?: Rect()
         }
 
+    val displayStableBounds: Rect
+        get() {
+            val currState = getCurrentStateDump(clearCacheAfterParsing = false)
+            return currState.wmState.getDefaultDisplay()?.stableBounds ?: Rect()
+        }
+
     /** Gets the current display rotation */
     val displayRotation: Rotation
         get() {
