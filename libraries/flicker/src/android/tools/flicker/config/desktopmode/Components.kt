@@ -37,6 +37,15 @@ object Components {
 
             getDesktopAppForScenario(scenarioInstance.type, associatedTransition)
         }
+
+    val NON_RESIZABLE_APP =
+        ComponentTemplate("NON_RESIZABLE_APP") {
+            ComponentNameMatcher(
+                "com.android.server.wm.flicker.testapp",
+                "com.android.server.wm.flicker.testapp.NonResizeableActivity"
+            )
+        }
+
     val DESKTOP_WALLPAPER =
         ComponentTemplate("DesktopWallpaper") {
             ComponentNameMatcher(
