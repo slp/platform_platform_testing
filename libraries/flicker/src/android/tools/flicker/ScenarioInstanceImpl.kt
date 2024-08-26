@@ -24,7 +24,7 @@ import android.tools.flicker.config.FlickerConfigEntry
 import android.tools.flicker.extractors.TraceSlice
 import android.tools.flicker.extractors.Utils
 import android.tools.io.Reader
-import android.tools.traces.events.CujType
+import android.tools.traces.events.ICujType
 import android.tools.traces.wm.Transition
 import android.tools.withTracing
 
@@ -35,7 +35,7 @@ data class ScenarioInstanceImpl(
     val startTimestamp: Timestamp,
     val endTimestamp: Timestamp,
     override val reader: Reader,
-    val associatedCuj: CujType? = null,
+    val associatedCuj: ICujType? = null,
     override val associatedTransition: Transition? = null,
 ) : ScenarioInstance {
     // b/227752705

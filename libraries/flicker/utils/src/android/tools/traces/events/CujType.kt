@@ -16,13 +16,22 @@
 
 package android.tools.traces.events
 
+interface ICujType {
+    val id: Int
+    val name: String
+}
+
+data class UnknownCuj(override val id: Int) : ICujType {
+    override val name: String = "UnknownCuj($id)"
+}
+
 /**
  * From com.android.internal.jank.InteractionJankMonitor.
  *
  * NOTE: Make sure order is the same as in {@see com.android.internal.jank.InteractionJankMonitor}.
  */
 // TODO: Can we re-use to enum generated from the proto stats/enums/jank/enums.proto?
-enum class CujType(val id: Int) {
+enum class CujType(override val id: Int) : ICujType {
     CUJ_NOTIFICATION_SHADE_EXPAND_COLLAPSE(0),
     CUJ_NOTIFICATION_SHADE_SCROLL_FLING(2),
     CUJ_NOTIFICATION_SHADE_ROW_EXPAND(3),
@@ -128,13 +137,10 @@ enum class CujType(val id: Int) {
     CUJ_DESKTOP_MODE_EXIT_MODE(108),
     CUJ_DESKTOP_MODE_MINIMIZE_WINDOW(109),
     CUJ_DESKTOP_MODE_DRAG_WINDOW(110),
-    CUJ_DESKTOP_MODE_SNAP_RESIZE(118),
-
-    // KEEP AS LAST TYPE
-    // used to handle new types that haven't been added here yet but might be dumped by the platform
-    UNKNOWN(-1);
+    CUJ_DESKTOP_MODE_SNAP_RESIZE(118);
 
     companion object {
-        fun from(eventId: Int): CujType = values().firstOrNull { it.id == eventId } ?: UNKNOWN
+        fun from(eventId: Int): ICujType =
+            values().firstOrNull { it.id == eventId } ?: UnknownCuj(eventId)
     }
 }
