@@ -23,6 +23,7 @@ import android.car.Car;
 import android.car.hardware.property.CarPropertyManager;
 import android.content.Context;
 import android.device.loggers.TestLogData;
+import android.util.Log;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
@@ -67,7 +68,13 @@ public class CarPropertyManagerBenchmarkTest {
                     () -> {
                         for (int j = 0; j < NUM_RUNS; j++) {
                             long timeBeforeRun = System.nanoTime();
-                            mCarPropertyManager.getProperty(PERF_VEHICLE_SPEED, 0);
+                            try {
+                                mCarPropertyManager.getProperty(PERF_VEHICLE_SPEED, 0);
+                            } catch (IllegalStateException e) {
+                                // This is expected because car service only allows up to 16 sync
+                                // get/set operations happening at the same time.
+                                Log.i(TAG, "getProperty threw an error", e);
+                            }
                             concurrentLinkedQueue.add((System.nanoTime() - timeBeforeRun));
                         }
                         latch.countDown();
