@@ -31,7 +31,7 @@ from bluetooth_test import bluetooth_base_test
 from mobly import asserts
 from utilities.main_utils import common_main
 from utilities import constants
-
+import logging
 
 MOBILE_DEVICE_NAME = 'target'
 AUTOMOTIVE_DEVICE_NAME = 'discoverer'
@@ -45,6 +45,10 @@ class BluetoothConnectionStatusOnLevelTwo(bluetooth_base_test.BluetoothBaseTest)
         super().enable_recording()
 
     def test_connection_status_displayed_on_device_screen(self):
+        # Log BT Connection State after pairing
+        bt_connection_state=self.call_utils.get_bt_connection_status_using_adb_command(self.discoverer)
+        logging.info("BT State after pairing : <%s>", bt_connection_state)
+
         # Open bluetooth settings.
         self.call_utils.open_bluetooth_settings()
 
