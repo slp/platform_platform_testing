@@ -191,6 +191,14 @@ class LayersTraceSubject(val trace: LayersTrace, override val reader: Reader? = 
             }
         }
 
+    /** {@inheritDoc} */
+    override fun hasNoRoundedCorners(componentMatcher: IComponentMatcher): LayersTraceSubject =
+        apply {
+            addAssertion("hasNoRoundedCorners(${componentMatcher.toLayerIdentifier()})") {
+                it.hasNoRoundedCorners(componentMatcher)
+            }
+        }
+
     /** See [isSplashScreenVisibleFor] */
     fun isSplashScreenVisibleFor(
         componentMatcher: IComponentNameMatcher,
