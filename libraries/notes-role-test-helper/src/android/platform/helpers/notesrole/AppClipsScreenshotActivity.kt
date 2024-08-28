@@ -31,10 +31,17 @@ import androidx.activity.ComponentActivity
 /** Empty activity for app clips screenshots. */
 class AppClipsScreenshotActivity : ComponentActivity() {
 
-    private val launchSplitScreenReceiver: BroadcastReceiver =
+    private val launchDifferentAppInSplitScreenReceiver: BroadcastReceiver =
         object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                launchInSplitScreen()
+                launchDifferentAppInSplitScreen()
+            }
+        }
+
+    private val launchSameAppInSplitScreenReceiver: BroadcastReceiver =
+        object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                launchSameAppInSplitScreen()
             }
         }
 
@@ -42,21 +49,41 @@ class AppClipsScreenshotActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         registerReceiver(
-            launchSplitScreenReceiver,
-            IntentFilter(LAUNCH_IN_SPLIT_SCREEN_ACTION),
+            launchDifferentAppInSplitScreenReceiver,
+            IntentFilter(LAUNCH_DIFFERENT_APP_IN_SPLIT_SCREEN_ACTION),
+            RECEIVER_EXPORTED
+        )
+
+        registerReceiver(
+            launchSameAppInSplitScreenReceiver,
+            IntentFilter(LAUNCH_SAME_APP_IN_SPLIT_SCREEN_ACTION),
             RECEIVER_EXPORTED
         )
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(launchSplitScreenReceiver)
+        unregisterReceiver(launchDifferentAppInSplitScreenReceiver)
+        unregisterReceiver(launchSameAppInSplitScreenReceiver)
     }
 
-    private fun launchInSplitScreen() =
+    private fun launchDifferentAppInSplitScreen() =
         startActivity(
             Intent().apply {
-                setComponent(ComponentName(packageName, SPLIT_ACTIVITY_NAME))
+                setComponent(ComponentName(packageName, SPLIT_DIFFERENT_ACTIVITY_NAME))
+                addFlags(
+                    FLAG_ACTIVITY_NEW_TASK or
+                        FLAG_ACTIVITY_LAUNCH_ADJACENT or
+                        FLAG_ACTIVITY_MULTIPLE_TASK or
+                        FLAG_ACTIVITY_NEW_DOCUMENT
+                )
+            }
+        )
+
+    private fun launchSameAppInSplitScreen() =
+        startActivity(
+            Intent().apply {
+                setComponent(this@AppClipsScreenshotActivity.componentName)
                 addFlags(
                     FLAG_ACTIVITY_NEW_TASK or
                         FLAG_ACTIVITY_LAUNCH_ADJACENT or
@@ -67,8 +94,11 @@ class AppClipsScreenshotActivity : ComponentActivity() {
         )
 
     companion object {
-        const val LAUNCH_IN_SPLIT_SCREEN_ACTION: String = "LAUNCH_IN_SPLIT_SCREEN_ACTION"
-        private const val SPLIT_ACTIVITY_NAME: String =
+        const val LAUNCH_DIFFERENT_APP_IN_SPLIT_SCREEN_ACTION: String =
+            "LAUNCH_DIFFERENT_APP_IN_SPLIT_SCREEN_ACTION"
+        const val LAUNCH_SAME_APP_IN_SPLIT_SCREEN_ACTION: String =
+            "LAUNCH_SAME_APP_IN_SPLIT_SCREEN_ACTION"
+        private const val SPLIT_DIFFERENT_ACTIVITY_NAME: String =
             "android.platform.helpers.notesrole.AppClipsScreenshotActivity.Split"
 
         fun getIntent(context: Context): Intent =
