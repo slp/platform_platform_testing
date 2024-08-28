@@ -20,7 +20,7 @@ import android.tools.Timestamp
 import android.tools.TraceEntry
 
 data class Cuj(
-    val cuj: CujType,
+    val cuj: ICujType,
     val startTimestamp: Timestamp,
     val endTimestamp: Timestamp,
     val canceled: Boolean,
