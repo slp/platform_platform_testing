@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 The Android Open Source Project
+ * Copyright (C) 2024 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,18 +19,21 @@ package android.tools.flicker.assertors.assertions
 import android.tools.flicker.ScenarioInstance
 import android.tools.flicker.assertions.FlickerTest
 import android.tools.flicker.assertors.ComponentTemplate
+import android.tools.helpers.WindowUtils
 
-/** Checks that the visible region of [component] always reduces during the animation */
-class AppLayerReduces(private val component: ComponentTemplate) :
+class AppWindowHasMaxBoundsInOnlyOneDimension(private val component: ComponentTemplate) :
     AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
-        val layerMatcher = component.build(scenarioInstance)
-        flicker.assertLayers {
-            val layerList = layers { layerMatcher.layerMatchesAnyOf(it) && it.isVisible }
-            layerList.zipWithNext { previous, current ->
-                current.visibleRegion.coversAtMost(previous.visibleRegion.region)
-            }
+        flicker.assertWmEnd {
+            val maxDisplayBounds = WindowUtils.getInsetDisplayBounds()
+            val windowBounds = visibleRegion(component.build(scenarioInstance)).region.bounds
+
+            val hasMaxHeight = windowBounds.height() == maxDisplayBounds.height()
+            val hasMaxWidth = windowBounds.width() == maxDisplayBounds.width()
+            val isMaxInOneDimension = hasMaxHeight.xor(hasMaxWidth)
+
+            check { "only one max bounds" }.that(isMaxInOneDimension).isEqual(true)
         }
     }
 }

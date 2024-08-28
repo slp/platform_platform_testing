@@ -74,27 +74,14 @@ object Components {
                     associatedTransition.changes.first { it.transitMode == TransitionType.CLOSE }
                 FullComponentIdMatcher(change.windowId, change.layerId)
             }
-            ScenarioId("CORNER_RESIZE") -> {
-                val change = associatedTransition.changes.first()
-                FullComponentIdMatcher(change.windowId, change.layerId)
-            }
-            ScenarioId("CORNER_RESIZE_TO_MINIMUM_SIZE") -> {
-                val change = associatedTransition.changes.first()
-                FullComponentIdMatcher(change.windowId, change.layerId)
-            }
-            ScenarioId("SNAP_RESIZE_LEFT_WITH_DRAG") -> {
-                val change = associatedTransition.changes.first()
-                FullComponentIdMatcher(change.windowId, change.layerId)
-            }
-            ScenarioId("SNAP_RESIZE_RIGHT_WITH_DRAG") -> {
-                val change = associatedTransition.changes.first()
-                FullComponentIdMatcher(change.windowId, change.layerId)
-            }
-            ScenarioId("SNAP_RESIZE_LEFT_WITH_BUTTON") -> {
-                val change = associatedTransition.changes.first()
-                FullComponentIdMatcher(change.windowId, change.layerId)
-            }
-            ScenarioId("SNAP_RESIZE_RIGHT_WITH_BUTTON") -> {
+            ScenarioId("CORNER_RESIZE"),
+            ScenarioId("CORNER_RESIZE_TO_MINIMUM_SIZE"),
+            ScenarioId("SNAP_RESIZE_LEFT_WITH_DRAG"),
+            ScenarioId("SNAP_RESIZE_RIGHT_WITH_DRAG"),
+            ScenarioId("SNAP_RESIZE_LEFT_WITH_BUTTON"),
+            ScenarioId("SNAP_RESIZE_RIGHT_WITH_BUTTON"),
+            ScenarioId("MAXIMIZE_APP"),
+            ScenarioId("MAXIMIZE_APP_NON_RESIZABLE") -> {
                 val change = associatedTransition.changes.first()
                 FullComponentIdMatcher(change.windowId, change.layerId)
             }
