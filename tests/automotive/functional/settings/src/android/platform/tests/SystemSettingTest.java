@@ -67,9 +67,14 @@ public class SystemSettingTest {
     @Test
     public void testAndroidVersion() {
         String androidVersion = android.os.Build.VERSION.RELEASE;
+        String androidVersionCodename = android.os.Build.VERSION.RELEASE_OR_CODENAME;
         assertTrue(
                 "Android Version from API and Android Version from UI are not the same",
-                mSystemSettingsHelper.get().getAndroidVersion().endsWith(androidVersion));
+                mSystemSettingsHelper.get().getAndroidVersion().endsWith(androidVersion)
+                        || mSystemSettingsHelper
+                                .get()
+                                .getAndroidVersion()
+                                .endsWith(androidVersionCodename));
     }
 
     @Test
