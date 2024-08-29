@@ -1,4 +1,4 @@
-plugins { id("com.android.sts.sdk.submission") }
+plugins { id("com.android.sts.sdksubmission") }
 
 fun getSubprojects(): List<Project> {
     // glob for gradle direct subprojects

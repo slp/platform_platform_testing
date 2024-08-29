@@ -1,6 +1,6 @@
 plugins {
     // my sts sdk plugin
-    id("com.android.sts.sdk.ndktest")
+    id("com.android.sts.ndktest")
 }
 
 nativeTest {
