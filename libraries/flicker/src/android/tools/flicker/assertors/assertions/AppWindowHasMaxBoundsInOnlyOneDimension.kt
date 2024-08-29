@@ -29,8 +29,10 @@ class AppWindowHasMaxBoundsInOnlyOneDimension(private val component: ComponentTe
             val maxDisplayBounds = WindowUtils.getInsetDisplayBounds()
             val windowBounds = visibleRegion(component.build(scenarioInstance)).region.bounds
 
-            val hasMaxHeight = windowBounds.height() == maxDisplayBounds.height()
-            val hasMaxWidth = windowBounds.width() == maxDisplayBounds.width()
+            val hasMaxHeight = windowBounds.top == maxDisplayBounds.top
+                    && windowBounds.bottom == maxDisplayBounds.bottom
+            val hasMaxWidth = windowBounds.left == maxDisplayBounds.left
+                    && windowBounds.right == maxDisplayBounds.right
             val isMaxInOneDimension = hasMaxHeight.xor(hasMaxWidth)
 
             check { "only one max bounds" }.that(isMaxInOneDimension).isEqual(true)
