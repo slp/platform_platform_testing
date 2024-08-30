@@ -44,7 +44,7 @@ class StsSdkBasePlugin : Plugin<Project> {
         ) {
             val stsSdkTestResourceConfiguration =
                 project.configurations.getByName(STS_SDK_TESTCASES_RESOURCE_CONFIGURATION_NAME)
-            val abiAttribute = Attribute.of("com.android.sts.sdk.abi", Abi::class.java)
+            val abiAttribute = Attribute.of("com.android.sts.abi", Abi::class.java)
             stsSdkTestResourceConfiguration.outgoing { configurationPublications ->
                 configurationPublications.artifact(sourceDirectoryArtifact) {
                     configurePublishArtifact ->

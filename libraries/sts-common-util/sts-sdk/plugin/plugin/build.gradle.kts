@@ -47,7 +47,7 @@ java {
 }
 
 // Define the overall plugin
-group = "com.android.sts.sdk"
+group = "com.android.sts"
 
 version = "1.0.0"
 
@@ -55,23 +55,23 @@ version = "1.0.0"
 gradlePlugin {
     plugins {
         create("stsSdkBasePlugin") {
-            id = "com.android.sts.sdk.base"
+            id = "com.android.sts.base"
             implementationClass = "com.android.sts.StsSdkBasePlugin"
         }
         create("stsSdkSubmissionPlugin") {
-            id = "com.android.sts.sdk.submission"
+            id = "com.android.sts.sdksubmission"
             implementationClass = "com.android.sts.StsSdkSubmissionPlugin"
         }
         create("StsSdkJavaHostTestPlugin") {
-            id = "com.android.sts.sdk.javahosttest"
+            id = "com.android.sts.javahosttest"
             implementationClass = "com.android.sts.StsSdkJavaHostTestPlugin"
         }
         create("StsSdkAppTestPlugin") {
-            id = "com.android.sts.sdk.apptest"
+            id = "com.android.sts.apptest"
             implementationClass = "com.android.sts.StsSdkAppTestPlugin"
         }
         create("StsSdkNdkTestPlugin") {
-            id = "com.android.sts.sdk.ndktest"
+            id = "com.android.sts.ndktest"
             implementationClass = "com.android.sts.StsSdkNdkTestPlugin"
         }
     }

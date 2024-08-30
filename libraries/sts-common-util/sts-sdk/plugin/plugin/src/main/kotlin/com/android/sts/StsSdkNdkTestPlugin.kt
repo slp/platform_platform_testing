@@ -36,7 +36,7 @@ class StsSdkNdkTestPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val nativeTest = project.extensions.create("nativeTest", NdkTestExtension::class.java)
 
-        project.plugins.apply("com.android.sts.sdk.base")
+        project.plugins.apply("com.android.sts.base")
         val ndkTest = project.extensions.create("appTest", NdkTestExtension::class.java)
 
         val writeManifestTask =

@@ -74,7 +74,7 @@ class StsSdkJavaHostTestPlugin : Plugin<Project> {
         val copyTestcasesResourcesTasks =
             StsSdkBasePlugin.Abi.entries.map { abi -> Pair(abi, copyTestcasesResourcesTask) }
 
-        project.plugins.apply("com.android.sts.sdk.base")
+        project.plugins.apply("com.android.sts.base")
         StsSdkBasePlugin.applyConfiguration(
             project = project,
             sourceDirectoryArtifact = project.layout.projectDirectory.dir("src/main"),
