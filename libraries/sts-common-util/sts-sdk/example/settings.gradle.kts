@@ -36,9 +36,9 @@ dependencyResolutionManagement {
 plugins {
     // Apply the foojay-resolver plugin to allow automatic download of JDKs
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.4.0"
-    id("com.android.sts.sdk.submission") version "1.0.0" apply false
-    id("com.android.sts.sdk.apptest") version "1.0.0" apply false
-    id("com.android.sts.sdk.javahosttest") version "1.0.0" apply false
+    id("com.android.sts.sdksubmission") version "1.0.0" apply false
+    id("com.android.sts.apptest") version "1.0.0" apply false
+    id("com.android.sts.javahosttest") version "1.0.0" apply false
 }
 
 rootProject.name = "sts-sdk-example"

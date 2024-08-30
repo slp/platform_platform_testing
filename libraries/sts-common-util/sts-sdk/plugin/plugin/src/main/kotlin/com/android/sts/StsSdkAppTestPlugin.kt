@@ -44,7 +44,7 @@ class StsSdkAppTestPlugin : Plugin<Project> {
         val appTest = project.extensions.create("appTest", AppTestExtension::class.java)
 
         // The APK artifact will be published to the "stsSdkTestResource" configuration
-        project.plugins.apply("com.android.sts.sdk.base")
+        project.plugins.apply("com.android.sts.base")
 
         val writeManifestTask =
             project.tasks.register("writeManifestTask") { task ->
