@@ -4,7 +4,7 @@ plugins {
 }
 
 nativeTest {
-    minSdk = 11
+    minSdk = 33
     targetSdk = 33
     compileSdk = 33
 }
