@@ -41,7 +41,7 @@ open class ViewScreenshotTestRule(
     pathManager: GoldenPathManager,
     private val matcher: BitmapMatcher = UnitTestBitmapMatcher,
     private val decorFitsSystemWindows: Boolean = false,
-    private val screenshotRule: ScreenshotTestRule = ScreenshotTestRule(pathManager)
+    protected val screenshotRule: ScreenshotTestRule = ScreenshotTestRule(pathManager)
 ) : TestRule, BitmapDiffer by screenshotRule, ScreenshotAsserterFactory by screenshotRule {
     private val colorsRule = MaterialYouColorsRule()
     private val fontsRule = FontsRule()
@@ -56,8 +56,11 @@ open class ViewScreenshotTestRule(
     // though their relative orders are not critical.
     private val deviceRule = RuleChain.outerRule(colorsRule).around(commonRule)
     private val roboRule =
-        RuleChain.outerRule(colorsRule).around(fontsRule).around(timeZoneRule)
-            .around(hardwareRenderingRule).around(commonRule)
+        RuleChain.outerRule(colorsRule)
+            .around(fontsRule)
+            .around(timeZoneRule)
+            .around(hardwareRenderingRule)
+            .around(commonRule)
     private val isRobolectric = if (Build.FINGERPRINT.contains("robolectric")) true else false
 
     var frameLimit = 10
