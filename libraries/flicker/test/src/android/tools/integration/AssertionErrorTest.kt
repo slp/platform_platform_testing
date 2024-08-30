@@ -22,6 +22,7 @@ import android.tools.io.RunStatus
 import android.tools.testutils.CleanFlickerEnvironmentRule
 import android.tools.testutils.TEST_SCENARIO
 import android.tools.traces.TRACE_CONFIG_REQUIRE_CHANGES
+import androidx.test.filters.FlakyTest
 import com.google.common.truth.Truth
 import java.io.File
 import org.junit.Before
@@ -34,6 +35,7 @@ import org.junit.Test
  *
  * To run this test: `atest FlickerLibTest:AssertionErrorTest`
  */
+@FlakyTest(bugId = 362942901)
 class AssertionErrorTest {
     private var assertionExecuted = false
     private val testParam = LegacyFlickerTest().also { it.initialize(TEST_SCENARIO.testClass) }
