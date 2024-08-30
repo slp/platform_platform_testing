@@ -18,7 +18,6 @@ package android.tools.traces.monitors
 
 import android.tools.io.TraceType
 import android.tools.traces.executeShellCommand
-import android.tools.traces.io.IoUtils
 import com.android.internal.protolog.common.LogLevel
 import java.io.File
 import java.util.concurrent.locks.ReentrantLock
@@ -37,17 +36,19 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
 
     private var perfettoPid: Int? = null
     private var traceFile: File? = null
-    private var traceFileInPerfettoDir: File? = null
     private val PERFETTO_TRACES_DIR = File("/data/misc/perfetto-traces")
 
+    fun captureDump(): File {
+        doStart()
+        return doStop()
+    }
+
     override fun doStart() {
-        traceFile = File.createTempFile(traceType.fileName, "")
-        traceFileInPerfettoDir = PERFETTO_TRACES_DIR.resolve(requireNotNull(traceFile).name)
+        val fileName = File.createTempFile(traceType.fileName, "").name
+        traceFile = PERFETTO_TRACES_DIR.resolve(fileName)
 
         val command =
-            "perfetto --background-wait" +
-                " --config -" +
-                " --out ${traceFileInPerfettoDir?.absolutePath}"
+            "perfetto --background-wait" + " --config -" + " --out ${traceFile?.absolutePath}"
         val stdout = String(executeShellCommand(command, config.toByteArray()))
         val pid = stdout.trim().toInt()
 
@@ -64,7 +65,6 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
         require(isEnabled) { "Attempted to stop disabled trace monitor" }
         killPerfettoProcess(requireNotNull(perfettoPid))
         waitPerfettoProcessExits(requireNotNull(perfettoPid))
-        IoUtils.moveFile(requireNotNull(traceFileInPerfettoDir), requireNotNull(traceFile))
         perfettoPid = null
         return requireNotNull(traceFile)
     }
