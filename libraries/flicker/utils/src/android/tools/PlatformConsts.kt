@@ -129,4 +129,6 @@ object PlatformConsts {
     internal const val DEBUGGER_WINDOW_PREFIX = "Waiting For Debugger: "
 
     const val SPLIT_SCREEN_TRANSITION_HANDLER = "com.android.wm.shell.splitscreen.StageCoordinator"
+
+    const val DESKTOP_MODE_INITIAL_WINDOW_HEIGHT_PROPORTION = 0.375
 }

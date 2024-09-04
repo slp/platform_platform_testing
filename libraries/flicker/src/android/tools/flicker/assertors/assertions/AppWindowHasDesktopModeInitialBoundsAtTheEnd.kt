@@ -18,30 +18,36 @@ package android.tools.flicker.assertors.assertions
 
 import android.graphics.Rect
 import android.os.SystemProperties
+import android.tools.PlatformConsts.DESKTOP_MODE_INITIAL_WINDOW_HEIGHT_PROPORTION
 import android.tools.flicker.ScenarioInstance
 import android.tools.flicker.assertions.FlickerTest
 import android.tools.flicker.assertors.ComponentTemplate
+import android.tools.helpers.WindowUtils
 
 class AppWindowHasDesktopModeInitialBoundsAtTheEnd(private val component: ComponentTemplate) :
     AssertionTemplateWithComponent(component) {
+
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
         flicker.assertLayersEnd {
             val displayBounds =
                 entry.physicalDisplayBounds ?: error("Missing physical display bounds")
-            val scale =
+            val stableBounds = WindowUtils.getInsetDisplayBounds()
+            val desktopModeInitialBoundsScale =
                 SystemProperties.getInt("persist.wm.debug.desktop_mode_initial_bounds_scale", 75) /
                     100f
 
-            val desiredWidth = displayBounds.width().times(scale).toInt()
-            val desiredHeight = displayBounds.height().times(scale).toInt()
+            val desiredWidth = displayBounds.width().times(desktopModeInitialBoundsScale)
+            val desiredHeight = displayBounds.height().times(desktopModeInitialBoundsScale)
 
-            val outBounds = Rect(0, 0, desiredWidth, desiredHeight)
-            // Center the task in screen bounds
-            outBounds.offset(
-                displayBounds.centerX() - outBounds.centerX(),
-                displayBounds.centerY() - outBounds.centerY()
-            )
+            val outBounds = Rect(0, 0, desiredWidth.toInt(), desiredHeight.toInt())
+            val xOffset = ((stableBounds.width() - desiredWidth) / 2).toInt()
+            val yOffset =
+                ((stableBounds.height() - desiredHeight) *
+                        DESKTOP_MODE_INITIAL_WINDOW_HEIGHT_PROPORTION + stableBounds.top)
+                    .toInt()
+            // Position the task in screen bounds
+            outBounds.offset(xOffset, yOffset)
 
             visibleRegion(component.build(scenarioInstance)).coversExactly(outBounds)
         }
