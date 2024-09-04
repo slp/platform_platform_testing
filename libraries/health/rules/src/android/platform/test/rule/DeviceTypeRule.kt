@@ -85,6 +85,16 @@ class DeviceTypeRule : TestRule {
             )
         }
 
+        if (description.getAnnotationClearly<FoldableOnly>() != null && isFoldable
+            && isCuttlefish) {
+            return wrongDeviceTypeStatement(
+                description,
+                "Skipping test on ${Build.PRODUCT} as E2E foldable tests are not " +
+                        "supported on Cuttlefish targets. " +
+                        "See go/e2e-cf-foldable-maybe-not for more details"
+            )
+        }
+
         if (description.getAnnotationClearly<TabletOnly>() != null && !isTablet) {
             return wrongDeviceTypeStatement(
                 description,
@@ -103,6 +113,8 @@ internal fun isFoldable(): Boolean {
         .getIntArray(R.array.config_foldedDeviceStates)
         .isNotEmpty()
 }
+
+private val isCuttlefish get() = Build.BOARD == "cutf"
 
 /** Returns whether the device default display is currently considered large screen. */
 fun isLargeScreen(): Boolean {
