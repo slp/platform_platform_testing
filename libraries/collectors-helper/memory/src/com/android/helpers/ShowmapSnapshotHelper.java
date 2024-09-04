@@ -53,13 +53,14 @@ public class ShowmapSnapshotHelper implements ICollectorHelper<String> {
     public static final String ALL_PROCESSES_CMD = "ps -A";
     private static final String SHOWMAP_CMD = "showmap -v %d";
     private static final String CHILD_PROCESSES_CMD = "ps -A --ppid %d";
+    private static final String ACTIVITY_LRU_CMD = "dumpsys activity lru";
+    private static final String DUMP_SYS_THREADS_CMD = "ps -ATw -o pid,tid,ppid,name,cmd,cmdline";
     @VisibleForTesting public static final String OOM_SCORE_ADJ_CMD = "cat /proc/%d/oom_score_adj";
+    @VisibleForTesting public static final String COUNT_THREADS_CMD = "sh /sdcard/countThreads.sh";
     private static final int PROCESS_OOM_SCORE_IMPERCEPTIBLE = 200;
     private static final int PROCESS_OOM_SCORE_CACHED = 899;
-    private static final String ACTIVITY_LRU_CMD = "dumpsys activity lru";
-    private static final String THREADS_FILE_PATH = "/sdcard/countThreads.sh";
-    @VisibleForTesting public static final String THREADS_CMD = "sh /sdcard/countThreads.sh";
-    private static final String THREADS_EXEC_SCRIPT =
+    private static final String COUNT_THREADS_FILE_PATH = "/sdcard/countThreads.sh";
+    private static final String COUNT_THREADS_EXEC_SCRIPT =
             "for i in $(ls /proc | grep -E [0-9]+); do echo \"threads_count_$(cat"
                     + " /proc/$i/cmdline) : $(ls /proc/$i/task | wc -l)\"; done;";
     public static final String THREADS_PATTERN = "(?<key>^threads_count_.+) : (?<value>[0-9]+)";
@@ -67,6 +68,7 @@ public class ShowmapSnapshotHelper implements ICollectorHelper<String> {
     public static final String OUTPUT_IMPERCEPTIBLE_METRIC_PATTERN =
             "showmap_%s_bytes_imperceptible";
     public static final String OUTPUT_FILE_PATH_KEY = "showmap_output_file";
+    public static final String SYSTEM_THREADS_FILE_PATH_KEY = "system_threads_output_file";
     public static final String PROCESS_COUNT = "process_count";
     public static final String CHILD_PROCESS_COUNT_PREFIX = "child_processes_count";
     public static final String OUTPUT_CHILD_PROCESS_COUNT_KEY = CHILD_PROCESS_COUNT_PREFIX + "_%s";
@@ -81,7 +83,7 @@ public class ShowmapSnapshotHelper implements ICollectorHelper<String> {
     private String[] mProcessNames = null;
     private String mTestOutputDir = null;
     private String mTestOutputFile = null;
-
+    private String mSysThreadsDebugFile = null;
     private int mDropCacheOption;
     private boolean mCollectForAllProcesses = false;
     private UiDevice mUiDevice;
@@ -145,6 +147,58 @@ public class ShowmapSnapshotHelper implements ICollectorHelper<String> {
         }
 
         mTestOutputFile = filePath;
+
+        if (mRunCountThreads) {
+            // Prepare system threads output debugging file
+            String sysThreadsDebugFilePath =
+                    String.format(
+                            "%s/system_threads_snapshot%d.txt",
+                            mTestOutputDir, UUID.randomUUID().hashCode());
+            File sysThreadsDebugFile = new File(sysThreadsDebugFilePath);
+
+            // Make sure directory exists and file does not
+            if (directory.exists()) {
+                if (sysThreadsDebugFile.exists() && !sysThreadsDebugFile.delete()) {
+                    Log.e(
+                            TAG,
+                            String.format(
+                                    "Failed to delete threads debugging files %s",
+                                    sysThreadsDebugFile));
+                    return false;
+                }
+            } else {
+                if (!directory.mkdirs()) {
+                    Log.e(
+                            TAG,
+                            String.format(
+                                    "Failed to create result output directory %s", mTestOutputDir));
+                    return false;
+                }
+            }
+
+            // Create an empty file to fail early in case there are no write permissions
+            try {
+                if (!sysThreadsDebugFile.createNewFile()) {
+                    // This should not happen unless someone created the file right after we deleted
+                    // it
+                    Log.e(
+                            TAG,
+                            String.format(
+                                    "Race with another user of threads debugging files %s",
+                                    sysThreadsDebugFile));
+                    return false;
+                }
+            } catch (IOException e) {
+                Log.e(
+                        TAG,
+                        String.format(
+                                "Failed to create threads debugging files %s", sysThreadsDebugFile),
+                        e);
+                return false;
+            }
+            mSysThreadsDebugFile = sysThreadsDebugFilePath;
+        }
+
         return true;
     }
 
@@ -388,14 +442,22 @@ public class ShowmapSnapshotHelper implements ICollectorHelper<String> {
         String countOutput;
         Map<String, String> countResults = new HashMap<>();
         try {
-            File execTempFile = new File(THREADS_FILE_PATH);
+            // Run ps -AT into file for debugging
+            try (FileWriter sysThreadsDebugFileWriter =
+                    new FileWriter(new File(mSysThreadsDebugFile), true)) {
+                sysThreadsDebugFileWriter.write(executeShellCommand(DUMP_SYS_THREADS_CMD));
+            }
+            countResults.put(SYSTEM_THREADS_FILE_PATH_KEY, mSysThreadsDebugFile);
+
+            // Run count threads command and save it to metrics map
+            File execTempFile = new File(COUNT_THREADS_FILE_PATH);
             execTempFile.setWritable(true);
             execTempFile.setExecutable(true, /*ownersOnly*/ false);
             String countThreadsScriptPath = execTempFile.getAbsolutePath();
             BufferedWriter writer = new BufferedWriter(new FileWriter(countThreadsScriptPath));
-            writer.write(THREADS_EXEC_SCRIPT);
+            writer.write(COUNT_THREADS_EXEC_SCRIPT);
             writer.close();
-            countOutput = executeShellCommand(THREADS_CMD);
+            countOutput = executeShellCommand(COUNT_THREADS_CMD);
             Pattern pattern =
                     Pattern.compile(THREADS_PATTERN, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
             String[] lines = countOutput.split("\n");
