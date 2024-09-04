@@ -273,7 +273,7 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
 
             if (logFrom != null) {
                 protoLogConfigBuilder.setDefaultLogFromLevel(
-                    PerfettoConfig.ProtoLogLevel.forNumber(logFrom.ordinal)
+                    PerfettoConfig.ProtoLogLevel.forNumber(logFrom.ordinal + 1)
                 )
             }
 
