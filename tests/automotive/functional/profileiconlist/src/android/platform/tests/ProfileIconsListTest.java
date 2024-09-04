@@ -23,13 +23,9 @@ import android.platform.helpers.IAutoHomeHelper;
 import android.platform.helpers.IAutoSettingHelper;
 import android.platform.helpers.MultiUserHelper;
 import android.platform.scenario.multiuser.MultiUserConstants;
-import android.platform.test.rules.ConditionalIgnore;
-import android.platform.test.rules.ConditionalIgnoreRule;
-import android.platform.test.rules.IgnoreOnPortrait;
 
 import androidx.test.runner.AndroidJUnit4;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -37,7 +33,6 @@ import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
 public class ProfileIconsListTest {
-    @Rule public ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     private static final String USER_NAME = MultiUserConstants.SECONDARY_USER_NAME;
 
@@ -58,7 +53,6 @@ public class ProfileIconsListTest {
      * <p>This method is used to compare profiles based on position.
      */
     @Test
-    @ConditionalIgnore(condition = IgnoreOnPortrait.class)
     public void testListOfProfiles() throws Exception {
         mMultiUserHelper.createUser(USER_NAME, false);
         mHomeHelper.get().openStatusBarProfiles();
