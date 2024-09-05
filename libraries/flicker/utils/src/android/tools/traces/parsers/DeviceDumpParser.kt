@@ -61,7 +61,7 @@ class DeviceDumpParser {
                         wmTraceData
                             .takeIf { it.isNotEmpty() }
                             ?.let {
-                                if (android.tracing.Flags.perfettoWmTracing()) {
+                                if (android.tracing.Flags.perfettoWmDump()) {
                                     TraceProcessorSession.loadPerfettoTrace(wmTraceData) { session
                                         ->
                                         WindowManagerTraceParser()
