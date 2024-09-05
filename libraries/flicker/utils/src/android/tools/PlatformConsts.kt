@@ -90,6 +90,8 @@ object PlatformConsts {
     const val STATE_PAUSED = "PAUSED"
     const val STATE_STOPPED = "STOPPED"
     const val STATE_DESTROYED = "DESTROYED"
+    const val DESKTOP_MODE_MINIMUM_WINDOW_WIDTH = 386
+    const val DESKTOP_MODE_MINIMUM_WINDOW_HEIGHT = 352
     internal const val APP_STATE_IDLE = "APP_STATE_IDLE"
     internal const val ACTIVITY_TYPE_UNDEFINED = 0
     internal const val ACTIVITY_TYPE_STANDARD = 1
