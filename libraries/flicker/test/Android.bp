@@ -27,7 +27,7 @@ java_defaults {
     certificate: "platform",
     platform_apis: true,
     test_suites: ["device-tests"],
-    libs: ["android.test.runner"],
+    libs: ["android.test.runner.stubs.system"],
     optimize: {
         enabled: false,
     },
