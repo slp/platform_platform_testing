@@ -25,4 +25,13 @@ data class TraceSlice(
     val endTimestamp: Timestamp,
     val associatedTransition: Transition? = null,
     val associatedCuj: ICujType? = null
-)
+) {
+    init {
+        require(startTimestamp.hasAllTimestamps) {
+            "startTimestamp ($startTimestamp) has missing timestamps"
+        }
+        require(endTimestamp.hasAllTimestamps) {
+            "endTimestamp ($endTimestamp) has missing timestamps"
+        }
+    }
+}
