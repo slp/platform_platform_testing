@@ -78,6 +78,7 @@ object Components {
             }
             ScenarioId("CORNER_RESIZE"),
             ScenarioId("CORNER_RESIZE_TO_MINIMUM_SIZE"),
+            ScenarioId("CORNER_RESIZE_TO_MAXIMUM_SIZE"),
             ScenarioId("EDGE_RESIZE"),
             ScenarioId("SNAP_RESIZE_LEFT_WITH_DRAG"),
             ScenarioId("SNAP_RESIZE_RIGHT_WITH_DRAG"),
