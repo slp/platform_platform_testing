@@ -33,7 +33,6 @@ import android.view.ViewTreeObserver.OnDrawListener
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import androidx.concurrent.futures.SuspendToFutureAdapter
-import androidx.test.annotation.ExperimentalTestApi
 import androidx.test.core.internal.os.HandlerExecutor
 import androidx.test.internal.platform.ServiceLoaderWrapper
 import androidx.test.internal.platform.os.ControlledLooper
@@ -81,10 +80,10 @@ import kotlinx.coroutines.suspendCancellableCoroutine
  *
  * This API is currently experimental and subject to change or removal.
  */
-@ExperimentalTestApi
 suspend fun View.captureToBitmap(rect: Rect? = null): Bitmap {
     val mainHandlerDispatcher = Handler(Looper.getMainLooper()).asCoroutineDispatcher()
     var bitmap: Bitmap? = null
+    ControlledLooperSingleton.getInstance().drainMainThreadUntilIdle()
     val job =
         CoroutineScope(mainHandlerDispatcher).launch {
             val hardwareDrawingEnabled = HardwareRendererCompat.isDrawingEnabled()
@@ -112,7 +111,6 @@ private fun getControlledLooper(): ControlledLooper {
 }
 
 /** A ListenableFuture variant of captureToBitmap intended for use from Java. */
-@ExperimentalTestApi
 fun View.captureToBitmapAsync(rect: Rect? = null): ListenableFuture<Bitmap> {
     return SuspendToFutureAdapter.launchFuture(Dispatchers.Main) { captureToBitmap(rect) }
 }
@@ -124,7 +122,6 @@ fun View.captureToBitmapAsync(rect: Rect? = null): ListenableFuture<Bitmap> {
  */
 // TODO(b/316921934): uncomment once @ExperimentalTestApi is removed
 // @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-@ExperimentalTestApi
 suspend fun View.forceRedraw() {
     checkState(handler.looper.isCurrentThread, "Must be called from view's handler thread")
     if (Build.FINGERPRINT.contains("robolectric")) {
@@ -162,8 +159,29 @@ suspend fun View.forceRedraw() {
 }
 
 private suspend fun View.generateBitmap(rect: Rect? = null): Bitmap {
-    val rectWidth = rect?.width() ?: width
-    val rectHeight = rect?.height() ?: height
+    var rectWidth = rect?.width() ?: width
+    var rectHeight = rect?.height() ?: height
+
+    // Throttling to wait for the readiness of `rectWidth` and `rectHeight`.
+    val maximumPixelNumbers = 1_000_000_000L
+    val milliSecondsInTenSeconds = 10L * 1000L
+    var milliSecondsToWait = 10L
+    while (rectWidth.toLong() * rectHeight.toLong() > maximumPixelNumbers
+        && milliSecondsToWait < milliSecondsInTenSeconds) {
+        Log.d("View.generateBitmap",
+            "Current width ($rectWidth) or current height ($rectHeight) is too large"
+                + ", which might indicate the view is not stable yet. "
+                + "Wait for $milliSecondsToWait milliseconds to retry.")
+        Thread.sleep(milliSecondsToWait)
+        milliSecondsToWait = milliSecondsToWait * 2
+        rectWidth = rect?.width() ?: width
+        rectHeight = rect?.height() ?: height
+    }
+    if (rectWidth.toLong() * rectHeight.toLong() > maximumPixelNumbers) {
+        throw IllegalStateException(
+            "The view $this is not stable within $milliSecondsInTenSeconds milliseconds.")
+    }
+
     val destBitmap = Bitmap.createBitmap(rectWidth, rectHeight, Bitmap.Config.ARGB_8888)
 
     return when {

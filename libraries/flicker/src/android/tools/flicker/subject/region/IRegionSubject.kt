@@ -16,8 +16,8 @@
 
 package android.tools.flicker.subject.region
 
-import android.tools.datatypes.Rect
-import android.tools.datatypes.Region
+import android.graphics.Rect
+import android.graphics.Region
 import android.tools.flicker.subject.exceptions.IncorrectRegionException
 
 interface IRegionSubject {
@@ -148,7 +148,7 @@ interface IRegionSubject {
      * @param other Expected area that the center should be in
      * @throws AssertionError
      */
-    fun regionsCenterPointInside(other: Region): IRegionSubject
+    fun regionsCenterPointInside(other: Rect): IRegionSubject
 
     /**
      * Asserts that region covers at least [other], that is, its area covers each point in the

@@ -19,6 +19,7 @@ package android.platform.helpers.features.common;
 import static android.platform.helpers.ui.UiAutomatorUtils.getUiDevice;
 
 import static com.android.systemui.Flags.migrateClocksToBlueprint;
+import static com.android.systemui.Flags.sceneContainer;
 
 import static com.google.common.truth.Truth.assertWithMessage;
 
@@ -33,8 +34,6 @@ import androidx.test.uiautomator.BySelector;
 import androidx.test.uiautomator.Direction;
 import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.Until;
-
-import java.util.regex.Pattern;
 
 /**
  * Helper class for Lock screen Home page. This contains the all the possible helper methods for the
@@ -51,22 +50,19 @@ public class HomeLockscreenPage implements Page {
 
     // https://hsv.googleplex.com/4836673386971136?node=68
     public static final BySelector SWIPEABLE_AREA =
-            By.res("com.android.systemui:id/notification_panel");
+            By.res(
+                    "com.android.systemui",
+                    com.android.systemui.Flags.sceneContainer()
+                            ? "shared_notification_container"
+                            : "notification_panel");
     // https://hsv.googleplex.com/5130837462876160?node=117
-    public static final Pattern PAGE_TITLE_SELECTOR_PATTERN;
 
-    static {
-        if (migrateClocksToBlueprint()) {
-            PAGE_TITLE_SELECTOR_PATTERN = Pattern.compile(
-                    String.format("com.android.systemui:id/%s", "keyguard_indication_area"));
-        } else {
-            PAGE_TITLE_SELECTOR_PATTERN = Pattern.compile(
-                    String.format("com.android.systemui:id/%s", "keyguard_clock_container"));
-        }
-    }
-
+    public static final String PAGE_TITLE_ID =
+            migrateClocksToBlueprint() ? "keyguard_indication_area" : "keyguard_clock_container";
     private static final BySelector PAGE_TITLE_SELECTOR =
-            By.res(PAGE_TITLE_SELECTOR_PATTERN);
+            sceneContainer()
+                    ? By.res("element:lockscreen")
+                    : By.res("com.android.systemui", PAGE_TITLE_ID);
     private static final int SHORT_SLEEP_IN_SECONDS = 2;
     private static final int WAIT_TIME_MILLIS = 5000;
 
@@ -108,14 +104,10 @@ public class HomeLockscreenPage implements Page {
         UiObject2 swipeableArea = getUiDevice().wait(Until.findObject(SWIPEABLE_AREA),
                 WAIT_TIME_MILLIS);
         assertWithMessage("Swipeable area not found").that(swipeableArea).isNotNull();
-        //shift swipe gesture over to left so we don't begin the gesture on the lock icon
+        // shift swipe gesture over to left so we don't begin the gesture on the lock icon
         //   this can be removed if b/229696938 gets resolved to allow for swiping on the icon
         swipeableArea.setGestureMargins(
-                /* left= */ 0,
-                /* top= */ 0,
-                swipeableArea.getVisibleCenter().x,
-                /* bottom= */ 0
-        );
-        swipeableArea.swipe(Direction.UP, /* percent= */ 0.7f , /* speed= */ 1000 );
+                /* left= */ 0, /* top= */ 0, swipeableArea.getVisibleCenter().x, /* bottom= */ 1);
+        swipeableArea.swipe(Direction.UP, /* percent= */ 0.7f, /* speed= */ 1000);
     }
 }

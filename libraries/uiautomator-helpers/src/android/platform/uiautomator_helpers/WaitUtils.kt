@@ -25,6 +25,14 @@ import java.io.Closeable
 import java.time.Duration
 import java.time.Instant.now
 
+sealed interface WaitResult {
+    data class WaitThrown(val thrown: Throwable?) : WaitResult
+    data object WaitSuccess : WaitResult
+    data object WaitFailure : WaitResult
+}
+
+data class WaitReport(val result: WaitResult, val iterations: Int)
+
 /**
  * Collection of utilities to ensure a certain conditions is met.
  *
@@ -59,34 +67,67 @@ object WaitUtils {
         ignoreException: Boolean = false,
         condition: () -> Boolean,
     ) {
+        val errorProvider =
+            errorProvider
+                ?: { "Error ensuring that \"$description\" within ${timeout.toMillis()}ms" }
+        waitToBecomeTrue(description, timeout, condition).run {
+            when (result) {
+                WaitResult.WaitSuccess -> return
+                WaitResult.WaitFailure -> {
+                    if (ignoreFailure) {
+                        Log.w(TAG, "Ignoring ensureThat failure: ${errorProvider()}")
+                    } else {
+                        throw FailedEnsureException(errorProvider())
+                    }
+                }
+                is WaitResult.WaitThrown -> {
+                    if (!ignoreException) {
+                        throw RuntimeException("[#$iterations] iteration failed.", result.thrown)
+                    } else {
+                        return
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Wait until [timeout] for [condition] to become true, and then return a [WaitReport] with the
+     * result.
+     *
+     * This can be a useful replacement for [ensureThat] in situations where you want to wait for
+     * the condition to become true, but want a chance to recover if it does not.
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun waitToBecomeTrue(
+        description: String? = null,
+        timeout: Duration = DEFAULT_DEADLINE,
+        condition: () -> Boolean,
+    ): WaitReport {
         val traceName =
             if (description != null) {
                 "Ensuring $description"
             } else {
                 "ensure"
             }
-        val errorProvider =
-            errorProvider
-                ?: { "Error ensuring that \"$description\" within ${timeout.toMillis()}ms" }
+        var i = 1
         trace(traceName) {
             val startTime = uptimeMillis()
             val timeoutMs = timeout.toMillis()
             Log.d(TAG, "Starting $traceName")
             withEventualLogging(logTimeDelta = true) {
                 log(traceName)
-                var i = 1
                 while (uptimeMillis() < startTime + timeoutMs) {
                     trace("iteration $i") {
                         try {
                             if (condition()) {
                                 log("[#$i] Condition true")
-                                return
+                                return WaitReport(WaitResult.WaitSuccess, i)
                             }
                         } catch (t: Throwable) {
                             log("[#$i] Condition failing with exception")
-                            if (!ignoreException) {
-                                throw RuntimeException("[#$i] iteration failed.", t)
-                            }
+                            return WaitReport(WaitResult.WaitThrown(t), i)
                         }
 
                         log("[#$i] Condition false, might retry.")
@@ -95,11 +136,7 @@ object WaitUtils {
                     }
                 }
                 log("[#$i] Condition has always been false. Failing.")
-                if (ignoreFailure) {
-                    Log.w(TAG, "Ignoring ensureThat failure: ${errorProvider()}")
-                } else {
-                    throw FailedEnsureException(errorProvider())
-                }
+                return WaitReport(WaitResult.WaitFailure, i)
             }
         }
     }

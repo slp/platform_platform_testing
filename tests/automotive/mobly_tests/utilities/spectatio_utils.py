@@ -68,6 +68,11 @@ class CallUtils:
         """Get dialing phone number"""
         return self.device.mbs.getDialingNumber()
 
+    def get_user_phone_number(self):
+        """Get user phone number"""
+        return self.device.mbs.getUserProfilePhoneNumber()
+
+
     def get_home_address_from_details(self):
         """Return the home address of the contact whose details are currently being displayed"""
         return self.device.mbs.getHomeAddress()
@@ -228,7 +233,6 @@ class CallUtils:
 
     def upload_vcf_contacts_to_device(self, device_target, path_to_contacts_file):
         """Upload contacts do device"""
-        self.push_vcf_contacts_to_device(device_target, path_to_contacts_file)
         self.import_contacts_from_vcf_file(device_target)
         device_target.mbs.pressDevice()
 
@@ -297,7 +301,7 @@ class CallUtils:
 
     def verify_disabled_phone_profile(self):
         logging.info("Checks if phone profile is disabled")
-        return self.device.mbs.verifyDisabledPhoneProfile()
+        return self.device.mbs.isBluetoothPhoneButtonEnabled()
 
     def verify_bluetooth_hfp_error_displayed(self):
         logging.info("Checks if bluetooth hfp error")
@@ -412,6 +416,20 @@ class CallUtils:
     def verify_dialing_number(self, expected_dialing_number):
         """Replace all non-digits characters to null"""
         actual_dialing_number = re.sub(r'\D', '', str(self.get_dialing_number()))
+        logging.info(
+            'Expected dialing number: %s, Actual: %s',
+            expected_dialing_number,
+            actual_dialing_number,
+        )
+        if actual_dialing_number != expected_dialing_number:
+            raise CallUtilsError(
+                "Actual and Expected dialing numbers don't match.")
+
+
+    # Verify dialing number the same as expected
+    def verify_user_phone_number(self, expected_dialing_number):
+        """Replace all non-digits characters to null"""
+        actual_dialing_number = re.sub(r'\D', '', str(self.get_user_phone_number()))
         logging.info(
             'Expected dialing number: %s, Actual: %s',
             expected_dialing_number,

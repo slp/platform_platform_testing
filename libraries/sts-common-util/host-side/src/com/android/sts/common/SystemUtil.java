@@ -90,4 +90,26 @@ public class SystemUtil {
             }
         };
     }
+
+    /**
+     * Ensures Bluetooth is enabled on the specified test device.
+     *
+     * @param device The test device on which Bluetooth is to be enabled.
+     * @return An AutoCloseable resource that restores the state of bluetooth.
+     */
+    public static AutoCloseable withBluetoothEnabled(ITestDevice device)
+            throws DeviceNotAvailableException, IllegalStateException {
+        if (!device.hasFeature("android.hardware.bluetooth")) {
+            throw new IllegalStateException("Device does not support bluetooth");
+        }
+
+        // Check if bluetooth is already enabled
+        if (device.getSetting("global", "bluetooth_on").trim().equals("1")) {
+            return () -> {};
+        }
+
+        // Enable bluetooth and disable it later
+        CommandUtil.runAndCheck(device, "svc bluetooth enable");
+        return () -> CommandUtil.runAndCheck(device, "svc bluetooth disable");
+    }
 }

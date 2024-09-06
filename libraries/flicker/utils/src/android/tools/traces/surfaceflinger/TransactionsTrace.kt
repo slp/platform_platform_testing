@@ -29,7 +29,11 @@ class TransactionsTrace(override val entries: Collection<TransactionsTraceEntry>
                     prev.timestamp.elapsedNanos < next.timestamp.elapsedNanos
                 }
                 .all { it }
-        require(alwaysIncreasing) { "Transaction timestamp not always increasing..." }
+
+        require(alwaysIncreasing) {
+            "Transaction timestamp not always increasing: " +
+                "[${entries.joinToString { it.timestamp.toString() }}]"
+        }
     }
 
     val allTransactions: Collection<Transaction> = entries.flatMap { it.transactions }

@@ -16,9 +16,9 @@
 
 package android.tools.flicker.assertions
 
-import android.tools.Logger
 import android.tools.io.Reader
 import android.tools.io.RunStatus
+import android.tools.withTracing
 
 /**
  * Helper class to run an assertions
@@ -41,8 +41,6 @@ abstract class BaseAssertionRunner(
 
         if (resultReader.isFailure || resultReader.runStatus == newStatus) return
 
-        Logger.withTracing("${this::class.simpleName}#updateResultStatus") {
-            doUpdateStatus(newStatus)
-        }
+        withTracing("${this::class.simpleName}#updateResultStatus") { doUpdateStatus(newStatus) }
     }
 }

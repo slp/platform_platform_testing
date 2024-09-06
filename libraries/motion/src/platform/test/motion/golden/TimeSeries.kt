@@ -22,11 +22,20 @@ package platform.test.motion.golden
  * A [TimeSeries] contains a number of distinct [Feature]s, each of which must contain exactly one
  * [DataPoint] per [frameIds], in the same order.
  */
-data class TimeSeries(val frameIds: List<FrameId>, val features: List<Feature<*>>) {
+data class TimeSeries(val frameIds: List<FrameId>, val features: Map<String, Feature<*>>) {
+
+    constructor(
+        frameIds: List<FrameId>,
+        features: List<Feature<*>>
+    ) : this(frameIds, features.associateBy { it.name }) {
+        require(features.size == this.features.size) { "duplicate feature names" }
+    }
+
     init {
-        features.forEach {
-            require(it.dataPoints.size == frameIds.size) {
-                "Feature [${it.name}] includes ${it.dataPoints.size} data points, " +
+        features.forEach { (key, feature) ->
+            require(key == feature.name)
+            require(feature.dataPoints.size == frameIds.size) {
+                "Feature [$key] includes ${feature.dataPoints.size} data points, " +
                     "but ${frameIds.size} data points are expected"
             }
         }
@@ -55,7 +64,7 @@ data class SupplementalFrameId(override val label: String) : FrameId
  *
  * All [dataPoints] must be of the same [DataPointType].
  */
-data class Feature<in T>(
+data class Feature<out T>(
     /** Test-specific, human readable name identifying the feature. */
     val name: String,
     /** Recorded data points of the feature. */

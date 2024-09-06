@@ -26,7 +26,9 @@ import androidx.test.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -65,10 +67,11 @@ public class PerfettoHelper {
     private static final int PERFETTO_KILL_WAIT_COUNT = 12;
     // Check if perfetto is stopped every 5 secs.
     private static final long PERFETTO_KILL_WAIT_TIME = 5000;
+    private static final String PERFETTO_PID_FILE_PREFIX = "perfetto_pid_";
 
     private static Set<Integer> sPerfettoProcessIds = new HashSet<>();
 
-    private UiDevice mUIDevice;
+    private UiDevice mUIDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
 
     private String mConfigRootDir;
 
@@ -79,6 +82,9 @@ public class PerfettoHelper {
     private String mTextProtoConfig;
     private String mConfigFileName;
     private boolean mIsTextProtoConfig;
+    private boolean mTrackPerfettoPidFlag;
+    private String mTrackPerfettoRootDir = "sdcard/";
+    private File mPerfettoPidFile;
 
     /** Set content of the perfetto configuration to be used when tracing */
     public PerfettoHelper setTextProtoConfig(String value) {
@@ -131,7 +137,8 @@ public class PerfettoHelper {
      */
     @VisibleForTesting
     public boolean startCollectingFromConfig(String textProtoConfig) {
-        mUIDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        mPerfettoPidFile = null;
+        String startOutput = null;
         if (textProtoConfig == null || textProtoConfig.isEmpty()) {
             Log.e(LOG_TAG, "Perfetto config is null or empty.");
             return false;
@@ -164,12 +171,25 @@ public class PerfettoHelper {
 
             try (ParcelFileDescriptor.AutoCloseInputStream inputStream =
                     new ParcelFileDescriptor.AutoCloseInputStream(inputStreamDescriptor)) {
-                String startOutput = new String(inputStream.readAllBytes());
-
+                startOutput = new String(inputStream.readAllBytes());
+                // Persist perfetto pid in a file and use it for cleanup if the instrumentation
+                // crashes.
+                if (mTrackPerfettoPidFlag) {
+                    mPerfettoPidFile = writePidToFile(startOutput);
+                }
                 if (!canUpdateAfterStartCollecting(startOutput)) {
                     return false;
                 }
             }
+        } catch (FileNotFoundException fnf) {
+            Log.e(LOG_TAG, "Unable to write perfetto process id to a file :" + fnf.getMessage());
+            Log.i(LOG_TAG, "Stopping perfetto tracing because perfetto id is not tracked.");
+            try {
+                stopPerfetto(Integer.parseInt(startOutput.trim()));
+            } catch (IOException ie) {
+                Log.e(LOG_TAG, "Unable to stop perfetto process output file." + ie.getMessage());
+            }
+            return false;
         } catch (IOException ioe) {
             Log.e(LOG_TAG, "Unable to start the perfetto tracing due to :" + ioe.getMessage());
             return false;
@@ -190,7 +210,8 @@ public class PerfettoHelper {
      */
     @VisibleForTesting
     public boolean startCollectingFromConfigFile(String configFileName, boolean isTextProtoConfig) {
-        mUIDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        mPerfettoPidFile = null;
+        String startOutput = null;
         if (configFileName == null || configFileName.isEmpty()) {
             Log.e(LOG_TAG, "Perfetto config file name is null or empty.");
             return false;
@@ -219,12 +240,26 @@ public class PerfettoHelper {
 
             // Start perfetto tracing.
             Log.i(LOG_TAG, "Starting perfetto tracing.");
-            String startOutput = mUIDevice.executeShellCommand(perfettoCmd);
+            startOutput = mUIDevice.executeShellCommand(perfettoCmd);
+            if (mTrackPerfettoPidFlag) {
+                // Persist perfetto pid in a file and use it for cleanup if the instrumentation
+                // crashes.
+                mPerfettoPidFile = writePidToFile(startOutput);
+            }
             Log.i(LOG_TAG, String.format("Perfetto start command output - %s", startOutput));
 
             if (!canUpdateAfterStartCollecting(startOutput)) {
                 return false;
             }
+        } catch (FileNotFoundException fnf) {
+            Log.e(LOG_TAG, "Unable to write perfetto process id to a file :" + fnf.getMessage());
+            Log.i(LOG_TAG, "Stopping perfetto tracing because perfetto id is not tracked.");
+            try {
+                stopPerfetto(Integer.parseInt(startOutput.trim()));
+            } catch (IOException ie) {
+                Log.e(LOG_TAG, "Unable to stop perfetto process output file." + ie.getMessage());
+            }
+            return false;
         } catch (IOException ioe) {
             Log.e(LOG_TAG, "Unable to start the perfetto tracing due to :" + ioe.getMessage());
             return false;
@@ -270,7 +305,7 @@ public class PerfettoHelper {
             SystemClock.sleep(1000);
         }
 
-        if (!isTestPerfettoRunning(getPerfettoPid())) {
+        if (!isTestPerfettoRunning(mPerfettoProcId)) {
             return false;
         }
 
@@ -294,7 +329,7 @@ public class PerfettoHelper {
         // Stop the perfetto and copy the output file.
         Log.i(LOG_TAG, "Stopping perfetto.");
         try {
-            if (stopPerfetto(getPerfettoPid())) {
+            if (stopPerfetto(mPerfettoProcId)) {
                 if (!copyFileOutput(destinationFile)) {
                     return false;
                 }
@@ -305,6 +340,17 @@ public class PerfettoHelper {
         } catch (IOException ioe) {
             Log.e(LOG_TAG, "Unable to stop the perfetto tracing due to " + ioe.getMessage());
             return false;
+        }
+        // Delete the perfetto process id file if the perfetto tracing successfully ended.
+        if (mTrackPerfettoPidFlag) {
+            if (mPerfettoPidFile.exists()) {
+                Log.i(
+                        LOG_TAG,
+                        String.format(
+                                "Deleting Perfetto process id file %s .",
+                                mPerfettoPidFile.toString()));
+                mPerfettoPidFile.delete();
+            }
         }
         return true;
     }
@@ -339,6 +385,34 @@ public class PerfettoHelper {
                 LOG_TAG,
                 String.format("Perfetto process id %d removed for tracking", perfettoProcId));
         return true;
+    }
+
+    /**
+     * Utility method for writing perfetto pid to a file.
+     *
+     * @param perfettoStartOutput perfetto process id.
+     * @return File with perfetto process id written in it.
+     */
+    private File writePidToFile(String perfettoStartOutput)
+            throws IOException, FileNotFoundException {
+        File perfettoPidFile =
+                new File(
+                        String.format(
+                                "%s%s%s.txt",
+                                getTrackPerfettoRootDir(),
+                                PERFETTO_PID_FILE_PREFIX,
+                                System.currentTimeMillis()));
+        perfettoPidFile.createNewFile();
+        try (PrintWriter out = new PrintWriter(perfettoPidFile)) {
+            out.println(perfettoStartOutput);
+            Log.i(
+                    LOG_TAG,
+                    String.format("Perfetto Process id file output %s", perfettoStartOutput));
+        }
+        Log.i(
+                LOG_TAG,
+                String.format("Perfetto Process id file %s created.", perfettoPidFile.toString()));
+        return perfettoPidFile;
     }
 
     /**
@@ -444,5 +518,29 @@ public class PerfettoHelper {
 
     public Set<Integer> getPerfettoPids() {
         return sPerfettoProcessIds;
+    }
+
+    public void setTrackPerfettoPidFlag(boolean trackPerfettoPidFlag) {
+        mTrackPerfettoPidFlag = trackPerfettoPidFlag;
+    }
+
+    public boolean getTrackPerfettoPidFlag() {
+        return mTrackPerfettoPidFlag;
+    }
+
+    public void setTrackPerfettoRootDir(String rootDir) {
+        mTrackPerfettoRootDir = rootDir;
+    }
+
+    public String getTrackPerfettoRootDir() {
+        return mTrackPerfettoRootDir;
+    }
+
+    public File getPerfettoPidFile() {
+        return mPerfettoPidFile;
+    }
+
+    public String getPerfettoFilePrefix() {
+        return PERFETTO_PID_FILE_PREFIX;
     }
 }

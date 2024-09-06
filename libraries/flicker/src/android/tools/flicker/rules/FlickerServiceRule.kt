@@ -17,22 +17,19 @@
 package android.tools.flicker.rules
 
 import android.platform.test.rule.TestWatcher
-import android.tools.AndroidLogger
-import android.tools.CrossPlatform
 import android.tools.FLICKER_TAG
-import android.tools.Logger
-import android.tools.TimestampFactory
 import android.tools.flicker.FlickerConfig
 import android.tools.flicker.FlickerService
 import android.tools.flicker.FlickerServiceResultsCollector
 import android.tools.flicker.FlickerServiceTracesCollector
 import android.tools.flicker.IFlickerServiceResultsCollector
 import android.tools.flicker.annotation.FlickerTest
+import android.tools.flicker.assertions.AssertionResult
 import android.tools.flicker.config.FlickerConfig
 import android.tools.flicker.config.FlickerServiceConfig
 import android.tools.flicker.config.ScenarioId
-import android.tools.traces.formatRealTimestamp
 import android.tools.traces.getDefaultFlickerOutputDir
+import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth
 import org.junit.AssumptionViolatedException
@@ -53,6 +50,7 @@ open class FlickerServiceRule
 constructor(
     enabled: Boolean = true,
     failTestOnFlicker: Boolean = enabled,
+    failTestOnServiceError: Boolean = false,
     config: FlickerConfig = FlickerConfig().use(FlickerServiceConfig.DEFAULT),
     private val metricsCollector: IFlickerServiceResultsCollector =
         FlickerServiceResultsCollector(
@@ -71,13 +69,14 @@ constructor(
         }
             ?: failTestOnFlicker
 
+    private val failTestOnServiceError: Boolean =
+        InstrumentationRegistry.getArguments().getString("faas:failTestOnServiceError")?.let {
+            it.toBoolean()
+        }
+            ?: failTestOnServiceError
+
     private var testFailed = false
     private var testSkipped = false
-
-    init {
-        CrossPlatform.setLogger(AndroidLogger())
-            .setTimestampFactory(TimestampFactory { formatRealTimestamp(it) })
-    }
 
     /** Invoked when a test is about to start */
     public override fun starting(description: Description) {
@@ -115,39 +114,41 @@ constructor(
     }
 
     private fun handleStarting(description: Description) {
-        Logger.i(LOG_TAG, "Test starting $description")
+        Log.i(LOG_TAG, "Test starting $description")
         metricsCollector.testStarted(description)
         testFailed = false
         testSkipped = false
     }
 
     private fun handleSucceeded(description: Description) {
-        Logger.i(LOG_TAG, "Test succeeded $description")
+        Log.i(LOG_TAG, "Test succeeded $description")
     }
 
     private fun handleFailed(e: Throwable?, description: Description) {
-        Logger.e(LOG_TAG, "$description test failed with", e)
+        Log.e(LOG_TAG, "$description test failed with", e)
         metricsCollector.testFailure(Failure(description, e))
         testFailed = true
     }
 
     private fun handleSkipped(e: AssumptionViolatedException, description: Description) {
-        Logger.i(LOG_TAG, "Test skipped $description with", e)
+        Log.i(LOG_TAG, "Test skipped $description with", e)
         metricsCollector.testSkipped(description)
         testSkipped = true
     }
 
-    private fun shouldRun(description: Description?): Boolean {
+    private fun shouldRun(description: Description): Boolean {
         // Only run FaaS if test rule is enabled and on tests with FlickerTest annotation if it's
         // used within the class, otherwise run on all tests
-        return when {
-            !enabled -> false
-            // Nullable description case is only handled because of b/302018924.
-            description != null ->
-                (testClassHasFlickerTestAnnotations(description.testClass) ||
-                    description.annotations.none { it is FlickerTest })
-            else -> true
+        if (!enabled) {
+            return false
         }
+
+        if (description.annotations.none { it is FlickerTest }) {
+            // FlickerTest annotation is not used within the test class, so run on all tests
+            return true
+        }
+
+        return testClassHasFlickerTestAnnotations(description.testClass)
     }
 
     private fun testClassHasFlickerTestAnnotations(testClass: Class<*>): Boolean {
@@ -155,28 +156,38 @@ constructor(
     }
 
     private fun handleFinished(description: Description) {
-        Logger.i(LOG_TAG, "Test finished $description")
+        Log.i(LOG_TAG, "Test finished $description")
         metricsCollector.testFinished(description)
         for (executionError in metricsCollector.executionErrors) {
-            Logger.e(LOG_TAG, "FaaS reported execution errors", executionError)
+            Log.e(LOG_TAG, "FaaS reported execution errors", executionError)
         }
+
+        if (failTestOnServiceError && testContainsServiceError()) {
+            throw metricsCollector.executionErrors.first()
+        }
+
         if (testSkipped || testFailed || metricsCollector.executionErrors.isNotEmpty()) {
             // If we had an execution error or the underlying test failed or was skipped, then we
             // have no guarantees about the correctness of the flicker assertions and detect
             // scenarios, so we should not check those and instead return immediately.
             return
         }
-        val failedMetrics = metricsCollector.resultsForTest(description).filter { it.failed }
+
+        val failedMetrics =
+            metricsCollector.resultsForTest(description).filter {
+                it.status == AssertionResult.Status.FAIL
+            }
         val assertionErrors = failedMetrics.flatMap { it.assertionErrors }
         assertionErrors.forEach {
-            Logger.e(LOG_TAG, "FaaS reported an assertion failure:")
-            Logger.e(LOG_TAG, it.message)
-            Logger.e(LOG_TAG, it.stackTraceToString())
+            Log.e(LOG_TAG, "FaaS reported an assertion failure:")
+            Log.e(LOG_TAG, it.message)
+            Log.e(LOG_TAG, it.stackTraceToString())
         }
 
         if (failTestOnFlicker && testContainsFlicker(description)) {
             throw assertionErrors.firstOrNull() ?: error("Unexpectedly missing assertion error")
         }
+
         val flickerTestAnnotation: FlickerTest? =
             description.annotations.filterIsInstance<FlickerTest>().firstOrNull()
         if (failTestOnFlicker && flickerTestAnnotation != null) {
@@ -188,7 +199,11 @@ constructor(
 
     private fun testContainsFlicker(description: Description): Boolean {
         val resultsForTest = metricsCollector.resultsForTest(description)
-        return resultsForTest.any { it.failed }
+        return resultsForTest.any { it.status == AssertionResult.Status.FAIL }
+    }
+
+    private fun testContainsServiceError(): Boolean {
+        return metricsCollector.executionErrors.isNotEmpty()
     }
 
     companion object {

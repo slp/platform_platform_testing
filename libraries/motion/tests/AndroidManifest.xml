@@ -18,11 +18,10 @@
 
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
 
-    <application>
+    <application android:debuggable="true">
         <activity
             android:name="platform.test.screenshot.ScreenshotActivity"
             android:exported="true" />
-
         <uses-library android:name="android.test.runner" />
     </application>
 
@@ -30,9 +29,4 @@
         android:name="androidx.test.runner.AndroidJUnitRunner"
         android:label="Android Motion Testing Tests"
         android:targetPackage="platform.test.motion.tests" />
-
-    <uses-sdk
-        android:minSdkVersion="21"
-        android:targetSdkVersion="24" />
-
 </manifest>

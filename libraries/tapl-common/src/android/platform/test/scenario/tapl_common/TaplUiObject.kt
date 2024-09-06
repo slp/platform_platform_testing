@@ -103,27 +103,42 @@ class TaplUiObject constructor(val uiObject: UiObject2, private val name: String
     }
 
     /**
-     * Performs a fling gesture on this object.
+     * Performs a scroll gesture on this object via flinging.
      *
-     * @param direction The direction in which to scroll.
+     * @param scrollDirection The direction in which to scroll. For example, if the direction is UP,
+     *   the gesture will start in the top center of this object and finish somewhere lower
+     *   depending on [percent].
      * @param percent The distance to scroll as a percentage of this object's visible size.
      * @param verifyIsScrollable Whether to verify that the object is scrollable.
      */
-    fun fling(direction: Direction, percent: Float, verifyIsScrollable: Boolean = false) {
+    fun scrollWithFling(
+        scrollDirection: Direction,
+        percent: Float,
+        verifyIsScrollable: Boolean = false
+    ) {
+        // To scroll, we fling in the opposite direction
+        fling(Direction.reverse(scrollDirection), percent, verifyIsScrollable)
+    }
+
+    /**
+     * Performs a fling gesture on this object.
+     *
+     * @param gestureDirection The direction in which to fling. For example, if the direction is UP,
+     *   the gesture will start in the bottom center of this object and finish somewhere higher
+     *   depending on [percent].
+     * @param percent The distance to scroll as a percentage of this object's visible size.
+     * @param verifyIsScrollable Whether to verify that the object is scrollable.
+     */
+    fun fling(gestureDirection: Direction, percent: Float, verifyIsScrollable: Boolean = false) {
         if (verifyIsScrollable) {
             Gestures.waitForObjectEnabled(uiObject, name)
             Gestures.waitForObjectScrollable(uiObject, name)
         }
 
-        require(percent >= 0.0f) { "Percent must be greater than 0.0f" }
-        require(percent <= 1.0f) { "Percent must be less than 1.0f" }
-
-        // To fling, we swipe in the opposite direction
-        val swipeDirection: Direction = Direction.reverse(direction)
+        require(percent >= 0.0f) { "Percent must be at least 0.0f" }
+        require(percent <= 1.0f) { "Percent must be at most 1.0f" }
 
         val bounds: Rect = getVisibleBoundsForGestures()
-        val segment = Math.min(percent, 1.0f)
-
-        BetterFling.fling(bounds, swipeDirection, percentage = segment)
+        BetterFling.fling(bounds, gestureDirection, percentage = percent)
     }
 }

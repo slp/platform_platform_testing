@@ -17,8 +17,8 @@
 package platform.test.screenshot
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Rect
-import android.platform.uiautomator_helpers.DeviceHelpers.context
 import android.platform.uiautomator_helpers.DeviceHelpers.shell
 import android.provider.Settings.System
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -30,42 +30,34 @@ import java.lang.AssertionError
 import java.util.ArrayList
 import org.junit.After
 import org.junit.AfterClass
-import org.junit.Assert.assertThrows
 import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import platform.test.screenshot.OutputFileType.IMAGE_ACTUAL
-import platform.test.screenshot.OutputFileType.IMAGE_DIFF
-import platform.test.screenshot.OutputFileType.IMAGE_EXPECTED
-import platform.test.screenshot.OutputFileType.RESULT_BIN_PROTO
-import platform.test.screenshot.OutputFileType.RESULT_PROTO
 import platform.test.screenshot.matchers.MSSIMMatcher
 import platform.test.screenshot.matchers.PixelPerfectMatcher
-import platform.test.screenshot.proto.ScreenshotResultProto
+import platform.test.screenshot.proto.ScreenshotResultProto.DiffResult
+import platform.test.screenshot.report.DiffResultExportStrategy
 import platform.test.screenshot.utils.loadBitmap
 
-class CustomGoldenImagePathManager(appcontext: Context, assetsPath: String = "assets") :
-    GoldenImagePathManager(appcontext, assetsPath) {
-    public override fun goldenIdentifierResolver(testName: String): String = "$testName.png"
+class CustomGoldenPathManager(appcontext: Context, assetsPath: String = "assets") :
+    GoldenPathManager(appcontext, assetsPath) {
+    override fun goldenIdentifierResolver(testName: String, extension: String): String =
+        "$testName.$extension"
 }
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class ScreenshotTestRuleTest {
 
-    private val customizedAssetsPath =
-        "platform_testing/libraries/screenshot/src/androidTest/assets"
+    private val fakeDiffEscrow = FakeDiffResultExport()
 
     @get:Rule
     val rule =
         ScreenshotTestRule(
-            CustomGoldenImagePathManager(InstrumentationRegistry.getInstrumentation().context)
+            CustomGoldenPathManager(InstrumentationRegistry.getInstrumentation().context),
+            diffEscrowStrategy = fakeDiffEscrow
         )
-
-    @get:Rule
-    val customizedRule =
-        ScreenshotTestRule(CustomGoldenImagePathManager(context, customizedAssetsPath))
 
     @Test
     fun performDiff_sameBitmaps() {
@@ -74,10 +66,7 @@ class ScreenshotTestRuleTest {
 
         first.assertAgainstGolden(rule, goldenIdentifier, matcher = PixelPerfectMatcher())
 
-        assertThat(rule.getPathOnDeviceFor(IMAGE_ACTUAL, goldenIdentifier).exists()).isFalse()
-        assertThat(rule.getPathOnDeviceFor(IMAGE_DIFF, goldenIdentifier).exists()).isFalse()
-        assertThat(rule.getPathOnDeviceFor(IMAGE_EXPECTED, goldenIdentifier).exists()).isFalse()
-        assertThat(rule.getPathOnDeviceFor(RESULT_BIN_PROTO, goldenIdentifier).exists()).isFalse()
+        assertThat(fakeDiffEscrow.reports).isEmpty()
     }
 
     @Test
@@ -90,28 +79,7 @@ class ScreenshotTestRuleTest {
             )
 
         first.assertAgainstGolden(rule, goldenIdentifier, matcher = PixelPerfectMatcher())
-
-        assertThat(rule.getPathOnDeviceFor(IMAGE_ACTUAL, goldenIdentifier).exists()).isFalse()
-        assertThat(rule.getPathOnDeviceFor(IMAGE_DIFF, goldenIdentifier).exists()).isFalse()
-        assertThat(rule.getPathOnDeviceFor(IMAGE_EXPECTED, goldenIdentifier).exists()).isFalse()
-        assertThat(rule.getPathOnDeviceFor(RESULT_BIN_PROTO, goldenIdentifier).exists()).isFalse()
-    }
-
-    @Test
-    fun performDiff_sameBitmaps_customizedAssetsPath() {
-        val goldenIdentifier = "round_rect_gray"
-        val first = loadBitmap(goldenIdentifier)
-
-        first.assertAgainstGolden(customizedRule, goldenIdentifier, matcher = PixelPerfectMatcher())
-
-        assertThat(customizedRule.getPathOnDeviceFor(IMAGE_ACTUAL, goldenIdentifier).exists())
-            .isFalse()
-        assertThat(customizedRule.getPathOnDeviceFor(IMAGE_DIFF, goldenIdentifier).exists())
-            .isFalse()
-        assertThat(customizedRule.getPathOnDeviceFor(IMAGE_EXPECTED, goldenIdentifier).exists())
-            .isFalse()
-        assertThat(customizedRule.getPathOnDeviceFor(RESULT_BIN_PROTO, goldenIdentifier).exists())
-            .isFalse()
+        assertThat(fakeDiffEscrow.reports).isEmpty()
     }
 
     @Test
@@ -128,10 +96,7 @@ class ScreenshotTestRuleTest {
             regions = regions
         )
 
-        assertThat(rule.getPathOnDeviceFor(IMAGE_ACTUAL, goldenIdentifier).exists()).isFalse()
-        assertThat(rule.getPathOnDeviceFor(IMAGE_DIFF, goldenIdentifier).exists()).isFalse()
-        assertThat(rule.getPathOnDeviceFor(IMAGE_EXPECTED, goldenIdentifier).exists()).isFalse()
-        assertThat(rule.getPathOnDeviceFor(RESULT_BIN_PROTO, goldenIdentifier).exists()).isFalse()
+        assertThat(fakeDiffEscrow.reports).isEmpty()
     }
 
     @Test
@@ -149,10 +114,7 @@ class ScreenshotTestRuleTest {
         val goldenIdentifier = "qmc-folder2"
         first.assertAgainstGolden(rule, goldenIdentifier, matcher, regions)
 
-        assertThat(rule.getPathOnDeviceFor(IMAGE_ACTUAL, goldenIdentifier).exists()).isFalse()
-        assertThat(rule.getPathOnDeviceFor(IMAGE_DIFF, goldenIdentifier).exists()).isFalse()
-        assertThat(rule.getPathOnDeviceFor(IMAGE_EXPECTED, goldenIdentifier).exists()).isFalse()
-        assertThat(rule.getPathOnDeviceFor(RESULT_BIN_PROTO, goldenIdentifier).exists()).isFalse()
+        assertThat(fakeDiffEscrow.reports).isEmpty()
     }
 
     @Test
@@ -160,7 +122,7 @@ class ScreenshotTestRuleTest {
         val imageExtension = ".png"
         val first = loadBitmap("round_rect_gray")
         val compStatistics =
-            ScreenshotResultProto.DiffResult.ComparisonStatistics.newBuilder()
+            DiffResult.ComparisonStatistics.newBuilder()
                 .setNumberPixelsCompared(1504)
                 .setNumberPixelsDifferent(74)
                 .setNumberPixelsIgnored(800)
@@ -172,34 +134,23 @@ class ScreenshotTestRuleTest {
             first.assertAgainstGolden(rule, goldenIdentifier)
         }
 
-        val resultProto = rule.getPathOnDeviceFor(RESULT_PROTO, goldenIdentifier)
-        assertThat(resultProto.readText()).contains("FAILED")
-
-        val actualImagePathOnDevice = rule.getPathOnDeviceFor(IMAGE_ACTUAL, goldenIdentifier)
-        assertThat(actualImagePathOnDevice.exists()).isTrue()
-        assertThat(actualImagePathOnDevice.getName().contains("_actual")).isTrue()
-        assertThat(actualImagePathOnDevice.getName().contains(imageExtension)).isTrue()
-
-        val diffImagePathOnDevice = rule.getPathOnDeviceFor(IMAGE_DIFF, goldenIdentifier)
-        assertThat(diffImagePathOnDevice.exists()).isTrue()
-        assertThat(diffImagePathOnDevice.getName().contains("_diff")).isTrue()
-        assertThat(diffImagePathOnDevice.getName().contains(imageExtension)).isTrue()
-
-        val expectedImagePathOnDevice = rule.getPathOnDeviceFor(IMAGE_EXPECTED, goldenIdentifier)
-        assertThat(expectedImagePathOnDevice.exists()).isTrue()
-        assertThat(expectedImagePathOnDevice.getName().contains("_expected")).isTrue()
-        assertThat(expectedImagePathOnDevice.getName().contains(imageExtension)).isTrue()
-
-        val binProtoPathOnDevice = rule.getPathOnDeviceFor(RESULT_BIN_PROTO, goldenIdentifier)
-        assertThat(binProtoPathOnDevice.exists()).isTrue()
-        assertThat(binProtoPathOnDevice.getName().contains("_goldResult")).isTrue()
+        assertThat(fakeDiffEscrow.reports)
+            .containsExactly(
+                ReportedDiffResult(
+                    goldenIdentifier,
+                    DiffResult.Status.FAILED,
+                    hasExpected = true,
+                    hasDiff = true,
+                    comparisonStatistics = compStatistics
+                )
+            )
     }
 
     @Test
     fun performDiff_sameSizes_pixelPerfect_noMatch() {
         val first = loadBitmap("round_rect_gray")
         val compStatistics =
-            ScreenshotResultProto.DiffResult.ComparisonStatistics.newBuilder()
+            DiffResult.ComparisonStatistics.newBuilder()
                 .setNumberPixelsCompared(2304)
                 .setNumberPixelsDifferent(556)
                 .setNumberPixelsIdentical(1748)
@@ -210,71 +161,45 @@ class ScreenshotTestRuleTest {
             first.assertAgainstGolden(rule, goldenIdentifier, matcher = PixelPerfectMatcher())
         }
 
-        val resultProto = rule.getPathOnDeviceFor(RESULT_PROTO, goldenIdentifier)
-        assertThat(resultProto.readText()).contains("FAILED")
-        assertThat(rule.getPathOnDeviceFor(IMAGE_ACTUAL, goldenIdentifier).exists()).isTrue()
-        assertThat(rule.getPathOnDeviceFor(IMAGE_DIFF, goldenIdentifier).exists()).isTrue()
-        assertThat(rule.getPathOnDeviceFor(IMAGE_EXPECTED, goldenIdentifier).exists()).isTrue()
-        assertThat(rule.getPathOnDeviceFor(RESULT_BIN_PROTO, goldenIdentifier).exists()).isTrue()
-    }
-
-    @Test
-    fun performDiff_sameSizes_pixelPerfect_noMatch_noDuplicateImageWritten() {
-        val first = loadBitmap("round_rect_gray")
-        val second = loadBitmap("round_rect_gray_dark")
-
-        val goldenIdentifier = "round_rect_green"
-        assertThrows(AssertionError::class.java) {
-            first.assertAgainstGolden(rule, goldenIdentifier, matcher = PixelPerfectMatcher())
-        }
-        val actualFile1 = rule.getPathOnDeviceFor(IMAGE_ACTUAL, goldenIdentifier)
-
-        assertThrows(AssertionError::class.java) {
-            second.assertAgainstGolden(rule, goldenIdentifier, matcher = PixelPerfectMatcher())
-        }
-        val actualFile2 = rule.getPathOnDeviceFor(IMAGE_ACTUAL, goldenIdentifier)
-
-        assertThat(actualFile1).isEqualTo(actualFile2)
-    }
-
-    @Test
-    fun performDiff_sameSizes_pixelPerfect_firstMatchSecondNoMatch_noDuplicateImageWritten() {
-        val first = loadBitmap("round_rect_green")
-        val second = loadBitmap("round_rect_gray")
-
-        val goldenIdentifier = "round_rect_green"
-        first.assertAgainstGolden(rule, goldenIdentifier, matcher = PixelPerfectMatcher())
-
-        assertThat(rule.getPathOnDeviceFor(IMAGE_ACTUAL, goldenIdentifier).exists()).isFalse()
-        assertThat(rule.getPathOnDeviceFor(IMAGE_DIFF, goldenIdentifier).exists()).isFalse()
-        assertThat(rule.getPathOnDeviceFor(IMAGE_EXPECTED, goldenIdentifier).exists()).isFalse()
-        assertThat(rule.getPathOnDeviceFor(RESULT_BIN_PROTO, goldenIdentifier).exists()).isFalse()
-
-        assertThrows(AssertionError::class.java) {
-            second.assertAgainstGolden(rule, goldenIdentifier, matcher = PixelPerfectMatcher())
-        }
-
-        assertThat(rule.getPathOnDeviceFor(IMAGE_ACTUAL, goldenIdentifier).exists()).isTrue()
-        assertThat(rule.getPathOnDeviceFor(IMAGE_DIFF, goldenIdentifier).exists()).isTrue()
-        assertThat(rule.getPathOnDeviceFor(IMAGE_EXPECTED, goldenIdentifier).exists()).isTrue()
-        assertThat(rule.getPathOnDeviceFor(RESULT_BIN_PROTO, goldenIdentifier).exists()).isTrue()
+        assertThat(fakeDiffEscrow.reports)
+            .containsExactly(
+                ReportedDiffResult(
+                    goldenIdentifier,
+                    DiffResult.Status.FAILED,
+                    hasExpected = true,
+                    hasDiff = true,
+                    comparisonStatistics = compStatistics
+                )
+            )
     }
 
     @Test
     fun performDiff_differentSizes() {
         val first = loadBitmap("fullscreen_rect_gray")
-
         val goldenIdentifier = "round_rect_gray"
-        expectErrorMessage("Sizes are different! Expected: [48, 48], Actual: [720, 1184]") {
+        val compStatistics =
+            DiffResult.ComparisonStatistics.newBuilder()
+                .setNumberPixelsCompared(2304)
+                .setNumberPixelsDifferent(568)
+                .setNumberPixelsIdentical(1736)
+                .build()
+
+        expectErrorMessage(
+            "Sizes are different! Expected: [48, 48], Actual: [720, 1184]. Force aligned "
+                + "at (0, 0). Comparison stats: '${compStatistics}'") {
             first.assertAgainstGolden(rule, goldenIdentifier)
         }
 
-        val resultProto = rule.getPathOnDeviceFor(RESULT_PROTO, goldenIdentifier)
-        assertThat(resultProto.readText()).contains("FAILED")
-        assertThat(rule.getPathOnDeviceFor(IMAGE_ACTUAL, goldenIdentifier).exists()).isTrue()
-        assertThat(rule.getPathOnDeviceFor(IMAGE_DIFF, goldenIdentifier).exists()).isFalse()
-        assertThat(rule.getPathOnDeviceFor(IMAGE_EXPECTED, goldenIdentifier).exists()).isTrue()
-        assertThat(rule.getPathOnDeviceFor(RESULT_BIN_PROTO, goldenIdentifier).exists()).isTrue()
+        assertThat(fakeDiffEscrow.reports)
+            .containsExactly(
+                ReportedDiffResult(
+                    goldenIdentifier,
+                    DiffResult.Status.FAILED,
+                    hasExpected = true,
+                    hasDiff = true,
+                    comparisonStatistics = compStatistics
+                )
+            )
     }
 
     @Test(expected = IllegalArgumentException::class)
@@ -289,18 +214,23 @@ class ScreenshotTestRuleTest {
         val first = loadBitmap("round_rect_gray")
 
         val goldenIdentifier = "does_not_exist"
+
         expectErrorMessage(
-            "Missing golden image 'does_not_exist.png'. Did you mean to check in " + "a new image?"
+            "Missing golden image 'does_not_exist.png'. Did you mean to check in a new image?"
         ) {
             first.assertAgainstGolden(rule, goldenIdentifier)
         }
 
-        val resultProto = rule.getPathOnDeviceFor(RESULT_PROTO, goldenIdentifier)
-        assertThat(resultProto.readText()).contains("MISSING_REFERENCE")
-        assertThat(rule.getPathOnDeviceFor(IMAGE_ACTUAL, goldenIdentifier).exists()).isTrue()
-        assertThat(rule.getPathOnDeviceFor(IMAGE_DIFF, goldenIdentifier).exists()).isFalse()
-        assertThat(rule.getPathOnDeviceFor(IMAGE_EXPECTED, goldenIdentifier).exists()).isFalse()
-        assertThat(rule.getPathOnDeviceFor(RESULT_BIN_PROTO, goldenIdentifier).exists()).isTrue()
+        assertThat(fakeDiffEscrow.reports)
+            .containsExactly(
+                ReportedDiffResult(
+                    goldenIdentifier,
+                    DiffResult.Status.MISSING_REFERENCE,
+                    hasExpected = false,
+                    hasDiff = false,
+                    comparisonStatistics = null
+                ),
+            )
     }
 
     @Test
@@ -398,7 +328,7 @@ class ScreenshotTestRuleTest {
     @After
     fun after() {
         // Clear all files we generated so we don't have dependencies between tests
-        File(rule.goldenImagePathManager.deviceLocalPath).deleteRecursively()
+        File(rule.goldenPathManager.deviceLocalPath).deleteRecursively()
     }
 
     private fun expectErrorMessage(expectedErrorMessage: String, block: () -> Unit) {
@@ -413,6 +343,36 @@ class ScreenshotTestRuleTest {
         throw AssertionError("No AssertionError thrown!")
     }
 
+    data class ReportedDiffResult(
+        val goldenIdentifier: String,
+        val status: DiffResult.Status,
+        val hasExpected: Boolean = false,
+        val hasDiff: Boolean = false,
+        val comparisonStatistics: DiffResult.ComparisonStatistics? = null,
+    )
+
+    class FakeDiffResultExport : DiffResultExportStrategy {
+        val reports = mutableListOf<ReportedDiffResult>()
+        override fun reportResult(
+            testIdentifier: String,
+            goldenIdentifier: String,
+            actual: Bitmap,
+            status: DiffResult.Status,
+            comparisonStatistics: DiffResult.ComparisonStatistics?,
+            expected: Bitmap?,
+            diff: Bitmap?
+        ) {
+            reports.add(
+                ReportedDiffResult(
+                    goldenIdentifier,
+                    status,
+                    hasExpected = expected != null,
+                    hasDiff = diff != null,
+                    comparisonStatistics
+                )
+            )
+        }
+    }
     private companion object {
         var prevPointerLocationSetting: Int = 0
         var prevShowTouchesSetting: Int = 0

@@ -16,8 +16,10 @@
 
 package android.tools.flicker.subject.layers
 
-import android.tools.datatypes.Color
-import android.tools.datatypes.Region
+import android.graphics.Region
+import android.tools.datatypes.emptyColor
+import android.tools.datatypes.isEmpty
+import android.tools.datatypes.isNotEmpty
 import android.tools.flicker.assertions.Fact
 import android.tools.flicker.subject.FlickerSubject
 import android.tools.flicker.subject.exceptions.ExceptionMessageBuilder
@@ -26,12 +28,14 @@ import android.tools.flicker.subject.exceptions.InvalidElementException
 import android.tools.flicker.subject.exceptions.InvalidPropertyException
 import android.tools.flicker.subject.region.RegionSubject
 import android.tools.io.Reader
+import android.tools.traces.component.ComponentNameMatcher
 import android.tools.traces.component.ComponentSplashScreenMatcher
 import android.tools.traces.component.IComponentMatcher
 import android.tools.traces.component.IComponentNameMatcher
 import android.tools.traces.surfaceflinger.Layer
 import android.tools.traces.surfaceflinger.LayerTraceEntry
 import android.tools.traces.surfaceflinger.LayersTrace
+import androidx.core.graphics.toRect
 
 /**
  * Subject for [LayerTraceEntry] objects, used to make assertions over behaviors that occur on a
@@ -96,8 +100,10 @@ class LayerTraceEntrySubject(
     ): RegionSubject {
         val selectedLayers =
             if (componentMatcher == null) {
-                // No filters so use all subjects
-                subjects
+                // No filters so use all non screen recording subjects
+                subjects.filterNot {
+                    ComponentNameMatcher.SCREEN_RECORDING_OVERLAYS.layerMatchesAnyOf(it.layer)
+                }
             } else {
                 subjects.filter { componentMatcher.layerMatchesAnyOf(it.layer) }
             }
@@ -121,7 +127,7 @@ class LayerTraceEntrySubject(
             val visibleAreas = visibleLayers.mapNotNull { it.layer.visibleRegion }
             RegionSubject(visibleAreas, timestamp, reader)
         } else {
-            val visibleAreas = visibleLayers.map { Region.from(it.layer.screenBounds) }
+            val visibleAreas = visibleLayers.map { Region(it.layer.screenBounds.toRect()) }
             RegionSubject(visibleAreas, timestamp, reader)
         }
     }
@@ -249,7 +255,7 @@ class LayerTraceEntrySubject(
         contains(componentMatcher)
 
         val targets = componentMatcher.filterLayers(subjects.map { it.layer })
-        val hasLayerColor = targets.any { it.color.isNotEmpty }
+        val hasLayerColor = targets.any { it.color.isNotEmpty() }
 
         if (!hasLayerColor) {
             val errorMsgBuilder =
@@ -265,14 +271,14 @@ class LayerTraceEntrySubject(
     /** {@inheritDoc} */
     override fun hasNoColor(componentMatcher: IComponentMatcher): LayerTraceEntrySubject = apply {
         val targets = componentMatcher.filterLayers(subjects.map { it.layer })
-        val hasNoLayerColor = targets.all { it.color.isEmpty }
+        val hasNoLayerColor = targets.all { it.color.isEmpty() }
 
         if (!hasNoLayerColor) {
             val errorMsgBuilder =
                 ExceptionMessageBuilder()
                     .forSubject(this)
                     .forInvalidProperty("Color")
-                    .setExpected(Color.EMPTY.toString())
+                    .setExpected(emptyColor().toString())
                     .setActual(targets.map { Fact(it.name, it.color) })
             throw InvalidPropertyException(errorMsgBuilder)
         }

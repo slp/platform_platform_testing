@@ -16,12 +16,13 @@
 
 package android.tools.traces.surfaceflinger
 
+import android.graphics.Rect
+import android.graphics.RectF
 import android.tools.Timestamps
 import android.tools.TraceEntry
-import android.tools.datatypes.Rect
-import android.tools.datatypes.RectF
 import android.tools.traces.component.ComponentNameMatcher
 import android.tools.traces.component.IComponentMatcher
+import androidx.core.graphics.toRectF
 
 /**
  * Represents a single Layer trace entry.
@@ -167,7 +168,7 @@ class LayerTraceEntry(
                     .firstOrNull { it.layerStackId == layer.stackId }
                     ?.layerStackSpace
                     ?.toRectF()
-                    ?: RectF.EMPTY
+                    ?: RectF()
 
             if (visible) {
                 val occludedBy =

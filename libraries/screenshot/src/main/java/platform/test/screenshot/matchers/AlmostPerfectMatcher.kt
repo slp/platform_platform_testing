@@ -24,9 +24,17 @@ import platform.test.screenshot.proto.ScreenshotResultProto
  * Matcher for differences not detectable by human eye. The relaxed threshold allows for low quality
  * png storage.
  */
-class AlmostPerfectMatcher(
+class AlmostPerfectMatcher
+private constructor(
     private val acceptableThreshold: Double = 0.0,
+    private val acceptableThresholdCount: Int = -1
 ) : BitmapMatcher() {
+    constructor() : this(0.0, -1)
+
+    constructor(acceptableThreshold: Double) : this(acceptableThreshold, -1)
+
+    constructor(acceptableThresholdCount: Int) : this(0.0, acceptableThresholdCount)
+
     override fun compareBitmaps(
         expected: IntArray,
         given: IntArray,
@@ -51,7 +59,62 @@ class AlmostPerfectMatcher(
             }
         }
 
-        val matches = different <= (acceptableThreshold * width * height)
+        val threshold =
+            if (acceptableThresholdCount >= 0) acceptableThresholdCount
+            else (acceptableThreshold * width * height).toInt()
+        val matches = different <= threshold
+        val diffBmp =
+            if (different <= 0) null
+            else Bitmap.createBitmap(diffArray.value, width, height, Bitmap.Config.ARGB_8888)
+        if (matches) {
+            ignored += different
+            different = 0
+        }
+
+        val stats =
+            ScreenshotResultProto.DiffResult.ComparisonStatistics.newBuilder()
+                .setNumberPixelsCompared(width * height)
+                .setNumberPixelsIdentical(same)
+                .setNumberPixelsDifferent(different)
+                .setNumberPixelsIgnored(ignored)
+                .build()
+
+        return MatchResult(matches = matches, diff = diffBmp, comparisonStatistics = stats)
+    }
+
+    override fun compareBitmaps(
+        expected: IntArray,
+        given: IntArray,
+        expectedWidth: Int,
+        expectedHeight: Int,
+        actualWidth: Int,
+        actualHeight: Int
+    ): MatchResult {
+        val width = if (expectedWidth < actualWidth) expectedWidth else actualWidth
+        val height = if (expectedHeight < actualHeight) expectedHeight else actualHeight
+        var different = 0
+        var same = 0
+        var ignored = 0
+
+        val diffArray = lazy { IntArray(width * height) { Color.TRANSPARENT } }
+
+        for (i in 0..<height) {
+            for (j in 0..<width) {
+                val actualIndex = i * actualWidth + j
+                val expectedIndex = i * expectedWidth + j
+                if (areSame(expected[expectedIndex], given[actualIndex])) {
+                    same++
+                } else {
+                    different++
+                    diffArray.value[i * width + j] = Color.MAGENTA
+                }
+            }
+        }
+
+        val threshold =
+            if (acceptableThresholdCount >= 0) acceptableThresholdCount
+            else (acceptableThreshold * width * height).toInt()
+        val matches = different <= threshold
         val diffBmp =
             if (different <= 0) null
             else Bitmap.createBitmap(diffArray.value, width, height, Bitmap.Config.ARGB_8888)

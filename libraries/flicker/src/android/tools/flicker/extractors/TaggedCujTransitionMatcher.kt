@@ -32,26 +32,26 @@ class TaggedCujTransitionMatcher(
     private val mainTransform: TransitionsTransform = noOpTransitionsTransform,
     private val finalTransform: TransitionsTransform = noOpTransitionsTransform,
     private val associatedTransitionRequired: Boolean = true,
-    // Transformations applied, in order, to all transitions the reader returns to end up with the
-    // targeted transition.
-    private val transforms: List<TransitionsTransform> =
-        listOf(
-            mainTransform,
-            inCujRangeFilter,
-            permissionDialogFilter,
-            mergeTrampolineTransitions,
-            finalTransform
-        )
 ) : TransitionMatcher {
     override fun getMatches(reader: Reader, cujEntry: Cuj): Collection<Transition> {
+        val transformsToNames: Map<TransitionsTransform, String> =
+            mapOf(
+                mainTransform to "Main Transform",
+                inCujRangeFilter to "In CUJ Range Filter",
+                permissionDialogFilter to "Permission Dialog Filter",
+                mergeTrampolineTransitions to "Merge Trampoline Transitions",
+                finalTransform to "Final Transform",
+            )
+        val transforms = transformsToNames.keys
+
         val transitionsTrace = reader.readTransitionsTrace() ?: error("Missing transitions trace")
 
         val completeTransitions = transitionsTrace.entries.filter { !it.isIncomplete }
 
-        val formattedTransitions = {
+        val formattedTransitions = { transitions: Collection<Transition> ->
             "[\n" +
                 "${
-                        transitionsTrace.entries.joinToString(",\n") {
+                    transitions.joinToString(",\n") {
                             Transition.Formatter(reader.readLayersTrace(),
                                     reader.readWmTrace()).format(it)
                         }.prependIndent()
@@ -60,28 +60,43 @@ class TaggedCujTransitionMatcher(
         }
 
         require(!associatedTransitionRequired || completeTransitions.isNotEmpty()) {
-            "No successfully finished transitions in: ${formattedTransitions()}"
+            "No successfully finished transitions in: " +
+                formattedTransitions(transitionsTrace.entries)
         }
 
         var appliedTransformsCount = 0
         val matchedTransitions =
             transforms.fold(completeTransitions) { transitions, transform ->
-                val remainingTransitions = transform(transitions, cujEntry, reader)
+                val remainingTransitions =
+                    try {
+                        transform(transitions, cujEntry, reader)
+                    } catch (e: Exception) {
+                        throw RuntimeException(
+                            "Failed to apply ${transformsToNames[transform]} on " +
+                                "the following transitions (CUJ=${cujEntry.cuj.name}" +
+                                "[${cujEntry.startTimestamp},${cujEntry.endTimestamp}]):\n " +
+                                formattedTransitions(transitions),
+                            e
+                        )
+                    }
 
                 appliedTransformsCount++
 
                 require(!associatedTransitionRequired || remainingTransitions.isNotEmpty()) {
                     "Required an associated transition for ${cujEntry.cuj.name}" +
                         "(${cujEntry.startTimestamp},${cujEntry.endTimestamp}) " +
-                        "but no transition left after $appliedTransformsCount/${transforms.size} " +
-                        "filters from: ${formattedTransitions()}!"
+                        "but no transition left after applying ${transformsToNames[transform]} " +
+                        "($appliedTransformsCount/${transforms.size} filters) " +
+                        "from the following transitions: " +
+                        formattedTransitions(transitionsTrace.entries)
                 }
 
                 remainingTransitions
             }
 
         require(!associatedTransitionRequired || matchedTransitions.size == 1) {
-            "Got too many associated transitions expected only 1."
+            "Got too many associated transitions for CUJ $cujEntry expected only 1, but got: [\n" +
+                "${matchedTransitions.joinToString(",\n")}\n]"
         }
 
         return matchedTransitions

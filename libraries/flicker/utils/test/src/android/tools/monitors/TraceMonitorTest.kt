@@ -43,7 +43,7 @@ abstract class TraceMonitorTest<T : TraceMonitor> {
     protected open val tag = Tag.ALL
     protected val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
     protected val device: UiDevice = UiDevice.getInstance(instrumentation)
-    private val traceMonitor by lazy { getMonitor() }
+    protected val traceMonitor by lazy { getMonitor() }
 
     @Before
     fun before() {
@@ -82,7 +82,7 @@ abstract class TraceMonitorTest<T : TraceMonitor> {
 
     @Test
     @Throws(Exception::class)
-    fun captureTrace() {
+    open fun captureTrace() {
         traceMonitor.start()
         device.pressHome()
         device.pressRecentApps()
@@ -102,7 +102,7 @@ abstract class TraceMonitorTest<T : TraceMonitor> {
     }
 
     @Test
-    fun withTracing() {
+    open fun withTracing() {
         val trace =
             traceMonitor.withTracing(tag) {
                 device.pressHome()

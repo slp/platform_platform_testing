@@ -150,6 +150,17 @@ class InputDeviceRule : TestWatcher(), UInputDevice.EventInjector {
     }
 
     /**
+     * Update the time base from which the following events are scheduled to the current time.
+     *
+     * See frameworks/base/cmds/uinput/README.md for a more thorough explanation.
+     *
+     * @param deviceId The id corresponding to [UInputDevice] to update the time base of
+     */
+    override fun updateTimeBase(deviceId: Int) {
+        writeCommand("""{"command": "updateTimeBase", "id": $deviceId}""")
+    }
+
+    /**
      * Inject array of uinput events for a device. The following is an example of events: [[EV_KEY],
      * [KEY_UP], [KEY_DOWN], [EV_SYN], [SYN_REPORT], 0]. The number of entries in the provided
      * [evdevEvents] has to be a multiple of 3.

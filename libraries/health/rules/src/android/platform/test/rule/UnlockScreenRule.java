@@ -15,14 +15,20 @@
  */
 package android.platform.test.rule;
 
+import static android.platform.uiautomator_helpers.DeviceHelpers.assertInvisible;
+
 import static com.android.systemui.Flags.keyguardBottomAreaRefactor;
 
 import android.os.RemoteException;
 
+import androidx.annotation.NonNull;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.BySelector;
+import androidx.test.uiautomator.UiDevice;
 
 import org.junit.runner.Description;
+
+import java.time.Duration;
 
 /** This rule will unlock phone screen before a test case. */
 public class UnlockScreenRule extends TestWatcher {
@@ -35,10 +41,19 @@ public class UnlockScreenRule extends TestWatcher {
 
     @Override
     protected void starting(Description description) {
+        unlockScreen(getUiDevice());
+    }
+
+    /**
+     * Unlocks the screen on the given device and asserts that the lock screen has disappeared.
+     *
+     * @param uiDevice the device to unlock the screen for.
+     */
+    public static void unlockScreen(@NonNull UiDevice uiDevice) {
         try {
             // Turn on the screen if necessary.
-            if (!getUiDevice().isScreenOn()) {
-                getUiDevice().wakeUp();
+            if (!uiDevice.isScreenOn()) {
+                uiDevice.wakeUp();
             }
 
             BySelector screenLock;
@@ -48,9 +63,10 @@ public class UnlockScreenRule extends TestWatcher {
                 screenLock = KEYGUARD_BOTTOM_AREA_VIEW;
             }
 
-            if (getUiDevice().hasObject(screenLock)) {
-                getUiDevice().pressMenu();
-                getUiDevice().waitForIdle();
+            if (uiDevice.hasObject(screenLock)) {
+                uiDevice.pressMenu();
+                uiDevice.waitForIdle();
+                assertInvisible(screenLock, /* timeout= */ Duration.ofSeconds(20));
             }
         } catch (RemoteException e) {
             throw new RuntimeException("Could not unlock device.", e);

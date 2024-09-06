@@ -50,6 +50,33 @@ class CujTraceTest {
     }
 
     @Test
+    fun canCreateFromListOfCujEventsWithTags() {
+        val trace =
+            CujTrace.from(
+                listOf(
+                    createCujEvent(
+                        1,
+                        CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL,
+                        CujEvent.JANK_CUJ_BEGIN_TAG,
+                        tag = "MySubType"
+                    ),
+                    createCujEvent(
+                        2,
+                        CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL,
+                        CujEvent.JANK_CUJ_END_TAG
+                    ),
+                )
+            )
+
+        Truth.assertThat(trace.entries).hasSize(1)
+        Truth.assertThat(trace.entries.first().cuj).isEqualTo(CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL)
+        Truth.assertThat(trace.entries.first().tag).isEqualTo("MySubType")
+        Truth.assertThat(trace.entries.first().startTimestamp.unixNanos).isEqualTo(1)
+        Truth.assertThat(trace.entries.first().endTimestamp.unixNanos).isEqualTo(2)
+        Truth.assertThat(trace.entries.first().canceled).isFalse()
+    }
+
+    @Test
     fun canCreateCanceledCujsFromListOfCujEvents() {
         val trace =
             CujTrace.from(

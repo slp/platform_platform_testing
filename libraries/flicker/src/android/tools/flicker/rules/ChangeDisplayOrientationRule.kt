@@ -20,9 +20,10 @@ import android.app.Instrumentation
 import android.content.Context
 import android.os.RemoteException
 import android.tools.FLICKER_TAG
-import android.tools.Logger
 import android.tools.Rotation
 import android.tools.traces.parsers.WindowManagerStateHelper
+import android.tools.withTracing
+import android.util.Log
 import android.view.WindowManager
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
@@ -51,8 +52,8 @@ constructor(
     private var initialOrientation = Rotation.ROTATION_0
 
     override fun starting(description: Description?) {
-        Logger.withTracing("ChangeDisplayOrientationRule:starting") {
-            Logger.v(
+        withTracing("ChangeDisplayOrientationRule:starting") {
+            Log.v(
                 FLICKER_TAG,
                 "Changing display orientation to " +
                     "$targetOrientation ${targetOrientation.description}"
@@ -65,7 +66,7 @@ constructor(
     }
 
     override fun finished(description: Description?) {
-        Logger.withTracing("ChangeDisplayOrientationRule:finished") {
+        withTracing("ChangeDisplayOrientationRule:finished") {
             if (resetOrientationAfterTest) {
                 setRotation(initialOrientation, instrumentation, clearCacheAfterParsing)
             }
@@ -98,7 +99,7 @@ constructor(
                     wmHelper.StateSyncBuilder().withRotation(rotation).waitForAndVerify()
                 } else {
                     wmHelper.StateSyncBuilder().withAppTransitionIdle().waitForAndVerify()
-                    Logger.v(FLICKER_TAG, "Rotation is not allowed in the state")
+                    Log.v(FLICKER_TAG, "Rotation is not allowed in the state")
                     return
                 }
                 device.freezeRotation()

@@ -18,8 +18,10 @@ package platform.test.motion.golden
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
+import org.json.JSONObject
 import org.junit.Test
 import org.junit.runner.RunWith
+import platform.test.motion.testing.DataPointTypeSubject.Companion.assertThat
 
 @RunWith(AndroidJUnit4::class)
 class DataPointTypesTest {
@@ -108,5 +110,53 @@ class DataPointTypesTest {
             .isEqualTo("Something(string=bar)".asDataPoint())
     }
 
-    data class Something(val string: String)
+    @Test
+    fun listOf_fromToJson_ofInt() {
+        assertThat(DataPointTypes.listOf(DataPointTypes.int))
+            .convertsJsonArray(listOf(1, 2, 3), """[1,2,3]""")
+    }
+
+    @Test
+    fun listOf_fromToJson_ofEmptyList() {
+        assertThat(DataPointTypes.listOf(DataPointTypes.int)).convertsJsonArray(listOf(), """[]""")
+    }
+
+    @Test
+    fun listOf_fromToJson_ofObject() {
+        assertThat(DataPointTypes.listOf(something))
+            .convertsJsonArray(
+                listOf(Something("foo"), Something("bar")),
+                """[{"string":"foo"}, {"string":"bar"}]"""
+            )
+    }
+
+    @Test
+    fun listOf_fromToJson_withWronglyTypedElement_returnsUnknown() {
+        assertThat(DataPointTypes.listOf(DataPointTypes.int).fromJson("""[1, "foo"]"""))
+            .isEqualTo(DataPoint.unknownType<List<Int>>())
+    }
+
+    @Test
+    fun listOf_fromToJson_withNullElement_returnsUnknown() {
+        assertThat(DataPointTypes.listOf(DataPointTypes.int).fromJson("""[1, null]"""))
+            .isEqualTo(DataPoint.unknownType<List<Int>>())
+    }
+
+    @Test
+    fun listOf_typeName_containsArrayIndicator() {
+        assertThat(DataPointTypes.listOf(something).typeName).isEqualTo("something[]")
+    }
+
+    private data class Something(val string: String)
+
+    private val something: DataPointType<Something> =
+        DataPointType(
+            "something",
+            jsonToValue = {
+                with(it as? JSONObject ?: throw UnknownTypeException()) {
+                    Something(getString("string"))
+                }
+            },
+            valueToJson = { JSONObject().apply { put("string", it.string) } }
+        )
 }

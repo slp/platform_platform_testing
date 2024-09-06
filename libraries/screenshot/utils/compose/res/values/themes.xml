@@ -26,10 +26,20 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
 
         <!-- Make sure that device specific cutouts don't impact the outcome of screenshot tests -->
-        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">always</item>
+
+        <!--
+            TODO(b/309578419): Make activities handle insets properly and then remove this.
+        -->
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
     </style>
 
     <style name="Theme.PlatformUi.Dialog.Screenshot" parent="Theme.PlatformUi.Dialog.DayAndNightScreenshot" />
+
+    <style name="Theme.PlatformUi.Dialog.Screenshot.MinWidth" parent="Theme.PlatformUi.Dialog.Screenshot">
+        <item name="android:windowMinWidthMajor">@android:dimen/dialog_min_width_major</item>
+        <item name="android:windowMinWidthMinor">@android:dimen/dialog_min_width_minor</item>
+    </style>
 
     <style name="Theme.PlatformUi.DayAndNightScreenshot" parent="Theme.SystemUI">
         <!-- Hardcode the material colors so that screenshot tests don't depend on colors that will

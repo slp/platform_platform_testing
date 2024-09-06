@@ -57,6 +57,8 @@ fun CleanFlickerEnvironmentRule(): RuleChain =
 
 val TEST_SCENARIO = ScenarioBuilder().forClass("test").build() as ScenarioImpl
 
+const val SYSTEMUI_PACKAGE = "com.android.systemui"
+
 /**
  * Runs `r` and asserts that an exception with type `expectedThrowable` is thrown.
  *
@@ -92,19 +94,36 @@ fun assertThatErrorContainsDebugInfo(error: Throwable) {
     Truth.assertThat(error).hasMessageThat().contains("Where?")
 }
 
-fun assertArchiveContainsFiles(archivePath: File, expectedFiles: List<String>) {
+/**
+ * Method to check if the [archivePath] contains trace files from one of the expected files list as
+ * given in the [possibleExpectedFiles].
+ */
+fun assertArchiveContainsFiles(archivePath: File, possibleExpectedFiles: List<List<String>>) {
     Truth.assertWithMessage("Expected trace archive `$archivePath` to exist")
         .that(archivePath.exists())
         .isTrue()
 
-    val archiveStream = ZipInputStream(FileInputStream(archivePath))
+    val actualFiles = getActualTraceFilesFromArchive(archivePath)
+    var isActualTraceAsExpected = false
 
-    val actualFiles = generateSequence { archiveStream.nextEntry }.map { it.name }.toList()
+    for (expectedFiles: List<String> in possibleExpectedFiles) {
+        if (actualFiles.equalsIgnoreOrder(expectedFiles)) {
+            isActualTraceAsExpected = true
+            break
+        }
+    }
 
     Truth.assertWithMessage("Trace archive doesn't contain all expected traces")
-        .that(actualFiles)
-        .containsExactlyElementsIn(expectedFiles)
+        .that(isActualTraceAsExpected)
+        .isTrue()
 }
+
+fun getActualTraceFilesFromArchive(archivePath: File): List<String> {
+    val archiveStream = ZipInputStream(FileInputStream(archivePath))
+    return generateSequence { archiveStream.nextEntry }.map { it.name }.toList()
+}
+
+fun <T> List<T>.equalsIgnoreOrder(other: List<T>) = this.toSet() == other.toSet()
 
 fun getWmTraceReaderFromAsset(
     relativePath: String,
@@ -205,6 +224,12 @@ fun createDefaultArtifactBuilder(
 
 fun getLauncherPackageName() =
     UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()).launcherPackageName
+
+fun getSystemUiUidName(): String {
+    val packageManager = InstrumentationRegistry.getInstrumentation().context.getPackageManager()
+    val uid = packageManager.getApplicationInfo(SYSTEMUI_PACKAGE, 0).uid
+    return requireNotNull(packageManager.getNameForUid(uid))
+}
 
 fun newEmptyRootContainer(orientation: Int = 0, layerId: Int = 0) =
     RootWindowContainer(

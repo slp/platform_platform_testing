@@ -16,7 +16,6 @@
 
 package android.tools.traces.monitors
 
-import android.tools.Logger
 import android.tools.ScenarioBuilder
 import android.tools.Tag
 import android.tools.io.TraceType
@@ -40,7 +39,7 @@ abstract class TraceMonitor : ITransitionMonitor {
     protected open fun doStopTraces(): Map<TraceType, File> = mapOf(traceType to doStop())
 
     final override fun start() {
-        Logger.withTracing("${this::class.simpleName}#start") {
+        android.tools.withTracing("${this::class.simpleName}#start") {
             validateStart()
             doStart()
         }
@@ -49,7 +48,8 @@ abstract class TraceMonitor : ITransitionMonitor {
     open fun validateStart() {
         if (this.isEnabled) {
             throw UnsupportedOperationException(
-                "Trace already running. This is likely due to chained 'withTracing' calls."
+                "${traceType.name} trace already running. " +
+                    "This is likely due to chained 'withTracing' calls."
             )
         }
     }
@@ -58,7 +58,7 @@ abstract class TraceMonitor : ITransitionMonitor {
     override fun stop(writer: ResultWriter) {
         val artifacts =
             try {
-                Logger.withTracing("${this::class.simpleName}#stop") {
+                android.tools.withTracing("${this::class.simpleName}#stop") {
                     doStopTraces()
                         .map { (key, value) -> key to moveTraceFileToTmpDir(value) }
                         .toMap()
@@ -87,7 +87,7 @@ abstract class TraceMonitor : ITransitionMonitor {
      * @throws UnsupportedOperationException If tracing is already activated
      */
     fun withTracing(writer: ResultWriter, predicate: () -> Unit) {
-        Logger.withTracing("${this::class.simpleName}#withTracing") {
+        android.tools.withTracing("${this::class.simpleName}#withTracing") {
             try {
                 this.start()
                 predicate()

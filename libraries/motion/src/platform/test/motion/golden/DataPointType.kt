@@ -16,37 +16,46 @@
 
 package platform.test.motion.golden
 
-/** Golden value type to convert to/from JSON. */
+import org.json.JSONException
+
+/**
+ * Golden value type to convert to/from JSON.
+ *
+ * @param typeName identifier written to the JSON, to support de-serialization of the values.
+ * @param jsonToValue convert the [jsonValue] to a native [T], throws [JSONException] if conversion
+ *   fails.
+ * @param valueToJson converts the native [T] to a `org.json` supported type.
+ * @param ensureImmutable copies mutable objects, to avoid subsequent modification.
+ */
 class DataPointType<T>(
-    /** Type identifier written to the JSON, to support de-serialization of the values again. */
     val typeName: String,
-    /**
-     * Function to convert the [jsonValue] to a native [T].
-     *
-     * @throws UnknownTypeException if [jsonValue] cannot be converted to [T].
-     */
     private val jsonToValue: (jsonValue: Any) -> T,
-    private val valueToJson: (T) -> Any
+    private val valueToJson: (T) -> Any,
+    internal val ensureImmutable: (T & Any) -> T & Any = { it },
 ) {
     fun makeDataPoint(nativeValue: T?): DataPoint<T> {
         return DataPoint.of(nativeValue, this)
     }
 
-    internal fun fromJson(jsonValue: Any): DataPoint<T> {
+    fun fromJson(jsonValue: Any): DataPoint<T> {
         return when {
             NullDataPoint.isNullValue(jsonValue) -> DataPoint.nullValue()
             NotFoundDataPoint.isNotFoundValue(jsonValue) -> DataPoint.notFound()
             else ->
                 try {
                     makeDataPoint(jsonToValue(jsonValue))
-                } catch (e: UnknownTypeException) {
+                } catch (e: JSONException) {
                     DataPoint.unknownType()
                 }
         }
     }
 
     fun toJson(value: T): Any = valueToJson(value)
+
+    override fun toString(): String {
+        return typeName
+    }
 }
 
 /** Signals that a JSON value cannot be deserialized by a [DataPointType]. */
-class UnknownTypeException : Exception()
+class UnknownTypeException : JSONException("JSON cannot be converted to DataPoint value")

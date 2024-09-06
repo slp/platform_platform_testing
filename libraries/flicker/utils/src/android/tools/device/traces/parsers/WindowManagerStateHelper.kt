@@ -23,7 +23,7 @@ import androidx.test.platform.app.InstrumentationRegistry
     "Please use the version in the android.tools.traces.parsers package instead",
     replaceWith = ReplaceWith("android.tools.traces.parsers.WindowManagerStateHelper")
 )
-class WindowManagerStateHelper @JvmOverloads
-constructor(
-    instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
-): android.tools.traces.parsers.WindowManagerStateHelper(instrumentation)
+class WindowManagerStateHelper
+@JvmOverloads
+constructor(instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()) :
+    android.tools.traces.parsers.WindowManagerStateHelper(instrumentation)

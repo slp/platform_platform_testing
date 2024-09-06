@@ -44,7 +44,7 @@ class ContactSearchAndCall(bluetooth_base_test.BluetoothBaseTest):
         expected_first_name = constants.EXPECTED_CONTACT_FULL_NAME
         self.call_utils.open_phone_app()
         self.call_utils.open_contacts()
-        self.call_utils.wait_with_log(constants.DEFAULT_WAIT_TIME_FIVE_SECS)
+        self.call_utils.wait_with_log(5)
 
         # Search for the expected first contact name
         self.call_utils.search_contact_by_name(
@@ -59,8 +59,8 @@ class ContactSearchAndCall(bluetooth_base_test.BluetoothBaseTest):
         self.discoverer.mbs.pressMobileCallOnContact()
 
         # Verify that the expected number is being dialed
-        self.call_utils.wait_with_log(constants.WAIT_ONE_SEC)
-        self.call_utils.verify_dialing_number(constants.EXPECTED_PHONE_NUMBER)
+        self.call_utils.wait_with_log(1)
+        self.call_utils.verify_user_phone_number(constants.EXPECTED_PHONE_NUMBER)
         self.call_utils.end_call()
 
     def teardown_test(self):

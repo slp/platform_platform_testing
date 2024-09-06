@@ -84,8 +84,6 @@ platform_tests += \
     sl4a \
     SmokeTest \
     SmokeTestApp \
-    SysAppJankTestsWear \
-    TouchLatencyJankTestWear \
     trace_config.textproto \
     trace_config_boot_time.textproto \
     trace_config_boot_time_stop.textproto \

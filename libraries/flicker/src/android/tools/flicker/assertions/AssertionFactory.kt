@@ -16,7 +16,6 @@
 
 package android.tools.flicker.assertions
 
-import android.tools.Logger
 import android.tools.Tag
 import android.tools.flicker.subject.FlickerSubject
 import android.tools.flicker.subject.FlickerTraceSubject
@@ -27,6 +26,7 @@ import android.tools.flicker.subject.region.RegionTraceSubject
 import android.tools.flicker.subject.wm.WindowManagerStateSubject
 import android.tools.flicker.subject.wm.WindowManagerTraceSubject
 import android.tools.traces.component.IComponentMatcher
+import android.tools.withTracing
 
 class AssertionFactory {
     private val wmAssertionFactory =
@@ -41,7 +41,7 @@ class AssertionFactory {
      * @param assertion Assertion predicate
      */
     fun createWmStartAssertion(assertion: WindowManagerStateSubject.() -> Unit): AssertionData =
-        Logger.withTracing("createWmStartAssertion") {
+        withTracing("createWmStartAssertion") {
             wmAssertionFactory.createStartStateAssertion(assertion as FlickerSubject.() -> Unit)
         }
 
@@ -51,7 +51,7 @@ class AssertionFactory {
      * @param assertion Assertion predicate
      */
     fun createWmEndAssertion(assertion: WindowManagerStateSubject.() -> Unit): AssertionData =
-        Logger.withTracing("createWmEndAssertion") {
+        withTracing("createWmEndAssertion") {
             wmAssertionFactory.createEndStateAssertion(assertion as FlickerSubject.() -> Unit)
         }
 
@@ -61,7 +61,7 @@ class AssertionFactory {
      * @param assertion Assertion predicate
      */
     fun createWmAssertion(assertion: WindowManagerTraceSubject.() -> Unit): AssertionData =
-        Logger.withTracing("createWmAssertion") {
+        withTracing("createWmAssertion") {
             wmAssertionFactory.createTraceAssertion(
                 assertion as (FlickerTraceSubject<FlickerSubject>) -> Unit
             )
@@ -76,7 +76,7 @@ class AssertionFactory {
         tag: String,
         assertion: WindowManagerStateSubject.() -> Unit
     ): AssertionData =
-        Logger.withTracing("createWmTagAssertion") {
+        withTracing("createWmTagAssertion") {
             wmAssertionFactory.createTagAssertion(tag, assertion as FlickerSubject.() -> Unit)
         }
 
@@ -90,7 +90,7 @@ class AssertionFactory {
         componentMatcher: IComponentMatcher,
         assertion: RegionTraceSubject.() -> Unit
     ): AssertionData =
-        Logger.withTracing("createWmVisibleRegionAssertion") {
+        withTracing("createWmVisibleRegionAssertion") {
             val closedAssertion: WindowManagerTraceSubject.() -> Unit = {
                 require(!hasAssertions()) { "Subject was already used to execute assertions" }
                 // convert WindowManagerTraceSubject to RegionTraceSubject
@@ -112,7 +112,7 @@ class AssertionFactory {
      * @param assertion Assertion predicate
      */
     fun createLayersStartAssertion(assertion: LayerTraceEntrySubject.() -> Unit): AssertionData =
-        Logger.withTracing("createLayersStartAssertion") {
+        withTracing("createLayersStartAssertion") {
             layersAssertionFactory.createStartStateAssertion(assertion as FlickerSubject.() -> Unit)
         }
 
@@ -122,7 +122,7 @@ class AssertionFactory {
      * @param assertion Assertion predicate
      */
     fun createLayersEndAssertion(assertion: LayerTraceEntrySubject.() -> Unit): AssertionData =
-        Logger.withTracing("createLayersEndAssertion") {
+        withTracing("createLayersEndAssertion") {
             layersAssertionFactory.createEndStateAssertion(assertion as FlickerSubject.() -> Unit)
         }
 
@@ -132,7 +132,7 @@ class AssertionFactory {
      * @param assertion Assertion predicate
      */
     fun createLayersAssertion(assertion: LayersTraceSubject.() -> Unit): AssertionData =
-        Logger.withTracing("createLayersAssertion") {
+        withTracing("createLayersAssertion") {
             layersAssertionFactory.createTraceAssertion(
                 assertion as (FlickerTraceSubject<FlickerSubject>) -> Unit
             )
@@ -147,7 +147,7 @@ class AssertionFactory {
         tag: String,
         assertion: LayerTraceEntrySubject.() -> Unit
     ): AssertionData =
-        Logger.withTracing("createLayersTagAssertion") {
+        withTracing("createLayersTagAssertion") {
             layersAssertionFactory.createTagAssertion(tag, assertion as FlickerSubject.() -> Unit)
         }
 
@@ -166,7 +166,7 @@ class AssertionFactory {
         useCompositionEngineRegionOnly: Boolean = true,
         assertion: RegionTraceSubject.() -> Unit
     ): AssertionData =
-        Logger.withTracing("createLayersVisibleRegionAssertion") {
+        withTracing("createLayersVisibleRegionAssertion") {
             val closedAssertion: LayersTraceSubject.() -> Unit = {
                 require(!hasAssertions()) { "Subject was already used to execute assertions" }
                 // convert LayersTraceSubject to RegionTraceSubject
@@ -190,7 +190,7 @@ class AssertionFactory {
      * @param assertion Assertion predicate
      */
     fun createEventLogAssertion(assertion: EventLogSubject.() -> Unit): AssertionData =
-        Logger.withTracing("createEventLogAssertion") {
+        withTracing("createEventLogAssertion") {
             eventLogAssertionFactory.createTagAssertion(
                 Tag.ALL,
                 assertion as FlickerSubject.() -> Unit

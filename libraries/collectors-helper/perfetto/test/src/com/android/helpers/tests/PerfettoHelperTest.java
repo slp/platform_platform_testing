@@ -28,6 +28,7 @@ import androidx.test.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
 import androidx.test.uiautomator.UiDevice;
 
+import com.android.helpers.MetricUtility;
 import com.android.helpers.PerfettoHelper;
 
 import org.junit.After;
@@ -89,8 +90,8 @@ public class PerfettoHelperTest {
             mPerfettoHelper.setPerfettoConfigRootDir("/data/misc/perfetto-traces/");
             UiDevice uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
             mPerfettoHelper.stopCollecting(1000, "data/local/tmp/out.perfetto-trace");
-            uiDevice.executeShellCommand(String.format(REMOVE_CMD,
-                "/data/local/tmp/out.perfetto-trace"));
+            uiDevice.executeShellCommand(
+                    String.format(REMOVE_CMD, "/data/local/tmp/out.perfetto-trace"));
         }
     }
 
@@ -161,6 +162,48 @@ public class PerfettoHelperTest {
     public void testPerfettoStartSuccess() throws Exception {
         assertTrue(mPerfettoHelper.startCollectingFromConfigFile("trace_config.textproto", true));
         isPerfettoStartSuccess = true;
+    }
+
+    /** Test if perfetto process id is tracked in a file if the option is enabled */
+    @Test
+    public void testTrackPerfettoProcIdInFileFromConfigFile() throws Exception {
+        mPerfettoHelper.setTrackPerfettoPidFlag(true);
+        assertTrue(mPerfettoHelper.startCollectingFromConfigFile("trace_config.textproto", true));
+        isPerfettoStartSuccess = true;
+        assertTrue(mPerfettoHelper.getPerfettoPidFile().exists());
+        String perfettoProcId =
+                MetricUtility.readStringFromFile(mPerfettoHelper.getPerfettoPidFile());
+        assertTrue(Integer.parseInt(perfettoProcId.trim()) == mPerfettoHelper.getPerfettoPid());
+    }
+
+    /** Test if perfetto process id is not tracked in a file if the option is enabled */
+    @Test
+    public void testNoTrackPerfettoProcIdInFileFromConfigFile() throws Exception {
+        mPerfettoHelper.setTrackPerfettoPidFlag(false);
+        assertTrue(mPerfettoHelper.startCollectingFromConfigFile("trace_config.textproto", true));
+        isPerfettoStartSuccess = true;
+        assertTrue(mPerfettoHelper.getPerfettoPidFile() == null);
+    }
+
+    /** Test if perfetto process id is tracked in a file if the option is enabled */
+    @Test
+    public void testTrackPerfettoProcIdInFileFromConfig() throws Exception {
+        mPerfettoHelper.setTrackPerfettoPidFlag(true);
+        assertTrue(mPerfettoHelper.startCollectingFromConfig(DEFAULT_CFG));
+        isPerfettoStartSuccess = true;
+        assertTrue(mPerfettoHelper.getPerfettoPidFile().exists());
+        String perfettoProcId =
+                MetricUtility.readStringFromFile(mPerfettoHelper.getPerfettoPidFile());
+        assertTrue(Integer.parseInt(perfettoProcId.trim()) == mPerfettoHelper.getPerfettoPid());
+    }
+
+    /** Test if perfetto process id is not tracked in a file if the option is enabled */
+    @Test
+    public void testNoTrackPerfettoProcIdInFileFromConfig() throws Exception {
+        mPerfettoHelper.setTrackPerfettoPidFlag(false);
+        assertTrue(mPerfettoHelper.startCollectingFromConfig(DEFAULT_CFG));
+        isPerfettoStartSuccess = true;
+        assertTrue(mPerfettoHelper.getPerfettoPidFile() == null);
     }
 
     /** Test perfetto collection returns true if the valid perfetto config file. */
@@ -244,5 +287,4 @@ public class PerfettoHelperTest {
         mPerfettoHelper.setPerfettoConfigRootDir("/data/misc/invalid-folder/");
         assertFalse(mPerfettoHelper.startCollectingFromConfigFile("trace_config.textproto", true));
     }
-
 }

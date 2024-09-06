@@ -18,11 +18,13 @@ package android.tools.flicker.assertions
 
 import android.tools.flicker.AssertionInvocationGroup
 import android.tools.flicker.subject.exceptions.FlickerAssertionError
+import org.junit.AssumptionViolatedException
 
 /** Base class for a FaaS assertion */
 internal data class AssertionResultImpl(
     override val name: String,
     override val assertionData: Collection<AssertionData>,
+    override val assumptionViolations: Collection<AssumptionViolatedException>,
     override val assertionErrors: Collection<FlickerAssertionError>,
     override val stabilityGroup: AssertionInvocationGroup
 ) : AssertionResult

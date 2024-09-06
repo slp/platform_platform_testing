@@ -52,9 +52,10 @@ public class BluetoothPaletteTest {
     }
 
 
+
     @Test
     public void testBluetoothDisableMessage() {
-        mStatusBarHelper.get().openBluetoothSwitch();
+        mStatusBarHelper.get().turnOnOffBluetooth(false);
         assertTrue(
                 "Bluetooth toggle button OFF message is not displayed ",
                 mStatusBarHelper.get().hasToggleOffMessage());
@@ -68,6 +69,7 @@ public class BluetoothPaletteTest {
                 "Bluetooth settings page title is not displayed",
                 mStatusBarHelper.get().hasBluetoothSettingsPageTitle());
     }
+
 
     @After
     public void setup() {

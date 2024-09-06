@@ -16,7 +16,6 @@
 
 package android.tools.flicker
 
-import android.tools.Logger
 import android.tools.Rotation
 import android.tools.Timestamp
 import android.tools.flicker.assertions.ScenarioAssertion
@@ -27,6 +26,7 @@ import android.tools.flicker.extractors.Utils
 import android.tools.io.Reader
 import android.tools.traces.events.CujType
 import android.tools.traces.wm.Transition
+import android.tools.withTracing
 
 data class ScenarioInstanceImpl(
     override val config: FlickerConfigEntry,
@@ -51,7 +51,7 @@ data class ScenarioInstanceImpl(
     override fun <T> getConfigValue(key: String): T? = null
 
     override fun generateAssertions(): Collection<ScenarioAssertion> =
-        Logger.withTracing("generateAssertions") {
+        withTracing("generateAssertions") {
             val assertionExtraData =
                 mutableMapOf<String, String>().apply {
                     this["Scenario Start"] = startTimestamp.toString()

@@ -19,16 +19,7 @@
 package android.tools.traces.parsers
 
 import android.content.ComponentName
-import android.tools.datatypes.Rect
 import android.tools.traces.component.ComponentNameMatcher
-
-fun Rect.toAndroidRect(): android.graphics.Rect {
-    return android.graphics.Rect(left, top, right, bottom)
-}
-
-fun android.graphics.Rect.toFlickerRect(): Rect {
-    return Rect.from(left, top, right, bottom)
-}
 
 /** Converts an Android [ComponentName] into a flicker [ComponentNameMatcher] */
 fun ComponentName.toFlickerComponent(): ComponentNameMatcher =

@@ -15,7 +15,7 @@
  */
 package android.tools.traces.inputmethod
 
-import android.tools.datatypes.Rect
+import android.graphics.Rect
 import android.tools.traces.wm.DisplayCutout
 import android.tools.traces.wm.WindowLayoutParams
 

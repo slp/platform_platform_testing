@@ -16,11 +16,11 @@
 
 package android.tools.flicker.subject.surfaceflinger
 
+import android.graphics.Region
 import android.tools.Cache
 import android.tools.CleanFlickerEnvironmentRuleWithDataStore
 import android.tools.ScenarioBuilder
 import android.tools.Timestamps
-import android.tools.datatypes.Region
 import android.tools.flicker.legacy.LegacyFlickerTest
 import android.tools.flicker.subject.layers.LayersTraceSubject
 import android.tools.flicker.subject.region.RegionSubject
@@ -257,7 +257,8 @@ class LayersTraceSubjectTest {
         val areas =
             animation.map {
                 val region = it.layer.visibleRegion ?: Region()
-                val area = region.width * region.height
+                val bounds = region.bounds
+                val area = bounds.width() * bounds.height()
                 area
             }
         val expanding = areas.zipWithNext { currentArea, nextArea -> nextArea >= currentArea }
@@ -357,7 +358,7 @@ class LayersTraceSubjectTest {
                     snapshotLayers.mapNotNull { snapshotLayer -> snapshotLayer.layer.visibleRegion }
                 val snapshotRegion = RegionSubject(visibleAreas, timestamp)
                 // Verify the size of snapshotRegion covers appVisibleRegion exactly in animation.
-                if (snapshotRegion.region.isNotEmpty) {
+                if (!snapshotRegion.region.isEmpty) {
                     val appVisibleRegion = it.visibleRegion(component)
                     snapshotRegion.coversExactly(appVisibleRegion.region)
                 }
@@ -369,9 +370,15 @@ class LayersTraceSubjectTest {
         private const val LABEL = "ImeActivity"
         private const val FLICKER_APP_PACKAGE = "com.android.server.wm.flicker.testapp"
 
-        private val DISPLAY_REGION = Region.from(0, 0, 1440, 2880)
-        private val DISPLAY_REGION_ROTATED = Region.from(0, 0, 2160, 1080)
+        private val DISPLAY_REGION = Region(0, 0, 1440, 2880)
+        private val DISPLAY_REGION_ROTATED = Region(0, 0, 2160, 1080)
 
         @ClassRule @JvmField val ENV_CLEANUP = CleanFlickerEnvironmentRuleWithDataStore()
+
+        private fun Region.minus(other: Region): Region {
+            val thisRegion = Region(this)
+            thisRegion.op(other, Region.Op.XOR)
+            return thisRegion
+        }
     }
 }

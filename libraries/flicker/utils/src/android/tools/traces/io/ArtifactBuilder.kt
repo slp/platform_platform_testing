@@ -16,13 +16,14 @@
 
 package android.tools.traces.io
 
-import android.tools.Logger
 import android.tools.Scenario
 import android.tools.io.BUFFER_SIZE
 import android.tools.io.FLICKER_IO_TAG
 import android.tools.io.ResultArtifactDescriptor
 import android.tools.io.RunStatus
 import android.tools.traces.deleteIfExists
+import android.tools.withTracing
+import android.util.Log
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.File
@@ -54,11 +55,11 @@ class ArtifactBuilder {
     }
 
     fun build(): FileArtifact {
-        return Logger.withTracing("ArtifactBuilder#build") {
+        return withTracing("ArtifactBuilder#build") {
             val scenario = scenario ?: error("Missing scenario")
             require(!scenario.isEmpty) { "Scenario shouldn't be empty" }
             val artifactFile = createArtifactFile()
-            Logger.d(FLICKER_IO_TAG, "Creating artifact archive at $artifactFile")
+            Log.d(FLICKER_IO_TAG, "Creating artifact archive at $artifactFile")
 
             writeToZip(artifactFile, files)
 
@@ -106,7 +107,7 @@ class ArtifactBuilder {
     }
 
     private fun addFile(zipOutputStream: ZipOutputStream, artifact: File, nameInArchive: String) {
-        Logger.v(FLICKER_IO_TAG, "Adding $artifact with name $nameInArchive to zip")
+        Log.v(FLICKER_IO_TAG, "Adding $artifact with name $nameInArchive to zip")
         val fi = FileInputStream(artifact)
         val inputStream = BufferedInputStream(fi, BUFFER_SIZE)
         inputStream.use {
@@ -136,7 +137,7 @@ class ArtifactBuilder {
                     )
                     writtenFileNames.add(descriptor.fileNameInArtifact)
                 } else {
-                    Logger.d(
+                    Log.d(
                         FLICKER_IO_TAG,
                         "Not adding duplicated ${descriptor.fileNameInArtifact} to zip"
                     )

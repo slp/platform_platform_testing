@@ -23,7 +23,12 @@ data class Cuj(
     val cuj: CujType,
     val startTimestamp: Timestamp,
     val endTimestamp: Timestamp,
-    val canceled: Boolean
+    val canceled: Boolean,
+    val tag: String? = null,
 ) : TraceEntry {
     override val timestamp: Timestamp = startTimestamp
+
+    override fun toString(): String {
+        return "$cuj${tag?.let { "_$it" } ?: ""}[$startTimestamp, $endTimestamp]"
+    }
 }

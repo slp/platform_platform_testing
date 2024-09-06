@@ -18,6 +18,7 @@ package {
 
 java_library_host {
     name: "sts-host-util",
+    java_resources: [":sts_host_util_java_resources"],
     defaults: ["cts_error_prone_rules"],
 
     srcs: [
@@ -38,6 +39,13 @@ java_library_host {
         "guava",
         "tradefed",
     ],
+}
+
+// Workaround: java_resource_dirs ignores *.java files
+filegroup {
+    name: "sts_host_util_java_resources",
+    path: "res/",
+    srcs: ["res/**/*.java"],
 }
 
 java_library_host {

@@ -17,9 +17,9 @@
 package android.tools.parsers
 
 import android.tools.Cache
-import android.tools.Logger
 import android.tools.Timestamp
 import android.tools.Timestamps
+import android.tools.withTracing
 
 /** Base trace parser class */
 abstract class AbstractTraceParser<
@@ -87,7 +87,7 @@ abstract class AbstractTraceParser<
             if (!selectedInputTimestamps.contains(currTimestamp) || !shouldParseEntry(rawEntry)) {
                 continue
             }
-            val parsedEntry = Logger.withTracing("doParseEntry") { doParseEntry(rawEntry) }
+            val parsedEntry = withTracing("doParseEntry") { doParseEntry(rawEntry) }
             parsedEntries.add(parsedEntry)
         }
         return createTrace(parsedEntries)
@@ -109,7 +109,7 @@ abstract class AbstractTraceParser<
         addInitialEntry: Boolean = true,
         clearCache: Boolean = true
     ): OutputTypeTrace {
-        return Logger.withTracing("${this::class.simpleName}#parse") {
+        return withTracing("${this::class.simpleName}#parse") {
             try {
                 doParse(input, from, to, addInitialEntry)
             } finally {

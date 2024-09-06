@@ -66,3 +66,38 @@ data_sources: {
     }
   }
 }
+
+data_sources: {
+  config {
+    name: "android.surfaceflinger.layers"
+    surfaceflinger_layers_config: {
+      mode: MODE_ACTIVE
+      trace_flags: TRACE_FLAG_INPUT
+      trace_flags: TRACE_FLAG_BUFFERS
+    }
+  }
+}
+
+data_sources: {
+  config {
+    name: "android.surfaceflinger.transactions"
+    surfaceflinger_transactions_config: {
+      mode: MODE_ACTIVE
+    }
+  }
+}
+
+data_sources: {
+  config {
+    name: "com.android.wm.shell.transition"
+  }
+}
+
+data_sources: {
+  config {
+    name: "android.input.inputevent"
+    android_input_event_config {
+      mode: TRACE_MODE_TRACE_ALL
+    }
+  }
+}

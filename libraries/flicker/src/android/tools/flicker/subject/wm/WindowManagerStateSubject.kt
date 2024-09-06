@@ -16,8 +16,8 @@
 
 package android.tools.flicker.subject.wm
 
+import android.graphics.Region
 import android.tools.Rotation
-import android.tools.datatypes.Region
 import android.tools.flicker.assertions.Fact
 import android.tools.flicker.subject.FlickerSubject
 import android.tools.flicker.subject.exceptions.ExceptionMessageBuilder
@@ -279,15 +279,14 @@ class WindowManagerStateSubject(
                 }
                 // keep entries only for windows that we actually found by removing nulls
                 .filterValues { it != null }
-        val foundWindowsRegions =
-            foundWindows.mapValues { (_, v) -> v?.frameRegion ?: Region.EMPTY }
+        val foundWindowsRegions = foundWindows.mapValues { (_, v) -> v?.frameRegion ?: Region() }
 
         val regions = foundWindowsRegions.entries.toList()
         for (i in regions.indices) {
             val (ourTitle, ourRegion) = regions[i]
             for (j in i + 1 until regions.size) {
                 val (otherTitle, otherRegion) = regions[j]
-                val overlapRegion = Region().also { it.set(ourRegion) }
+                val overlapRegion = Region(ourRegion)
                 if (overlapRegion.op(otherRegion, Region.Op.INTERSECT)) {
                     val errorMsgBuilder =
                         ExceptionMessageBuilder()

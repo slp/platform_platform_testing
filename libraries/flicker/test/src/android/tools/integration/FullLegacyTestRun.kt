@@ -17,9 +17,9 @@
 package android.tools.integration
 
 import android.app.Instrumentation
+import android.graphics.Region
 import android.platform.test.annotations.Presubmit
 import android.tools.Scenario
-import android.tools.datatypes.Region
 import android.tools.device.apphelpers.MessagingAppHelper
 import android.tools.flicker.annotation.FlickerServiceCompatible
 import android.tools.flicker.junit.FlickerBuilderProvider
@@ -161,11 +161,9 @@ class FullLegacyTestRun(private val flicker: LegacyFlickerTest) {
     ) {
         Truth.assertWithMessage("Actual visible region").that(actual).isNotNull()
         Truth.assertWithMessage("Expected visible region").that(expected).isNotNull()
-        actual?.coversExactly(expected?.region ?: Region.EMPTY)
+        actual?.coversExactly(expected?.region ?: Region())
 
-        val failure: Result<Any?> = runCatching {
-            actual?.isHigher(expected?.region ?: Region.EMPTY)
-        }
+        val failure: Result<Any?> = runCatching { actual?.isHigher(expected?.region ?: Region()) }
         if (failure.isSuccess) {
             error("Should have thrown failure")
         }

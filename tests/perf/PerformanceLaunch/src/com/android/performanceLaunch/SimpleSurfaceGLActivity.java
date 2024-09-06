@@ -16,12 +16,15 @@
 
 package com.android.performanceLaunch;
 
-import com.android.performanceLaunch.helper.SimpleGLSurfaceView;
-
 import android.app.Activity;
+import android.graphics.Insets;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Trace;
+import android.view.View;
+import android.view.WindowInsets;
+
+import com.android.performanceLaunch.helper.SimpleGLSurfaceView;
 
 /**
  * To draw the GLSurface view Source : development/samples/OpenGL/HelloOpenGLES20
@@ -39,6 +42,14 @@ public class SimpleSurfaceGLActivity extends Activity {
         // as the ContentView for this Activity
         mGLView = new SimpleGLSurfaceView(this);
         setContentView(mGLView);
+        if (mGLView.getParent() instanceof final View parentView) {
+            parentView.setOnApplyWindowInsetsListener(
+                    (view, windowInsets) -> {
+                        final Insets insets = windowInsets.getSystemWindowInsets();
+                        view.setPadding(insets.left, insets.top, insets.right, insets.bottom);
+                        return WindowInsets.CONSUMED;
+                    });
+        }
         Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
     }
 
