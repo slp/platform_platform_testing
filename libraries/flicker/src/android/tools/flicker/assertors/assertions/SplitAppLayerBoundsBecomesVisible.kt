@@ -16,7 +16,7 @@
 
 package android.tools.flicker.assertors.assertions
 
-import android.tools.datatypes.Region
+import android.graphics.Region
 import android.tools.flicker.ScenarioInstance
 import android.tools.flicker.assertions.FlickerTest
 import android.tools.flicker.assertors.ComponentTemplate
@@ -92,18 +92,18 @@ class SplitAppLayerBoundsBecomesVisible(
                 visibleRegion(component)
                     .coversAtMost(
                         if (
-                            activeDisplay.layerStackSpace.width >
-                                activeDisplay.layerStackSpace.height
+                            activeDisplay.layerStackSpace.width() >
+                                activeDisplay.layerStackSpace.height()
                         ) {
                             if (landscapePosLeft) {
-                                Region.from(
+                                Region(
                                     0,
                                     0,
                                     (dividerRegion.bounds.left + dividerRegion.bounds.right) / 2,
                                     activeDisplay.layerStackSpace.bottom
                                 )
                             } else {
-                                Region.from(
+                                Region(
                                     (dividerRegion.bounds.left + dividerRegion.bounds.right) / 2,
                                     0,
                                     activeDisplay.layerStackSpace.right,
@@ -112,14 +112,14 @@ class SplitAppLayerBoundsBecomesVisible(
                             }
                         } else {
                             if (portraitPosTop) {
-                                Region.from(
+                                Region(
                                     0,
                                     0,
                                     activeDisplay.layerStackSpace.right,
                                     (dividerRegion.bounds.top + dividerRegion.bounds.bottom) / 2
                                 )
                             } else {
-                                Region.from(
+                                Region(
                                     0,
                                     (dividerRegion.bounds.top + dividerRegion.bounds.bottom) / 2,
                                     activeDisplay.layerStackSpace.right,

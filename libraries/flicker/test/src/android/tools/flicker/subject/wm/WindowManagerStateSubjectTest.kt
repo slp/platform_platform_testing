@@ -16,8 +16,8 @@
 
 package android.tools.flicker.subject.wm
 
+import android.graphics.Region
 import android.tools.Cache
-import android.tools.datatypes.Region
 import android.tools.traces.component.ComponentNameMatcher
 import android.tools.traces.wm.KeyguardControllerState
 import android.tools.traces.wm.WindowManagerState
@@ -53,10 +53,10 @@ class WindowManagerStateSubjectTest {
     private val traceFirstChromeFlashScreenTimestamp = 9215551505798
 
     // The bounds of the display used to generate the trace [trace]
-    private val displayBounds = Region.from(0, 0, 1440, 2960)
+    private val displayBounds = Region(0, 0, 1440, 2960)
 
     // The region covered by the status bar in the trace
-    private val statusBarRegion = Region.from(0, 0, 1440, 171)
+    private val statusBarRegion = Region(0, 0, 1440, 171)
 
     @Before
     fun before() {
@@ -117,10 +117,8 @@ class WindowManagerStateSubjectTest {
         val entry =
             WindowManagerTraceSubject(trace, reader)
                 .getEntryByElapsedTimestamp(traceFirstFrameTimestamp)
-        entry
-            .visibleRegion(ComponentNameMatcher.STATUS_BAR)
-            .coversAtLeast(Region.from(0, 0, 100, 100))
-        entry.visibleRegion(TestComponents.LAUNCHER).coversAtLeast(Region.from(0, 0, 100, 100))
+        entry.visibleRegion(ComponentNameMatcher.STATUS_BAR).coversAtLeast(Region(0, 0, 100, 100))
+        entry.visibleRegion(TestComponents.LAUNCHER).coversAtLeast(Region(0, 0, 100, 100))
     }
 
     @Test
@@ -131,13 +129,11 @@ class WindowManagerStateSubjectTest {
         assertFail("SkRegion((1440,0,1441,171))") {
             subject
                 .visibleRegion(ComponentNameMatcher.STATUS_BAR)
-                .coversAtLeast(Region.from(0, 0, 1441, 171))
+                .coversAtLeast(Region(0, 0, 1441, 171))
         }
 
         assertFail("SkRegion((0,2960,1440,2961))") {
-            subject
-                .visibleRegion(TestComponents.LAUNCHER)
-                .coversAtLeast(Region.from(0, 0, 1440, 2961))
+            subject.visibleRegion(TestComponents.LAUNCHER).coversAtLeast(Region(0, 0, 1440, 2961))
         }
     }
 
@@ -159,11 +155,11 @@ class WindowManagerStateSubjectTest {
         assertFail("SkRegion((0,0,1440,171)) should cover at most SkRegion((0,0,100,100))") {
             subject
                 .visibleRegion(ComponentNameMatcher.STATUS_BAR)
-                .coversAtMost(Region.from(0, 0, 100, 100))
+                .coversAtMost(Region(0, 0, 100, 100))
         }
 
         assertFail("Out-of-bounds region: SkRegion((100,0,1440,100)(0,100,1440,2960))") {
-            subject.visibleRegion(TestComponents.LAUNCHER).coversAtMost(Region.from(0, 0, 100, 100))
+            subject.visibleRegion(TestComponents.LAUNCHER).coversAtMost(Region(0, 0, 100, 100))
         }
     }
 
@@ -175,13 +171,11 @@ class WindowManagerStateSubjectTest {
         assertFail("Uncovered region: SkRegion((1440,0,1441,171))") {
             subject
                 .visibleRegion(ComponentNameMatcher.STATUS_BAR)
-                .coversAtLeast(Region.from(0, 0, 1441, 171))
+                .coversAtLeast(Region(0, 0, 1441, 171))
         }
 
         assertFail("Uncovered region: SkRegion((0,2960,1440,2961))") {
-            subject
-                .visibleRegion(TestComponents.LAUNCHER)
-                .coversAtLeast(Region.from(0, 0, 1440, 2961))
+            subject.visibleRegion(TestComponents.LAUNCHER).coversAtLeast(Region(0, 0, 1440, 2961))
         }
     }
 
@@ -202,11 +196,11 @@ class WindowManagerStateSubjectTest {
         assertFail("SkRegion((0,0,1440,171)) should cover at most SkRegion((0,0,100,100))") {
             subject
                 .visibleRegion(ComponentNameMatcher.STATUS_BAR)
-                .coversAtMost(Region.from(0, 0, 100, 100))
+                .coversAtMost(Region(0, 0, 100, 100))
         }
 
         assertFail("SkRegion((0,0,1440,2960)) should cover at most SkRegion((0,0,100,100))") {
-            subject.visibleRegion(TestComponents.LAUNCHER).coversAtMost(Region.from(0, 0, 100, 100))
+            subject.visibleRegion(TestComponents.LAUNCHER).coversAtMost(Region(0, 0, 100, 100))
         }
     }
 
@@ -216,10 +210,8 @@ class WindowManagerStateSubjectTest {
             WindowManagerTraceSubject(trace, reader)
                 .getEntryByElapsedTimestamp(traceFirstFrameTimestamp)
 
-        entry
-            .visibleRegion(ComponentNameMatcher.STATUS_BAR)
-            .coversAtMost(Region.from(0, 0, 1441, 171))
-        entry.visibleRegion(TestComponents.LAUNCHER).coversAtMost(Region.from(0, 0, 1440, 2961))
+        entry.visibleRegion(ComponentNameMatcher.STATUS_BAR).coversAtMost(Region(0, 0, 1441, 171))
+        entry.visibleRegion(TestComponents.LAUNCHER).coversAtMost(Region(0, 0, 1440, 2961))
     }
 
     @Test

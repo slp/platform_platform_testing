@@ -18,14 +18,28 @@ package android.tools.flicker.assertions
 
 import android.tools.flicker.AssertionInvocationGroup
 import android.tools.flicker.subject.exceptions.FlickerAssertionError
+import org.junit.AssumptionViolatedException
 
 interface AssertionResult {
     val name: String
     val assertionData: Collection<AssertionData>
     val assertionErrors: Collection<FlickerAssertionError>
+    val assumptionViolations: Collection<AssumptionViolatedException>
     val stabilityGroup: AssertionInvocationGroup
-    val passed: Boolean
-        get() = assertionErrors.isEmpty()
-    val failed: Boolean
-        get() = !passed
+    val status: Status
+        get() {
+            if (assumptionViolations.isNotEmpty()) {
+                return Status.ASSUMPTION_VIOLATION
+            }
+            if (assertionErrors.isNotEmpty()) {
+                return Status.FAIL
+            }
+            return Status.PASS
+        }
+
+    enum class Status {
+        PASS,
+        FAIL,
+        ASSUMPTION_VIOLATION
+    }
 }

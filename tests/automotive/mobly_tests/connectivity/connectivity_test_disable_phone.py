@@ -22,19 +22,9 @@
 
 """
 
-import sys
-import logging
-import pprint
-
 from mobly import asserts
-from mobly import test_runner
-from mobly.controllers import android_device
-
+from utilities.main_utils import common_main
 from bluetooth_test import bluetooth_base_test
-
-
-from utilities.spectatio_utils import CallUtils
-from utilities.bt_utils import BTUtils
 from utilities import constants
 
 class BluetoothDisableEnablePhoneTest(bluetooth_base_test.BluetoothBaseTest):
@@ -96,4 +86,4 @@ class BluetoothDisableEnablePhoneTest(bluetooth_base_test.BluetoothBaseTest):
 
 if __name__ == '__main__':
     # Take test args
-    test_runner.main()
+    common_main()

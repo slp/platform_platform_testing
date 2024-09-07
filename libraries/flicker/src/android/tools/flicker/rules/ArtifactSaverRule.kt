@@ -17,6 +17,9 @@
 package android.tools.flicker.rules
 
 import android.platform.test.rule.ArtifactSaver
+import android.tools.FLICKER_TAG
+import android.tools.traces.parsers.DeviceDumpParser
+import android.util.Log
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
@@ -27,7 +30,37 @@ class ArtifactSaverRule : TestWatcher() {
             return
         }
 
+        try {
+            if (DeviceDumpParser.lastWmTraceData.isNotEmpty()) {
+                val fileName = getClassAndMethodName(description) + "lastWmTraceData.winscope"
+                val file = ArtifactSaver.artifactFile(fileName)
+                file.writeBytes(DeviceDumpParser.lastWmTraceData)
+            }
+
+            if (DeviceDumpParser.lastLayersTraceData.isNotEmpty()) {
+                val fileName = getClassAndMethodName(description) + "lastLayersTraceData.perfetto"
+                val file = ArtifactSaver.artifactFile(fileName)
+                file.writeBytes(DeviceDumpParser.lastLayersTraceData)
+            }
+        } catch (e: Exception) {
+            Log.e(FLICKER_TAG, "Failed to write last Winscope dumps on error", e)
+        }
+
         ArtifactSaver.onError(description, e)
+
         handled = true
+    }
+
+    private fun getClassAndMethodName(description: Description?): String {
+        var suffix = description?.methodName
+        if (suffix == null) {
+            // Can happen when the description is from a ClassRule
+            suffix = "EntireClassExecution"
+        }
+        val testClass = description?.testClass
+
+        // Can have null class if this is a synthetic suite
+        val className = if (testClass != null) testClass.simpleName else "SUITE"
+        return "$className.$suffix"
     }
 }

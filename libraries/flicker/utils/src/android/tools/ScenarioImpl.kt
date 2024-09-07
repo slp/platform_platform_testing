@@ -16,6 +16,8 @@
 
 package android.tools
 
+import android.util.Log
+
 /**
  * Legacy flicker test scenario
  *
@@ -52,9 +54,15 @@ internal constructor(
     val isGesturalNavigation = navBarMode == NavBar.MODE_GESTURAL
 
     val isTablet: Boolean
-        get() =
-            extraConfig[IS_TABLET] as Boolean?
-                ?: error("$IS_TABLET property not initialized. Use [setIsTablet] to initialize ")
+        get() {
+            if (!extraConfig.containsKey(IS_TABLET)) {
+                Log.e(
+                    FLICKER_TAG,
+                    "$IS_TABLET property not initialized. Use [setIsTablet] to initialize"
+                )
+            }
+            return extraConfig[IS_TABLET] as Boolean? ?: false
+        }
 
     fun setIsTablet(isTablet: Boolean) {
         _extraConfig[IS_TABLET] = isTablet

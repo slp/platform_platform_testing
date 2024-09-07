@@ -26,6 +26,7 @@ import android.tools.flicker.subject.exceptions.SimpleFlickerAssertionError
 import android.tools.utils.CleanFlickerEnvironmentRule
 import android.tools.utils.KotlinMockito
 import com.google.common.truth.Truth
+import org.junit.Assert.assertThrows
 import org.junit.Assume
 import org.junit.AssumptionViolatedException
 import org.junit.Before
@@ -136,12 +137,15 @@ class FlickerServiceRuleTest {
 
         testRule.starting(mockDescription)
         testRule.succeeded(mockDescription)
-        try {
-            testRule.finished(mockDescription)
-            error("Exception was not thrown")
-        } catch (e: Throwable) {
-            Truth.assertThat(e).isEqualTo(assertionError)
-        }
+
+        val exception =
+            assertThrows(SimpleFlickerAssertionError::class.java) {
+                testRule.starting(mockDescription)
+                testRule.succeeded(mockDescription)
+                testRule.finished(mockDescription)
+            }
+
+        Truth.assertThat(exception).isEqualTo(assertionError)
     }
 
     @Test
@@ -162,6 +166,31 @@ class FlickerServiceRuleTest {
         testRule.starting(mockDescription)
         testRule.succeeded(mockDescription)
         testRule.finished(mockDescription)
+    }
+
+    @Test
+    fun throwsExceptionForExecutionErrorsIfRequested() {
+        val mockFlickerServiceResultsCollector =
+            Mockito.mock(IFlickerServiceResultsCollector::class.java)
+        val testRule =
+            FlickerServiceRule(
+                metricsCollector = mockFlickerServiceResultsCollector,
+                failTestOnServiceError = true,
+            )
+        val mockDescription = Description.createTestDescription(this::class.java, "mockTest")
+
+        val executionError = Throwable(Consts.FAILURE)
+        `when`(mockFlickerServiceResultsCollector.executionErrors)
+            .thenReturn(listOf(executionError))
+
+        val exception =
+            assertThrows(Throwable::class.java) {
+                testRule.starting(mockDescription)
+                testRule.succeeded(mockDescription)
+                testRule.finished(mockDescription)
+            }
+
+        Truth.assertThat(exception).hasMessageThat().isEqualTo(Consts.FAILURE)
     }
 
     @Test
@@ -212,6 +241,23 @@ class FlickerServiceRuleTest {
         testRule.finished(mockDescription)
     }
 
+    @Test
+    fun handlesAssertionsWithAssumptionFailures() {
+        val mockFlickerServiceResultsCollector =
+            Mockito.mock(IFlickerServiceResultsCollector::class.java)
+        val testRule =
+            FlickerServiceRule(
+                metricsCollector = mockFlickerServiceResultsCollector,
+                failTestOnFlicker = true
+            )
+        val mockDescription = Description.createTestDescription(this::class.java, "mockTest")
+
+        testRule.starting(mockDescription)
+        testRule.succeeded(mockDescription)
+
+        testRule.finished(mockDescription)
+    }
+
     companion object {
         fun mockFailureAssertionResult(error: FlickerAssertionError) =
             object : AssertionResult {
@@ -224,9 +270,10 @@ class FlickerServiceRuleTest {
                             }
                         }
                     )
+                override val assumptionViolations = emptyList<AssumptionViolatedException>()
                 override val assertionErrors = listOf(error)
                 override val stabilityGroup = AssertionInvocationGroup.BLOCKING
-                override val passed = false
+                override val status = AssertionResult.Status.FAIL
             }
 
         @ClassRule @JvmField val ENV_CLEANUP = CleanFlickerEnvironmentRule()

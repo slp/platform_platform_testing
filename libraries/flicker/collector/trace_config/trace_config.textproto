@@ -85,3 +85,12 @@ data_sources: {
     name: "com.android.wm.shell.transition"
   }
 }
+
+data_sources: {
+  config {
+    name: "android.input.inputevent"
+    android_input_event_config {
+        mode: TRACE_MODE_TRACE_ALL
+    }
+  }
+}

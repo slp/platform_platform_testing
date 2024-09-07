@@ -17,14 +17,15 @@
 package android.tools.parsers
 
 import android.annotation.SuppressLint
+import android.graphics.RectF
+import android.graphics.Region
 import android.tools.Cache
 import android.tools.Rotation
 import android.tools.Timestamps
 import android.tools.datatypes.ActiveBuffer
-import android.tools.datatypes.Color
 import android.tools.datatypes.Matrix33
-import android.tools.datatypes.RectF
-import android.tools.datatypes.Region
+import android.tools.datatypes.defaultColor
+import android.tools.traces.ConditionsFactory
 import android.tools.traces.DeviceStateDump
 import android.tools.traces.component.ComponentNameMatcher
 import android.tools.traces.component.IComponentName
@@ -38,6 +39,7 @@ import android.tools.traces.wm.WindowManagerTrace
 import android.tools.utils.CleanFlickerEnvironmentRule
 import android.tools.utils.getWmDumpReaderFromAsset
 import android.tools.utils.getWmTraceReaderFromAsset
+import androidx.core.graphics.toRect
 import androidx.test.filters.FlakyTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth
@@ -93,22 +95,22 @@ class WindowManagerStateHelperTest {
     private fun createImaginaryLayer(name: String, index: Int, id: Int, parentId: Int): Layer {
         val transform = Transform.from(0, Matrix33.EMPTY)
         val rect =
-            RectF.from(
-                left = index.toFloat(),
-                top = index.toFloat(),
-                right = index.toFloat() + 1,
-                bottom = index.toFloat() + 1
+            RectF(
+                /* left */ index.toFloat(),
+                /* top */ index.toFloat(),
+                /* right */ index.toFloat() + 1,
+                /* bottom */ index.toFloat() + 1
             )
         return Layer.from(
             name,
             id,
             parentId,
             z = 0,
-            visibleRegion = Region.from(rect.toRect()),
+            visibleRegion = Region(rect.toRect()),
             activeBuffer = ActiveBuffer.from(1, 1, 1, 1),
             flags = 0,
             bounds = rect,
-            color = Color.DEFAULT,
+            color = defaultColor(),
             isOpaque = true,
             shadowRadius = 0f,
             cornerRadius = 0f,
@@ -118,7 +120,7 @@ class WindowManagerStateHelperTest {
             effectiveScalingMode = 0,
             bufferTransform = transform,
             hwcCompositionType = HwcCompositionType.HWC_TYPE_UNSPECIFIED,
-            crop = rect.toRect(),
+            crop = rect,
             backgroundBlurRadius = 0,
             isRelativeOf = false,
             zOrderRelativeOfId = -1,
@@ -143,6 +145,10 @@ class WindowManagerStateHelperTest {
         return layers
     }
 
+    fun getNavBarComponent(wmState: WindowManagerState) =
+        if (wmState.isTablet || !ConditionsFactory.isPhoneNavBar()) ComponentNameMatcher.TASK_BAR
+        else ComponentNameMatcher.NAV_BAR
+
     /**
      * Creates a device state dump provider based on the WM trace
      *
@@ -156,35 +162,20 @@ class WindowManagerStateHelperTest {
             if (iterator.hasNext()) {
                 val wmState = iterator.next()
                 val layerList: MutableList<IComponentName> =
-                    mutableListOf(
-                        android.tools.traces.component.ComponentNameMatcher.STATUS_BAR,
-                        android.tools.traces.component.ComponentNameMatcher.NAV_BAR
-                    )
-                if (
-                    wmState.isWindowSurfaceShown(
-                        android.tools.traces.component.ComponentNameMatcher.SPLASH_SCREEN
-                    )
-                ) {
-                    layerList.add(android.tools.traces.component.ComponentNameMatcher.SPLASH_SCREEN)
+                    mutableListOf(ComponentNameMatcher.STATUS_BAR, getNavBarComponent(wmState))
+                if (wmState.isWindowSurfaceShown(ComponentNameMatcher.SPLASH_SCREEN)) {
+                    layerList.add(ComponentNameMatcher.SPLASH_SCREEN)
                 }
-                if (
-                    wmState.isWindowSurfaceShown(
-                        android.tools.traces.component.ComponentNameMatcher.SNAPSHOT
-                    )
-                ) {
-                    layerList.add(android.tools.traces.component.ComponentNameMatcher.SNAPSHOT)
+                if (wmState.isWindowSurfaceShown(ComponentNameMatcher.SNAPSHOT)) {
+                    layerList.add(ComponentNameMatcher.SNAPSHOT)
                 }
                 layerList.addAll(
                     wmState.visibleWindows
                         .filter { it.name.contains("/") }
-                        .map {
-                            android.tools.traces.component.ComponentNameMatcher.unflattenFromString(
-                                it.name
-                            )
-                        }
+                        .map { ComponentNameMatcher.unflattenFromString(it.name) }
                 )
                 if (wmState.inputMethodWindowState?.isSurfaceShown == true) {
-                    layerList.add(android.tools.traces.component.ComponentNameMatcher.IME)
+                    layerList.add(ComponentNameMatcher.IME)
                 }
                 val layerTraceEntry =
                     LayerTraceEntryBuilder()

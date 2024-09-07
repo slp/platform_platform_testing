@@ -124,7 +124,8 @@ class AssertionsChecker<T : FlickerSubject> {
                 ExceptionMessageBuilder()
                     .forSubject(entries.last())
                     .setMessage(
-                        "Assertion $assertionIndex never failed: ${assertions[assertionIndex]}"
+                        "Assertion ${assertions[assertionIndex]} (block $assertionIndex) never " +
+                            "became false. The assertions that came after it were never reached."
                     )
                     .addExtraDescription(passedAssertionsFacts)
                     .addExtraDescription(untestedAssertionsFacts)

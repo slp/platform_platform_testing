@@ -26,7 +26,6 @@
 """
 
 from mobly import asserts
-
 from utilities import constants
 from utilities.main_utils import common_main
 from bluetooth_test import bluetooth_base_test

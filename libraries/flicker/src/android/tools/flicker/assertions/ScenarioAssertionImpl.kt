@@ -17,10 +17,12 @@
 package android.tools.flicker.assertions
 
 import android.tools.FLICKER_TAG
-import android.tools.Logger
 import android.tools.flicker.AssertionInvocationGroup
 import android.tools.flicker.subject.exceptions.FlickerAssertionError
 import android.tools.io.Reader
+import android.tools.withTracing
+import android.util.Log
+import org.junit.AssumptionViolatedException
 
 // internal data class but visible for testing
 data class ScenarioAssertionImpl(
@@ -36,21 +38,31 @@ data class ScenarioAssertionImpl(
     }
 
     override fun execute(): AssertionResult =
-        Logger.withTracing("executeAssertion") {
+        withTracing("executeAssertion") {
+            val assertionExceptions = assertionData.map { assertionRunner.runAssertion(it) }
+
+            require(
+                assertionExceptions.all {
+                    it == null || it is FlickerAssertionError || it is AssumptionViolatedException
+                }
+            ) {
+                "Expected all assertion exceptions to be " +
+                    "FlickerAssertionErrors or AssumptionViolatedExceptions"
+            }
+
+            val assertionErrors = assertionExceptions.filterIsInstance<FlickerAssertionError>()
+            assertionErrors.forEach { assertion ->
+                assertionExtraData.forEach { (key, value) ->
+                    assertion.messageBuilder.addExtraDescription(key, value)
+                }
+            }
+
             AssertionResultImpl(
                     name,
                     assertionData,
-                    assertionData.mapNotNull {
-                        val exception = assertionRunner.runAssertion(it) ?: return@mapNotNull null
-                        if (exception !is FlickerAssertionError) {
-                            throw exception
-                        } else {
-                            assertionExtraData.forEach { (key, value) ->
-                                exception.messageBuilder.addExtraDescription(key, value)
-                            }
-                        }
-                        exception
-                    },
+                    assumptionViolations =
+                        assertionExceptions.filterIsInstance<AssumptionViolatedException>(),
+                    assertionErrors,
                     stabilityGroup
                 )
                 .also { log(it) }
@@ -59,13 +71,19 @@ data class ScenarioAssertionImpl(
     override fun toString() = name
 
     private fun log(result: AssertionResult) {
-        if (result.failed) {
-            Logger.w(
-                "$FLICKER_TAG-SERVICE",
-                "${result.name} FAILED :: " + result.assertionErrors.map { it.message }
-            )
-        } else {
-            Logger.w("$FLICKER_TAG-SERVICE", "${result.name} PASSED")
+        when (result.status) {
+            AssertionResult.Status.ASSUMPTION_VIOLATION ->
+                Log.w(
+                    "$FLICKER_TAG-SERVICE",
+                    "${result.name} ASSUMPTION VIOLATION :: " +
+                        result.assumptionViolations.map { it.message }
+                )
+            AssertionResult.Status.PASS -> Log.d("$FLICKER_TAG-SERVICE", "${result.name} PASSED")
+            AssertionResult.Status.FAIL ->
+                Log.e(
+                    "$FLICKER_TAG-SERVICE",
+                    "${result.name} FAILED :: " + result.assertionErrors.map { it.message }
+                )
         }
     }
 }

@@ -16,15 +16,17 @@
 
 package android.tools.utils
 
+import android.graphics.Rect
+import android.graphics.Region
 import android.tools.datatypes.ActiveBuffer
-import android.tools.datatypes.Color
 import android.tools.datatypes.Matrix33
-import android.tools.datatypes.Rect
-import android.tools.datatypes.Region
+import android.tools.datatypes.defaultColor
+import android.tools.datatypes.intersection
 import android.tools.traces.surfaceflinger.Flag
 import android.tools.traces.surfaceflinger.HwcCompositionType
 import android.tools.traces.surfaceflinger.Layer
 import android.tools.traces.surfaceflinger.Transform
+import androidx.core.graphics.toRectF
 
 class MockLayerBuilder(private val name: String) {
     companion object {
@@ -70,11 +72,12 @@ class MockLayerBuilder(private val name: String) {
                 id,
                 parentId,
                 z = zIndex,
-                visibleRegion = if (isVisible) Region.from(absoluteBounds) else Region.EMPTY,
-                activeBuffer = ActiveBuffer.from(absoluteBounds.width, absoluteBounds.height, 1, 1),
+                visibleRegion = if (isVisible) Region(absoluteBounds) else Region(),
+                activeBuffer =
+                    ActiveBuffer.from(absoluteBounds.width(), absoluteBounds.height(), 1, 1),
                 flags = if (isVisible) 0 else Flag.HIDDEN.value,
                 bounds = absoluteBounds.toRectF(),
-                color = Color.DEFAULT,
+                color = defaultColor(),
                 isOpaque = isVisible && isOpaque,
                 shadowRadius = 0f,
                 cornerRadius = 0f,
@@ -84,7 +87,7 @@ class MockLayerBuilder(private val name: String) {
                 effectiveScalingMode = 0,
                 bufferTransform = transform,
                 hwcCompositionType = HwcCompositionType.HWC_TYPE_UNSPECIFIED,
-                crop = absoluteBounds,
+                crop = absoluteBounds.toRectF(),
                 backgroundBlurRadius = 0,
                 isRelativeOf = false,
                 zOrderRelativeOfId = -1,

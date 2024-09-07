@@ -21,7 +21,6 @@ import android.tools.traces.executeShellCommand
 import android.tools.traces.io.IoUtils
 import com.android.internal.protolog.common.LogLevel
 import java.io.File
-import java.io.FileOutputStream
 import java.util.concurrent.locks.ReentrantLock
 import perfetto.protos.PerfettoConfig
 import perfetto.protos.PerfettoConfig.DataSourceConfig
@@ -49,8 +48,15 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
         traceFile = File.createTempFile(traceType.fileName, "")
         traceFileInPerfettoDir = PERFETTO_TRACES_DIR.resolve(requireNotNull(traceFile).name)
 
-        FileOutputStream(configFile).use { config.writeTo(it) }
+        configFile.writeBytes(config.toByteArray())
+
+        // Experiment for sporadic failures like b/333220956.
+        // The perfetto command below sometimes fails to find the config file on disk,
+        // so let's try to wait till the file exists on disk.
+        IoUtils.waitFileExists(configFile, 2000)
+
         IoUtils.moveFile(configFile, requireNotNull(configFileInPerfettoDir))
+        IoUtils.waitFileExists(requireNotNull(configFileInPerfettoDir), 2000)
 
         val command =
             "perfetto --background-wait" +
@@ -88,6 +94,8 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
         private val dataSourceConfigs = mutableSetOf<DataSourceConfig>()
         private var incrementalTimeoutMs: Int? = null
 
+        fun enableImeTrace(): Builder = apply { enableCustomTrace(createImeDataSourceConfig()) }
+
         fun enableLayersTrace(flags: List<SurfaceFlingerLayersConfig.TraceFlag>? = null): Builder =
             apply {
                 enableCustomTrace(
@@ -122,6 +130,11 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
             enableCustomTrace(createProtoLogDataSourceConfig(logAll, groupOverrides))
         }
 
+        fun enableViewCaptureTrace(): Builder = apply {
+            val config = DataSourceConfig.newBuilder().setName(VIEWCAPTURE_DATA_SOURCE).build()
+            enableCustomTrace(config)
+        }
+
         fun enableCustomTrace(dataSourceConfig: DataSourceConfig): Builder = apply {
             dataSourceConfigs.add(dataSourceConfig)
         }
@@ -151,6 +164,10 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
             }
 
             return PerfettoTraceMonitor(config = configBuilder.build())
+        }
+
+        private fun createImeDataSourceConfig(): DataSourceConfig {
+            return DataSourceConfig.newBuilder().setName(IME_DATA_SOURCE).build()
         }
 
         private fun createLayersTraceDataSourceConfig(
@@ -237,10 +254,12 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
     companion object {
         private const val TRACE_BUFFER_SIZE_KB = 1024 * 1024
 
+        private const val IME_DATA_SOURCE = "android.inputmethod"
         private const val SF_LAYERS_DATA_SOURCE = "android.surfaceflinger.layers"
         private const val SF_TRANSACTIONS_DATA_SOURCE = "android.surfaceflinger.transactions"
         private const val TRANSITIONS_DATA_SOURCE = "com.android.wm.shell.transition"
         private const val PROTOLOG_DATA_SOURCE = "android.protolog"
+        private const val VIEWCAPTURE_DATA_SOURCE = "android.viewcapture"
 
         private val allPerfettoPids = mutableListOf<Int>()
         private val allPerfettoPidsLock = ReentrantLock()

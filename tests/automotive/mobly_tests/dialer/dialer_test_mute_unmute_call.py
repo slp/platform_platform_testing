@@ -66,5 +66,12 @@ class BluetoothMuteUnmuteCallTest(bluetooth_base_test.BluetoothBaseTest):
             True)
         self.call_utils.end_call()
 
+    def teardown_test(self):
+        # End call if test failed
+        self.call_utils.end_call_using_adb_command(self.target)
+        self.call_utils.wait_with_log(5)
+        self.call_utils.press_home()
+        super().teardown_test()
+
 if __name__ == '__main__':
         common_main()

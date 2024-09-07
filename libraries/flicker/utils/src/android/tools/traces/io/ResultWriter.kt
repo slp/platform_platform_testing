@@ -16,7 +16,6 @@
 
 package android.tools.traces.io
 
-import android.tools.Logger
 import android.tools.Scenario
 import android.tools.ScenarioBuilder
 import android.tools.Tag
@@ -27,6 +26,8 @@ import android.tools.io.ResultArtifactDescriptor
 import android.tools.io.RunStatus
 import android.tools.io.TraceType
 import android.tools.io.TransitionTimeRange
+import android.tools.withTracing
+import android.util.Log
 import java.io.File
 
 /** Helper class to create run result artifact files */
@@ -71,7 +72,7 @@ open class ResultWriter {
      * @param tag used when adding [artifact] to the result artifact
      */
     fun addTraceResult(traceType: TraceType, artifact: File, tag: String = Tag.ALL) = apply {
-        Logger.d(
+        Log.d(
             FLICKER_IO_TAG,
             "Add trace result file=$artifact type=$traceType tag=$tag scenario=$scenario"
         )
@@ -81,13 +82,13 @@ open class ResultWriter {
 
     /** @return writes the result artifact to disk and returns it */
     open fun write(): IResultData {
-        return Logger.withTracing("write") {
+        return withTracing("write") {
             val outputDir = outputDir
             requireNotNull(outputDir) { "Output dir not configured" }
             require(!scenario.isEmpty) { "Scenario shouldn't be empty" }
 
             if (runStatus == RunStatus.UNDEFINED) {
-                Logger.w(FLICKER_IO_TAG, "Writing result with $runStatus run status")
+                Log.w(FLICKER_IO_TAG, "Writing result with $runStatus run status")
             }
 
             val artifact =

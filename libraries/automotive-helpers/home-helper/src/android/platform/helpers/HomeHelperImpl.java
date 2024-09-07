@@ -51,7 +51,7 @@ public class HomeHelperImpl extends AbstractStandardAppHelper implements IAutoHo
     @Override
     public boolean hasBluetoothButton() {
         BySelector bluetoothWidgetSelector =
-                getUiElementFromConfig(AutomotiveConfigConstants.HOME_BLUETOOTH_BUTTON);
+                getUiElementFromConfig(AutomotiveConfigConstants.STATUS_BAR_BLUETOOTH_BUTTON);
         return getSpectatioUiUtil().hasUiElement(bluetoothWidgetSelector);
     }
 
@@ -59,7 +59,7 @@ public class HomeHelperImpl extends AbstractStandardAppHelper implements IAutoHo
     @Override
     public boolean hasNetworkButton() {
         BySelector networkWidgetSelector =
-                getUiElementFromConfig(AutomotiveConfigConstants.HOME_NETWORK_BUTTON);
+                getUiElementFromConfig(AutomotiveConfigConstants.NETWORK_PALETTE);
         return getSpectatioUiUtil().hasUiElement(networkWidgetSelector);
     }
 
@@ -67,7 +67,7 @@ public class HomeHelperImpl extends AbstractStandardAppHelper implements IAutoHo
     @Override
     public boolean hasDisplayBrightness() {
         BySelector displayBrightnessWidgetSelector =
-                getUiElementFromConfig(AutomotiveConfigConstants.HOME_DISPLAY_BRIGHTNESS_BUTTON);
+                getUiElementFromConfig(AutomotiveConfigConstants.STATUS_BAR_BRIGHTNESS_BUTTON);
         return getSpectatioUiUtil().hasUiElement(displayBrightnessWidgetSelector);
     }
 

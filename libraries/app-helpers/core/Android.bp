@@ -20,6 +20,7 @@ package {
 
 java_library {
     name: "app-helpers-core",
+    sdk_version: "test_current",
     libs: [
         "androidx.test.runner",
         "launcher-helper-lib",

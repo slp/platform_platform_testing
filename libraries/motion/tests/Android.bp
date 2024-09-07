@@ -15,17 +15,18 @@
 
 package {
     default_applicable_licenses: ["Android-Apache-2.0"],
+    default_team: "trendy_team_motion",
 }
 
 android_test {
     name: "PlatformMotionTestingTests",
     manifest: "AndroidManifest.xml",
-    platform_apis: true,
-    sdk_version: "current",
-    certificate: "platform",
-    optimize: {
-        enabled: false,
-    },
+    defaults: ["MotionTestDefaults"],
+    // Libraries used by mockito inline
+    jni_libs: [
+        "libdexmakerjvmtiagent",
+        "libstaticjvmtiagent",
+    ],
     srcs: [
         "src/**/*.kt",
 
@@ -33,10 +34,14 @@ android_test {
         // directly once Kotlin tests can access internal declarations.
         ":PlatformMotionTesting-srcs",
     ],
+    resource_dirs: ["res"],
+    asset_dirs: ["assets"],
     static_libs: [
         "platform-screenshot-diff-core",
         "platform-screenshot-diff-proto",
         "uiautomator-helpers",
+        "mockito-target-inline-minus-junit4",
+        "mockito-kotlin2",
         "error_prone_annotations",
         "androidx.annotation_annotation",
         "androidx.transition_transition",

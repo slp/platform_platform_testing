@@ -16,8 +16,8 @@
 
 package android.tools.traces.wm
 
-import android.tools.datatypes.Insets
-import android.tools.datatypes.Rect
+import android.graphics.Insets
+import android.graphics.Rect
 import android.tools.withCache
 
 /** Representation of a display cutout from a WM trace */

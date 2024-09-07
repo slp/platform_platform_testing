@@ -75,9 +75,11 @@
     "OPEN_CAR_UI": "am crash com.android.car"
   },
   "UI_ELEMENTS": {
-
-
-
+    "MAKE_CALL": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "call_button",
+      "PACKAGE": "com.android.car.dialer"
+    },
     "MOBILE_PHONE_ICON": {
       "TYPE": "TEXT",
       "VALUE": "Phone"
@@ -174,8 +176,12 @@
     },
     "DIALING_NUMBER": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "user_profile_phone_number",
+      "VALUE": "user_profile_title",
       "PACKAGE": "com.android.car.dialer"
+    },
+    "USER_PROFILE_PHONE_NUMBER": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "user_profile_phone_number"
     },
     "CONTACT_SEARCH_BAR": {
       "TYPE": "CLASS",
@@ -474,7 +480,7 @@
     },
     "STATUS_BAR_BRIGHTNESS_BUTTON": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "qc_display_status_icon",
+      "VALUE": "display_panel_button",
       "PACKAGE": "com.android.systemui"
     },
     "STATUS_BAR_DISPLAY_BRIGHTNESS_PALETTE": {
@@ -516,19 +522,9 @@
       "TYPE": "TEXT",
       "VALUE": "Phone"
     },
-    "HOME_BLUETOOTH_BUTTON": {
-      "TYPE": "RESOURCE_ID",
-      "VALUE": "qc_bluetooth_status_icon",
-      "PACKAGE": "com.android.systemui"
-    },
-    "HOME_DISPLAY_BRIGHTNESS_BUTTON": {
-      "TYPE": "RESOURCE_ID",
-      "VALUE": "qc_display_status_icon",
-      "PACKAGE": "com.android.systemui"
-    },
     "HOME_NETWORK_BUTTON": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "qc_signal_status_icon",
+      "VALUE": "connectivity_panel_button",
       "PACKAGE": "com.android.systemui"
     },
     "HOME_PROFILE_GUEST_ICON": {
@@ -906,7 +902,7 @@
     },
     "STATUS_BAR_BLUETOOTH_BUTTON": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "qc_bluetooth_status_icon",
+      "VALUE": "bluetooth_panel_button",
       "PACKAGE": "com.android.systemui"
     },
     "STATUS_BAR_BLUETOOTH_TOGGLE_ON": {
@@ -1329,6 +1325,10 @@
       "TYPE": "TEXT",
       "VALUE": "Sign in on car screen"
     },
+    "ACCOUNT_SETTINGS_TRY_ANOTHER_WAY": {
+      "TYPE": "TEXT_CONTAINS",
+      "VALUE": "Try another way"
+    },
     "ACCOUNT_SETTINGS_REMOVE_BUTTON": {
       "TYPE": "RESOURCE_ID",
       "VALUE": "car_ui_secondary_action"
@@ -1680,6 +1680,10 @@
       "TYPE": "TEXT",
       "VALUE": "Recently opened"
     },
+    "SOUND_SETTING_INCALL": {
+      "TYPE": "TEXT",
+      "VALUE": "In-call volume"
+    },
     "NOTIFICATIONS_UI_ELEMENT": {
       "TYPE": "TEXT",
       "VALUE": "Notifications"
@@ -2023,7 +2027,7 @@
     },
     "NETWORK_PALETTE": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "qc_signal_status_icon",
+      "VALUE": "connectivity_panel_button",
       "PACKAGE": "com.android.systemui"
     },
     "NETWORK_PALETTE_HOTSPOT": {

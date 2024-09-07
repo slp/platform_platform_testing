@@ -616,11 +616,7 @@ public abstract class AbstractStandardAppHelper2 implements IAppHelper {
     private boolean packageNeedsNotificationPermission(PackageManager pm, String pkg) {
         PackageInfo pInfo;
         try {
-            pInfo =
-                    pm.getPackageInfoAsUser(
-                            pkg,
-                            PackageManager.PackageInfoFlags.of(PackageManager.GET_PERMISSIONS),
-                            ActivityManager.getCurrentUser());
+            pInfo = pm.getPackageInfo(pkg, PackageManager.GET_PERMISSIONS);
         } catch (NameNotFoundException e) {
             Log.w(LOG_TAG, "package name not found");
             return false;

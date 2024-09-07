@@ -22,6 +22,7 @@ android_test {
 
     sdk_version: "test_current",
     static_libs: [
+        "androidx.test.runner",
         "microbenchmark-device-lib",
         "mockito-target",
         "truth",

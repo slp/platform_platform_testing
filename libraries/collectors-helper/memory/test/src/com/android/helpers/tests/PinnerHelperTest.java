@@ -16,19 +16,23 @@
 
 package com.android.helpers.tests;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
+import androidx.test.uiautomator.UiDevice;
+
 import com.android.helpers.PinnerHelper;
 
-import java.io.IOException;
-import java.util.Map;
-
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
+
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * Android Unit tests for {@link PinnerHelper}.
@@ -39,6 +43,10 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidJUnit4.class)
 public class PinnerHelperTest {
     private static final String TAG = PinnerHelperTest.class.getSimpleName();
+    // Valid output file
+    private static final String VALID_OUTPUT_DIR = "/sdcard/test_results";
+    // Invalid output file (no permissions to write)
+    private static final String INVALID_OUTPUT_DIR = "/data/local/tmp";
 
     private PinnerHelper mPinnerHelper;
 
@@ -50,6 +58,38 @@ public class PinnerHelperTest {
 
     @After
     public void tearDown() throws IOException {
+        UiDevice uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        uiDevice.executeShellCommand(String.format("rm -rf %s", VALID_OUTPUT_DIR));
+    }
+
+    /** Test start collecting returns false if the helper has not been properly set up. */
+    @Test
+    public void testSetUpNotCalled() {
+        assertFalse(mPinnerHelper.startCollecting());
+    }
+
+    /** Test writing file to a valid output directory. */
+    @Test
+    public void testValidFile() {
+        mPinnerHelper.setUp(VALID_OUTPUT_DIR);
+        assertTrue(mPinnerHelper.startCollecting());
+    }
+
+    /** Test writing file to a invalid directory. */
+    @Test
+    public void testInvalidFile() {
+        mPinnerHelper.setUp(INVALID_OUTPUT_DIR);
+        assertFalse(mPinnerHelper.startCollecting());
+    }
+
+    /** Test the pinner snapshot file is added in the result map. */
+    @Test
+    public void testPinnerSnapshotDumpFile() {
+        mPinnerHelper.setUp(VALID_OUTPUT_DIR);
+        assertTrue(mPinnerHelper.startCollecting());
+        Map<String, String> metrics = mPinnerHelper.getMetrics();
+        assertTrue(metrics.size() > 2);
+        assertTrue(metrics.containsKey(PinnerHelper.OUTPUT_FILE_PATH_KEY));
     }
 
     /**
@@ -57,6 +97,7 @@ public class PinnerHelperTest {
      */
     @Test
     public void testPinnerTotalFileSizeMetric() {
+        mPinnerHelper.setUp(VALID_OUTPUT_DIR);
         assertTrue(mPinnerHelper.startCollecting());
         Map<String, String> metrics = mPinnerHelper.getMetrics();
         assertTrue(metrics.size() > 2);
@@ -68,6 +109,7 @@ public class PinnerHelperTest {
      */
     @Test
     public void testValidateTotalFileSizeCount() {
+        mPinnerHelper.setUp(VALID_OUTPUT_DIR);
         assertTrue(mPinnerHelper.startCollecting());
         Map<String, String> metrics = mPinnerHelper.getMetrics();
         int totalFilesCount = metrics.entrySet().stream().filter(

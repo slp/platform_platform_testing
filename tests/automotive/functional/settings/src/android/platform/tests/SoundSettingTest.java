@@ -18,11 +18,13 @@ package android.platform.tests;
 
 import static junit.framework.Assert.assertTrue;
 
+import android.platform.helpers.AutomotiveConfigConstants;
 import android.platform.helpers.HelperAccessor;
 import android.platform.helpers.IAutoSettingHelper;
 import android.platform.helpers.IAutoSoundsSettingHelper;
 import android.platform.helpers.IAutoSoundsSettingHelper.SoundType;
 import android.platform.helpers.IAutoSoundsSettingHelper.VolumeType;
+import android.platform.helpers.IAutoUISettingsHelper;
 import android.platform.helpers.SettingsConstants;
 
 import androidx.test.runner.AndroidJUnit4;
@@ -38,13 +40,14 @@ public class SoundSettingTest {
     private static final String NOTIFICATION_SOUND = "Selenium";
     private static final String ALARM_SOUND = "Platinum";
     private static final int INDEX = 20;
-
+    private HelperAccessor<IAutoUISettingsHelper> mSettingsUIHelper;
     private HelperAccessor<IAutoSoundsSettingHelper> mSoundsSettingHelper;
     private HelperAccessor<IAutoSettingHelper> mSettingHelper;
 
     public SoundSettingTest() throws Exception {
         mSoundsSettingHelper = new HelperAccessor<>(IAutoSoundsSettingHelper.class);
         mSettingHelper = new HelperAccessor<>(IAutoSettingHelper.class);
+        mSettingsUIHelper = new HelperAccessor<>(IAutoUISettingsHelper.class);
     }
 
 
@@ -53,7 +56,9 @@ public class SoundSettingTest {
         mSettingHelper.get().openSetting(SettingsConstants.SOUND_SETTINGS);
         assertTrue(
                 "Sound setting did not open",
-                mSettingHelper.get().checkMenuExists("In-call volume"));
+                mSettingsUIHelper
+                        .get()
+                        .hasUIElement(AutomotiveConfigConstants.SOUND_SETTING_INCALL));
     }
 
     @After

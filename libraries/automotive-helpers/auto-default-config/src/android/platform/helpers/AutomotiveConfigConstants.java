@@ -46,6 +46,7 @@ public class AutomotiveConfigConstants {
     public static final String VOICE_CHANNEL_CAR = "VOICE_CHANNEL_CAR";
     public static final String DIALED_CONTACT_TYPE = "DIALED_CONTACT_TYPE";
     public static final String DIALING_NUMBER = "DIALING_NUMBER";
+    public static final String USER_PROFILE_PHONE_NUMBER = "USER_PROFILE_PHONE_NUMBER";
     public static final String CONTACT_SEARCH_BAR = "CONTACT_SEARCH_BAR";
     public static final String CONTACT_SEARCH_RESULT = "CONTACT_SEARCH_RESULT";
     public static final String CONTACT_SEARCH_RESULT_NAME = "CONTACT_SEARCH_RESULT_NAME";
@@ -289,6 +290,7 @@ public class AutomotiveConfigConstants {
             "SOUND_SETTINGS_SCROLL_BACKWARD_BUTTON";
     public static final String SOUND_SETTINGS_SCROLL_MARGIN = "SOUND_SETTINGS_SCROLL_MARGIN";
     public static final String SOUND_SETTINGS_SCROLL_WAIT_TIME = "SOUND_SETTINGS_SCROLL_WAIT_TIME";
+    public static final String SOUND_SETTING_INCALL = "SOUND_SETTING_INCALL";
 
     // Media Center
     public static final String MEDIA_CENTER_PACKAGE = "MEDIA_CENTER_PACKAGE";
@@ -315,6 +317,8 @@ public class AutomotiveConfigConstants {
     public static final String TRACK_NAME = "TRACK_NAME";
     public static final String TRACK_NAME_MINIMIZED_CONTROL = "TRACK_NAME_MINIMIZED_CONTROL";
     public static final String BACK_BUTTON = "BACK_BUTTON";
+    public static final String ACCOUNT_SETTINGS_TRY_ANOTHER_WAY =
+            "ACCOUNT_SETTINGS_TRY_ANOTHER_WAY";
     // Media Center On Home Screen
     public static final String PLAY_PAUSE_BUTTON_HOME_SCREEN = "PLAY_PAUSE_BUTTON_HOME_SCREEN";
     public static final String PREVIOUS_BUTTON_HOME_SCREEN = "PREVIOUS_BUTTON_HOME_SCREEN";

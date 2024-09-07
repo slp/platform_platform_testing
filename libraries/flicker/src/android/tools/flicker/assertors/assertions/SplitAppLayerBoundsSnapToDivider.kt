@@ -16,7 +16,7 @@
 
 package android.tools.flicker.assertors.assertions
 
-import android.tools.datatypes.Region
+import android.graphics.Region
 import android.tools.flicker.ScenarioInstance
 import android.tools.flicker.assertions.FlickerTest
 import android.tools.flicker.assertors.ComponentTemplate
@@ -57,18 +57,18 @@ class SplitAppLayerBoundsSnapToDivider(private val component: ComponentTemplate)
                 layer(splitScreenDivider)?.visibleRegion?.region
                     ?: error("Missing splitscreen divider")
 
-            require(dividerRegion.isNotEmpty) { "Splitscreen divider region should not be empty" }
+            require(!dividerRegion.isEmpty) { "Splitscreen divider region should not be empty" }
 
             return if (displaySize.width > displaySize.height) {
                 if (landscapePosLeft) {
-                    Region.from(
+                    Region(
                         0,
                         0,
                         (dividerRegion.bounds.left + dividerRegion.bounds.right) / 2,
                         displaySize.height
                     )
                 } else {
-                    Region.from(
+                    Region(
                         (dividerRegion.bounds.left + dividerRegion.bounds.right) / 2,
                         0,
                         displaySize.width,
@@ -77,14 +77,14 @@ class SplitAppLayerBoundsSnapToDivider(private val component: ComponentTemplate)
                 }
             } else {
                 if (portraitPosTop) {
-                    Region.from(
+                    Region(
                         0,
                         0,
                         displaySize.width,
                         (dividerRegion.bounds.top + dividerRegion.bounds.bottom) / 2
                     )
                 } else {
-                    Region.from(
+                    Region(
                         0,
                         (dividerRegion.bounds.top + dividerRegion.bounds.bottom) / 2,
                         displaySize.width,

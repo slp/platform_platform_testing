@@ -219,6 +219,26 @@ class LayersTraceEntryTest {
         Truth.assertThat(navBar.isVisible).isFalse()
     }
 
+    @Test
+    fun canDetectCoveredLayerByAccountingForAlpha() {
+        val reader = getLayerTraceReaderFromAsset("layers_trace_launch_split_screen.perfetto-trace")
+        val trace = reader.readLayersTrace() ?: error("Unable to read layers trace")
+
+        var state =
+            trace.getEntryAt(
+                Timestamps.from(
+                    elapsedNanos = 90485742427178,
+                    elapsedOffsetNanos = 1682359234732002451
+                )
+            )
+        var coveredLayer = state.getLayerById(693) ?: error("Activity layer not found")
+        var coveringLayer = state.getLayerById(690) ?: error("Splash Screen layer not found")
+
+        Truth.assertThat(coveredLayer.isVisible).isTrue()
+        Truth.assertThat(coveringLayer.isVisible).isTrue()
+        Truth.assertThat(coveredLayer.coveredBy).contains(coveringLayer)
+    }
+
     companion object {
         @ClassRule @JvmField val ENV_CLEANUP = CleanFlickerEnvironmentRule()
         private const val EXPECTED_OCCLUDE =

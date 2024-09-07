@@ -54,10 +54,17 @@ public class ProcessUtilTest extends BaseHostJUnit4Test {
                 getDevice(), "system_server", Pattern.compile(Pattern.quote("libc.so")));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testFindLoadedByProcessMultipleProcesses() throws Exception {
+        assertTrue("must test with rootable device", getDevice().enableAdbRoot());
+
         // pattern 'android' has multiple (android.hardware.drm, android.hardware.gnss, etc)
-        ProcessUtil.findFileLoadedByProcess(getDevice(), "android", null);
+        Optional<IFileEntry> fileEntryOptional =
+                ProcessUtil.findFileLoadedByProcess(
+                        getDevice(), "android", Pattern.compile(Pattern.quote("libc.so")));
+        assertWithMessage("file entry should not be empty")
+                .that(fileEntryOptional.isPresent())
+                .isTrue();
     }
 
     @Test

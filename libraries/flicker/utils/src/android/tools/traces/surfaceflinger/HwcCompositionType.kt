@@ -23,5 +23,6 @@ enum class HwcCompositionType(val value: Int) {
     HWC_TYPE_SOLID_COLOR(3),
     HWC_TYPE_CURSOR(4),
     HWC_TYPE_SIDEBAND(5),
+    HWC_TYPE_DISPLAY_DECORATION(6),
     HWC_TYPE_UNRECOGNIZED(-1)
 }

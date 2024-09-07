@@ -20,6 +20,7 @@ import android.os.Build
 import androidx.test.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.android.internal.R
+import java.lang.RuntimeException
 import kotlin.annotation.AnnotationRetention.RUNTIME
 import kotlin.annotation.AnnotationTarget.ANNOTATION_CLASS
 import kotlin.annotation.AnnotationTarget.CLASS
@@ -40,8 +41,27 @@ class DeviceTypeRule : TestRule {
     private val isLargeScreen = isLargeScreen()
     private val isTablet = isTablet()
 
+    // We don't have a clear rule for whether these annotations should be inherited or not, and
+    // it's less confusing if we require them to be explicit
+    private inline fun <reified T : Annotation> Description.getAnnotationClearly(): T? {
+        getAnnotation(T::class.java)?.let {
+            return it
+        }
+        var superClass = testClass.superclass
+        while (superClass != null) {
+            if (superClass.getAnnotation(T::class.java) != null) {
+                val msg =
+                    "DeviceTypeRule requires subclass to have the same device-check " +
+                        "annotations as superclasses: ${T::class.simpleName}"
+                throw RuntimeException(msg)
+            }
+            superClass = superClass.superclass
+        }
+        return null
+    }
+
     override fun apply(base: Statement, description: Description): Statement {
-        val smallScreenAnnotation = description.getAnnotation(SmallScreenOnly::class.java)
+        val smallScreenAnnotation = description.getAnnotationClearly<SmallScreenOnly>()
         if (smallScreenAnnotation != null && isLargeScreen) {
             return wrongDeviceTypeStatement(
                 description,
@@ -51,21 +71,21 @@ class DeviceTypeRule : TestRule {
             )
         }
 
-        if (description.getAnnotation(LargeScreenOnly::class.java) != null && !isLargeScreen) {
+        if (description.getAnnotationClearly<LargeScreenOnly>() != null && !isLargeScreen) {
             return wrongDeviceTypeStatement(
                 description,
                 "Skipping test on ${Build.PRODUCT} as it doesn't have a large screen."
             )
         }
 
-        if (description.getAnnotation(FoldableOnly::class.java) != null && !isFoldable) {
+        if (description.getAnnotationClearly<FoldableOnly>() != null && !isFoldable) {
             return wrongDeviceTypeStatement(
                 description,
                 "Skipping test on ${Build.PRODUCT} as it is not a foldable."
             )
         }
 
-        if (description.getAnnotation(TabletOnly::class.java) != null && !isTablet) {
+        if (description.getAnnotationClearly<TabletOnly>() != null && !isTablet) {
             return wrongDeviceTypeStatement(
                 description,
                 "Skipping test on ${Build.PRODUCT} as it is not a tablet."

@@ -58,12 +58,17 @@ class CujTrace(override val entries: Collection<Cuj>) : Trace<Cuj> {
                 val closingEvent =
                     listOf(matchingCancelEvent, matchingEndEvent).minBy {
                         it?.timestamp ?: Timestamps.max()
-                    }
-                        ?: error("Should have found one matching closing event")
+                    } ?: error("Should have found one matching closing event")
                 val canceled = closingEvent.type == CujEvent.Companion.Type.CANCEL
 
                 cujs.add(
-                    Cuj(startEvent.cuj, startEvent.timestamp, closingEvent.timestamp, canceled)
+                    Cuj(
+                        startEvent.cuj,
+                        startEvent.timestamp,
+                        closingEvent.timestamp,
+                        canceled,
+                        startEvent.cujTag?.ifBlank { null },
+                    )
                 )
             }
 

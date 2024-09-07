@@ -16,11 +16,11 @@
 
 package android.tools.traces.monitors.wm
 
-import android.tools.Logger
 import android.tools.io.TraceType
 import android.tools.traces.monitors.LOG_TAG
 import android.tools.traces.monitors.TraceMonitor
 import android.tools.traces.wm.WindowManagerTrace
+import android.util.Log
 import android.view.WindowManagerGlobal
 import java.io.File
 
@@ -44,7 +44,7 @@ open class WindowManagerTraceMonitor : TraceMonitor() {
     override fun doStopTraces(): Map<TraceType, File> {
         val result = mutableMapOf(traceType to doStop())
         val protologFile = TRACE_DIR.resolve(TraceType.PROTOLOG.fileName)
-        Logger.d(LOG_TAG, "Adding protolog trace from $protologFile")
+        Log.d(LOG_TAG, "Adding protolog trace from $protologFile")
         result[TraceType.PROTOLOG] = protologFile
         return result
     }

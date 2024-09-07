@@ -14,6 +14,7 @@ from mobly.controllers import android_device
 from utilities import spectatio_utils
 from utilities import bt_utils
 from utilities.main_utils import common_main
+from utilities.video_utils_service import VideoRecording
 
 
 class BluetoothBaseTest(base_test.BaseTestClass):
@@ -38,11 +39,16 @@ class BluetoothBaseTest(base_test.BaseTestClass):
         logging.info("\tInitializing Utilities")
         self.call_utils = (spectatio_utils.CallUtils(self.discoverer))
         self.bt_utils = (bt_utils.BTUtils(self.discoverer, self.target))
+        logging.info("\tInitializing video services")
+        self.video_utils_service = VideoRecording(self.discoverer, self.__class__.__name__)
+        logging.info("Enabling video recording for Discoverer device")
+        self.video_utils_service.enable_screen_recording()
 
     def setup_test(self):
         # Make sure bluetooth is on.
+        self.call_utils.press_home()
         logging.info("Running basic test setup.")
-        logging.info("\tEnabling bluetooth on target and discoverer.")
+        logging.info("\tEnabling bluetooth on Target and Discoverer.")
         self.target.mbs.btEnable()
         self.discoverer.mbs.btEnable()
 
@@ -54,6 +60,16 @@ class BluetoothBaseTest(base_test.BaseTestClass):
         self.discoverer.mbs.btDisable()
         logging.info("Disable Bluetooth on Target device")
         self.target.mbs.btDisable()
+        self.call_utils.press_home()
+        self.hu_recording_handler()
+
+    def hu_recording_handler(self):
+        logging.info("Stopping the screen recording on Discoverer Device")
+        self.video_utils_service.stop_screen_recording()
+        logging.info("Pull the screen recording from Discoverer device")
+        self.video_utils_service.pull_recording_file(self.log_path)
+        logging.info("delete the screen recording from the Discoverer device")
+        self.video_utils_service.delete_screen_recording_from_device()
 
 
 if __name__ == '__main__':

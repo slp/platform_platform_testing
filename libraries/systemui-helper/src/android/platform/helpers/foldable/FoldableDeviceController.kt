@@ -183,7 +183,9 @@ internal class FoldableDeviceController {
         check(this.await(DEVICE_STATE_MAX_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS), error)
     }
 
-    private val deviceStateCallback = DeviceStateCallback { state -> currentState = state }
+    private val deviceStateCallback = DeviceStateCallback { state ->
+        currentState = state.identifier
+    }
 
     private val deviceStateRequestCallback =
         object : DeviceStateRequest.Callback {

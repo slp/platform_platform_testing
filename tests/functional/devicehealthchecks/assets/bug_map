@@ -12,6 +12,7 @@ system_app_anr executing\sservice\scom.google.android.as/com.google.android.apps
 system_app_anr executing\sservice\scom.google.android.as/com.google.android.apps.miphone.aiai.actions.service.ActionRankingDataTtlService 192300119
 system_app_anr executing\sservice\scom.android.se/.SecureElementService 199457346
 system_app_anr com.google.android.dialer[0-9\S\s]+72[0-9\S\s]+ 214941329
+system_app_anr act=android.intent.action.SIM_STATE_CHANGED\sflg=0x15000010 287636016
 system_app_crash -1\|android\|26\|null\|1000 155073214
 system_app_crash -1\|android\|32\|null\|1000 155073214
 system_app_crash android.database.sqlite.SQLiteCloseable.acquireReference 159658068
@@ -22,12 +23,14 @@ system_app_crash com.google.android.googlequicksearchbox[A-Za-z0-9\S\s]+11.26[A-
 system_app_crash v10804[\s\S]*com.google.android.apps.scone.wifiscorer.WifiScorerService[\s\S]*android.content.Intent.getAction 174277223
 system_app_crash Unable\sto\sget\sprovider\sandroidx.core.content.FileProvider[\S\s]+Couldn't\sfind\smeta-data\sfor\sprovider\swith\sauthority\scom.verizon.mips.services 166457582
 system_app_crash com.google.android.apps.youtube.music[\S\s]+NullPointerException[\S\s]+com.google.android.apps.youtube.music.mediabrowser.MusicBrowserService.d 211914566
+system_app_crash Unable\sto\sstart\sreceiver\scom.android.euicc.receiver.NotificationCallbackReceiver 319672380
 system_app_native_crash HwBinder*.*com.android.bluetooth 155074413
 system_app_native_crash ReferenceQueueD*.*com.google.android.apps.safetyhub 162103095
 system_app_native_crash Binder*.*com.google.android.apps.safetyhub 162104694
 system_app_native_crash Lite\sThread*.*com.google.android.apps.safetyhub 162379378
 system_app_native_crash BG\sThread*.*com.google.android.apps.safetyhub 162381002
 system_app_native_crash FireflyProcMgr\s+>>>\scom.google.android.GoogleCamera\s<<<[\S\s]+SIGSEGV[\S\s]+null\spointer\sdereference 195519497
+system_app_native_crash system/gd/hal/hci_hal_android_hidl.cc:119\sinitializationComplete:\sassert\sfailed:\sstatus\s==\sHidlStatus::SUCCESS 333226989
 SYSTEM_TOMBSTONE Binder*.*com.google.android.apps.safetyhub 162104694
 SYSTEM_TOMBSTONE ReferenceQueueD*.*com.google.android.apps.safetyhub 162103095
 SYSTEM_TOMBSTONE Lite\sThread*.*com.google.android.apps.safetyhub 162379378
@@ -42,3 +45,4 @@ SYSTEM_TOMBSTONE >>>\s/vendor/bin/hw/android.hardware.camera.provider@2.6-servic
 SYSTEM_TOMBSTONE (coral|flame|sunfish)[\s\S]+enableInternal\s+>>>\s+com.android.nfc\s<<<[\s\S]+JNI\sFatalError\scalled:\senableInternal 187522327
 SYSTEM_TOMBSTONE applyRouting\s+>>>\scom.android.nfc\s<<<[\S\s]+JNI\sFatalError\scalled:\sapplyRouting 187061650
 SYSTEM_TOMBSTONE android.hardwar*.*/vendor/bin/hw/android.hardware.sensors@2.0-service 163430194
+system_server_crash java.lang.ClassCastException:\sjava.lang.Boolean cannot be cast to com.android.clockwork.modes.ModeManagerService 336676453

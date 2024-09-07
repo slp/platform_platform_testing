@@ -15,6 +15,7 @@
 //
 
 package {
+    default_team: "trendy_team_windowing_tools",
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 
@@ -65,8 +66,11 @@ android_test {
         "truth",
         "mockito-target-extended-minus-junit4",
         "collector-device-lib",
+        "wm-flicker-common-app-helpers",
+        "//frameworks/base/packages/SystemUI/aconfig:com_android_systemui_flags_lib",
     ],
     data: [
         "trace_config/*",
+        ":FlickerTestApp",
     ],
 }

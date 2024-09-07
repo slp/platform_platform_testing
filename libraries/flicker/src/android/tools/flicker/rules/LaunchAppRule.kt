@@ -18,10 +18,11 @@ package android.tools.flicker.rules
 
 import android.app.Instrumentation
 import android.tools.FLICKER_TAG
-import android.tools.Logger
 import android.tools.device.apphelpers.StandardAppHelper
 import android.tools.traces.component.ComponentNameMatcher
 import android.tools.traces.parsers.WindowManagerStateHelper
+import android.tools.withTracing
+import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
@@ -63,8 +64,8 @@ constructor(
     )
 
     override fun starting(description: Description?) {
-        Logger.withTracing("LaunchAppRule:starting") {
-            Logger.v(FLICKER_TAG, "Launching app $appHelper")
+        withTracing("LaunchAppRule:starting") {
+            Log.v(FLICKER_TAG, "Launching app $appHelper")
             appHelper.launchViaIntent()
             appHelper.exit(wmHelper)
         }

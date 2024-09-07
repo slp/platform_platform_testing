@@ -18,12 +18,13 @@ package android.tools.flicker.junit
 
 import android.app.Instrumentation
 import android.os.Bundle
-import android.tools.Logger
 import android.tools.Scenario
 import android.tools.flicker.legacy.runner.FLICKER_RUNNER_TAG
 import android.tools.traces.ConditionList
 import android.tools.traces.ConditionsFactory
 import android.tools.traces.parsers.WindowManagerStateHelper
+import android.tools.withTracing
+import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.runner.Description
 
@@ -42,7 +43,7 @@ object Utils {
         )
 
     internal fun doWaitForUiStabilize(wmHelper: WindowManagerStateHelper) {
-        Logger.withTracing("doWaitForUiStabilize") {
+        withTracing("doWaitForUiStabilize") {
             wmHelper.StateSyncBuilder().add(UI_STABLE_CONDITIONS).waitFor()
         }
     }
@@ -60,7 +61,7 @@ object Utils {
         msg: String,
         instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
     ) {
-        Logger.d(FLICKER_RUNNER_TAG, "$scenarioName - $msg")
+        Log.d(FLICKER_RUNNER_TAG, "$scenarioName - $msg")
         val results = Bundle()
         results.putString(Instrumentation.REPORT_KEY_STREAMRESULT, "$msg\n")
         instrumentation.sendStatus(1, results)
