@@ -33,7 +33,8 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 public class CarPropertyManagerStressTestLogPostProcessor extends BasePostProcessor {
-    private static final String METRIC_NAME = "GET_PROPERTY_TIMING";
+    private static final String GET_METRIC_NAME = "GET_PROPERTY_TIMING";
+    private static final String SET_METRIC_NAME = "SET_PROPERTY_TIMING";
     private static final String FILE_NAME = "values_for_test";
 
     /** {@inheritDoc} */
@@ -58,6 +59,7 @@ public class CarPropertyManagerStressTestLogPostProcessor extends BasePostProces
             if (!key.contains(FILE_NAME)) {
                 continue;
             }
+            String metricName = key.contains("get") ? GET_METRIC_NAME : SET_METRIC_NAME;
             BufferedReader br;
             try {
                 File file = new File(runLogs.get(key).getPath());
@@ -82,7 +84,7 @@ public class CarPropertyManagerStressTestLogPostProcessor extends BasePostProces
                                 .setSingleString(stringBuilder.toString());
                 MetricMeasurement.Metric.Builder metric =
                         MetricMeasurement.Metric.newBuilder().setMeasurements(measurement);
-                metrics.put(METRIC_NAME, metric);
+                metrics.put(metricName, metric);
             } catch (IOException e) {
                 LogUtil.CLog.e("Unable to open buffered reader");
                 throw new RuntimeException(e);

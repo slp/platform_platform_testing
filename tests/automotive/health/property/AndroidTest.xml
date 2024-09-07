@@ -30,6 +30,7 @@
     </test>
     <metrics_collector class="com.android.tradefed.device.metric.FilePullerLogCollector">
         <option name="pull-pattern-keys" value="getPropertySync_latency_in_nanos"/>
+        <option name="pull-pattern-keys" value="setPropertySync_latency_in_nanos"/>
         <option name="collect-on-run-ended-only" value="true" />
     </metrics_collector>
     <metric_post_processor class="com.android.tradefed.postprocessor.MetricFilePostProcessor">
