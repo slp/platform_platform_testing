@@ -25,6 +25,7 @@ import android.tools.traces.events.CujEvent
 import android.tools.traces.events.CujType
 import android.tools.traces.events.EventLog.Companion.MAGIC_NUMBER
 import android.tools.traces.events.FocusEvent
+import android.tools.traces.events.UnknownCuj
 import android.tools.traces.io.ResultReader
 import android.tools.traces.monitors.events.EventLogMonitor
 import android.tools.traces.now
@@ -439,9 +440,9 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
         requireNotNull(eventLog) { "EventLog should have been created" }
 
         assertEquals(3, eventLog.cujEvents.size)
-        Truth.assertThat(eventLog.cujEvents.first().cuj).isEqualTo(CujType.UNKNOWN)
-        Truth.assertThat(eventLog.cujEvents.drop(1).first().cuj).isEqualTo(CujType.UNKNOWN)
-        Truth.assertThat(eventLog.cujEvents.drop(2).first().cuj).isEqualTo(CujType.UNKNOWN)
+        Truth.assertThat(eventLog.cujEvents.first().cuj).isEqualTo(UnknownCuj(unknownCujId))
+        Truth.assertThat(eventLog.cujEvents.drop(1).first().cuj).isEqualTo(UnknownCuj(unknownCujId))
+        Truth.assertThat(eventLog.cujEvents.drop(2).first().cuj).isEqualTo(UnknownCuj(unknownCujId))
     }
 
     private companion object {

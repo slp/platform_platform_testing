@@ -50,7 +50,7 @@ java_library {
         "flag-junit-base",
     ],
     libs: [
-        "framework-configinfrastructure",
+        "framework-configinfrastructure.stubs.module_lib",
     ],
     sdk_version: "module_current",
 }

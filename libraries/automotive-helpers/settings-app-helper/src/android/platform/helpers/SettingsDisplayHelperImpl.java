@@ -111,6 +111,9 @@ public class SettingsDisplayHelperImpl extends AbstractStandardAppHelper
     @Override
     public void toggleAdaptiveBrightness() {
         getAdaptiveBrightnessSwitch().click();
+        //Wait time if Gestures takes longer time
+        getSpectatioUiUtil().waitForIdle();
+        getSpectatioUiUtil().wait1Second();
     }
 
     /** {@inheritDoc} */

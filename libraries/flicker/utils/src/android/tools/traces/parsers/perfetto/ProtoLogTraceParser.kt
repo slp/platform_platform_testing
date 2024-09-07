@@ -80,6 +80,6 @@ class ProtoLogTraceParser :
 
     companion object {
         private fun getSqlQueryProtoLogMessages() =
-            "SELECT ts, level, tag, message, stacktrace FROM protolog;"
+            "SELECT ts, level, tag, message, stacktrace, location FROM protolog;"
     }
 }

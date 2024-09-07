@@ -48,6 +48,7 @@ public class ValidateUiElement implements JsonDeserializer<UiElement> {
                     JsonConfigConstants.TEXT_CONTAINS,
                     JsonConfigConstants.DESCRIPTION,
                     JsonConfigConstants.CLASS,
+                    JsonConfigConstants.DISPLAY_ID,
                     JsonConfigConstants.HAS_ANCESTOR,
                     JsonConfigConstants.HAS_DESCENDANT,
                     JsonConfigConstants.MULTIPLE,

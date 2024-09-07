@@ -32,7 +32,7 @@ android_test {
         "launcher-aosp-tapl",
     ],
 
-    libs: ["android.test.base"],
+    libs: ["android.test.base.stubs.system"],
     optimize: {
         enabled: false,
     },

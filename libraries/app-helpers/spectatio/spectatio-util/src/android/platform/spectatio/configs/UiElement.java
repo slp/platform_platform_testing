@@ -136,6 +136,8 @@ public class UiElement {
                     return By.clazz(mPackage, mValue);
                 }
                 return By.clazz(mValue);
+            case JsonConfigConstants.DISPLAY_ID:
+                return By.displayId(Integer.parseInt(mValue));
             case JsonConfigConstants.HAS_ANCESTOR:
                 return By.hasAncestor(mAncestor.getBySelectorForUiElement(), mMaxDepth);
             case JsonConfigConstants.HAS_DESCENDANT:
@@ -183,6 +185,9 @@ public class UiElement {
                     return;
                 }
                 s.clazz(mValue);
+                break;
+            case JsonConfigConstants.DISPLAY_ID:
+                s.displayId(Integer.parseInt(mValue));
                 break;
             case JsonConfigConstants.HAS_ANCESTOR:
                 s.hasAncestor(mAncestor.getBySelectorForUiElement(), mMaxDepth);

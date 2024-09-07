@@ -46,7 +46,7 @@ class StsSdkSubmissionPlugin : Plugin<Project> {
     // get plugin jar path from current class; plugin jar has resources
     val pluginJarUrl = this.javaClass.getProtectionDomain().getCodeSource().getLocation()
 
-    val abiAttribute = Attribute.of("com.android.sts.sdk.abi", StsSdkBasePlugin.Abi::class.java)
+    val abiAttribute = Attribute.of("com.android.sts.abi", StsSdkBasePlugin.Abi::class.java)
     var stsSdkTestResourceConfiguration: Configuration? = null
 
     fun dependencyProjectConfiguration(
