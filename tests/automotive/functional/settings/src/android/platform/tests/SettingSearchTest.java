@@ -21,22 +21,17 @@ import static junit.framework.Assert.assertTrue;
 import android.platform.helpers.HelperAccessor;
 import android.platform.helpers.IAutoSettingHelper;
 import android.platform.test.option.StringOption;
-import android.platform.test.rules.ConditionalIgnore;
-import android.platform.test.rules.ConditionalIgnoreRule;
-import android.platform.test.rules.IgnoreOnPortrait;
 
 import androidx.test.runner.AndroidJUnit4;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class SettingSearchTest {
-    @Rule public ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     private static final String SEARCH_APP = "search-app";
     private static final String SEARCH_SETTING = "search-setting";
@@ -68,7 +63,6 @@ public class SettingSearchTest {
     }
 
     @Test
-    @ConditionalIgnore(condition = IgnoreOnPortrait.class)
     public void testSearchApplication() {
         String searchApp = SEARCH_DEFAULT_APP;
         if (mSearchApp != null && mSearchApp.get() != null && !mSearchApp.get().isEmpty()) {
@@ -81,7 +75,6 @@ public class SettingSearchTest {
     }
 
     @Test
-    @ConditionalIgnore(condition = IgnoreOnPortrait.class)
     public void testSearchSetting() {
         String searchSetting = SEARCH_DEFAULT_SETTING;
         if (mSearchSetting != null
