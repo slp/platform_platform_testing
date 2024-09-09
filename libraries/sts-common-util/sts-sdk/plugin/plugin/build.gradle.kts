@@ -28,7 +28,7 @@ plugins {
 }
 
 dependencies {
-    implementation("com.android.tools.build:gradle:8.4.0")
+    implementation("com.android.tools.build:gradle:8.5.2")
 
     // Use the Kotlin JUnit 5 integration.
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
@@ -36,7 +36,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
-    implementation("com.google.code.gson:gson:2.11")
+    implementation("com.google.code.gson:gson:2.11.0")
 }
 
 java {
