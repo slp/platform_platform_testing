@@ -15,6 +15,6 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [plugins]
-androidApp = { id = "com.android.application", version = "8.4.0" }
-androidLib = { id = "com.android.library", version = "8.4.0" }
-jvm = { id = "org.jetbrains.kotlin.jvm", version = "2.0.10" }
+androidApp = { id = "com.android.application", version = "8.5.2" }
+androidLib = { id = "com.android.library", version = "8.5.2" }
+jvm = { id = "org.jetbrains.kotlin.jvm", version = "2.0.20" }
