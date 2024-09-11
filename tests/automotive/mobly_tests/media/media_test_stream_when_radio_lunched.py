@@ -33,6 +33,7 @@ class IsMediaStreamPairedWhenRadioLunchedTest(bluetooth_base_test.BluetoothBaseT
         self.common_utils.grant_local_mac_address_permission()
         self.common_utils.enable_wifi_on_phone_device()
         super().enable_recording()
+        self.media_utils.enable_bt_media_debugging_logs()
 
     def test_media_stream_when_radio_lunched(self):
         """Pair Mobile when Mobile device is streaming when Radio launched """

@@ -35,6 +35,7 @@ class IsDeviceSyncedAfterHuStart(bluetooth_base_test.BluetoothBaseTest):
         self.common_utils.enable_wifi_on_phone_device()
         self.bt_utils.pair_primary_to_secondary()
         super().enable_recording()
+        self.media_utils.enable_bt_media_debugging_logs()
 
     def test_is_hu_synced_after_hu_start(self):
         """Tests validating is media synced after HU start"""
@@ -47,6 +48,7 @@ class IsDeviceSyncedAfterHuStart(bluetooth_base_test.BluetoothBaseTest):
         self.video_utils_service = VideoRecording(self.discoverer, self.__class__.__name__)
         logging.info("Enabling video recording for HU post reboot")
         self.video_utils_service.enable_screen_recording()
+        self.media_utils.enable_bt_media_debugging_logs()
         self.media_utils.open_youtube_music_app()
         self.call_utils.wait_with_log(30)
         self.discoverer.load_snippet('mbs', android_device.MBS_PACKAGE)

@@ -32,6 +32,7 @@ class IsMediaMetadataForNextAndPrevSongOnHuValid(bluetooth_base_test.BluetoothBa
         self.media_utils = MediaUtils(self.target, self.discoverer)
         self.common_utils = CommonUtils(self.target, self.discoverer)
         super().enable_recording()
+        self.media_utils.enable_bt_media_debugging_logs()
 
     def setup_test(self):
         self.common_utils.grant_local_mac_address_permission()

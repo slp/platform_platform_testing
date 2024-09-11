@@ -39,6 +39,7 @@ class IsCategoriesPlaylistsSelectable(bluetooth_base_test.BluetoothBaseTest):
         self.common_utils.grant_local_mac_address_permission()
         self.common_utils.enable_wifi_on_phone_device()
         self.bt_utils.pair_primary_to_secondary()
+        self.media_utils.enable_bt_media_debugging_logs()
         super().enable_recording()
 
     def test_is_categories_playlists_selectable(self):

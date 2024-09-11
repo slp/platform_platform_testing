@@ -34,6 +34,7 @@ class IsMediaSynchronizedForReconnectedDevice(bluetooth_base_test.BluetoothBaseT
         self.common_utils.enable_wifi_on_phone_device()
         self.bt_utils.pair_primary_to_secondary()
         super().enable_recording()
+        self.media_utils.enable_bt_media_debugging_logs()
 
     def test_is_media_synchronized_after_reconnect_device(self):
         """Tests validating is Media data synchronized after reconnect device"""

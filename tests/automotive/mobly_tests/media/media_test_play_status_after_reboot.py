@@ -35,6 +35,7 @@ class IsSongPLayingAfterRebootTest(bluetooth_base_test.BluetoothBaseTest):
 
         self.common_utils.enable_wifi_on_phone_device()
         self.bt_utils.pair_primary_to_secondary()
+        self.media_utils.enable_bt_media_debugging_logs()
         super().enable_recording()
 
     def test_is_song_playing_after_reboot(self):
@@ -59,6 +60,7 @@ class IsSongPLayingAfterRebootTest(bluetooth_base_test.BluetoothBaseTest):
         self.video_utils_service = VideoRecording(self.discoverer, self.__class__.__name__)
         logging.info("Enabling video recording for HU post reboot")
         self.video_utils_service.enable_screen_recording()
+        self.media_utils.enable_bt_media_debugging_logs()
 
         self.media_utils.open_media_app_on_hu()
         self.call_utils.handle_bluetooth_audio_pop_up()
