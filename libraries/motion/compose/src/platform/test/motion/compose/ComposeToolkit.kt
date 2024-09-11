@@ -69,7 +69,7 @@ import platform.test.screenshot.DeviceEmulationSpec
 import platform.test.screenshot.Displays
 import platform.test.screenshot.GoldenPathManager
 
-/** Toolkit class to use for View-based [MotionTestRule] tests. */
+/** Toolkit to support Compose-based [MotionTestRule] tests. */
 class ComposeToolkit(
     val composeContentTestRule: ComposeContentTestRule,
     val testScope: TestScope,
