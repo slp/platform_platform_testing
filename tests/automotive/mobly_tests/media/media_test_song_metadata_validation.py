@@ -36,6 +36,7 @@ class IsMediaMetadataOnHuValid(bluetooth_base_test.BluetoothBaseTest):
         self.common_utils.enable_wifi_on_phone_device()
         self.bt_utils.pair_primary_to_secondary()
         super().enable_recording()
+        self.media_utils.enable_bt_media_debugging_logs()
 
     def test_is_media_metadata_valid_on_hu(self):
         """Tests is media metadata on HU valid"""

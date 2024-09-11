@@ -33,6 +33,7 @@ class PlaylistRendering(bluetooth_base_test.BluetoothBaseTest):
         self.common_utils.enable_wifi_on_phone_device()
         self.bt_utils.pair_primary_to_secondary()
         super().enable_recording()
+        self.media_utils.enable_bt_media_debugging_logs()
 
     def test_playlist_rendering(self):
         """Tests validating is song selectable using playlist on HU"""

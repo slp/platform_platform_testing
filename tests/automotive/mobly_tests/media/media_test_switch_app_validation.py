@@ -34,6 +34,7 @@ class IsAbleToSwitchAppTest(bluetooth_base_test.BluetoothBaseTest):
         self.common_utils.enable_wifi_on_phone_device()
         self.bt_utils.pair_primary_to_secondary()
         super().enable_recording()
+        self.media_utils.enable_bt_media_debugging_logs()
 
     def test_media_is_able_to_switch_app(self):
         """Tests validating song title on HU after switch media app"""
