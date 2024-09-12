@@ -231,6 +231,9 @@ public class AutomotiveConfigConstants {
     // Display Settings Constants
     public static final String BRIGHTNESS_SEEKBAR = "BRIGHTNESS_SEEKBAR";
 
+    // Bluetooth Settings Constants
+    public static final String USE_BLUETOOTH_SETTINGS_TOGGLE = "USE_BLUETOOTH_SETTINGS_TOGGLE";
+
     // Date and time Settings Constants
     public static final String DATE_TIME_SETTINGS_SCROLL_ACTION =
             "DATE_TIME_SETTINGS_SCROLL_ACTION";
