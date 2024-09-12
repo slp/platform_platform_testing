@@ -144,13 +144,15 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
             enableCustomTrace(config)
         }
 
+        @JvmOverloads
         fun enableWindowManagerTrace(
             logFrequency: WindowManagerConfig.LogFrequency =
-                WindowManagerConfig.LogFrequency.LOG_FREQUENCY_FRAME
+                WindowManagerConfig.LogFrequency.LOG_FREQUENCY_FRAME,
+            dataSourceName: String = WINDOWMANAGER_DATA_SOURCE
         ): Builder = apply {
             val config =
                 DataSourceConfig.newBuilder()
-                    .setName(WINDOWMANAGER_DATA_SOURCE)
+                    .setName(dataSourceName)
                     .setWindowmanagerConfig(
                         WindowManagerConfig.newBuilder()
                             .setLogLevel(WindowManagerConfig.LogLevel.LOG_LEVEL_VERBOSE)
@@ -162,22 +164,23 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
             enableCustomTrace(config)
         }
 
-        fun enableWindowManagerDump(): Builder = apply {
-            val config =
-                DataSourceConfig.newBuilder()
-                    .setName(WINDOWMANAGER_DATA_SOURCE)
-                    .setWindowmanagerConfig(
-                        WindowManagerConfig.newBuilder()
-                            .setLogLevel(WindowManagerConfig.LogLevel.LOG_LEVEL_VERBOSE)
-                            .setLogFrequency(
-                                WindowManagerConfig.LogFrequency.LOG_FREQUENCY_SINGLE_DUMP
-                            )
-                            .build()
-                    )
-                    .build()
+        fun enableWindowManagerDump(dataSourceName: String = WINDOWMANAGER_DATA_SOURCE): Builder =
+            apply {
+                val config =
+                    DataSourceConfig.newBuilder()
+                        .setName(dataSourceName)
+                        .setWindowmanagerConfig(
+                            WindowManagerConfig.newBuilder()
+                                .setLogLevel(WindowManagerConfig.LogLevel.LOG_LEVEL_VERBOSE)
+                                .setLogFrequency(
+                                    WindowManagerConfig.LogFrequency.LOG_FREQUENCY_SINGLE_DUMP
+                                )
+                                .build()
+                        )
+                        .build()
 
-            enableCustomTrace(config)
-        }
+                enableCustomTrace(config)
+            }
 
         fun enableCustomTrace(dataSourceConfig: DataSourceConfig): Builder = apply {
             dataSourceConfigs.add(dataSourceConfig)
