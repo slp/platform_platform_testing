@@ -34,7 +34,9 @@ import org.junit.runner.Description
 import org.junit.runners.model.Statement
 import platform.test.screenshot.matchers.BitmapMatcher
 import platform.test.screenshot.matchers.MSSIMMatcher
+import platform.test.screenshot.matchers.MatchResult
 import platform.test.screenshot.matchers.PixelPerfectMatcher
+import platform.test.screenshot.parity.ParityStatsCollector
 import platform.test.screenshot.proto.ScreenshotResultProto
 import platform.test.screenshot.report.DiffResultExportStrategy
 
@@ -67,7 +69,15 @@ internal constructor(
         disableIconPool
     )
 
+    private val doesCollectScreenshotParityStats =
+        "yes".equals(
+            java.lang.System.getProperty("screenshot.collectScreenshotParityStats"),
+            ignoreCase = true)
     private lateinit var testIdentifier: String
+
+    companion object {
+        private val parityStatsCollector = ParityStatsCollector()
+    }
 
     override fun apply(base: Statement, description: Description): Statement =
         object : Statement() {
@@ -191,6 +201,19 @@ internal constructor(
         }
 
         if (expected.sameAs(actual)) {
+            if (doesCollectScreenshotParityStats) {
+                val stats =
+                    ScreenshotResultProto.DiffResult.ComparisonStatistics.newBuilder()
+                        .setNumberPixelsCompared(actual.width * actual.height)
+                        .setNumberPixelsIdentical(actual.width * actual.height)
+                        .setNumberPixelsDifferent(0)
+                        .setNumberPixelsIgnored(0)
+                        .build()
+                parityStatsCollector.collectTestStats(
+                    testIdentifier,
+                    MatchResult(matches = true, diff = null, comparisonStatistics = stats))
+                parityStatsCollector.report()
+            }
             expected.recycle()
             return
         }
@@ -214,6 +237,10 @@ internal constructor(
                 expected = expected,
                 diff = comparisonResult.diff
             )
+            if (doesCollectScreenshotParityStats) {
+                parityStatsCollector.collectTestStats(testIdentifier, comparisonResult)
+                parityStatsCollector.report()
+            }
 
             val expectedWidth = expected.width
             val expectedHeight = expected.height
@@ -235,6 +262,10 @@ internal constructor(
                 height = actual.height,
                 regions = regions
             )
+        if (doesCollectScreenshotParityStats) {
+            parityStatsCollector.collectTestStats(testIdentifier, comparisonResult)
+            parityStatsCollector.report()
+        }
 
         val status =
             if (comparisonResult.matches) {
