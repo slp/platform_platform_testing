@@ -20,23 +20,15 @@ import android.platform.test.rule.DeviceProduct.CF_TABLET
 import com.google.common.truth.Truth.assertThat
 import org.junit.Assert.assertEquals
 import org.junit.AssumptionViolatedException
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.Description
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import org.junit.runners.model.Statement
-import org.mockito.MockitoAnnotations
 
 @RunWith(JUnit4::class)
 class LimitDevicesRuleTest {
-
-    @Before
-    fun setup() {
-        MockitoAnnotations.initMocks(this)
-    }
-
     @Test
     fun allowOnPhone_withPhone_succeeds() {
         val rule = LimitDevicesRule(thisDevice = CF_PHONE.product)
