@@ -75,7 +75,7 @@ annotation class FlakyDevices(vararg val flaky: DeviceProduct)
  */
 class LimitDevicesRule(
     private val thisDevice: String = Build.PRODUCT,
-    private val runningFlakyTests: Boolean = false
+    private val runningFlakyTests: Boolean = false,
 ) : TestRule {
     override fun apply(base: Statement, description: Description): Statement {
         if (description.ignoreLimit()) {
@@ -116,7 +116,7 @@ class LimitDevicesRule(
     private fun Description.allowedDevices(): List<String> =
         listOf(
                 getMostSpecificAnnotation<AllowedDevices>()?.allowed,
-                getMostSpecificAnnotation<ScreenshotTestDevices>()?.allowed
+                getMostSpecificAnnotation<ScreenshotTestDevices>()?.allowed,
             )
             .collectProducts()
 
@@ -131,7 +131,7 @@ class LimitDevicesRule(
                 getMostSpecificAnnotation<AllowedDevices>(),
                 getMostSpecificAnnotation<DeniedDevices>(),
                 getMostSpecificAnnotation<ScreenshotTestDevices>(),
-                getMostSpecificAnnotation<FlakyDevices>()
+                getMostSpecificAnnotation<FlakyDevices>(),
             )
             .toSet()
 
@@ -180,6 +180,8 @@ enum class DeviceProduct(val product: String) {
     TANGORPRO("tangorpro"),
     FELIX("felix"),
     ROBOLECTRIC("robolectric"),
+    COMET("comet"),
+    CHEETAH("cheetah"),
 }
 
 private fun makeAssumptionViolatedStatement(errorMessage: String): Statement =
