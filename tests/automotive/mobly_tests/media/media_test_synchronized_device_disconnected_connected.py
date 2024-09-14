@@ -34,6 +34,7 @@ class IsMediaSynchronizedForReconnectedDevice(bluetooth_base_test.BluetoothBaseT
         self.common_utils.enable_wifi_on_phone_device()
         self.bt_utils.pair_primary_to_secondary()
         super().enable_recording()
+        self.media_utils.enable_bt_media_debugging_logs()
 
     def test_is_media_synchronized_after_reconnect_device(self):
         """Tests validating is Media data synchronized after reconnect device"""
@@ -54,8 +55,6 @@ class IsMediaSynchronizedForReconnectedDevice(bluetooth_base_test.BluetoothBaseT
         # Assert <Bluetooth Audio disconnected> label is present
         asserts.assert_true(self.call_utils.is_bluetooth_audio_disconnected_label_visible(),
                             '<Bluetooth Audio disconnected> label should be present')
-        # Close <Bluetooth Audio disconnected> page
-        self.media_utils.click_on_cancel_bt_audio_connection_button_on_hu()
         # Enable BT on HU
         self.discoverer.mbs.btEnable()
         self.call_utils.wait_with_log(5)

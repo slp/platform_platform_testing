@@ -403,7 +403,7 @@ public class ShowmapSnapshotHelperTest {
                         + "threads_count_com.google.android.connectivitymonitor : 21\n";
         doReturn(countThreadsSampleOutput)
                 .when(mShowmapSnapshotHelper)
-                .executeShellCommand(matches(mShowmapSnapshotHelper.THREADS_CMD));
+                .executeShellCommand(matches(mShowmapSnapshotHelper.COUNT_THREADS_CMD));
         mShowmapSnapshotHelper.setCountThreadsOption(true);
         Map<String, String> metrics = mShowmapSnapshotHelper.getMetrics();
         assertFalse(metrics.isEmpty());
@@ -421,6 +421,6 @@ public class ShowmapSnapshotHelperTest {
         Map<String, String> metrics = mShowmapSnapshotHelper.getMetrics();
         assertTrue(metrics.isEmpty());
         verify(mShowmapSnapshotHelper, never())
-                .executeShellCommand(matches(mShowmapSnapshotHelper.THREADS_CMD));
+                .executeShellCommand(matches(mShowmapSnapshotHelper.COUNT_THREADS_CMD));
     }
 }

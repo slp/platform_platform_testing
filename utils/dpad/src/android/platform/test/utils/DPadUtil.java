@@ -16,6 +16,7 @@
 
 package android.platform.test.utils;
 
+import android.annotation.SuppressLint;
 import android.app.Instrumentation;
 import android.os.SystemClock;
 import android.support.test.uiautomator.Direction;
@@ -29,6 +30,7 @@ import java.io.IOException;
 /**
  * @deprecated , Use {@link DPadUtil2}, which uses latest androidx automator classes.
  */
+@Deprecated
 public class DPadUtil {
 
     private static final String TAG = DPadUtil.class.getSimpleName();
@@ -139,6 +141,7 @@ public class DPadUtil {
         return mDevice.pressBack();
     }
 
+    @SuppressLint("DefaultLocale")
     public boolean longPressKeyCode(int keyCode) {
         try {
             mDevice.executeShellCommand(String.format("input keyevent --longpress %d", keyCode));

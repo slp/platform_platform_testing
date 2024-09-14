@@ -25,6 +25,8 @@ class FlickerSubjectException(
     val facts: List<Fact>,
     override val cause: Throwable? = null
 ) : AssertionError() {
+    private val errorType: String =
+        if (cause == null) "Flicker assertion error" else "Unknown error"
     override val message = buildString {
         appendLine(errorType)
 
@@ -43,7 +45,4 @@ class FlickerSubjectException(
         appendLine("Facts")
         facts.forEach { appendLine(it.toString().prependIndent("\t")) }
     }
-
-    private val errorType: String =
-        if (cause == null) "Flicker assertion error" else "Unknown error"
 }

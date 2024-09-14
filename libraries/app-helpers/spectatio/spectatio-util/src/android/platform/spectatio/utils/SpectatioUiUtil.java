@@ -578,6 +578,8 @@ public class SpectatioUiUtil {
                 padXStart = bounds.right / 4 * 3;
                 padYStart = bounds.bottom / 4 * 3;
                 break;
+            case DEFAULT:
+                break; // handled above the switch
         }
 
         switch (swipeDirection) {

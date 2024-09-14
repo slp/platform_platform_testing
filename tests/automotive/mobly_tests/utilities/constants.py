@@ -167,3 +167,10 @@ DIALER_DIALPAD_LABEL = "Dialpad"
 BLUETOOTH_TAG="setprop persist.log.tag.bluetooth verbose"
 BLUETOOTH_NOOPERABLE="setprop persist.bluetooth.btsnoopenable true"
 BLUETOOTH_BTSNOOP_DEFAULT_MODE="settings put global bluetooth_btsnoop_default_mode full"
+
+
+# Media Logs
+PLAYBACK_VIEW_MODEL="setprop persist.log.tag.PlaybackViewModel DEBUG"
+MEDIA_BROWSER_CONNECTOR="setprop persist.log.tag.MediaBrowserConnector DEBUG"
+SETTINGS_CLOCK_SECONDS="settings put secure clock_seconds 1"
+

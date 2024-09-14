@@ -34,25 +34,26 @@ class IsSongPlayingTest(bluetooth_base_test.BluetoothBaseTest):
         self.common_utils.enable_wifi_on_phone_device()
         self.bt_utils.pair_primary_to_secondary()
         super().enable_recording()
+        self.media_utils.enable_bt_media_debugging_logs()
 
     def test_media_is_song_playing(self):
         """Tests validating is song playing on HU, and song title"""
         self.media_utils.open_media_app_on_hu()
         self.call_utils.handle_bluetooth_audio_pop_up()
         self.media_utils.open_youtube_music_app()
-#         current_phone_song_title = self.media_utils.get_song_title_from_phone()
-#         current_hu_song_title = self.media_utils.get_song_title_from_hu()
-#         asserts.assert_true(current_phone_song_title == current_hu_song_title,
-#                             'Invalid song titles. '
-#                             'Song title on phone device and HU should be the same')
-#
-#         # Switch to the next song on HU
-#         self.media_utils.click_next_track_on_hu()
-#         current_next_phone_song_title = self.media_utils.get_song_title_from_phone()
-#         current_next_hu_song_title = self.media_utils.get_song_title_from_hu()
-#         asserts.assert_true(current_next_phone_song_title == current_next_hu_song_title,
-#                             'Invalid song titles. '
-#                             'Song title on phone device and HU should be the same')
+        current_phone_song_title = self.media_utils.get_song_title_from_phone()
+        current_hu_song_title = self.media_utils.get_song_title_from_hu()
+        asserts.assert_true(current_phone_song_title == current_hu_song_title,
+                            'Invalid song titles. '
+                            'Song title on phone device and HU should be the same')
+
+        # Switch to the next song on HU
+        self.media_utils.click_next_track_on_hu()
+        current_next_phone_song_title = self.media_utils.get_song_title_from_phone()
+        current_next_hu_song_title = self.media_utils.get_song_title_from_hu()
+        asserts.assert_true(current_next_phone_song_title == current_next_hu_song_title,
+                            'Invalid song titles. '
+                            'Song title on phone device and HU should be the same')
 
     def teardown_test(self):
         #  Close YouTube Music app

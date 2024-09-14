@@ -32,4 +32,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "sts-sdk"
 
-include("plugin")
+include("sts-sdk")
