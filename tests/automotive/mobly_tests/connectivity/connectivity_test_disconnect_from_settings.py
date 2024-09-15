@@ -44,7 +44,7 @@ class BluetoothDisconnectFromSettingsTest(bluetooth_base_test.BluetoothBaseTest)
         self.call_utils.wait_with_log(constants.WAIT_THIRTY_SECONDS)
 
         # Navigate to Bluetooth Settings
-        self.call_utils.open_bluetooth_settings()
+        self.call_utils.open_bluetooth_settings_form_status_bar()
         self.call_utils.wait_with_log(constants.WAIT_TWO_SECONDS)
         # Press the Bluetooth toggle button to disconnect
         # (Recall that the toggle is the leftmost of the three buttons listed with the name)
