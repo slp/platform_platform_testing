@@ -16,12 +16,12 @@
 
 package android.platform.uiautomator_helpers
 
-import android.os.SystemClock.uptimeMillis
 import android.animation.TimeInterpolator
 import android.app.Instrumentation
 import android.content.Context
 import android.graphics.PointF
 import android.os.Bundle
+import android.os.SystemClock.uptimeMillis
 import android.platform.uiautomator_helpers.TracingUtils.trace
 import android.platform.uiautomator_helpers.WaitUtils.ensureThat
 import android.platform.uiautomator_helpers.WaitUtils.waitFor
@@ -60,7 +60,7 @@ object DeviceHelpers {
      */
     @Deprecated(
         "Use [DeviceHelpers.waitForObj] instead.",
-        ReplaceWith("DeviceHelpers.waitForObj(selector, timeout, errorProvider)")
+        ReplaceWith("DeviceHelpers.waitForObj(selector, timeout, errorProvider)"),
     )
     fun UiDevice.waitForObj(
         selector: BySelector,
@@ -83,6 +83,26 @@ object DeviceHelpers {
         waitFor("$selector object", timeout, errorProvider) { uiDevice.findObject(selector) }
 
     /**
+     * Waits for an object that satisfies on the many possible [selectors] and returns it along with
+     * the matching selector.
+     *
+     * Throws an error with message provided by [errorProvider] if the object is not found.
+     */
+    fun waitForFirstObj(
+        vararg selectors: BySelector,
+        timeout: Duration = SHORT_WAIT,
+        errorProvider: () -> String = { "No object found for any $selectors" },
+    ): Pair<UiObject2, BySelector> {
+        return waitFor("$selectors objects", timeout, errorProvider) {
+                selectors.firstNotNullOfOrNull { selector ->
+                    uiDevice.findObject(selector)?.let {
+                        it to selector
+                    }
+                }
+            }
+    }
+
+    /**
      * Waits for an object to be visible and returns it.
      *
      * Throws an error with message provided by [errorProvider] if the object is not found.
@@ -94,11 +114,31 @@ object DeviceHelpers {
     ): UiObject2 = waitFor("$selector object", timeout, errorProvider) { findObject(selector) }
 
     /**
+     * Waits for an object that satisfies on the many possible [selectors] and returns it along with
+     * the matching selector.
+     *
+     * Throws an error with message provided by [errorProvider] if the object is not found.
+     */
+    fun UiObject2.waitForFirstObj(
+        vararg selectors: BySelector,
+        timeout: Duration = SHORT_WAIT,
+        errorProvider: () -> String = { "No object found for any $selectors" },
+    ): Pair<UiObject2, BySelector> {
+        return waitFor("$selectors objects", timeout, errorProvider) {
+            selectors.firstNotNullOfOrNull { selector ->
+                findObject(selector)?.let {
+                    it to selector
+                }
+            }
+        }
+    }
+
+    /**
      * Waits for an object to be visible and returns it. Returns `null` if the object is not found.
      */
     @Deprecated(
         "Use [DeviceHelpers.waitForNullableObj] instead.",
-        ReplaceWith("DeviceHelpers.waitForNullableObj(selector, timeout)")
+        ReplaceWith("DeviceHelpers.waitForNullableObj(selector, timeout)"),
     )
     fun UiDevice.waitForNullableObj(
         selector: BySelector,
@@ -108,10 +148,7 @@ object DeviceHelpers {
     /**
      * Waits for an object to be visible and returns it. Returns `null` if the object is not found.
      */
-    fun waitForNullableObj(
-        selector: BySelector,
-        timeout: Duration = SHORT_WAIT,
-    ): UiObject2? =
+    fun waitForNullableObj(selector: BySelector, timeout: Duration = SHORT_WAIT): UiObject2? =
         waitForNullable("nullable $selector objects", timeout) { uiDevice.findObject(selector) }
 
     /**
@@ -130,8 +167,8 @@ object DeviceHelpers {
         "Use DeviceHelpers.waitForPossibleEmpty",
         ReplaceWith(
             "waitForPossibleEmpty(selector, timeout)",
-            "android.platform.uiautomator_helpers.DeviceHelpers.waitForPossibleEmpty"
-        )
+            "android.platform.uiautomator_helpers.DeviceHelpers.waitForPossibleEmpty",
+        ),
     )
     fun waitForNullableObjects(
         selector: BySelector,
@@ -154,7 +191,7 @@ object DeviceHelpers {
      */
     @Deprecated(
         "Use DeviceHelpers.waitForNullableObjects",
-        ReplaceWith("DeviceHelpers.waitForNullableObjects(selector, timeout)")
+        ReplaceWith("DeviceHelpers.waitForNullableObjects(selector, timeout)"),
     )
     fun UiDevice.waitForNullableObjects(
         selector: BySelector,
@@ -162,9 +199,8 @@ object DeviceHelpers {
     ): List<UiObject2>? = DeviceHelpers.waitForNullableObjects(selector, timeout)
 
     /** Returns [true] when the [selector] is visible. */
-    fun hasObject(
-        selector: BySelector,
-    ): Boolean = trace("Checking if device has $selector") { uiDevice.hasObject(selector) }
+    fun hasObject(selector: BySelector): Boolean =
+        trace("Checking if device has $selector") { uiDevice.hasObject(selector) }
 
     /** Finds an object with this selector and clicks on it. */
     fun BySelector.click() {
@@ -181,7 +217,7 @@ object DeviceHelpers {
     @JvmStatic
     @Deprecated(
         "Use DeviceHelpers.assertVisibility directly",
-        ReplaceWith("DeviceHelpers.assertVisibility(selector, visible, timeout, errorProvider)")
+        ReplaceWith("DeviceHelpers.assertVisibility(selector, visible, timeout, errorProvider)"),
     )
     fun UiDevice.assertVisibility(
         selector: BySelector,
@@ -230,7 +266,7 @@ object DeviceHelpers {
         ensureThat(
             "$selector is ${visible.asVisibilityBoolean()} inside $this",
             timeout,
-            errorProvider
+            errorProvider,
         ) {
             hasObject(selector) == visible
         }
@@ -239,13 +275,13 @@ object DeviceHelpers {
     /** Asserts that a this selector is visible. Throws otherwise. */
     fun BySelector.assertVisible(
         timeout: Duration = LONG_WAIT,
-        errorProvider: (() -> String)? = null
+        errorProvider: (() -> String)? = null,
     ) {
         uiDevice.assertVisibility(
             selector = this,
             visible = true,
             timeout = timeout,
-            errorProvider = errorProvider
+            errorProvider = errorProvider,
         )
     }
 
@@ -254,13 +290,13 @@ object DeviceHelpers {
     @JvmOverloads
     fun BySelector.assertInvisible(
         timeout: Duration = LONG_WAIT,
-        errorProvider: (() -> String)? = null
+        errorProvider: (() -> String)? = null,
     ) {
         uiDevice.assertVisibility(
             selector = this,
             visible = false,
             timeout = timeout,
-            errorProvider = errorProvider
+            errorProvider = errorProvider,
         )
     }
 
@@ -312,14 +348,14 @@ object DeviceHelpers {
     @JvmStatic
     @Deprecated(
         "Use DeviceHelpers.betterSwipe directly",
-        ReplaceWith("DeviceHelpers.betterSwipe(startX, startY, endX, endY, interpolator)")
+        ReplaceWith("DeviceHelpers.betterSwipe(startX, startY, endX, endY, interpolator)"),
     )
     fun UiDevice.betterSwipe(
         startX: Int,
         startY: Int,
         endX: Int,
         endY: Int,
-        interpolator: TimeInterpolator = FLING_GESTURE_INTERPOLATOR
+        interpolator: TimeInterpolator = FLING_GESTURE_INTERPOLATOR,
     ) {
         DeviceHelpers.betterSwipe(startX, startY, endX, endY, interpolator)
     }
@@ -336,12 +372,12 @@ object DeviceHelpers {
         startY: Int,
         endX: Int,
         endY: Int,
-        interpolator: TimeInterpolator = FLING_GESTURE_INTERPOLATOR
+        interpolator: TimeInterpolator = FLING_GESTURE_INTERPOLATOR,
     ) {
         trace("Swiping ($startX,$startY) -> ($endX,$endY)") {
             BetterSwipe.from(PointF(startX.toFloat(), startY.toFloat()))
-                    .to(PointF(endX.toFloat(), endY.toFloat()), interpolator = interpolator)
-                    .release()
+                .to(PointF(endX.toFloat(), endY.toFloat()), interpolator = interpolator)
+                .release()
         }
     }
 
