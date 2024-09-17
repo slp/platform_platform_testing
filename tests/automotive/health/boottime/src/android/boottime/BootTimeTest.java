@@ -205,9 +205,9 @@ public class BootTimeTest extends BaseHostJUnit4Test {
                     String.format(
                             "%s%s%d", IMMEDIATE_DMESG_FILENAME, METRIC_KEY_SEPARATOR, iteration));
         }
+        waitForBootComplete();
         CLog.v("Waiting for %d msecs immediately after successive boot.", mAfterBootDelayTime);
         sleep(mAfterBootDelayTime);
-        waitForBootComplete();
         if (mPostBootTestRunner != null) {
             sleep(2000);
             getDevice().runInstrumentationTests(mPostBootTestRunner, new CollectingTestListener());

@@ -46,11 +46,9 @@ import java.util.stream.Collectors;
 /** A Post Processor that processes text file containing logcat logs into key-value pairs */
 @OptionClass(alias = "logcat-post-processor")
 public class LogcatPostProcessor extends BaseBootTimeTestLogPostProcessor {
-    private static final String BOOT_PHASE_1000 = "starting_phase_1000";
+    private static final String BOOT_COMPLETE_KEY = "boot_complete_key";
     /** Matches the line indicating kernel start. It is starting point of the whole boot process */
     private static final Pattern KERNEL_START_PATTERN = Pattern.compile("Linux version");
-    /** Matches the logcat line indicating boot completed */
-    private static final Pattern LOGCAT_BOOT_COMPLETED = Pattern.compile("Starting phase 1000");
 
     // 03-10 21:43:40.328 1005 1005 D SystemServerTiming:StartWifi took to
     // complete: 3474ms
@@ -81,7 +79,19 @@ public class LogcatPostProcessor extends BaseBootTimeTestLogPostProcessor {
                             + " logcat line. Maybe repeated.")
     private Map<String, String> mBootTimePatterns = new HashMap<>();
 
+    @Option(
+            name = "starting-phase-signal",
+            description =
+                    "Keywords to match the starting phase of the boot.")
+    private String startingPhase = "Starting phase 1000";
+
     private List<Double> mDmesgBootCompleteTimes;
+    private Pattern mBootCompletePattern;
+
+    @Override
+    public void setUp() {
+        mBootCompletePattern = Pattern.compile(startingPhase);
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -202,7 +212,7 @@ public class LogcatPostProcessor extends BaseBootTimeTestLogPostProcessor {
             Map<String, GenericTimingItem> itemsMap =
                     items.stream()
                             .collect(Collectors.toMap(GenericTimingItem::getName, item -> item));
-            if (!itemsMap.containsKey(BOOT_PHASE_1000)) {
+            if (!itemsMap.containsKey(BOOT_COMPLETE_KEY)) {
                 LogUtil.CLog.e("Missing boot complete signals from logcat");
                 return metrics;
             }
@@ -226,13 +236,13 @@ public class LogcatPostProcessor extends BaseBootTimeTestLogPostProcessor {
 
     private TimingsLogParser createCustomTimingsParser() {
         TimingsLogParser parser = new TimingsLogParser();
-        parser.addDurationPatternPair(BOOT_PHASE_1000, KERNEL_START_PATTERN, LOGCAT_BOOT_COMPLETED);
+        parser.addDurationPatternPair(BOOT_COMPLETE_KEY, KERNEL_START_PATTERN, mBootCompletePattern);
         for (Map.Entry<String, String> pattern : mBootTimePatterns.entrySet()) {
             LogUtil.CLog.d(
                     "Adding boot metric with name: %s, pattern: %s",
                     pattern.getKey(), pattern.getValue());
             parser.addDurationPatternPair(
-                    pattern.getKey(), LOGCAT_BOOT_COMPLETED, Pattern.compile(pattern.getValue()));
+                    pattern.getKey(), mBootCompletePattern, Pattern.compile(pattern.getValue()));
         }
         return parser;
     }
