@@ -25,7 +25,6 @@ java_library_static {
     static_libs: [
         "android.car-test-stubs",
         "androidx.test.runner",
-        "compatibility-device-util-axt",
         "ub-uiautomator",
     ],
 }
