@@ -53,7 +53,7 @@ class BluetoothConnectionStatusOnLevelTwo(bluetooth_base_test.BluetoothBaseTest)
 
     def test_connection_status_displayed_on_device_screen(self):
         # Open bluetooth settings.
-        self.call_utils.open_bluetooth_settings()
+        self.call_utils.open_bluetooth_settings_form_status_bar()
         self.call_utils.wait_with_log(2)
 
         # Find the target device and disconnect it on the Level One page
