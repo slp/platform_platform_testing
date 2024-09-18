@@ -18,6 +18,7 @@ package android.platform.scenario.multiuser;
 
 import android.app.UiAutomation;
 import android.content.pm.UserInfo;
+import android.os.Build;
 import android.os.SystemClock;
 import android.platform.helpers.MultiUserHelper;
 import android.platform.test.scenario.annotation.Scenario;
@@ -54,6 +55,10 @@ public class SwitchToNewSecondaryUser {
         TODO(b/194536236): Refactor setup code in multiuser nonui tests
          * and create setup util API instead
          */
+        // Execute these tests only on devices running Android T or higher
+        Assume.assumeTrue(
+                "Skipping below Android T", Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU);
+
         // Execute user manager APIs with elevated permissions
         mUiAutomation = getUiAutomation();
         // TODO: b/302175460 - update minimum SDK version
