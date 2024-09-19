@@ -21,6 +21,7 @@ package {
 java_library {
     name: "spectatio-util-lib",
     static_libs: [
+        "androidx.test.monitor",
         "androidx.test.uiautomator_uiautomator",
         "gson",
         "guava",
