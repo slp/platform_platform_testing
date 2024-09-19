@@ -20,7 +20,6 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.graphics.Bitmap
 import android.view.View
-import androidx.annotation.OptIn
 import androidx.test.core.app.ActivityScenario
 import com.google.errorprone.annotations.CheckReturnValue
 import java.util.concurrent.TimeUnit
@@ -38,9 +37,7 @@ import platform.test.screenshot.BitmapSupplier
 import platform.test.screenshot.captureToBitmapAsync
 
 /** Toolkit class to use for View-based [MotionTestRule] tests. */
-class ViewToolkit(
-    internal val currentActivityScenario: () -> ActivityScenario<*>,
-)
+class ViewToolkit(internal val currentActivityScenario: () -> ActivityScenario<*>)
 
 /**
  * Defines the sampling of features during a test run.
@@ -75,7 +72,7 @@ data class ViewRecordingSpec<T>(
                 captureRoot = this,
                 sampling = sampling,
                 visualCapture = { screenshotView.captureToBitmapAsync().get(10, TimeUnit.SECONDS) },
-                timeSeriesCapture
+                timeSeriesCapture,
             )
 
         /**
@@ -86,12 +83,12 @@ data class ViewRecordingSpec<T>(
          */
         fun <T : View> T.capture(
             sampling: AnimationSampling,
-            timeSeriesCapture: TimeSeriesCaptureScope<T>.() -> Unit
+            timeSeriesCapture: TimeSeriesCaptureScope<T>.() -> Unit,
         ) =
             capture(
                 screenshotView = this,
                 sampling = sampling,
-                timeSeriesCapture = timeSeriesCapture
+                timeSeriesCapture = timeSeriesCapture,
             )
 
         /**
@@ -102,13 +99,13 @@ data class ViewRecordingSpec<T>(
          */
         fun <T> T.captureWithoutScreenshot(
             sampling: AnimationSampling,
-            timeSeriesCapture: TimeSeriesCaptureScope<T>.() -> Unit
+            timeSeriesCapture: TimeSeriesCaptureScope<T>.() -> Unit,
         ) =
             ViewRecordingSpec(
                 captureRoot = this,
                 sampling = sampling,
                 visualCapture = null,
-                timeSeriesCapture = timeSeriesCapture
+                timeSeriesCapture = timeSeriesCapture,
             )
     }
 }
@@ -117,7 +114,7 @@ data class ViewRecordingSpec<T>(
 @CheckReturnValue
 fun <T> MotionTestRule<ViewToolkit>.record(
     animator: AnimatorSet,
-    recordingSpec: ViewRecordingSpec<T>
+    recordingSpec: ViewRecordingSpec<T>,
 ): RecordedMotion {
     require(!animator.isStarted) { "AnimatorSet must not have been started." }
     return recordSeekableAnimation(animator.makeTestable(), recordingSpec)
@@ -164,7 +161,7 @@ internal fun <T> MotionTestRule<ViewToolkit>.recordSeekableAnimation(
     val timeSeries =
         TimeSeries(
             frameIdCollector.toList(),
-            propertyCollector.entries.map { entry -> Feature(entry.key, entry.value) }
+            propertyCollector.entries.map { entry -> Feature(entry.key, entry.value) },
         )
 
     return create(timeSeries, screenshotCollector)

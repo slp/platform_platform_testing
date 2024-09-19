@@ -52,7 +52,7 @@ class RecordedMotionSubjectTest {
     private val goldenPathManager =
         GoldenPathManager(
             InstrumentationRegistry.getInstrumentation().context,
-            pathConfig = PathConfig()
+            pathConfig = PathConfig(),
         )
     private val bitmapDiffer: BitmapDiffer = mock()
     private val motionRule =
@@ -78,7 +78,7 @@ class RecordedMotionSubjectTest {
             .writeGeneratedTimeSeries(
                 "foo",
                 recordedMotion,
-                TimeSeriesVerificationResult.MISSING_REFERENCE
+                TimeSeriesVerificationResult.MISSING_REFERENCE,
             )
     }
 
@@ -164,7 +164,7 @@ class RecordedMotionSubjectTest {
             testClassName = "MotionTest",
             testMethodName = "foo_test",
             actual,
-            screenshots
+            screenshots,
         )
     }
 }

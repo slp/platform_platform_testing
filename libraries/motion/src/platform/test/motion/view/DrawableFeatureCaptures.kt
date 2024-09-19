@@ -31,7 +31,7 @@ object DrawableFeatureCaptures {
         FeatureCapture<GradientDrawable, CornerRadii>("cornerRadii") {
             DataPoint.of(
                 it.cornerRadii?.let { rawValues -> CornerRadii(rawValues) },
-                DataPointTypes.cornerRadii
+                DataPointTypes.cornerRadii,
             )
         }
 }
@@ -44,6 +44,7 @@ object DrawableFeatureCaptures {
  */
 class CornerRadii(rawValues: FloatArray) {
     val rawValues = rawValues.clone()
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
 

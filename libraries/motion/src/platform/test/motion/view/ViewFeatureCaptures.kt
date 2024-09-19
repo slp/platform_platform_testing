@@ -25,7 +25,7 @@ import platform.test.motion.golden.asDataPoint
 /** Returns a [TimeSeriesCaptureScope] for the child view with the specified ID. */
 fun <U : View> TimeSeriesCaptureScope<out View>.onViewWithId(
     viewId: Int,
-    nestedTimeSeriesCapture: TimeSeriesCaptureScope<U>.() -> Unit
+    nestedTimeSeriesCapture: TimeSeriesCaptureScope<U>.() -> Unit,
 ) = on({ it.findViewById(viewId) }, nestedTimeSeriesCapture)
 
 /** Common, generic [FeatureCapture] implementations for Views. */

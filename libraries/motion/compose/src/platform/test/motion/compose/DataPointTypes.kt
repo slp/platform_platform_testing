@@ -52,7 +52,7 @@ object DataPointTypes {
                     else -> throw UnknownTypeException()
                 }
             },
-            valueToJson = { it.value }
+            valueToJson = { it.value },
         )
 
     val intSize: DataPointType<IntSize> =
@@ -68,7 +68,7 @@ object DataPointTypes {
                     put("width", it.width)
                     put("height", it.height)
                 }
-            }
+            },
         )
 
     val dpSize: DataPointType<DpSize> =
@@ -84,7 +84,7 @@ object DataPointTypes {
                     put("width", it.width.value)
                     put("height", it.height.value)
                 }
-            }
+            },
         )
 
     val dpOffset: DataPointType<DpOffset> =
@@ -100,7 +100,7 @@ object DataPointTypes {
                     put("x", it.x.value)
                     put("y", it.y.value)
                 }
-            }
+            },
         )
 
     val offset: DataPointType<Offset> =
@@ -125,6 +125,6 @@ object DataPointTypes {
                             put("y", it.y)
                         }
                 }
-            }
+            },
         )
 }

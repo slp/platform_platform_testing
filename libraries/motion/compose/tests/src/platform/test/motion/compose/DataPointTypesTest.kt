@@ -50,6 +50,7 @@ class DataPointTypesTest {
 
         assertThat(intSize).invalidJsonReturnsUnknownDataPoint(JSONObject(), 1)
     }
+
     @Test
     fun dpSize_jsonConversion() {
         assertThat(dpSize)
@@ -57,6 +58,7 @@ class DataPointTypesTest {
 
         assertThat(intSize).invalidJsonReturnsUnknownDataPoint(JSONObject(), 1)
     }
+
     @Test
     fun dpOffset_jsonConversion() {
         assertThat(dpOffset).convertsJsonObject(DpOffset(x = 1.dp, y = 2.dp), """{"x":1, "y": 2}""")

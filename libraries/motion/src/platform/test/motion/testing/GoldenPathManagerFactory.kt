@@ -28,7 +28,7 @@ import platform.test.screenshot.PathConfig
  */
 fun createGoldenPathManager(
     sourceTreeGoldenLocation: String,
-    pathConfig: PathConfig = PathConfig()
+    pathConfig: PathConfig = PathConfig(),
 ): GoldenPathManager {
     val appContext = InstrumentationRegistry.getInstrumentation().context
     val deviceOutputDirectory = File(appContext.filesDir, "goldens").toString()
@@ -36,6 +36,6 @@ fun createGoldenPathManager(
         appContext,
         sourceTreeGoldenLocation,
         deviceOutputDirectory,
-        pathConfig
+        pathConfig,
     )
 }

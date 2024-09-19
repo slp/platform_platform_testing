@@ -54,7 +54,7 @@ private constructor(failureMetadata: FailureMetadata, private val actual: DataPo
     private fun convertsJson(
         nativeObject: T,
         jsonRepresentation: String,
-        parseJsonRepresentation: (String) -> Any
+        parseJsonRepresentation: (String) -> Any,
     ) {
         isNotNull()
         val dataPointType = checkNotNull(actual)
