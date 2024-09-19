@@ -19,6 +19,7 @@ package platform.test.motion.compose
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -29,6 +30,7 @@ import org.junit.runner.RunWith
 import platform.test.motion.compose.DataPointTypes.dp
 import platform.test.motion.compose.DataPointTypes.dpOffset
 import platform.test.motion.compose.DataPointTypes.dpSize
+import platform.test.motion.compose.DataPointTypes.intOffset
 import platform.test.motion.compose.DataPointTypes.intSize
 import platform.test.motion.compose.DataPointTypes.offset
 import platform.test.motion.testing.DataPointTypeSubject.Companion.assertThat
@@ -49,6 +51,13 @@ class DataPointTypesTest {
             .convertsJsonObject(IntSize(width = 1, height = 2), """{"width":1, "height": 2}""")
 
         assertThat(intSize).invalidJsonReturnsUnknownDataPoint(JSONObject(), 1)
+    }
+
+    @Test
+    fun intOffset_jsonConversion() {
+        assertThat(intOffset).convertsJsonObject(IntOffset(x = 1, y = 2), """{"x":1, "y": 2}""")
+
+        assertThat(intOffset).invalidJsonReturnsUnknownDataPoint(JSONObject(), 1)
     }
 
     @Test

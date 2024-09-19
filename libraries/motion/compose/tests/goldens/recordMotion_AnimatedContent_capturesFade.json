@@ -1,0 +1,214 @@
+{
+  "frame_ids": [
+    "before",
+    0,
+    16,
+    32,
+    48,
+    64,
+    80,
+    96,
+    112,
+    128,
+    144,
+    160,
+    176,
+    192,
+    208,
+    224,
+    240,
+    256,
+    272,
+    288,
+    304,
+    320,
+    336,
+    "after"
+  ],
+  "features": [
+    {
+      "name": "test_transition",
+      "type": "animatedVisibilityTransitions",
+      "data_points": [
+        {},
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 1
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 1
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0.041483272
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 0.9585167
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0.13524042
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 0.86475956
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0.24952994
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 0.75047004
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0.36607495
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 0.633925
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0.47506905
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 0.52493095
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0.5719077
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 0.42809233
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0.6550744
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 0.34492555
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0.7247951
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 0.27520487
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0.7821971
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 0.21780288
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0.8287988
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 0.17120126
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0.8662106
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 0.13378945
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0.89597094
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 0.10402903
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0.919465
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 0.080535
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0.9378929
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 0.062107105
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0.95226747
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 0.047732532
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0.96342677
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 0.03657326
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0.9720537
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 0.027946273
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0.9786985
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 0.021301514
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0.9837997
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 0.016200291
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "alpha": 0.98770446
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "alpha": 0.012295524
+          }
+        },
+        {}
+      ]
+    }
+  ]
+}

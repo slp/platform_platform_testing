@@ -73,8 +73,7 @@ private constructor(failureMetadata: FailureMetadata, private val actual: DataPo
         val dataPointType = checkNotNull(actual)
 
         samples.forEach {
-            Truth.assertThat(dataPointType.fromJson(JSONObject()))
-                .isEqualTo(DataPoint.unknownType<T>())
+            Truth.assertThat(dataPointType.fromJson(it)).isEqualTo(DataPoint.unknownType<T>())
         }
     }
 
