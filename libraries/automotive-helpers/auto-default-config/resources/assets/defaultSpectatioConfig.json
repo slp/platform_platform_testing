@@ -1008,6 +1008,27 @@
       "VALUE": "summary",
       "PACKAGE": "android"
     },
+    "USE_BLUETOOTH_SETTINGS_TOGGLE": {
+      "TYPE": "MULTIPLE",
+      "SPECIFIERS": [
+        {
+          "TYPE": "CLASS",
+          "VALUE": "android.widget.Switch"
+        },
+        {
+          "TYPE": "HAS_ANCESTOR",
+          "MAX_DEPTH": 3,
+          "ANCESTOR": {
+            "TYPE": "HAS_DESCENDANT",
+            "MAX_DEPTH": 2,
+            "DESCENDANT": {
+              "TYPE": "TEXT",
+              "VALUE": "Use Bluetooth"
+            }
+          }
+        }
+      ]
+    },
     "DISPLAY_SETTINGS_SCROLL_ELEMENT": {
       "TYPE": "RESOURCE_ID",
       "VALUE": "car_ui_internal_recycler_view",

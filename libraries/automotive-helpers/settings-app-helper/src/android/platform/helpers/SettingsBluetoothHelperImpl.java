@@ -49,6 +49,12 @@ public class SettingsBluetoothHelperImpl extends AbstractStandardAppHelper
 
     /** {@inheritDoc} */
     @Override
+    public boolean isUseBluetoothToggleChecked() {
+        return buttonChecked(AutomotiveConfigConstants.USE_BLUETOOTH_SETTINGS_TOGGLE);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public boolean isMediaPreferenceChecked() {
         return buttonChecked(AutomotiveConfigConstants.MEDIA_BUTTON);
     }
