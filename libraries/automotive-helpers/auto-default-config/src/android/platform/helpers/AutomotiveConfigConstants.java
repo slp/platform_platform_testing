@@ -231,6 +231,9 @@ public class AutomotiveConfigConstants {
     // Display Settings Constants
     public static final String BRIGHTNESS_SEEKBAR = "BRIGHTNESS_SEEKBAR";
 
+    // Bluetooth Settings Constants
+    public static final String USE_BLUETOOTH_SETTINGS_TOGGLE = "USE_BLUETOOTH_SETTINGS_TOGGLE";
+
     // Date and time Settings Constants
     public static final String DATE_TIME_SETTINGS_SCROLL_ACTION =
             "DATE_TIME_SETTINGS_SCROLL_ACTION";
@@ -381,6 +384,11 @@ public class AutomotiveConfigConstants {
     public static final String APPS_SETTINGS = "OPEN_APPS_SETTINGS_WORKFLOW";
     public static final String SECURITY_SETTINGS = "OPEN_SECURITY_SETTINGS_WORKFLOW";
 
+    public static final String SETTINGS_SCROLL_ACTION = "SETTINGS_SCROLL_ACTION";
+    public static final String SETTINGS_SCROLL_DIRECTION = "SETTINGS_SCROLL_DIRECTION";
+    public static final String SETTINGS_SCROLL_BACKWARD_BUTTON = "SETTINGS_SCROLL_BACKWARD_BUTTON";
+    public static final String SETTINGS_SCROLL_FORWARD_BUTTON = "SETTINGS_SCROLL_FORWARD_BUTTON";
+    public static final String SETTINGS_SCROLL_ELEMENT = "SETTINGS_SCROLL_ELEMENT";
     public static final String SETTINGS_SUB_SETTING_SCROLL_ACTION =
             "SETTINGS_SUB_SETTING_SCROLL_ACTION";
     public static final String SETTINGS_SUB_SETTING_SCROLL_DIRECTION =

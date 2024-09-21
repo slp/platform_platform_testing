@@ -164,6 +164,7 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
             enableCustomTrace(config)
         }
 
+        @JvmOverloads
         fun enableWindowManagerDump(dataSourceName: String = WINDOWMANAGER_DATA_SOURCE): Builder =
             apply {
                 val config =

@@ -124,4 +124,18 @@ public interface IAutoHomeHelper extends IAppHelper {
      * <p>Opens Assistant Widget button on Home screen
      */
     void clickAssistantWidget();
+
+    /**
+     * Setup expectations: To open HVAC panel
+     *
+     * <p>Clicks home Temeprature buttons
+     */
+    void openHVAC();
+
+    /**
+     * Setup expectations: Checks HVAC panel is opened
+     *
+     * <p>Checks HVAC panel is opened
+     */
+    boolean isHVACOpen();
 }

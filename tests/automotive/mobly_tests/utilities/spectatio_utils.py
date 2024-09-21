@@ -127,8 +127,14 @@ class CallUtils:
     def open_bluetooth_settings(self):
         """Assumes we are on the home screen.
         Navigate to the Bluetooth setting page"""
-        logging.info("Opening bluetooth settings (via the Status Bar)")
+        logging.info("Opening bluetooth settings (via the home screen)")
         self.device.mbs.openBluetoothSettings()
+
+    def open_bluetooth_settings_form_status_bar(self):
+        """Assumes we are on the home screen.
+        Navigate to the Bluetooth setting page"""
+        logging.info("Opening bluetooth settings (via the Status Bar)")
+        self.device.mbs.openBluetoothSettingsFromStatusBar()
 
     def press_active_call_toggle(self):
         logging.info("Pressing the Active Call toggle")

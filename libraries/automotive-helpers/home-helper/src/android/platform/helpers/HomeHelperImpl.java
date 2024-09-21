@@ -262,4 +262,19 @@ public class HomeHelperImpl extends AbstractStandardAppHelper implements IAutoHo
         getSpectatioUiUtil().clickAndWait(assistantWidget);
         getSpectatioUiUtil().wait5Seconds();
     }
+
+    @Override
+    public void openHVAC() {
+        BySelector homeTemperatureButttonSelector =
+                getUiElementFromConfig(AutomotiveConfigConstants.HOME_TEMPERATURE_BUTTON);
+        UiObject2 homeTemperatureButton =
+                getSpectatioUiUtil().findUiObject(homeTemperatureButttonSelector);
+        getSpectatioUiUtil().clickAndWait(homeTemperatureButton);
+    }
+
+    @Override
+    public boolean isHVACOpen() {
+        BySelector hvacPanelSelector = getUiElementFromConfig(AutomotiveConfigConstants.HVAC_PANEL);
+        return getSpectatioUiUtil().hasUiElement(hvacPanelSelector);
+    }
 }
