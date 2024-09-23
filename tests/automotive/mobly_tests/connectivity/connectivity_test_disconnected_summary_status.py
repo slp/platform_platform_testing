@@ -52,6 +52,10 @@ class BluetoothConnectionStatusOnLevelTwo(bluetooth_base_test.BluetoothBaseTest)
         super().enable_recording()
 
     def test_connection_status_displayed_on_device_screen(self):
+        # Log BT Connection State after pairing
+        bt_connection_state=self.call_utils.get_bt_connection_status_using_adb_command(self.discoverer)
+        logging.info("BT State after pairing : <%s>", bt_connection_state)
+
         # Open bluetooth settings.
         self.call_utils.open_bluetooth_settings_form_status_bar()
         self.call_utils.wait_with_log(2)

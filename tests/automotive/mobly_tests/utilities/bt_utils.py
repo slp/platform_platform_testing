@@ -158,7 +158,6 @@ class BTUtils:
         self.media_utils.execute_shell_on_hu_device(constants.BLUETOOTH_NOOPERABLE)
         self.media_utils.execute_shell_on_hu_device(constants.BLUETOOTH_BTSNOOP_DEFAULT_MODE)
 
-
     def check_device_pairing_state(self):
         logging.info('Checking the bt pairing status')
         if  self.discoverer.mbs.btGetPairedDevices() :

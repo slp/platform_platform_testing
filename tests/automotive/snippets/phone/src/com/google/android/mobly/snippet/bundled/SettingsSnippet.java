@@ -85,11 +85,16 @@ public class SettingsSnippet implements Snippet {
     public void openBluetoothSettings() {
         mSettingsHelper.get().openSetting(sBluetoothSettings);
     }
-
     @Rpc(description = "Open the bluetooth settings (from status bar)")
     public void openBluetoothSettingsFromStatusBar() {
         mStatusBarHelper.get().openBluetoothPalette();
         mStatusBarHelper.get().openBluetoothSettings();
+    }
+
+    /** Go Back to bluetooth settings (from L2 Pages) */
+    @Rpc(description = "Go Back to bluetooth settings (from L2 Pages)")
+    public void goBackToBluetoothSettings() {
+        mBluetoothSettingsHelper.get().goBackToBluetoothSettings();
     }
 
     /** Press the phone preference toggle button */
