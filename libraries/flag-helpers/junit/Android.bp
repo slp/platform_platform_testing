@@ -59,7 +59,6 @@ java_library_host {
     name: "flag-junit-host",
     srcs: ["src_host/**/*.java"],
     static_libs: [
-        "aconfig_host_device_paths_java",
         "flag-junit-base",
         "flag-util",
         "libaconfig_java_proto_full",
