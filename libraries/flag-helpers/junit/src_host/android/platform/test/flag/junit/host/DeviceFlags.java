@@ -19,7 +19,6 @@ package android.platform.test.flag.junit.host;
 import android.aconfig.Aconfig.flag_permission;
 import android.aconfig.Aconfig.flag_state;
 import android.aconfig.Aconfig.parsed_flags;
-import android.aconfig.HostDeviceProtos;
 import android.platform.test.flag.util.Flag;
 import android.platform.test.flag.util.FlagReadException;
 
@@ -53,6 +52,13 @@ import javax.annotation.Nullable;
  */
 public class DeviceFlags {
     private static final String DUMP_DEVICE_CONFIG_CMD = "device_config list";
+
+    /**
+     * Partitions that contain the aconfig_flags.pb files. Should be consistent with the partitions
+     * defined in core/packaging/flags.mk.
+     */
+    private static final List<String> FLAG_PARTITIONS =
+            List.of("product", "system", "system_ext", "vendor");
 
     /**
      * The key is the flag name with namespace ({namespace}/{flagName} for legacy flags,
@@ -140,21 +146,10 @@ public class DeviceFlags {
     private parsed_flags getAconfigParsedFlags(ITestDevice testDevice) throws FlagReadException {
         parsed_flags.Builder builder = parsed_flags.newBuilder();
 
-        List<String> protoPaths =
-                HostDeviceProtos.parsedFlagsProtoPaths(
-                        command -> {
-                            try {
-                                String adbResult = testDevice.executeAdbCommand(command.split(" "));
-                                LogUtil.CLog.i(
-                                        "Adb command result for '%s': %s", command, adbResult);
-                                return adbResult;
-                            } catch (DeviceNotAvailableException e) {
-                                throw new FlagReadException("ALL_FLAGS", e);
-                            }
-                        });
-
-        for (String aconfigFlagsPbFilePath : protoPaths) {
+        for (String flagPartition : FLAG_PARTITIONS) {
             try {
+                String aconfigFlagsPbFilePath =
+                        String.format("/%s/etc/aconfig_flags.pb", flagPartition);
                 if (!testDevice.doesFileExist(aconfigFlagsPbFilePath)) {
                     LogUtil.CLog.i("Aconfig flags file %s does not exist", aconfigFlagsPbFilePath);
                     continue;
