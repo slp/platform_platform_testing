@@ -93,7 +93,7 @@ class ComposeToolkitTest {
                     },
                     ComposeRecordingSpec.until({ completed }) {
                         feature(hasTestTag("foo"), ComposeFeatureCaptures.positionInRoot)
-                    }
+                    },
                 )
 
             assertThat(motion).timeSeriesMatchesGolden()
@@ -118,7 +118,7 @@ class ComposeToolkitTest {
                     },
                     ComposeRecordingSpec.until({ completed }) {
                         feature(hasTestTag("foo"), ComposeFeatureCaptures.dpSize)
-                    }
+                    },
                 )
 
             assertThat(motion).timeSeriesMatchesGolden()
@@ -146,7 +146,7 @@ class ComposeToolkitTest {
                     },
                     ComposeRecordingSpec.until({ completed }) {
                         feature(hasTestTag("BoxOfInterest"), ComposeFeatureCaptures.alpha)
-                    }
+                    },
                 )
 
             assertThat(motion).timeSeriesMatchesGolden()
@@ -187,7 +187,7 @@ class ComposeToolkitTest {
                     ComposeRecordingSpec.until({ completed }) {
                         feature(hasTestTag("bar"), ComposeFeatureCaptures.alpha, name = "bar_alpha")
                         feature(hasTestTag("foo"), ComposeFeatureCaptures.alpha, name = "foo_alpha")
-                    }
+                    },
                 )
 
             assertThat(motion).timeSeriesMatchesGolden()
@@ -227,7 +227,7 @@ class ComposeToolkitTest {
                         }
                     ) {
                         feature(hasTestTag("foo"), ComposeFeatureCaptures.dpSize)
-                    }
+                    },
                 )
             motionRule.assertThat(motion).timeSeriesMatchesGolden()
         }
@@ -241,7 +241,7 @@ class ComposeToolkitTest {
                 Modifier.pointerInput(Unit) {
                         detectDragGestures(
                             onDragStart = { pointerPosition = it },
-                            onDragEnd = { pointerPosition = Offset.Unspecified }
+                            onDragEnd = { pointerPosition = Offset.Unspecified },
                         ) { _, dragAmount ->
                             pointerPosition =
                                 if (pointerPosition.isSpecified) pointerPosition + dragAmount
@@ -284,7 +284,7 @@ class ComposeToolkitTest {
                         }
                     ) {
                         feature(pointerOffsetKey, offset)
-                    }
+                    },
                 )
 
             // The golden is expected to be missing the first 100ms, while the `swipeDown` executes.
@@ -307,7 +307,7 @@ class ComposeToolkitTest {
                         }
                     ) {
                         feature(pointerOffsetKey, offset)
-                    }
+                    },
                 )
 
             motionRule.assertThat(motion).timeSeriesMatchesGolden()
@@ -339,7 +339,7 @@ class ComposeToolkitTest {
                         }
                     ) {
                         feature(pointerOffsetKey, offset)
-                    }
+                    },
                 )
 
             motionRule.assertThat(motion).timeSeriesMatchesGolden()
@@ -390,7 +390,7 @@ class ComposeToolkitTest {
             assertThatFrameCountValues(
                     recordBefore = true,
                     recordAfter = false,
-                    MotionControl { awaitFrames(5) }
+                    MotionControl { awaitFrames(5) },
                 )
                 // Minimum delays, play flag flipped after 2
                 .containsExactly(/* before */ 2, 103, 104, 105, 106, 107)
@@ -403,7 +403,7 @@ class ComposeToolkitTest {
             assertThatFrameCountValues(
                     recordBefore = false,
                     recordAfter = false,
-                    MotionControl { awaitFrames(5) }
+                    MotionControl { awaitFrames(5) },
                 )
                 // Same as above, just not recording before. Must not make a difference
                 .containsExactly(103, 104, 105, 106, 107)
@@ -416,7 +416,7 @@ class ComposeToolkitTest {
             assertThatFrameCountValues(
                     recordBefore = true,
                     recordAfter = true,
-                    MotionControl { awaitFrames(1) }
+                    MotionControl { awaitFrames(1) },
                 )
                 // after represents the state when the composable is idle, no matter how long the
                 // recording took
@@ -430,7 +430,7 @@ class ComposeToolkitTest {
             assertThatFrameCountValues(
                     recordBefore = true,
                     recordAfter = false,
-                    MotionControl(delayRecording = { awaitFrames(2) }) { awaitFrames(5) }
+                    MotionControl(delayRecording = { awaitFrames(2) }) { awaitFrames(5) },
                 )
                 // Start recording is delayed, readyToPlay is still after frame 2 (before is
                 // captured
@@ -445,7 +445,7 @@ class ComposeToolkitTest {
             assertThatFrameCountValues(
                     recordBefore = true,
                     recordAfter = false,
-                    MotionControl(delayReadyToPlay = { awaitFrames(2) }) { awaitFrames(5) }
+                    MotionControl(delayReadyToPlay = { awaitFrames(2) }) { awaitFrames(5) },
                 )
                 // delaying readyToPlay pushes back the before recording
                 .containsExactly(/* before */ 4, 105, 106, 107, 108, 109)
@@ -460,10 +460,10 @@ class ComposeToolkitTest {
                     recordAfter = false,
                     MotionControl(
                         delayReadyToPlay = { awaitFrames(2) },
-                        delayRecording = { awaitFrames(3) }
+                        delayRecording = { awaitFrames(3) },
                     ) {
                         awaitFrames(5)
-                    }
+                    },
                 )
                 .containsExactly(/* before */ 4, 108, 109, 110, 111, 112)
                 .inOrder()
@@ -475,7 +475,7 @@ class ComposeToolkitTest {
             assertThatFrameCountValues(
                     recordBefore = false,
                     recordAfter = false,
-                    MotionControl { awaitDelay(10.milliseconds) }
+                    MotionControl { awaitDelay(10.milliseconds) },
                 )
                 .hasSize(1)
         }
@@ -486,7 +486,7 @@ class ComposeToolkitTest {
             assertThatFrameCountValues(
                     recordBefore = false,
                     recordAfter = false,
-                    MotionControl { awaitDelay(16.milliseconds) }
+                    MotionControl { awaitDelay(16.milliseconds) },
                 )
                 .hasSize(1)
         }
@@ -497,7 +497,7 @@ class ComposeToolkitTest {
             assertThatFrameCountValues(
                     recordBefore = false,
                     recordAfter = false,
-                    MotionControl { awaitDelay(17.milliseconds) }
+                    MotionControl { awaitDelay(17.milliseconds) },
                 )
                 .hasSize(2)
         }
@@ -512,7 +512,7 @@ class ComposeToolkitTest {
                         // 20ms
                         awaitDelay(10.milliseconds)
                         awaitDelay(10.milliseconds)
-                    }
+                    },
                 )
                 .hasSize(2)
         }
@@ -523,7 +523,7 @@ class ComposeToolkitTest {
             assertThatFrameCountValues(
                     recordBefore = false,
                     recordAfter = false,
-                    MotionControl { awaitDelay(10.milliseconds) }
+                    MotionControl { awaitDelay(10.milliseconds) },
                 )
                 .hasSize(1)
         }
@@ -542,7 +542,7 @@ class ComposeToolkitTest {
                             checkConditionInvocationFrames.add(currentFrameCount)
                             currentFrameCount == 105
                         }
-                    }
+                    },
                 )
                 // Must not record the frame where the condition returned true
                 .containsExactly(/* before */ 2, 103, 104)
@@ -573,13 +573,13 @@ class ComposeToolkitTest {
                                 motionTestValueOfNode(frameCountKey)
                                     .also(awaitStartRecordingInvocationFrames::add) == 107
                             }
-                        }
+                        },
                     ) {
                         awaitCondition {
                             motionTestValueOfNode(frameCountKey)
                                 .also(awaitAnimationEndInvocationFrames::add) == 110
                         }
-                    }
+                    },
                 )
                 .containsExactly(/* before */ 6, 108, 109)
                 .inOrder()
@@ -622,12 +622,12 @@ class ComposeToolkitTest {
                     Text(
                         text = "$exportedFrameCount",
                         modifier =
-                            Modifier.motionTestValues { exportedFrameCount exportAs frameCountKey }
+                            Modifier.motionTestValues { exportedFrameCount exportAs frameCountKey },
                     )
                 },
                 ComposeRecordingSpec(motionControl, recordBefore, recordAfter) {
                     feature(frameCountKey, DataPointTypes.int)
-                }
+                },
             )
 
         val frameCountValues =

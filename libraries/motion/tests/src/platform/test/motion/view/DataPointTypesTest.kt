@@ -35,12 +35,12 @@ class DataPointTypesTest {
 
     @Test
     fun point_fromToJson() {
-        assertThat(point).convertsJsonObject(Point(/* x = */ 1, /* y = */ 2), """{"x":1, "y": 2}""")
+        assertThat(point).convertsJsonObject(Point(/* x= */ 1, /* y= */ 2), """{"x":1, "y": 2}""")
     }
 
     @Test
     fun point_dataPoint_isImmutable() {
-        val native = Point(/* x = */ 1, /* y = */ 2)
+        val native = Point(/* x= */ 1, /* y= */ 2)
         val dataPoint = DataPoint.of(native, point)
         native.x = 3
         assertThat((dataPoint as ValueDataPoint).value.x).isEqualTo(1)
@@ -55,8 +55,8 @@ class DataPointTypesTest {
     fun rect_fromToJson() {
         assertThat(rect)
             .convertsJsonObject(
-                Rect(/* left = */ 1, /* top = */ 2, /* right = */ 3, /* bottom = */ 4),
-                """{"left":1, "top": 2,"right":3, "bottom": 4}"""
+                Rect(/* left= */ 1, /* top= */ 2, /* right= */ 3, /* bottom= */ 4),
+                """{"left":1, "top": 2,"right":3, "bottom": 4}""",
             )
     }
 
@@ -67,7 +67,7 @@ class DataPointTypesTest {
 
     @Test
     fun rect_dataPoint_isImmutable() {
-        val native = Rect(/* left = */ 1, /* top = */ 2, /* right = */ 3, /* bottom = */ 4)
+        val native = Rect(/* left= */ 1, /* top= */ 2, /* right= */ 3, /* bottom= */ 4)
         val dataPoint = DataPoint.of(native, rect)
         native.top = 5
         assertThat((dataPoint as ValueDataPoint).value.left).isEqualTo(1)
@@ -87,7 +87,7 @@ class DataPointTypesTest {
                 "bottom_right_y": 6,
                 "bottom_left_x": 7,
                 "bottom_left_y": 8
-                }"""
+                }""",
             )
     }
 

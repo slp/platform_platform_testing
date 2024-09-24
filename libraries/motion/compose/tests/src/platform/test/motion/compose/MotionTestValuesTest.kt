@@ -98,7 +98,7 @@ class MotionTestValuesTest {
             val motion =
                 recordMotion(
                     content = { Box(Modifier.size(10.dp).motionTestValues { .5f exportAs foo }) },
-                    singleFrame { feature(foo, DataPointTypes.float) }
+                    singleFrame { feature(foo, DataPointTypes.float) },
                 )
 
             motion.timeSeries.assertSingleFeatureMatches("foo", .5f.asDataPoint())
@@ -116,7 +116,7 @@ class MotionTestValuesTest {
                             }
                         )
                     },
-                    singleFrame { feature(foo, DataPointTypes.float, matcher = hasTestTag("foo")) }
+                    singleFrame { feature(foo, DataPointTypes.float, matcher = hasTestTag("foo")) },
                 )
 
             motion.timeSeries.assertSingleFeatureMatches("foo", .5f.asDataPoint())
@@ -130,7 +130,7 @@ class MotionTestValuesTest {
                     content = { Box(Modifier.size(10.dp).motionTestValues { .5f exportAs foo }) },
                     singleFrame {
                         feature(foo, DataPointTypes.float, matcher = hasTestTag("unknown"))
-                    }
+                    },
                 )
 
             motion.timeSeries.assertSingleFeatureMatches("foo", DataPoint.notFound())
@@ -142,7 +142,7 @@ class MotionTestValuesTest {
             val motion =
                 recordMotion(
                     content = { Box(Modifier.size(10.dp).motionTestValues { .5f exportAs foo }) },
-                    singleFrame { feature(foo, DataPointTypes.float, name = "bar") }
+                    singleFrame { feature(foo, DataPointTypes.float, name = "bar") },
                 )
 
             motion.timeSeries.assertSingleFeatureMatches("bar", .5f.asDataPoint())
@@ -154,7 +154,7 @@ class MotionTestValuesTest {
             val motion =
                 recordMotion(
                     content = { Box(Modifier.size(10.dp).motionTestValues { .5f exportAs foo }) },
-                    singleFrame { feature(foo, times3) }
+                    singleFrame { feature(foo, times3) },
                 )
 
             motion.timeSeries.assertSingleFeatureMatches("foo_times3", 1.5f.asDataPoint())
@@ -172,7 +172,7 @@ class MotionTestValuesTest {
                             }
                         )
                     },
-                    singleFrame { feature(foo, times3, matcher = hasTestTag("foo")) }
+                    singleFrame { feature(foo, times3, matcher = hasTestTag("foo")) },
                 )
 
             motion.timeSeries.assertSingleFeatureMatches("foo_times3", 1.5f.asDataPoint())
@@ -184,7 +184,7 @@ class MotionTestValuesTest {
             val motion =
                 recordMotion(
                     content = { Box(Modifier.size(10.dp).motionTestValues { .5f exportAs foo }) },
-                    singleFrame { feature(foo, times3, matcher = hasTestTag("unknown")) }
+                    singleFrame { feature(foo, times3, matcher = hasTestTag("unknown")) },
                 )
 
             motion.timeSeries.assertSingleFeatureMatches("foo_times3", DataPoint.notFound())
@@ -196,7 +196,7 @@ class MotionTestValuesTest {
             val motion =
                 recordMotion(
                     content = { Box(Modifier.size(10.dp).motionTestValues { .5f exportAs foo }) },
-                    singleFrame { feature(foo, times3, name = "bar") }
+                    singleFrame { feature(foo, times3, name = "bar") },
                 )
 
             motion.timeSeries.assertSingleFeatureMatches("bar", 1.5f.asDataPoint())
@@ -208,7 +208,7 @@ class MotionTestValuesTest {
      */
     private fun TimeSeries.assertSingleFeatureMatches(
         featureName: String,
-        vararg expectedDataPoints: DataPoint<Float>
+        vararg expectedDataPoints: DataPoint<Float>,
     ) {
         assertThat(features.keys).containsExactly(featureName)
         val feature = checkNotNull(features[featureName])
@@ -216,13 +216,13 @@ class MotionTestValuesTest {
     }
 
     private fun singleFrame(
-        timeSeriesCapture: TimeSeriesCaptureScope<SemanticsNodeInteractionsProvider>.() -> Unit,
+        timeSeriesCapture: TimeSeriesCaptureScope<SemanticsNodeInteractionsProvider>.() -> Unit
     ): ComposeRecordingSpec {
         return ComposeRecordingSpec(
             recording = { awaitFrames(1) },
             recordBefore = false,
             recordAfter = false,
-            timeSeriesCapture
+            timeSeriesCapture,
         )
     }
 

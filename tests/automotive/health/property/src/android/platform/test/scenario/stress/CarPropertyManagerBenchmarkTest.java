@@ -20,7 +20,10 @@ import static android.car.VehiclePropertyIds.PERF_VEHICLE_SPEED;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assume.assumeTrue;
+
 import android.car.Car;
+import android.car.hardware.CarPropertyConfig;
 import android.car.hardware.property.CarPropertyManager;
 import android.content.Context;
 import android.device.loggers.TestLogData;
@@ -99,6 +102,10 @@ public class CarPropertyManagerBenchmarkTest {
         ExecutorService executorService = Executors.newFixedThreadPool(NUM_TASKS);
         final CountDownLatch latch = new CountDownLatch(NUM_TASKS); // For synchronization
         ConcurrentLinkedQueue<Long> concurrentLinkedQueue = new ConcurrentLinkedQueue<>();
+        CarPropertyConfig<?> hvacTempSetConfig =
+                mCarPropertyManager.getCarPropertyConfig(HVAC_TEMPERATURE_SET);
+        assumeTrue("Cannot set hvacTemp", hvacTempSetConfig != null);
+        int areaId = hvacTempSetConfig.getAreaIdConfigs().get(0).getAreaId();
         for (int i = 0; i < NUM_TASKS; i++) {
             executorService.execute(
                     () -> {
@@ -109,7 +116,7 @@ public class CarPropertyManagerBenchmarkTest {
                                 mCarPropertyManager.setProperty(
                                         Float.class,
                                         HVAC_TEMPERATURE_SET,
-                                        /* areaId= */ 1,
+                                        /* areaId= */ areaId,
                                         /* val= */ MIN_TEMP
                                                 + rd.nextFloat() * (MAX_TEMP - MIN_TEMP));
                             } catch (IllegalStateException e) {

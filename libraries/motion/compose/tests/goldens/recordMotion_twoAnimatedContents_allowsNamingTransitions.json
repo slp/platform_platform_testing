@@ -1,0 +1,340 @@
+{
+  "frame_ids": [
+    "before",
+    0,
+    16,
+    32,
+    48,
+    64,
+    80,
+    96,
+    112,
+    128,
+    144,
+    160,
+    176,
+    192,
+    208,
+    224,
+    240,
+    256,
+    272,
+    288,
+    304,
+    320,
+    336,
+    352,
+    368,
+    384,
+    400,
+    416,
+    432,
+    448,
+    464,
+    480,
+    496,
+    512,
+    "after"
+  ],
+  "features": [
+    {
+      "name": "test_transition",
+      "type": "animatedVisibilityTransitions",
+      "data_points": [
+        {},
+        {
+          "one::Enter": {
+            "alpha": 0
+          },
+          "two::Enter": {
+            "alpha": 0
+          },
+          "one::Exit": {
+            "alpha": 1
+          },
+          "two::Exit": {
+            "alpha": 1
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0
+          },
+          "two::Enter": {
+            "alpha": 0
+          },
+          "one::Exit": {
+            "alpha": 1
+          },
+          "two::Exit": {
+            "alpha": 1
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0
+          },
+          "two::Enter": {
+            "alpha": 0
+          },
+          "one::Exit": {
+            "alpha": 0.9229404
+          },
+          "two::Exit": {
+            "alpha": 0.9229404
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0
+          },
+          "two::Enter": {
+            "alpha": 0
+          },
+          "one::Exit": {
+            "alpha": 0.5782508
+          },
+          "two::Exit": {
+            "alpha": 0.5782508
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0
+          },
+          "two::Enter": {
+            "alpha": 0
+          },
+          "one::Exit": {
+            "alpha": 0.25091302
+          },
+          "two::Exit": {
+            "alpha": 0.25091302
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0
+          },
+          "two::Enter": {
+            "alpha": 0
+          },
+          "one::Exit": {
+            "alpha": 0.09543866
+          },
+          "two::Exit": {
+            "alpha": 0.09543866
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0
+          },
+          "two::Enter": {
+            "alpha": 0
+          },
+          "one::Exit": {
+            "alpha": 0.024732292
+          },
+          "two::Exit": {
+            "alpha": 0.024732292
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0
+          },
+          "two::Enter": {
+            "alpha": 0
+          },
+          "one::Exit": {
+            "alpha": 0.0008595586
+          },
+          "two::Exit": {
+            "alpha": 0.0008595586
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0
+          },
+          "two::Enter": {
+            "alpha": 0
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0
+          },
+          "two::Enter": {
+            "alpha": 0
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0
+          },
+          "two::Enter": {
+            "alpha": 0
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0
+          },
+          "two::Enter": {
+            "alpha": 0
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0
+          },
+          "two::Enter": {
+            "alpha": 0
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0
+          },
+          "two::Enter": {
+            "alpha": 0
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0.003614861
+          },
+          "two::Enter": {
+            "alpha": 0
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0.039107826
+          },
+          "two::Enter": {
+            "alpha": 0
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0.13394694
+          },
+          "two::Enter": {
+            "alpha": 0
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0.31306237
+          },
+          "two::Enter": {
+            "alpha": 0
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0.5245707
+          },
+          "two::Enter": {
+            "alpha": 0
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0.68782955
+          },
+          "two::Enter": {
+            "alpha": 0
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0.7996198
+          },
+          "two::Enter": {
+            "alpha": 0.00086708216
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0.8759679
+          },
+          "two::Enter": {
+            "alpha": 0.025862994
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0.9281181
+          },
+          "two::Enter": {
+            "alpha": 0.1028615
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0.9629379
+          },
+          "two::Enter": {
+            "alpha": 0.26111406
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0.98475736
+          },
+          "two::Enter": {
+            "alpha": 0.47459888
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0.9964471
+          },
+          "two::Enter": {
+            "alpha": 0.65247446
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0.7755618
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0.8594967
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0.9169188
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0.95558983
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0.9803462
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0.99435395
+          }
+        },
+        {
+          "one::Enter": {
+            "alpha": 0.99978864
+          }
+        },
+        {}
+      ]
+    }
+  ]
+}

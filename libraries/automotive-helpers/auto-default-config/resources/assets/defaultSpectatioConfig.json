@@ -1595,8 +1595,7 @@
     },
     "DEVICE_CONNECTION_BACK_BUTTON": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "car_ui_toolbar_nav_icon_container",
-      "PACKAGE": "com.android.car.settings"
+      "VALUE": "car_ui_toolbar_nav_icon"
     },
     "DEVICE_FORGET_BUTTON": {
       "TYPE": "MULTIPLE",

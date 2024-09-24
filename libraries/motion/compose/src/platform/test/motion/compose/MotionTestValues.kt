@@ -37,7 +37,7 @@ fun <T> hasMotionTestValue(motionTestValueKey: MotionTestValueKey<T>): Semantics
 fun <T> SemanticsNodeInteractionsProvider.motionTestValueOfNode(
     motionTestValueKey: MotionTestValueKey<T>,
     matcher: SemanticsMatcher = hasMotionTestValue(motionTestValueKey),
-    useUnmergedTree: Boolean = false
+    useUnmergedTree: Boolean = false,
 ): T = onNode(matcher, useUnmergedTree).fetchSemanticsNode().get(motionTestValueKey)
 
 /**
@@ -51,7 +51,7 @@ fun <T : Any> TimeSeriesCaptureScope<SemanticsNodeInteractionsProvider>.feature(
     motionTestValueKey: MotionTestValueKey<T>,
     dataPointType: DataPointType<T>,
     matcher: SemanticsMatcher = hasMotionTestValue(motionTestValueKey),
-    name: String = motionTestValueKey.semanticsPropertyKey.name
+    name: String = motionTestValueKey.semanticsPropertyKey.name,
 ) {
     feature(
         matcher,
@@ -70,12 +70,9 @@ fun <T> TimeSeriesCaptureScope<SemanticsNodeInteractionsProvider>.feature(
     motionTestValueKey: MotionTestValueKey<T>,
     capture: FeatureCapture<T, *>,
     matcher: SemanticsMatcher = hasMotionTestValue(motionTestValueKey),
-    name: String = "${motionTestValueKey.semanticsPropertyKey.name}_${capture.name}"
+    name: String = "${motionTestValueKey.semanticsPropertyKey.name}_${capture.name}",
 ) {
-    feature(
-        matcher,
-        FeatureCapture(name) { capture.capture(it.get(motionTestValueKey)) },
-    )
+    feature(matcher, FeatureCapture(name) { capture.capture(it.get(motionTestValueKey)) })
 }
 
 private fun <T> SemanticsNode.get(motionTestValueKey: MotionTestValueKey<T>) =

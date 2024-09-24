@@ -38,7 +38,7 @@ class DataPointTypeTest {
             valueToJson = {
                 valueToJsonInvocations++
                 it.id
-            }
+            },
         )
     private var jsonToValueInvocations = 0
     private var valueToJsonInvocations = 0

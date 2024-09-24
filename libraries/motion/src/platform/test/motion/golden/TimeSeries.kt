@@ -26,7 +26,7 @@ data class TimeSeries(val frameIds: List<FrameId>, val features: Map<String, Fea
 
     constructor(
         frameIds: List<FrameId>,
-        features: List<Feature<*>>
+        features: List<Feature<*>>,
     ) : this(frameIds, features.associateBy { it.name }) {
         require(features.size == this.features.size) { "duplicate feature names" }
     }
@@ -68,5 +68,5 @@ data class Feature<out T>(
     /** Test-specific, human readable name identifying the feature. */
     val name: String,
     /** Recorded data points of the feature. */
-    val dataPoints: List<DataPoint<T>>
+    val dataPoints: List<DataPoint<T>>,
 )

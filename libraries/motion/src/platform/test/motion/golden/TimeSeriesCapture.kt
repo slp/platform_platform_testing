@@ -21,10 +21,7 @@ package platform.test.motion.golden
  *
  * A [DataPoint] of type [V] is recorded at each frame.
  */
-class FeatureCapture<T, V : Any>(
-    val name: String,
-    private val captureFn: (T) -> DataPoint<V>,
-) {
+class FeatureCapture<T, V : Any>(val name: String, private val captureFn: (T) -> DataPoint<V>) {
     fun capture(observed: T) = captureFn(observed)
 }
 
@@ -58,7 +55,7 @@ class TimeSeriesCaptureScope<T>(
      */
     fun <U> on(
         resolveRelated: (T) -> U?,
-        nestedTimeSeriesCapture: TimeSeriesCaptureScope<U>.() -> Unit
+        nestedTimeSeriesCapture: TimeSeriesCaptureScope<U>.() -> Unit,
     ) {
         with(TimeSeriesCaptureScope(observing?.let(resolveRelated), valueCollector)) {
             nestedTimeSeriesCapture()

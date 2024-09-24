@@ -92,7 +92,7 @@ internal constructor(
      */
     fun filmstripMatchesGolden(
         goldenName: String? = null,
-        bitmapMatcher: BitmapMatcher = PixelPerfectMatcher()
+        bitmapMatcher: BitmapMatcher = PixelPerfectMatcher(),
     ) {
         isNotNull()
         val recordedMotion = checkNotNull(actual)

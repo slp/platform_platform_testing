@@ -1,0 +1,211 @@
+{
+  "frame_ids": [
+    "before",
+    0,
+    16,
+    32,
+    48,
+    64,
+    80,
+    96,
+    112,
+    128,
+    144,
+    160,
+    176,
+    192,
+    "after"
+  ],
+  "features": [
+    {
+      "name": "test_transition",
+      "type": "animatedVisibilityTransitions",
+      "data_points": [
+        {},
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "slide": {
+              "x": 0,
+              "y": 175
+            }
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "slide": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "slide": {
+              "x": 0,
+              "y": 175
+            }
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "slide": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "slide": {
+              "x": 0,
+              "y": 153
+            }
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "slide": {
+              "x": 0,
+              "y": -22
+            }
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "slide": {
+              "x": 0,
+              "y": 113
+            }
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "slide": {
+              "x": 0,
+              "y": -62
+            }
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "slide": {
+              "x": 0,
+              "y": 78
+            }
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "slide": {
+              "x": 0,
+              "y": -97
+            }
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "slide": {
+              "x": 0,
+              "y": 51
+            }
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "slide": {
+              "x": 0,
+              "y": -124
+            }
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "slide": {
+              "x": 0,
+              "y": 32
+            }
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "slide": {
+              "x": 0,
+              "y": -143
+            }
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "slide": {
+              "x": 0,
+              "y": 20
+            }
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "slide": {
+              "x": 0,
+              "y": -155
+            }
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "slide": {
+              "x": 0,
+              "y": 12
+            }
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "slide": {
+              "x": 0,
+              "y": -163
+            }
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "slide": {
+              "x": 0,
+              "y": 7
+            }
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "slide": {
+              "x": 0,
+              "y": -168
+            }
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "slide": {
+              "x": 0,
+              "y": 4
+            }
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "slide": {
+              "x": 0,
+              "y": -171
+            }
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "slide": {
+              "x": 0,
+              "y": 3
+            }
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "slide": {
+              "x": 0,
+              "y": -172
+            }
+          }
+        },
+        {
+          "AnimatedVisibility[0]::Enter": {
+            "slide": {
+              "x": 0,
+              "y": 1
+            }
+          },
+          "AnimatedVisibility[0]::Exit": {
+            "slide": {
+              "x": 0,
+              "y": -174
+            }
+          }
+        },
+        {}
+      ]
+    }
+  ]
+}

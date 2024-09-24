@@ -174,3 +174,10 @@ PLAYBACK_VIEW_MODEL="setprop persist.log.tag.PlaybackViewModel DEBUG"
 MEDIA_BROWSER_CONNECTOR="setprop persist.log.tag.MediaBrowserConnector DEBUG"
 SETTINGS_CLOCK_SECONDS="settings put secure clock_seconds 1"
 
+
+# Bluetooth State Verification commands
+BLUETOOTH_CONNECTION_STATE = "dumpsys bluetooth_manager | grep ConnectionState"
+BLUETOOTH_MAP = "dumpsys bluetooth_manager | grep -E MceStateMachine"
+BLUETOOTH_HFP ="dumpsys bluetooth_manager | grep HfpClientConnectionService"
+BLUETOOTH_AVRCP =  "dumpsys bluetooth_manager | grep AvrcpControllerStateMachine"
+

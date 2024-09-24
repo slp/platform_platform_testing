@@ -22,6 +22,7 @@ import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import java.lang.reflect.Array.getDouble
@@ -52,7 +53,7 @@ object DataPointTypes {
                     else -> throw UnknownTypeException()
                 }
             },
-            valueToJson = { it.value }
+            valueToJson = { it.value },
         )
 
     val intSize: DataPointType<IntSize> =
@@ -68,7 +69,23 @@ object DataPointTypes {
                     put("width", it.width)
                     put("height", it.height)
                 }
-            }
+            },
+        )
+
+    val intOffset: DataPointType<IntOffset> =
+        DataPointType(
+            "intOffset",
+            jsonToValue = {
+                with(it as? JSONObject ?: throw UnknownTypeException()) {
+                    IntOffset(getInt("x"), getInt("y"))
+                }
+            },
+            valueToJson = {
+                JSONObject().apply {
+                    put("x", it.x)
+                    put("y", it.y)
+                }
+            },
         )
 
     val dpSize: DataPointType<DpSize> =
@@ -84,7 +101,7 @@ object DataPointTypes {
                     put("width", it.width.value)
                     put("height", it.height.value)
                 }
-            }
+            },
         )
 
     val dpOffset: DataPointType<DpOffset> =
@@ -100,7 +117,7 @@ object DataPointTypes {
                     put("x", it.x.value)
                     put("y", it.y.value)
                 }
-            }
+            },
         )
 
     val offset: DataPointType<Offset> =
@@ -125,6 +142,6 @@ object DataPointTypes {
                             put("y", it.y)
                         }
                 }
-            }
+            },
         )
 }

@@ -70,10 +70,7 @@ import platform.test.screenshot.Displays
 import platform.test.screenshot.GoldenPathManager
 
 /** Toolkit to support Compose-based [MotionTestRule] tests. */
-class ComposeToolkit(
-    val composeContentTestRule: ComposeContentTestRule,
-    val testScope: TestScope,
-) {
+class ComposeToolkit(val composeContentTestRule: ComposeContentTestRule, val testScope: TestScope) {
     internal companion object {
         const val TAG = "ComposeToolkit"
     }
@@ -82,7 +79,7 @@ class ComposeToolkit(
 /** Runs a motion test in the [ComposeToolkit.testScope] */
 fun MotionTestRule<ComposeToolkit>.runTest(
     timeout: Duration = 20.seconds,
-    testBody: suspend MotionTestRule<ComposeToolkit>.() -> Unit
+    testBody: suspend MotionTestRule<ComposeToolkit>.() -> Unit,
 ) {
     val motionTestRule = this
     toolkit.testScope.runTest(timeout) { testBody.invoke(motionTestRule) }
@@ -98,7 +95,7 @@ fun MotionTestRule<ComposeToolkit>.runTest(
 fun createComposeMotionTestRule(
     goldenPathManager: GoldenPathManager,
     testScope: TestScope = TestScope(),
-    deviceEmulationSpec: DeviceEmulationSpec = DeviceEmulationSpec(Displays.Phone)
+    deviceEmulationSpec: DeviceEmulationSpec = DeviceEmulationSpec(Displays.Phone),
 ): MotionTestRule<ComposeToolkit> {
     val deviceEmulationRule = DeviceEmulationRule(deviceEmulationSpec)
     val composeRule = createComposeRule(testScope.coroutineContext)
@@ -106,7 +103,7 @@ fun createComposeMotionTestRule(
     return MotionTestRule(
         ComposeToolkit(composeRule, testScope),
         goldenPathManager,
-        extraRules = RuleChain.outerRule(deviceEmulationRule).around(composeRule)
+        extraRules = RuleChain.outerRule(deviceEmulationRule).around(composeRule),
     )
 }
 
@@ -122,7 +119,7 @@ fun createComposeMotionTestRule(
 class MotionControl(
     val delayReadyToPlay: MotionControlFn = {},
     val delayRecording: MotionControlFn = {},
-    val recording: MotionControlFn
+    val recording: MotionControlFn,
 )
 
 typealias MotionControlFn = suspend MotionControlScope.() -> Unit
@@ -146,7 +143,7 @@ interface MotionControlScope : SemanticsNodeInteractionsProvider {
      */
     suspend fun performTouchInputAsync(
         onNode: SemanticsNodeInteraction,
-        gestureControl: TouchInjectionScope.() -> Unit
+        gestureControl: TouchInjectionScope.() -> Unit,
     )
 }
 
@@ -185,7 +182,7 @@ data class ComposeRecordingSpec(
                 motionControl = MotionControl { awaitCondition { checkDone() } },
                 recordBefore,
                 recordAfter,
-                timeSeriesCapture
+                timeSeriesCapture,
             )
         }
     }
@@ -226,7 +223,7 @@ fun MotionTestRule<ComposeToolkit>.recordMotion(
             MotionControlImpl(
                 toolkit.composeContentTestRule,
                 toolkit.testScope,
-                recordingSpec.motionControl
+                recordingSpec.motionControl,
             )
 
         Log.i(TAG, "recordMotion() awaiting readyToPlay")
@@ -266,7 +263,7 @@ fun MotionTestRule<ComposeToolkit>.recordMotion(
         val timeSeries =
             TimeSeries(
                 frameIdCollector.toList(),
-                propertyCollector.entries.map { entry -> Feature(entry.key, entry.value) }
+                propertyCollector.entries.map { entry -> Feature(entry.key, entry.value) },
             )
 
         return create(timeSeries, screenshotCollector.map { it.asAndroidBitmap() })
@@ -285,7 +282,7 @@ enum class MotionControlState {
 private class MotionControlImpl(
     val composeTestRule: ComposeTestRule,
     val testScope: TestScope,
-    val motionControl: MotionControl
+    val motionControl: MotionControl,
 ) : MotionControlScope, SemanticsNodeInteractionsProvider by composeTestRule {
 
     private var state = MotionControlState.Start
@@ -375,7 +372,7 @@ private class MotionControlImpl(
 
     override suspend fun performTouchInputAsync(
         onNode: SemanticsNodeInteraction,
-        gestureControl: TouchInjectionScope.() -> Unit
+        gestureControl: TouchInjectionScope.() -> Unit,
     ) {
         val node = onNode.fetchSemanticsNode()
         val density = node.layoutInfo.density
@@ -429,7 +426,7 @@ private sealed interface TouchEventRecorderEntry {
 private class TouchEventRecorder(
     density: Density,
     override val viewConfiguration: ViewConfiguration,
-    override val visibleSize: IntSize
+    override val visibleSize: IntSize,
 ) : TouchInjectionScope, Density by density {
 
     val lastPositions = mutableMapOf<Int, Offset>()
@@ -464,7 +461,7 @@ private class TouchEventRecorder(
     override fun moveWithHistoryMultiPointer(
         relativeHistoricalTimes: List<Long>,
         historicalCoordinates: List<List<Offset>>,
-        delayMillis: Long
+        delayMillis: Long,
     ) {
         TODO("Not yet supported")
     }

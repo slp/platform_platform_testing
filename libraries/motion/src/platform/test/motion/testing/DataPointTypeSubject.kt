@@ -54,7 +54,7 @@ private constructor(failureMetadata: FailureMetadata, private val actual: DataPo
     private fun convertsJson(
         nativeObject: T,
         jsonRepresentation: String,
-        parseJsonRepresentation: (String) -> Any
+        parseJsonRepresentation: (String) -> Any,
     ) {
         isNotNull()
         val dataPointType = checkNotNull(actual)
@@ -73,8 +73,7 @@ private constructor(failureMetadata: FailureMetadata, private val actual: DataPo
         val dataPointType = checkNotNull(actual)
 
         samples.forEach {
-            Truth.assertThat(dataPointType.fromJson(JSONObject()))
-                .isEqualTo(DataPoint.unknownType<T>())
+            Truth.assertThat(dataPointType.fromJson(it)).isEqualTo(DataPoint.unknownType<T>())
         }
     }
 
