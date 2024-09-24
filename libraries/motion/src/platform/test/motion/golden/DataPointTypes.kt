@@ -40,7 +40,7 @@ object DataPointTypes {
                     else -> throw UnknownTypeException()
                 }
             },
-            valueToJson = { it }
+            valueToJson = { it },
         )
 
     val float: DataPointType<Float> =
@@ -54,7 +54,7 @@ object DataPointTypes {
                     else -> throw UnknownTypeException()
                 }
             },
-            valueToJson = { it }
+            valueToJson = { it },
         )
 
     val int: DataPointType<Int> =
@@ -68,7 +68,7 @@ object DataPointTypes {
                     else -> throw UnknownTypeException()
                 }
             },
-            valueToJson = { it }
+            valueToJson = { it },
         )
 
     val string: DataPointType<String> =
@@ -95,7 +95,7 @@ object DataPointTypes {
             },
             valueToJson = {
                 JSONArray().apply { it.forEach { value -> put(dataPointType.toJson(value)) } }
-            }
+            },
         )
     }
 }

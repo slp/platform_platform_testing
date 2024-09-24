@@ -91,7 +91,7 @@ enum class FilmstripOrientation {
     /** Horizontal for screenshots taller than wide, and vice versa */
     AUTOMATIC,
     HORIZONTAL,
-    VERTICAL
+    VERTICAL,
 }
 
 /** An animation screenshot annotated with the frame its originating from. */
@@ -101,7 +101,7 @@ private sealed class FilmstripRenderer(
     val screenshots: List<MotionScreenshot>,
     val screenshotWidth: Int,
     val screenshotHeight: Int,
-    val scale: Float
+    val scale: Float,
 ) {
     val bitmapConfig = checkNotNull(screenshots.first().bitmap.config)
 
@@ -131,7 +131,7 @@ private class HorizontalFilmstripRenderer(
     screenshots: List<MotionScreenshot>,
     screenshotWidth: Int,
     screenshotHeight: Int,
-    scale: Float
+    scale: Float,
 ) : FilmstripRenderer(screenshots, screenshotWidth, screenshotHeight, scale) {
 
     init {
@@ -168,7 +168,7 @@ private class HorizontalFilmstripRenderer(
             canvas.drawBitmap(
                 /* bitmap = */ screenshot.bitmap,
                 /* matrix = */ transform,
-                /* paint = */ backgroundPaint
+                /* paint = */ backgroundPaint,
             )
 
             canvas.drawText(
@@ -188,7 +188,7 @@ private class VerticalFilmstripRenderer(
     screenshots: List<MotionScreenshot>,
     screenshotWidth: Int,
     screenshotHeight: Int,
-    scale: Float
+    scale: Float,
 ) : FilmstripRenderer(screenshots, screenshotWidth, screenshotHeight, scale) {
     override fun render(): Bitmap {
         val tileHeight = max(screenshotHeight, labelHeight + 2 * labelMargin)
@@ -218,7 +218,7 @@ private class VerticalFilmstripRenderer(
             canvas.drawBitmap(
                 /* bitmap = */ screenshot.bitmap,
                 /* matrix = */ transform,
-                /* paint = */ backgroundPaint
+                /* paint = */ backgroundPaint,
             )
 
             val textBounds = Rect()

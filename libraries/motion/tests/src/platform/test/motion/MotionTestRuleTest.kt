@@ -46,7 +46,7 @@ class MotionTestRuleTest {
             "FooClass",
             "bar_test",
             TimeSeries(listOf(), emptyList()),
-            screenshots = null
+            screenshots = null,
         )
 
     @Test
@@ -76,7 +76,7 @@ class MotionTestRuleTest {
         subject.writeGeneratedTimeSeries(
             "updated_golden",
             emptyRecordedMotion,
-            TimeSeriesVerificationResult.PASSED
+            TimeSeriesVerificationResult.PASSED,
         )
         val expectedFile =
             File(goldenPathManager.deviceLocalPath).resolve("FooClass/updated_golden.actual.json")
@@ -89,7 +89,7 @@ class MotionTestRuleTest {
         subject.writeGeneratedTimeSeries(
             "updated_golden",
             emptyRecordedMotion,
-            TimeSeriesVerificationResult.PASSED
+            TimeSeriesVerificationResult.PASSED,
         )
         val expectedFile =
             File(goldenPathManager.deviceLocalPath).resolve("FooClass/updated_golden.actual.json")
@@ -111,7 +111,7 @@ class MotionTestRuleTest {
         subject.writeGeneratedTimeSeries(
             "updated_golden",
             emptyRecordedMotion,
-            TimeSeriesVerificationResult.MISSING_REFERENCE
+            TimeSeriesVerificationResult.MISSING_REFERENCE,
         )
         val expectedFile =
             File(goldenPathManager.deviceLocalPath).resolve("FooClass/updated_golden.actual.json")
@@ -152,15 +152,15 @@ class MotionTestRuleTest {
                 "bar_test",
                 TimeSeries(
                     listOf(TimestampFrameId(0), TimestampFrameId(16), SupplementalFrameId("after")),
-                    listOf()
+                    listOf(),
                 ),
                 listOf(
                     mockScreenshot(Color.RED, w, h),
                     mockScreenshot(Color.GREEN, w, h),
-                    mockScreenshot(Color.BLUE, w, h)
-                )
+                    mockScreenshot(Color.BLUE, w, h),
+                ),
             ),
-            TimeSeriesVerificationResult.MISSING_REFERENCE
+            TimeSeriesVerificationResult.MISSING_REFERENCE,
         )
 
         val expectedVideo =
@@ -200,7 +200,7 @@ class MotionTestRuleTest {
             subject.writeGeneratedTimeSeries(
                 "invalid identifier!",
                 emptyRecordedMotion,
-                TimeSeriesVerificationResult.PASSED
+                TimeSeriesVerificationResult.PASSED,
             )
         }
     }
@@ -209,6 +209,6 @@ class MotionTestRuleTest {
         color: Int,
         width: Int = 400,
         height: Int = 200,
-        bitmapConfig: Bitmap.Config = Bitmap.Config.ARGB_8888
+        bitmapConfig: Bitmap.Config = Bitmap.Config.ARGB_8888,
     ) = Bitmap.createBitmap(width, height, bitmapConfig).also { Canvas(it).drawColor(color) }
 }
