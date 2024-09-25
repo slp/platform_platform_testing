@@ -184,6 +184,22 @@ public class SettingUserHelperImpl extends AbstractStandardAppHelper implements 
         }
     }
 
+    @Override
+    public void switchUsingUserIcon(String userNameConfigKey) {
+        clickbutton(AutomotiveConfigConstants.HOME_PROFILE_ICON_BUTTON);
+        clickbutton(userNameConfigKey);
+        getSpectatioUiUtil().wait5Seconds();
+    }
+
+    @Override
+    public String getProfileNameFromSettings() {
+        BySelector profileNameSelector =
+                getUiElementFromConfig(AutomotiveConfigConstants.DEVICE_HEADER_TITLE);
+        UiObject2 profileName = getSpectatioUiUtil().findUiObject(profileNameSelector);
+        String profileNameText = profileName.getText();
+        return profileNameText;
+    }
+
     // add User via quick settings
     @Override
     public void addUserQuickSettings(String userFrom) {

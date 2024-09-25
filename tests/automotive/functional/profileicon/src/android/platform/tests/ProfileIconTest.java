@@ -20,42 +20,42 @@ import static junit.framework.Assert.assertTrue;
 
 import android.platform.helpers.HelperAccessor;
 import android.platform.helpers.IAutoHomeHelper;
+import android.platform.helpers.IAutoSettingHelper;
 import android.platform.helpers.IAutoUserHelper;
 import android.platform.helpers.MultiUserHelper;
+import android.platform.helpers.SettingsConstants;
 import android.platform.scenario.multiuser.MultiUserConstants;
-import android.platform.test.rules.ConditionalIgnore;
-import android.platform.test.rules.ConditionalIgnoreRule;
-import android.platform.test.rules.IgnoreOnPortrait;
+import android.platform.helpers.AutomotiveConfigConstants;
 
 import androidx.test.runner.AndroidJUnit4;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class ProfileIconTest {
-    @Rule public ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     private static final String USER_NAME = MultiUserConstants.GUEST_NAME;
+    private static final String GUEST = AutomotiveConfigConstants.HOME_GUEST_BUTTON;
 
     private final MultiUserHelper mMultiUserHelper = MultiUserHelper.getInstance();
 
     private HelperAccessor<IAutoUserHelper> mUsersHelper;
-
+    private HelperAccessor<IAutoSettingHelper> mSettingHelper;
     private HelperAccessor<IAutoHomeHelper> mHomeHelper;
 
     public ProfileIconTest() {
         mHomeHelper = new HelperAccessor<>(IAutoHomeHelper.class);
         mUsersHelper = new HelperAccessor<>(IAutoUserHelper.class);
+        mSettingHelper = new HelperAccessor<>(IAutoSettingHelper.class);
     }
 
     @Test
-    @ConditionalIgnore(condition = IgnoreOnPortrait.class)
     public void testToVerifyGuestProfile() throws Exception {
-        mUsersHelper.get().switchUser("Driver", USER_NAME);
+        mUsersHelper.get().switchUsingUserIcon(GUEST);
+        mSettingHelper.get().openSetting(SettingsConstants.PROFILE_ACCOUNT_SETTINGS);
         assertTrue(
                 "Failed to switch from current user to Guest Profile.",
-                USER_NAME.equals(mHomeHelper.get().getUserProfileName()));
+                mUsersHelper.get().getProfileNameFromSettings().contains(USER_NAME));
     }
 }
