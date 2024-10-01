@@ -117,25 +117,40 @@ fun getCurrentState(
         throw IllegalArgumentException("Only dump types are supported. Invalid types: $traceTypes")
     }
 
+    val requestedWmDump = dumpTypes.contains(TraceType.WM_DUMP)
+    val requestedSfDump = dumpTypes.contains(TraceType.SF_DUMP)
+
     Log.d(LOG_TAG, "Requesting new device state dump")
-    val wmTraceData =
-        if (dumpTypes.contains(TraceType.WM_DUMP)) {
-            if (android.tracing.Flags.perfettoWmDump()) {
-                PerfettoTraceMonitor.newBuilder().enableWindowManagerDump().build().withTracing {}
-            } else {
-                getCurrentWindowManagerState()
+
+    val perfettoTrace =
+        PerfettoTraceMonitor.newBuilder()
+            .also {
+                if (requestedWmDump && android.tracing.Flags.perfettoWmDump()) {
+                    it.enableWindowManagerDump()
+                }
+
+                if (requestedSfDump) {
+                    it.enableLayersDump()
+                }
             }
+            .build()
+            .withTracing {}
+
+    val wmDump =
+        if (android.tracing.Flags.perfettoWmDump()) {
+            if (requestedWmDump) perfettoTrace else ByteArray(0)
         } else {
-            ByteArray(0)
-        }
-    val layersTraceData =
-        if (dumpTypes.contains(TraceType.SF_DUMP)) {
-            PerfettoTraceMonitor.newBuilder().enableLayersDump().build().withTracing {}
-        } else {
-            ByteArray(0)
+            if (requestedWmDump) {
+                Log.d(LOG_TAG, "Requesting new legacy WM state dump")
+                getCurrentWindowManagerState()
+            } else {
+                ByteArray(0)
+            }
         }
 
-    return Pair(wmTraceData, layersTraceData)
+    val sfDump = if (requestedSfDump) perfettoTrace else ByteArray(0)
+
+    return Pair(wmDump, sfDump)
 }
 
 /**

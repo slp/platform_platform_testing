@@ -1429,7 +1429,7 @@
     },
     "MINIMIZED_MEDIA_CONTROLS": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "minimized_playback_controls",
+      "VALUE": "minimized_control_bar_layout",
       "PACKAGE": "com.android.car.media"
     },
     "ARTIST_TITLE": {

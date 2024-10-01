@@ -36,9 +36,7 @@ import androidx.test.uiautomator.UiObjectNotFoundException;
 import java.util.List;
 import java.util.regex.Pattern;
 
-/**
- * Helper class for functional test for Mediacenter test
- */
+/** Helper class for functional test for Mediacenter test */
 public class MediaCenterHelperImpl extends AbstractStandardAppHelper implements IAutoMediaHelper {
 
     private MediaSessionManager mMediaSessionManager;

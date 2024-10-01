@@ -195,7 +195,7 @@ class MediaUtils:
 
     # Minimize playing song
     def minimize_now_playing(self):
-        logging.info("Maximizing playing song on HU")
+        logging.info("Minimizing the now playing song on HU")
         self.discoverer.mbs.minimizeNowPlaying()
 
     # Open playlist

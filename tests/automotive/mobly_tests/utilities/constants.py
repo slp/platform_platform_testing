@@ -168,12 +168,13 @@ BLUETOOTH_TAG="setprop persist.log.tag.bluetooth verbose"
 BLUETOOTH_NOOPERABLE="setprop persist.bluetooth.btsnoopenable true"
 BLUETOOTH_BTSNOOP_DEFAULT_MODE="settings put global bluetooth_btsnoop_default_mode full"
 
-
 # Media Logs
 PLAYBACK_VIEW_MODEL="setprop persist.log.tag.PlaybackViewModel DEBUG"
 MEDIA_BROWSER_CONNECTOR="setprop persist.log.tag.MediaBrowserConnector DEBUG"
+MEDIA_ITEM_REPOSITORY="setprop persist.log.tag.MediaItemsRepository DEBUG"
+MEDIA_SOURCE_MODEL="setprop persist.log.tag.MediaSourceViewModel DEBUG"
+MEDIA_ACTIVITY="setprop persist.log.tag.MediaActivity DEBUG"
 SETTINGS_CLOCK_SECONDS="settings put secure clock_seconds 1"
-
 
 # Bluetooth State Verification commands
 BLUETOOTH_CONNECTION_STATE = "dumpsys bluetooth_manager | grep ConnectionState"
