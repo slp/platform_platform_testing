@@ -21,7 +21,7 @@ public interface IAlarmHelper extends IAppHelper {
         AM("am_label"),
         PM("pm_label");
 
-        private String mDisplayName;
+        private final String mDisplayName;
 
         AmPm(String displayName) {
             mDisplayName = displayName;
