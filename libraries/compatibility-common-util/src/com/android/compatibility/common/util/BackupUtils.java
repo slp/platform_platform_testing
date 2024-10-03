@@ -57,8 +57,6 @@ public abstract class BackupUtils {
     private static final String MATCH_LINE_ONLY_GMS_BACKUP_TRANSPORT_PENDING_INIT =
             "(?s)" + ".*Pending init: 1.*com.google.android.gms/.backup.BackupTransportService.*";
 
-    private static final String BACKUP_DUMPSYS_CURRENT_TOKEN_FIELD = "Current:";
-
     /**
      * Kicks off adb shell {@param command} and return an {@link InputStream} with the command
      * output stream. The return value can be ignored and there might no need to close it.
