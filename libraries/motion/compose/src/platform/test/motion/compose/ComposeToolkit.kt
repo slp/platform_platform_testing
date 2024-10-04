@@ -24,12 +24,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.ViewConfiguration
+import androidx.compose.ui.platform.ViewRootForTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
 import androidx.compose.ui.test.TouchInjectionScope
-import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -37,6 +38,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
+import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -68,6 +70,7 @@ import platform.test.screenshot.DeviceEmulationRule
 import platform.test.screenshot.DeviceEmulationSpec
 import platform.test.screenshot.Displays
 import platform.test.screenshot.GoldenPathManager
+import platform.test.screenshot.captureToBitmapAsync
 
 /** Toolkit to support Compose-based [MotionTestRule] tests. */
 class ComposeToolkit(val composeContentTestRule: ComposeContentTestRule, val testScope: TestScope) {
@@ -207,7 +210,10 @@ fun MotionTestRule<ComposeToolkit>.recordMotion(
             Log.i(TAG, "recordFrame($frameId)")
             frameIdCollector.add(frameId)
             recordingSpec.timeSeriesCapture.invoke(TimeSeriesCaptureScope(this, propertyCollector))
-            screenshotCollector.add(onRoot().captureToImage())
+
+            val view = (onRoot().fetchSemanticsNode().root as ViewRootForTest).view
+            val bitmap = view.captureToBitmapAsync().get(10, TimeUnit.SECONDS)
+            screenshotCollector.add(bitmap.asImageBitmap())
         }
 
         var playbackStarted by mutableStateOf(false)
