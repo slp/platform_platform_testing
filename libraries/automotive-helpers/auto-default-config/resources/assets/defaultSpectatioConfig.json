@@ -1583,6 +1583,11 @@
       "VALUE": "entity_header_summary",
       "PACKAGE": "com.android.car.settings"
     },
+    "DEVICE_HEADER_TITLE": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "entity_header_title",
+      "PACKAGE": "com.android.car.settings"
+    },
     "DEVICE_CONNECTION_TEXT": {
       "TYPE": "RESOURCE_ID",
       "VALUE": "button1Text",
