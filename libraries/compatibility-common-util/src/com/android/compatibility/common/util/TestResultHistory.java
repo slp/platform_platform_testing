@@ -32,6 +32,9 @@ public class TestResultHistory implements Serializable {
 
     private static final long serialVersionUID = 10L;
 
+    private static final String ENCODING = "UTF-8";
+    private static final String TYPE = "org.kxml2.io.KXmlParser,org.kxml2.io.KXmlSerializer";
+
     // XML constants
     private static final String SUB_TEST_ATTR = "subtest";
     private static final String RUN_HISTORY_TAG = "RunHistory";
