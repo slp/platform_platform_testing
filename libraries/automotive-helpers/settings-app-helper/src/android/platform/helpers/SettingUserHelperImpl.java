@@ -88,7 +88,7 @@ public class SettingUserHelperImpl extends AbstractStandardAppHelper implements 
     public void addUser() {
         clickbutton(AutomotiveConfigConstants.USER_SETTINGS_ADD_PROFILE);
         clickbutton(AutomotiveConfigConstants.USER_SETTINGS_OK);
-        getSpectatioUiUtil().wait5Seconds();
+        getSpectatioUiUtil().waitNSeconds(WAIT_SEC);
     }
     // opens permission page of a user
     @Override
@@ -164,7 +164,6 @@ public class SettingUserHelperImpl extends AbstractStandardAppHelper implements 
     @Override
     public void switchUser(String userFrom, String userTo) {
         int count = 0;
-        goToQuickSettings();
         BySelector userFromSelector = By.text(userFrom);
         UiObject2 userFromObject = getSpectatioUiUtil().findUiObject(userFromSelector);
         getSpectatioUiUtil().validateUiObject(userFromObject, String.format("User %s", userFrom));
@@ -184,13 +183,26 @@ public class SettingUserHelperImpl extends AbstractStandardAppHelper implements 
         }
     }
 
+    @Override
+    public void switchUsingUserIcon(String userNameConfigKey) {
+        clickbutton(AutomotiveConfigConstants.HOME_PROFILE_ICON_BUTTON);
+        clickbutton(userNameConfigKey);
+        getSpectatioUiUtil().wait5Seconds();
+    }
+
+    @Override
+    public String getProfileNameFromSettings() {
+        BySelector profileNameSelector =
+                getUiElementFromConfig(AutomotiveConfigConstants.DEVICE_HEADER_TITLE);
+        UiObject2 profileName = getSpectatioUiUtil().findUiObject(profileNameSelector);
+        String profileNameText = profileName.getText();
+        return profileNameText;
+    }
+
     // add User via quick settings
     @Override
     public void addUserQuickSettings(String userFrom) {
         goToQuickSettings();
-        BySelector userFromSelector = By.text(userFrom);
-        UiObject2 userFromObject = getSpectatioUiUtil().findUiObject(userFromSelector);
-        getSpectatioUiUtil().validateUiObject(userFromObject, String.format("user %s", userFrom));
         getSpectatioUiUtil().wait1Second();
         addUser();
     }
@@ -253,7 +265,7 @@ public class SettingUserHelperImpl extends AbstractStandardAppHelper implements 
 
     // go to quick Settings for switching User
     private void goToQuickSettings() {
-        clickbutton(AutomotiveConfigConstants.USER_SETTINGS_MAKE_TIME_PATTERN);
+        clickbutton(AutomotiveConfigConstants.HOME_PROFILE_ICON_BUTTON);
     }
     // checks whether the Add profile button is visible
     @Override

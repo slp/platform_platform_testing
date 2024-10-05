@@ -55,6 +55,7 @@ public class ReadElf implements AutoCloseable {
     public static final String ARCH_X86 = "x86";
     public static final String ARCH_RISCV = "riscv";
     public static final String ARCH_UNKNOWN = "unknown";
+    private static final String RODATA = ".rodata";
 
     private static final int ELFCLASS32 = 1;
     private static final int ELFCLASS64 = 2;
@@ -1237,6 +1238,7 @@ public class ReadElf implements AutoCloseable {
             try {
                 int[] verSmyArr = this.getVerSym();
                 VerNeed[] verNeedArr = this.getVerNeedArr();
+                VerDef[] verDefArr = this.getVerDef();
                 mDynSymArr = new Symbol[mDynSymEntCnt];
                 mDynamicSymbols =
                         readSymbolTable(
