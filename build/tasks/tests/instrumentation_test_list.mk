@@ -74,19 +74,6 @@ instrumentation_tests := \
     ExtServicesUnitTests-sminus \
     FrameworksNetSmokeTests \
     FlickerLibTest \
-    FlickerTestsOther \
-    FlickerTestsAppClose \
-    FlickerTestsIme \
-    FlickerTestsQuickswitch \
-    FlickerTestsRotation \
-    FlickerTestApp \
-    WMShellFlickerTestsOther \
-    WMShellFlickerTestsBubbles \
-    WMShellFlickerTestsPip1 \
-    WMShellFlickerTestsPip2 \
-    WMShellFlickerTestsPip3 \
-    WMShellFlickerTestsSplitScreenGroup1 \
-    WMShellFlickerTestsSplitScreenGroup2 \
     WMShellUnitTests \
     trace_config_detailed.textproto \
     perfetto_trace_processor_shell \
