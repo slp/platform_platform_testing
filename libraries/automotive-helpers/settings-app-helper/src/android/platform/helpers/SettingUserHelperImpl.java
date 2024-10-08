@@ -185,9 +185,18 @@ public class SettingUserHelperImpl extends AbstractStandardAppHelper implements 
 
     @Override
     public void switchUsingUserIcon(String userNameConfigKey) {
+        int count = 0;
         clickbutton(AutomotiveConfigConstants.HOME_PROFILE_ICON_BUTTON);
         clickbutton(userNameConfigKey);
-        getSpectatioUiUtil().wait5Seconds();
+        while ((getSpectatioUiUtil()
+                                .findUiObject(
+                                        getUiElementFromConfig(
+                                                AutomotiveConfigConstants.HOME_BOTTOM_CARD))
+                        == null)
+                && count < MAX_WAIT_COUNT) {
+            getSpectatioUiUtil().waitNSeconds(WAIT_SEC);
+            count++;
+        }
     }
 
     @Override
