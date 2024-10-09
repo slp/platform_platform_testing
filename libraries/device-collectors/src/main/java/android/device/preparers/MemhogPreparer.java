@@ -20,6 +20,7 @@ import android.device.collectors.DataRecord;
 import android.device.collectors.annotations.OptionClass;
 import android.os.Bundle;
 import android.util.Log;
+
 import com.android.helpers.MemhogHelper;
 
 import org.junit.runner.Description;
@@ -29,7 +30,9 @@ import org.junit.runner.Result;
 public final class MemhogPreparer extends BaseMetricListener {
     private static final String TAG = MemhogPreparer.class.getSimpleName();
     private static final String MEMORY_SIZE_BYTES = "memory_size_bytes";
+    private static final String MODE = "mode";
     private static final String DEFAULT_MEMORY_SIZE_BYTES = "1337";
+    private static final String DEFAULT_MODE = "hog";
 
     private boolean mMemhogStarted;
 
@@ -43,10 +46,13 @@ public final class MemhogPreparer extends BaseMetricListener {
     public void onTestRunStart(DataRecord runData, Description description) {
         Bundle args = getArgsBundle();
 
+        String mMode = args.getString(MODE, DEFAULT_MODE);
+
         // Amount of memory (in bytes) to be allocated.
         long mMemorySizeBytes =
                 Long.parseLong(args.getString(MEMORY_SIZE_BYTES, DEFAULT_MEMORY_SIZE_BYTES));
-        mMemhogStarted = mMemhogHelper.startMemhog(mMemorySizeBytes);
+
+        mMemhogStarted = mMemhogHelper.startMemhog(mMode, mMemorySizeBytes);
         if (!mMemhogStarted) {
             throw new IllegalStateException("Memhog failed to start.");
         }
