@@ -16,10 +16,8 @@
 
 package android.platform.test.flag.junit.example;
 
-import static android.platform.test.flag.junit.SetFlagsRule.DefaultInitValueType.NULL_DEFAULT;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.platform.test.annotations.DisableFlags;
@@ -66,26 +64,26 @@ public class ExampleFlagsParameterizedTest {
 
     @Rule public final SetFlagsRule mSetFlagsRule;
 
-    // assertNotNull is used to call out when a flag is accessible
+    // unused variables are used to call out when a flag is accessible
     // but will have different values depending on the parameterization.
 
     @Test
     public void runTestWithAllFlagCombinations() {
-        assertNotNull(Flags.flagName3());
-        assertNotNull(Flags.flagName4());
+        boolean unusedFlag3 = Flags.flagName3();
+        boolean unusedFlag4 = Flags.flagName4();
     }
 
     @Test
     @EnableFlags(Flags.FLAG_FLAG_NAME3)
     public void runTestWithFlag3Enabled() {
         assertTrue(Flags.flagName3());
-        assertNotNull(Flags.flagName4());
+        boolean unusedFlag4 = Flags.flagName4();
     }
 
     @Test
     @DisableFlags(Flags.FLAG_FLAG_NAME4)
     public void runTestWithFlag4Disabled() {
-        assertNotNull(Flags.flagName3());
+        boolean unusedFlag3 = Flags.flagName3();
         assertFalse(Flags.flagName4());
     }
 
