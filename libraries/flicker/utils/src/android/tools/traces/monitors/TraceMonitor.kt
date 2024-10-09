@@ -17,9 +17,8 @@
 package android.tools.traces.monitors
 
 import android.tools.ScenarioBuilder
-import android.tools.Tag
 import android.tools.io.TraceType
-import android.tools.traces.TRACE_CONFIG_REQUIRE_CHANGES
+import android.tools.traces.io.IResultData
 import android.tools.traces.io.IoUtils
 import android.tools.traces.io.ResultReader
 import android.tools.traces.io.ResultWriter
@@ -33,7 +32,9 @@ import kotlin.io.path.createTempDirectory
 abstract class TraceMonitor : ITransitionMonitor {
     abstract val isEnabled: Boolean
     abstract val traceType: TraceType
+
     protected abstract fun doStart()
+
     protected abstract fun doStop(): File
 
     protected open fun doStopTraces(): Map<TraceType, File> = mapOf(traceType to doStop())
@@ -66,7 +67,7 @@ abstract class TraceMonitor : ITransitionMonitor {
             } catch (e: Throwable) {
                 throw RuntimeException(
                     "Could not stop ${traceType.name} trace and save it to ${traceType.fileName}",
-                    e
+                    e,
                 )
             }
         artifacts.forEach { (key, value) -> writer.addTraceResult(key, value) }
@@ -101,16 +102,18 @@ abstract class TraceMonitor : ITransitionMonitor {
      * Acquires the trace generated when executing the commands defined in the [predicate].
      *
      * @param predicate Commands to execute
+     * @param resultReaderProvider Predicate to generate new result readers
+     * @param
      * @throws UnsupportedOperationException If tracing is already activated
      */
-    fun withTracing(tag: String = Tag.ALL, predicate: () -> Unit): ByteArray {
+    fun withTracing(
+        resultReaderProvider: (IResultData) -> ResultReader,
+        predicate: () -> Unit,
+    ): ResultReader {
         val writer = createWriter()
         withTracing(writer, predicate)
         val result = writer.write()
-        val reader = ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)
-        val bytes = reader.readBytes(traceType, tag) ?: error("Missing trace $traceType")
-        result.artifact.deleteIfExists()
-        return bytes
+        return resultReaderProvider.invoke(result)
     }
 
     private fun createWriter(): ResultWriter {

@@ -21,6 +21,8 @@ import android.tools.Cache
 import android.tools.device.apphelpers.MessagingAppHelper
 import android.tools.testutils.CleanFlickerEnvironmentRule
 import android.tools.testutils.readAsset
+import android.tools.traces.SERVICE_TRACE_CONFIG
+import android.tools.traces.io.ResultReader
 import android.tools.traces.monitors.wm.LegacyShellTransitionTraceMonitor
 import android.tools.traces.parsers.wm.ShellTransitionTraceParser
 import android.tracing.Flags
@@ -57,14 +59,16 @@ class LegacyShellLegacyTransitionTraceParserTest {
     fun canParseAllEntriesFromNewTrace() {
         val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
         val tapl = LauncherInstrumentation()
-        val data =
-            LegacyShellTransitionTraceMonitor().withTracing {
+        val reader =
+            LegacyShellTransitionTraceMonitor().withTracing(
+                resultReaderProvider = { ResultReader(it, SERVICE_TRACE_CONFIG) }
+            ) {
                 MessagingAppHelper(instrumentation).open()
                 tapl.goHome().switchToAllApps()
                 tapl.goHome()
             }
-        val trace = ShellTransitionTraceParser().parse(data, clearCache = false)
-        Truth.assertThat(trace.entries).isNotEmpty()
+        val trace = reader.readTransitionsTrace()
+        Truth.assertThat(trace?.entries).isNotEmpty()
     }
 
     companion object {
