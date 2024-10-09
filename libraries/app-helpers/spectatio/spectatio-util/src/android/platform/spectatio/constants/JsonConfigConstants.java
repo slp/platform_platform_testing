@@ -42,6 +42,7 @@ public class JsonConfigConstants {
     public static final String TEXT = "TEXT";
     public static final String TEXT_CONTAINS = "TEXT_CONTAINS";
     public static final String DESCRIPTION = "DESCRIPTION";
+    public static final String DESCRIPTION_CONTAINS = "DESCRIPTION_CONTAINS";
     public static final String CLASS = "CLASS";
     public static final String DISPLAY_ID = "DISPLAY_ID";
     public static final String HAS_ANCESTOR = "HAS_ANCESTOR";
