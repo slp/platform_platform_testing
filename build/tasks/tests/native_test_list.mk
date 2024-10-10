@@ -92,6 +92,7 @@ native_tests := \
     libminijail_unittest_gtest \
     libnativehelper_tests \
     libnetworkstats_test \
+    libnfc-nci-jni-tests\
     libnfc-nci-tests\
     libprocinfo_test \
     librenderengine_test \
