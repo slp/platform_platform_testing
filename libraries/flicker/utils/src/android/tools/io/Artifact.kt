@@ -25,6 +25,10 @@ interface Artifact {
     val stableId: String
 
     fun updateStatus(newStatus: RunStatus)
+
+    /* reads the entire artifact */
+    fun readBytes(): ByteArray
+
     fun readBytes(descriptor: ResultArtifactDescriptor): ByteArray?
 
     /** @return if a file matching [descriptor exists in the artifact */
@@ -32,5 +36,6 @@ interface Artifact {
 
     /** @return the number of files in the artifact */
     fun traceCount(): Int
+
     fun deleteIfExists()
 }

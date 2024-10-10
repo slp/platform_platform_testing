@@ -35,6 +35,8 @@ class TestArtifact(artifactIdentifier: String) : Artifact {
 
     override fun hasTrace(descriptor: ResultArtifactDescriptor): Boolean = false
 
+    override fun readBytes(): ByteArray = ByteArray(0)
+
     override fun readBytes(descriptor: ResultArtifactDescriptor): ByteArray? = null
 
     override fun updateStatus(newStatus: RunStatus) {
