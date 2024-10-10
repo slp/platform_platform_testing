@@ -25,6 +25,7 @@ import android.os.Process
 import android.os.SystemClock
 import android.tools.MILLISECOND_AS_NANOSECONDS
 import android.tools.io.TraceType
+import android.tools.traces.io.ResultReader
 import android.tools.traces.monitors.PerfettoTraceMonitor
 import android.tools.traces.parsers.DeviceDumpParser
 import android.tools.traces.surfaceflinger.LayerTraceEntry
@@ -74,7 +75,7 @@ fun executeShellCommand(cmd: String, stdin: ByteArray): ByteArray {
 }
 
 private fun doBinderDump(name: String): ByteArray {
-    // create an fd for the binder transaction
+    // create a fd for the binder transaction
     val pipe = ParcelFileDescriptor.createPipe()
     val source = pipe[0]
     val sink = pipe[1]
@@ -134,7 +135,8 @@ fun getCurrentState(
                 }
             }
             .build()
-            .withTracing {}
+            .withTracing(resultReaderProvider = { ResultReader(it, SERVICE_TRACE_CONFIG) }) {}
+            .readBytes(TraceType.PERFETTO) ?: ByteArray(0)
 
     val wmDump =
         if (android.tracing.Flags.perfettoWmDump()) {
