@@ -20,21 +20,18 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 import android.content.pm.UserInfo;
+import android.platform.helpers.AutomotiveConfigConstants;
 import android.platform.helpers.HelperAccessor;
 import android.platform.helpers.IAutoSettingHelper;
 import android.platform.helpers.IAutoUserHelper;
 import android.platform.helpers.MultiUserHelper;
 import android.platform.helpers.SettingsConstants;
 import android.platform.scenario.multiuser.MultiUserConstants;
-import android.platform.test.rules.ConditionalIgnore;
-import android.platform.test.rules.ConditionalIgnoreRule;
-import android.platform.test.rules.IgnoreOnPortrait;
 import android.util.Log;
 
 import androidx.test.runner.AndroidJUnit4;
 
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -44,9 +41,10 @@ import org.junit.runner.RunWith;
  */
 @RunWith(AndroidJUnit4.class)
 public class DeleteGuestSelfNotAllowed {
-    @Rule public ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     private static final String guestUser = MultiUserConstants.GUEST_NAME;
+    private static final String GUEST = AutomotiveConfigConstants.HOME_GUEST_BUTTON;
+    private static final String DRIVER = AutomotiveConfigConstants.HOME_DRIVER_BUTTON;
     private final MultiUserHelper mMultiUserHelper = MultiUserHelper.getInstance();
     private HelperAccessor<IAutoUserHelper> mUsersHelper;
     private HelperAccessor<IAutoSettingHelper> mSettingHelper;
@@ -62,11 +60,10 @@ public class DeleteGuestSelfNotAllowed {
     }
 
     @Test
-    @ConditionalIgnore(condition = IgnoreOnPortrait.class)
     public void testDeleteGuestNotAllowed() throws Exception {
         UserInfo previousUser = mMultiUserHelper.getCurrentForegroundUserInfo();
         // switch to Guest and verify the user switch
-        mUsersHelper.get().switchUser(previousUser.name, guestUser);
+        mUsersHelper.get().switchUsingUserIcon(GUEST);
         UserInfo currentUser = mMultiUserHelper.getCurrentForegroundUserInfo();
         assertTrue(currentUser.name.equals(guestUser));
         boolean IsDeleteAllowed = true;
@@ -82,6 +79,7 @@ public class DeleteGuestSelfNotAllowed {
         }
         assertFalse(IsDeleteAllowed);
         // switch to initial user before terminating the test
-        mUsersHelper.get().switchUser(currentUser.name, previousUser.name);
+        mUsersHelper.get().switchUsingUserIcon(DRIVER);
+        assertTrue(mMultiUserHelper.getCurrentForegroundUserInfo().name.equals(previousUser.name));
     }
 }
