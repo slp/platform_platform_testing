@@ -66,6 +66,7 @@ public class SwitchUserQuickSettings {
         assertTrue(currentUser.name.equals(guestUser));
         // switch to initial user before terminating the test
         mUsersHelper.get().switchUsingUserIcon(DRIVER);
-        assertTrue(mMultiUserHelper.getCurrentForegroundUserInfo().equals(previousUser));
+        assertTrue(
+            mMultiUserHelper.getCurrentForegroundUserInfo().name.equals(previousUser.name));
     }
 }
