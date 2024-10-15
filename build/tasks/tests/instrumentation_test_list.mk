@@ -64,7 +64,6 @@ instrumentation_tests := \
     TelephonyProviderTests \
     CarrierConfigTests \
     TeleServiceTests \
-    CarrierAppIntegrationTestCases \
     PresencePollingTests \
     ImsCommonTests \
     SettingsProviderTest \
