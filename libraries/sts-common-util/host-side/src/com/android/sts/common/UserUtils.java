@@ -237,7 +237,7 @@ public class UserUtils {
             }
             final String outputStdout = output.getStdout();
             mTestUserId =
-                    Optional.ofNullable(
+                    Optional.of(
                             Integer.parseInt(
                                     outputStdout.substring(outputStdout.lastIndexOf(" ")).trim()));
             AutoCloseable asSecondaryUser =
