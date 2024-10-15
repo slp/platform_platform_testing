@@ -70,6 +70,8 @@ platform_tests += \
     UiBenchMicrobenchmark \
     uwb_snippet \
     WifiStrengthScannerUtil \
+    wifi_direct_mobly_snippet \
+    wifi_aware_snippet_new \
 
 ifneq ($(strip $(BOARD_PERFSETUP_SCRIPT)),)
 platform_tests += perf-setup
