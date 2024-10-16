@@ -177,6 +177,7 @@ enum class DeviceProduct(val product: String) {
     CF_TABLET("cf_x86_64_tablet"),
     CF_FOLDABLE("cf_x86_64_foldable"),
     CF_AUTO("cf_x86_64_auto"),
+    CF_ARM_PHONE("cf_arm64_only_phone"),
     TANGORPRO("tangorpro"),
     FELIX("felix"),
     ROBOLECTRIC("robolectric"),

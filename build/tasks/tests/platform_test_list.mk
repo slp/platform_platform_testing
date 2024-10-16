@@ -110,6 +110,8 @@ platform_tests += \
     VersatileTestApp_None \
     VoiceInteraction \
     WifiStrengthScannerUtil \
+    wifi_direct_mobly_snippet \
+    wifi_aware_snippet_new \
 
 ifneq ($(strip $(BOARD_PERFSETUP_SCRIPT)),)
 platform_tests += perf-setup
