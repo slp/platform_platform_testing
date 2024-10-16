@@ -66,6 +66,7 @@ class SelectSongFromPlaylist(bluetooth_base_test.BluetoothBaseTest):
                             'Song title on phone device and HU should be the same')
 
     def teardown_test(self):
+        self.media_utils.get_bt_dumpsys_metadata()
         # Minimize now_playing
         self.media_utils.minimize_now_playing()
         #  Close YouTube Music app
