@@ -2228,6 +2228,11 @@
       "TYPE": "TEXT",
       "VALUE": "Text-to-speech output"
     },
+    "SOFT_KEYBOARD_HIDE_BUTTON": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "key_pos_hide_keyboard",
+      "PACKAGE": "com.google.android.apps.automotive.inputmethod"
+    },
     "UNIT_SYSTEM_SETTINGS_SPEED": {
       "TYPE": "TEXT",
       "VALUE": "Speed"
