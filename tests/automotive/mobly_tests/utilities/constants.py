@@ -128,6 +128,7 @@ YOUTUBE_MUSIC_PACKAGE = 'com.google.android.apps.youtube.music'
 START_YOUTUBE_MEDIA_SHELL = 'am start ' + YOUTUBE_MUSIC_PACKAGE
 STOP_YOUTUBE_MEDIA_SHELL = 'am force-stop ' + YOUTUBE_MUSIC_PACKAGE
 GET_DUMPSYS_METADATA = 'dumpsys media_session'
+GET_DUMPSYS_METADATA = 'dumpsys bluetooth_manager'
 SONG_METADATA_PATTERN = r"description=.[^\n]+"
 DEFAULT_YOUTUBE_MUSIC_PLAYLIST = 'am start -a android.intent.action.VIEW -d https://music.youtube.com/watch?v=nkBJzfHpq_A'
 BLUETOOTH_AUDIO_APP = "Bluetooth Audio"

@@ -87,6 +87,7 @@ class IsMediaMetadataOnHuValid(bluetooth_base_test.BluetoothBaseTest):
                                       '<' + actual_current_song_max_playing_time + '>')
 
     def teardown_test(self):
+        self.media_utils.get_bt_dumpsys_metadata()
         # Minimize now_playing
         self.media_utils.minimize_now_playing()
         #  Close YouTube Music app
