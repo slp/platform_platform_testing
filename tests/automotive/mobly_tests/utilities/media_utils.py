@@ -307,3 +307,12 @@ class MediaUtils:
         self.execute_shell_on_hu_device(constants.PLAYBACK_VIEW_MODEL)
         self.execute_shell_on_hu_device(constants.MEDIA_BROWSER_CONNECTOR)
         self.execute_shell_on_hu_device(constants.SETTINGS_CLOCK_SECONDS)
+
+    # Get bt dumpsys from HU device
+    def get_bt_dumpsys_metadata(self):
+        logging.debug("Getting bt dumpsys from HU device")
+        # get bt dumpsys
+        dumpsys_metadata = self.execute_shell_on_hu_device(constants.GET_DUMPSYS_METADATA).decode(
+            'utf8')
+        logging.debug('bt dumpsys before tear down on HU device: %s"',
+                             dumpsys_metadata)
