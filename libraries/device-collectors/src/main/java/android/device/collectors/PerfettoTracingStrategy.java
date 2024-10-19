@@ -429,7 +429,7 @@ public abstract class PerfettoTracingStrategy {
                 args.getString(PERFETTO_CONFIG_OUTPUT_FILE_PREFIX, DEFAULT_PERFETTO_PREFIX);
 
         mPerfettoHelper.setTrackPerfettoPidFlag(
-                Boolean.parseBoolean(args.getString(PERFETTO_PERSIST_PID_TRACK)));
+                Boolean.parseBoolean(args.getString(PERFETTO_PERSIST_PID_TRACK, "true")));
         if (mPerfettoHelper.getTrackPerfettoPidFlag()) {
             mPerfettoHelper.setTrackPerfettoRootDir(
                     args.getString(PERFETTO_PID_TRACK_ROOT, DEFAULT_PERFETTO_PID_TRACK_ROOT));
