@@ -25,7 +25,8 @@ import android.platform.helpers.IAutoPrivacySettingsHelper;
 import android.platform.helpers.IAutoSettingHelper;
 import android.platform.helpers.SettingsConstants;
 import android.platform.test.annotations.RequiresFlagsEnabled;
-import android.platform.test.flag.junit.SetFlagsRule;
+import android.platform.test.flag.junit.CheckFlagsRule;
+import android.platform.test.flag.junit.DeviceFlagsValueProvider;
 
 import androidx.test.runner.AndroidJUnit4;
 
@@ -36,6 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
+@RequiresFlagsEnabled(com.android.car.settings.Flags.FLAG_MICROPHONE_PRIVACY_UPDATES)
 public class MicroPhoneSettingTest {
     private static final String USE_MICROPHONE_TXT = "Use microphone";
     private static final String MICROPHONE_OFF_TXT = "Microphone is off.";
@@ -43,7 +45,9 @@ public class MicroPhoneSettingTest {
     private HelperAccessor<IAutoFacetBarHelper> mFacetBarHelper;
     private HelperAccessor<IAutoSettingHelper> mSettingHelper;
     private HelperAccessor<IAutoPrivacySettingsHelper> mPrivacySettingsHelper;
-    @Rule public final SetFlagsRule mSetFlagsRule = new SetFlagsRule();
+
+    @Rule
+    public final CheckFlagsRule mCheckFlagsRule = DeviceFlagsValueProvider.createCheckFlagsRule();
 
     public MicroPhoneSettingTest() throws Exception {
         mFacetBarHelper = new HelperAccessor<>(IAutoFacetBarHelper.class);
@@ -80,7 +84,6 @@ public class MicroPhoneSettingTest {
     }
 
     @Test
-    @RequiresFlagsEnabled(com.android.car.settings.Flags.FLAG_MICROPHONE_PRIVACY_UPDATES)
     public void manageMicrophonePermissions() {
         mSettingHelper.get().openSetting(SettingsConstants.PRIVACY_SETTINGS);
         assertTrue(
@@ -94,7 +97,6 @@ public class MicroPhoneSettingTest {
     }
 
     @Test
-    @RequiresFlagsEnabled(com.android.car.settings.Flags.FLAG_MICROPHONE_PRIVACY_UPDATES)
     public void testMicroPhoneToggleOff() {
         // turn off microphone
         mPrivacySettingsHelper.get().turnOnOffMicroPhone(false);
@@ -111,7 +113,6 @@ public class MicroPhoneSettingTest {
     }
 
     @Test
-    @RequiresFlagsEnabled(com.android.car.settings.Flags.FLAG_MICROPHONE_PRIVACY_UPDATES)
     public void testMicroPhoneToggleOn() {
         // turn off microphone
         mPrivacySettingsHelper.get().turnOnOffMicroPhone(false);
@@ -133,7 +134,6 @@ public class MicroPhoneSettingTest {
     }
 
     @Test
-    @RequiresFlagsEnabled(com.android.car.settings.Flags.FLAG_MICROPHONE_PRIVACY_UPDATES)
     public void testMicroPhonePanelStatusBar() {
         // turn off microphone
         mPrivacySettingsHelper.get().turnOnOffMicroPhone(false);
@@ -151,7 +151,6 @@ public class MicroPhoneSettingTest {
     }
 
     @Test
-    @RequiresFlagsEnabled(com.android.car.settings.Flags.FLAG_MICROPHONE_PRIVACY_UPDATES)
     public void testMicroPhonePanelStatusBarFromHome() {
         // turn off microphone
         mPrivacySettingsHelper.get().turnOnOffMicroPhone(false);
@@ -167,7 +166,6 @@ public class MicroPhoneSettingTest {
     }
 
     @Test
-    @RequiresFlagsEnabled(com.android.car.settings.Flags.FLAG_MICROPHONE_PRIVACY_UPDATES)
     public void testMicroPhonePanelSettingsLink() {
         // turn off microphone
         mPrivacySettingsHelper.get().turnOnOffMicroPhone(false);
@@ -181,7 +179,6 @@ public class MicroPhoneSettingTest {
     }
 
     @Test
-    @RequiresFlagsEnabled(com.android.car.settings.Flags.FLAG_MICROPHONE_PRIVACY_UPDATES)
     public void testMicroPhonePanelToggle() {
         // turn off microphone
         mPrivacySettingsHelper.get().turnOnOffMicroPhone(false);
@@ -203,7 +200,6 @@ public class MicroPhoneSettingTest {
     }
 
     @Test
-    @RequiresFlagsEnabled(com.android.car.settings.Flags.FLAG_MICROPHONE_PRIVACY_UPDATES)
     public void testMicroPhoneButtonDismiss() {
         mPrivacySettingsHelper.get().turnOnOffMicroPhone(false);
         mPrivacySettingsHelper.get().clickMicroPhoneStatusBar();
