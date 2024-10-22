@@ -39,7 +39,7 @@ class InsetsSource private constructor(val type: Int, val frame: Rect, val visib
     }
 
     override fun toString(): String {
-        return "InsetsSource(" + "type=$type, " + "frame=$frame, " + "visible=$visible" + ")"
+        return "InsetsSource(type=$type, frame=$frame, visible=$visible)"
     }
 
     companion object {

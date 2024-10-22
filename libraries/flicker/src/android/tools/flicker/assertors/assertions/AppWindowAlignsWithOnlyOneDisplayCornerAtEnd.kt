@@ -27,7 +27,7 @@ class AppWindowAlignsWithOnlyOneDisplayCornerAtEnd(private val component: Compon
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
         flicker.assertWmEnd {
-            val displayAppBounds = WindowUtils.getInsetDisplayBounds()
+            val displayAppBounds = WindowUtils.getInsetDisplayBounds(scenarioInstance.startRotation)
             val windowBounds = visibleRegion(component.build(scenarioInstance)).region.bounds
 
             val onRightSide = windowBounds.right == displayAppBounds.right
