@@ -21,13 +21,15 @@ import android.tools.flicker.assertions.FlickerTest
 import android.tools.flicker.assertors.ComponentTemplate
 import android.tools.helpers.WindowUtils
 
-class AppWindowCoversLeftHalfScreenAtEnd(
-    private val component: ComponentTemplate,
-) : AssertionTemplateWithComponent(component) {
+class AppWindowCoversLeftHalfScreenAtEnd(private val component: ComponentTemplate) :
+    AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
         flicker.assertWmEnd {
-            val expectedBounds = WindowUtils.getInsetDisplayBounds().apply { right = centerX() }
+            val expectedBounds =
+                WindowUtils.getInsetDisplayBounds(scenarioInstance.startRotation).apply {
+                    right = centerX()
+                }
             visibleRegion(component.build(scenarioInstance)).coversExactly(expectedBounds)
         }
     }
