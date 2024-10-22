@@ -706,4 +706,7 @@ public class AutomotiveConfigConstants {
             "UNIT_SYSTEM_SETTINGS_TEMPERATURE";
     public static final String UNIT_SYSTEM_SETTINGS_PRESSURE = "UNIT_SYSTEM_SETTINGS_PRESSURE";
     public static final String LANGUAGES_INPUT_IN_SYSTEM = "LANGUAGES_INPUT_IN_SYSTEM";
+
+    // Soft Keyboard UI elements
+    public static final String SOFT_KEYBOARD_HIDE_BUTTON = "SOFT_KEYBOARD_HIDE_BUTTON";
 }
