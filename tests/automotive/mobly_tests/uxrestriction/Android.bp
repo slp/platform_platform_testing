@@ -31,7 +31,7 @@ python_test_host {
     test_options: {
         unit_test: false,
     },
-    data: [
+    device_common_data: [
         // Package the snippet with the mobly test
         ":AutomotiveSnippet",
         ":PhoneSnippet",
@@ -58,7 +58,7 @@ python_test_host {
     test_options: {
         unit_test: false,
     },
-    data: [
+    device_common_data: [
         // Package the snippet with the mobly test
         ":AutomotiveSnippet",
         ":PhoneSnippet",
@@ -85,7 +85,7 @@ python_test_host {
     test_options: {
         unit_test: false,
     },
-    data: [
+    device_common_data: [
         // Package the snippet with the mobly test
         ":AutomotiveSnippet",
         ":PhoneSnippet",
@@ -112,7 +112,7 @@ python_test_host {
     test_options: {
         unit_test: false,
     },
-    data: [
+    device_common_data: [
         // Package the snippet with the mobly test
         ":AutomotiveSnippet",
         ":PhoneSnippet",

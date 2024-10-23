@@ -14,7 +14,7 @@ java_test_host {
         "junit",
     ],
 
-    data: [
+    device_common_data: [
         ":CoverageInstrumentationSampleTest",
     ],
 }
