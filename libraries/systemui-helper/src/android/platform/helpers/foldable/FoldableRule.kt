@@ -130,7 +130,8 @@ class FoldableRule(private val ensureScreenOn: Boolean = false) : TestWatcher() 
         }
     }
 
-    fun unfold() {
+    @JvmOverloads
+    fun unfold(ensureFinished: Boolean = true) {
         trace("FoldableRule#unfold") {
             check(!controller.isUnfolded) { "Trying to unfold when already unfolded" }
             if (ensureScreenOn) {
@@ -140,6 +141,11 @@ class FoldableRule(private val ensureScreenOn: Boolean = false) : TestWatcher() 
             val initialState = currentState
 
             controller.unfold()
+
+            if (!ensureFinished) {
+                return
+            }
+
             SystemClock.sleep(ANIMATION_TIMEOUT) // Let's wait for the unfold animation to finish.
 
             ensureThat("screen is on after unfolding") { screenOn }
