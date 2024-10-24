@@ -120,10 +120,6 @@ public class ArtifactSaver {
                 artifactFile("MemInfo-OnFailure-" + getClassAndMethodName(description) + ".txt"));
 
         dumpCommandOutput(
-                "cmd statusbar flag | tail +11", // Flags info starts at line 11
-                artifactFile("Flags-OnFailure-" + getClassAndMethodName(description) + ".txt"));
-
-        dumpCommandOutput(
                 "dumpsys activity service SystemUI",
                 artifactFile("SystemUI-OnFailure-" + getClassAndMethodName(description) + ".txt"));
 

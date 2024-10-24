@@ -30,6 +30,7 @@ fun <A : Activity> dialogScreenshotTest(
     goldenIdentifier: String,
     waitForIdle: () -> Unit = {},
     dialogProvider: (A) -> Dialog,
+    checkDialog: (Dialog) -> Boolean = { _ -> false },
 ) {
     var dialog: Dialog? = null
     activityRule.scenario.onActivity { activity ->
@@ -54,16 +55,22 @@ fun <A : Activity> dialogScreenshotTest(
             }
     }
 
+    checkNotNull(dialog)
+
+    // We call onActivity again because it will make sure that our Activity is done measuring,
+    // laying out and drawing its content.
+    var waitForActivity = true
+    var iterCount = 0
+    while (waitForActivity && iterCount < 10) {
+        activityRule.scenario.onActivity { waitForActivity = checkDialog(dialog!!) }
+        iterCount++
+    }
+
     waitForIdle()
 
     try {
         val bitmap = dialog?.toBitmap() ?: error("dialog is null")
-
-        bitmapDiffer.assertBitmapAgainstGolden(
-            bitmap,
-            goldenIdentifier,
-            matcher,
-        )
+        bitmapDiffer.assertBitmapAgainstGolden(bitmap, goldenIdentifier, matcher)
     } finally {
         dialog?.dismiss()
     }
