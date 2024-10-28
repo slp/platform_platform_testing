@@ -34,9 +34,9 @@ import org.junit.runners.MethodSorters
 import org.mockito.junit.MockitoJUnitRunner
 
 /**
- * Contains an integration test
+ * Contains an integration test that should not trigger an error.
  *
- * To run this test: `atest FlickerLibTest:IntegrationTests`
+ * To run this test: `atest FlickerLibTestE2e:NoErrorTest`
  */
 @RunWith(MockitoJUnitRunner::class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -215,7 +215,7 @@ class NoErrorTest {
         val reader =
             android.tools.flicker.datastore.CachedResultReader(
                 TEST_SCENARIO,
-                TRACE_CONFIG_REQUIRE_CHANGES
+                TRACE_CONFIG_REQUIRE_CHANGES,
             )
         Truth.assertWithMessage("Run status")
             .that(reader.runStatus)
@@ -227,7 +227,7 @@ class NoErrorTest {
         val reader =
             android.tools.flicker.datastore.CachedResultReader(
                 TEST_SCENARIO,
-                TRACE_CONFIG_REQUIRE_CHANGES
+                TRACE_CONFIG_REQUIRE_CHANGES,
             )
         val file = File(reader.artifactPath)
         Truth.assertWithMessage("Files exist").that(file.exists()).isTrue()

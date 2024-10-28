@@ -28,6 +28,11 @@ import org.junit.BeforeClass
 import org.junit.ClassRule
 import org.junit.Test
 
+/**
+ * Contains an integration test that triggers a transition error.
+ *
+ * To run this test: `atest FlickerLibTestE2e:TransitionErrorTest`
+ */
 class TransitionErrorTest {
     private var assertionExecuted = false
     private val testParam = LegacyFlickerTest().also { it.initialize(TEST_SCENARIO.testClass) }
@@ -42,7 +47,7 @@ class TransitionErrorTest {
         val reader =
             android.tools.flicker.datastore.CachedResultReader(
                 TEST_SCENARIO,
-                TRACE_CONFIG_REQUIRE_CHANGES
+                TRACE_CONFIG_REQUIRE_CHANGES,
             )
         Truth.assertWithMessage("Run status").that(reader.runStatus).isEqualTo(RunStatus.RUN_FAILED)
         assertArtifactExists()
@@ -71,7 +76,7 @@ class TransitionErrorTest {
         val reader =
             android.tools.flicker.datastore.CachedResultReader(
                 TEST_SCENARIO,
-                TRACE_CONFIG_REQUIRE_CHANGES
+                TRACE_CONFIG_REQUIRE_CHANGES,
             )
         Truth.assertWithMessage("Run status").that(reader.runStatus).isEqualTo(RunStatus.RUN_FAILED)
         assertArtifactExists()
@@ -81,7 +86,7 @@ class TransitionErrorTest {
         val reader =
             android.tools.flicker.datastore.CachedResultReader(
                 TEST_SCENARIO,
-                TRACE_CONFIG_REQUIRE_CHANGES
+                TRACE_CONFIG_REQUIRE_CHANGES,
             )
         val file = File(reader.artifactPath)
         Truth.assertWithMessage("Files exist").that(file.exists()).isTrue()

@@ -33,7 +33,7 @@ import org.junit.Test
 /**
  * Integration tests to ensure assertions fail correctly
  *
- * To run this test: `atest FlickerLibTest:AssertionErrorTest`
+ * To run this test: `atest FlickerLibTestE2e:AssertionErrorTest`
  */
 @FlakyTest(bugId = 362942901)
 class AssertionErrorTest {
@@ -69,7 +69,7 @@ class AssertionErrorTest {
         val reader =
             android.tools.flicker.datastore.CachedResultReader(
                 TEST_SCENARIO,
-                TRACE_CONFIG_REQUIRE_CHANGES
+                TRACE_CONFIG_REQUIRE_CHANGES,
             )
         Truth.assertWithMessage("Run status")
             .that(reader.runStatus)
@@ -81,7 +81,7 @@ class AssertionErrorTest {
         val reader =
             android.tools.flicker.datastore.CachedResultReader(
                 TEST_SCENARIO,
-                TRACE_CONFIG_REQUIRE_CHANGES
+                TRACE_CONFIG_REQUIRE_CHANGES,
             )
         val file = File(reader.artifactPath)
         Truth.assertWithMessage("Files exist").that(file.exists()).isTrue()
