@@ -77,43 +77,40 @@ class LimitDevicesRule(
     private val thisDevice: String = Build.PRODUCT,
     private val runningFlakyTests: Boolean = false,
 ) : TestRule {
-    val scanner = TestAnnotationScanner()
-
     override fun apply(base: Statement, description: Description): Statement {
-        val skipReason = skipReasonIfAny(description)
-        if (skipReason == null) {
-            return base
-        } else {
-            return makeAssumptionViolatedStatement(skipReason)
-        }
-    }
-
-    fun skipReasonIfAny(description: Description): String? {
         if (description.ignoreLimit()) {
-            return null
+            return base
         }
 
         val limitDevicesAnnotations = description.limitDevicesAnnotation()
         if (limitDevicesAnnotations.count() > 1) {
-            return "Only one LimitDeviceRule annotation is supported. Found $limitDevicesAnnotations"
+            return makeAssumptionViolatedStatement(
+                "Only one LimitDeviceRule annotation is supported. Found $limitDevicesAnnotations"
+            )
         }
         val deniedDevices = description.deniedDevices()
         if (thisDevice in deniedDevices) {
-            return "Skipping test as $thisDevice is in $deniedDevices"
+            return makeAssumptionViolatedStatement(
+                "Skipping test as $thisDevice is in $deniedDevices"
+            )
         }
 
         val flakyDevices = description.flakyDevices()
         if (thisDevice in flakyDevices) {
             if (!runningFlakyTests) {
-                return "Skipping test as $thisDevice is flaky and this config excludes flakes"
+                return makeAssumptionViolatedStatement(
+                    "Skipping test as $thisDevice is flaky and this config excludes fakes"
+                )
             }
         }
 
         val allowedDevices = description.allowedDevices()
         if (allowedDevices.isEmpty() || thisDevice in allowedDevices) {
-            return null
+            return base
         }
-        return "Skipping test as $thisDevice in not in $allowedDevices"
+        return makeAssumptionViolatedStatement(
+            "Skipping test as $thisDevice in not in $allowedDevices"
+        )
     }
 
     private fun Description.allowedDevices(): List<String> =
@@ -139,10 +136,18 @@ class LimitDevicesRule(
             .toSet()
 
     private fun Description.ignoreLimit(): Boolean =
-        getMostSpecificAnnotation<IgnoreLimit>()?.ignoreLimit == true
+        getAnnotation(IgnoreLimit::class.java)?.ignoreLimit == true ||
+            testClass?.getClassAnnotation<IgnoreLimit>()?.ignoreLimit == true
 
-    private inline fun <reified T : Annotation> Description.getMostSpecificAnnotation() =
-        scanner.find<T>(this)
+    private inline fun <reified T : Annotation> Description.getMostSpecificAnnotation(): T? {
+        getAnnotation(T::class.java)?.let {
+            return it
+        }
+        return testClass?.getClassAnnotation<T>()
+    }
+
+    private inline fun <reified T : Annotation> Class<*>.getClassAnnotation() =
+        getLowestAncestorClassAnnotation(this, T::class.java)
 
     private fun List<Array<out DeviceProduct>?>.collectProducts() =
         filterNotNull().flatMap { it.toList() }.map { it.product }
