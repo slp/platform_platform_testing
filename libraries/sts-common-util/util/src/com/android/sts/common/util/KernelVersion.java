@@ -16,6 +16,8 @@
 
 package com.android.sts.common.util;
 
+import java.lang.Integer;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,28 +26,39 @@ public final class KernelVersion implements Comparable<KernelVersion> {
     public final int version;
     public final int patchLevel;
     public final int subLevel;
+    public Optional<Integer> osRelease;
 
     public KernelVersion(int version, int patchLevel, int subLevel) {
         this.version = version;
         this.patchLevel = patchLevel;
         this.subLevel = subLevel;
+        this.osRelease = Optional.empty();
+    }
+
+    public KernelVersion(int version, int patchLevel, int subLevel, Optional<Integer> osRelease) {
+        this.version = version;
+        this.patchLevel = patchLevel;
+        this.subLevel = subLevel;
+        this.osRelease = osRelease;
     }
 
     /**
-     * Parse a kernel version string in the format "version.patchlevel.sublevel" - "5.4.123".
-     * Trailing values are ignored so `uname -r` can be parsed properly.
+     * Parse a kernel version string in the format "version.patchlevel.sublevel-androidosRelease" -
+     * "5.4.123-android12". Trailing values are ignored so `uname -r` can be parsed properly.
      *
      * @param versionString The version string to parse
      */
     public static KernelVersion parse(String versionString) {
         Pattern kernelReleasePattern =
-                Pattern.compile("(?<version>\\d+)\\.(?<patchLevel>\\d+)\\.(?<subLevel>\\d+)(.*)");
+                Pattern.compile(
+                        "^(?<version>\\d+)[.](?<patchLevel>\\d+)[.](?<subLevel>\\d+)(-android(?<osRelease>\\d+))?(.*)$");
         Matcher matcher = kernelReleasePattern.matcher(versionString);
         if (matcher.find()) {
             return new KernelVersion(
                     Integer.parseInt(matcher.group("version")),
                     Integer.parseInt(matcher.group("patchLevel")),
-                    Integer.parseInt(matcher.group("subLevel")));
+                    Integer.parseInt(matcher.group("subLevel")),
+                    Optional.ofNullable(matcher.group("osRelease")).map(Integer::parseInt));
         }
         throw new IllegalArgumentException(
                 String.format("Could not parse kernel version string (%s)", versionString));
@@ -54,9 +67,7 @@ public final class KernelVersion implements Comparable<KernelVersion> {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        // 2147483647 (INT_MAX)
-        // vvppppssss
-        return version * 10000000 + patchLevel * 10000 + subLevel;
+        return toStringWithRelease().hashCode();
     }
 
     /** Compare by version, patchlevel, and sublevel in that order. */
@@ -67,7 +78,11 @@ public final class KernelVersion implements Comparable<KernelVersion> {
         if (patchLevel != o.patchLevel) {
             return Integer.compare(patchLevel, o.patchLevel);
         }
-        return Integer.compare(subLevel, o.subLevel);
+        if (subLevel != o.subLevel) {
+            return Integer.compare(subLevel, o.subLevel);
+        }
+        return Integer.compare(
+                osRelease.orElse(Integer.valueOf(0)), o.osRelease.orElse(Integer.valueOf(0)));
     }
 
     /** {@inheritDoc} */
@@ -88,5 +103,13 @@ public final class KernelVersion implements Comparable<KernelVersion> {
     /** Format as "version.patchlevel" */
     public String toStringShort() {
         return String.format("%d.%d", version, patchLevel);
+    }
+
+    public String toStringWithRelease() {
+        if (!osRelease.isPresent()) {
+            return toString();
+        }
+        return String.format(
+                "%d.%d.%d-android%d", version, patchLevel, subLevel, osRelease.get().intValue());
     }
 }
