@@ -93,7 +93,7 @@ class LimitDevicesRuleTest {
         FlakyOnPhone.isFlakyConfig = false
         checkResults(
             "runAndPass: SKIPPED: Skipping test as cf_x86_64_phone is flaky " +
-                "and this config excludes fakes"
+                "and this config excludes flakes"
         )
 
         FlakyOnPhone.device = CF_PHONE
@@ -108,7 +108,26 @@ class LimitDevicesRuleTest {
         FlakyOnPhone.isFlakyConfig = true
         checkResults("runAndPass: PASSED")
     }
+
+    @FlakyOnTablet
+    class ThisIsFlakyOnTablet {
+        fun aTest() {}
+    }
+
+    @Test
+    fun metaAnnotation() {
+        val skipReason =
+            LimitDevicesRule(thisDevice = CF_TABLET.product, runningFlakyTests = false)
+                .skipReasonIfAny("aTest".description<ThisIsFlakyOnTablet>())
+        val expected = "Skipping test as cf_x86_64_tablet is flaky and this config excludes flakes"
+        assertThat(skipReason).isEqualTo(expected)
+    }
 }
+
+@MetaAnnotation
+@Retention(AnnotationRetention.RUNTIME)
+@FlakyDevices(CF_TABLET)
+annotation class FlakyOnTablet
 
 @AllowedDevices(CF_PHONE) private class AllowedOnPhonesOnly
 
