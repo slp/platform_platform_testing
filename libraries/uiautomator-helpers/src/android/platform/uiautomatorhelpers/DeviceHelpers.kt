@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package android.platform.uiautomator_helpers
+package android.platform.uiautomatorhelpers
 
 import android.animation.TimeInterpolator
 import android.app.Instrumentation
@@ -22,12 +22,12 @@ import android.content.Context
 import android.graphics.PointF
 import android.os.Bundle
 import android.os.SystemClock.uptimeMillis
-import android.platform.uiautomator_helpers.TracingUtils.trace
-import android.platform.uiautomator_helpers.WaitUtils.ensureThat
-import android.platform.uiautomator_helpers.WaitUtils.waitFor
-import android.platform.uiautomator_helpers.WaitUtils.waitForNullable
-import android.platform.uiautomator_helpers.WaitUtils.waitForPossibleEmpty
-import android.platform.uiautomator_helpers.WaitUtils.waitForValueToSettle
+import android.platform.uiautomatorhelpers.TracingUtils.trace
+import android.platform.uiautomatorhelpers.WaitUtils.ensureThat
+import android.platform.uiautomatorhelpers.WaitUtils.waitFor
+import android.platform.uiautomatorhelpers.WaitUtils.waitForNullable
+import android.platform.uiautomatorhelpers.WaitUtils.waitForPossibleEmpty
+import android.platform.uiautomatorhelpers.WaitUtils.waitForValueToSettle
 import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.BySelector
@@ -38,7 +38,6 @@ import java.time.Duration
 
 private const val TAG = "DeviceHelpers"
 
-@Deprecated("Use uiautomatorhelpers, b/376676853")
 object DeviceHelpers {
     private val SHORT_WAIT = Duration.ofMillis(1500)
     private val LONG_WAIT = Duration.ofSeconds(10)
@@ -168,7 +167,7 @@ object DeviceHelpers {
         "Use DeviceHelpers.waitForPossibleEmpty",
         ReplaceWith(
             "waitForPossibleEmpty(selector, timeout)",
-            "android.platform.uiautomator_helpers.DeviceHelpers.waitForPossibleEmpty",
+            "android.platform.uiautomatorhelpers.DeviceHelpers.waitForPossibleEmpty",
         ),
     )
     fun waitForNullableObjects(

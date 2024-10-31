@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package android.platform.uiautomator_helpers
+package android.platform.uiautomatorhelpers
 
 import android.animation.TimeInterpolator
 import android.graphics.Point
@@ -21,9 +21,9 @@ import android.graphics.PointF
 import android.hardware.display.DisplayManager
 import android.os.SystemClock
 import android.os.SystemClock.sleep
-import android.platform.uiautomator_helpers.DeviceHelpers.context
-import android.platform.uiautomator_helpers.TracingUtils.trace
-import android.platform.uiautomator_helpers.WaitUtils.ensureThat
+import android.platform.uiautomatorhelpers.DeviceHelpers.context
+import android.platform.uiautomatorhelpers.TracingUtils.trace
+import android.platform.uiautomatorhelpers.WaitUtils.ensureThat
 import android.util.Log
 import android.view.Display.DEFAULT_DISPLAY
 import android.view.InputDevice
@@ -58,7 +58,6 @@ private val PAUSE_DURATION: Duration = Duration.of(250, MILLIS)
  * swipe.to(anotherPoint).release()
  * ```
  */
-@Deprecated("Use uiautomatorhelpers, b/376676853")
 object BetterSwipe {
 
     private val lastPointerId = AtomicInteger(0)

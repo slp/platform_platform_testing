@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package android.platform.uiautomator_helpers
+package android.platform.uiautomatorhelpers
 
 import android.graphics.PointF
 import android.graphics.Rect
-import android.platform.uiautomator_helpers.DeviceHelpers.uiDevice
-import android.platform.uiautomator_helpers.WaitUtils.waitForValueToSettle
+import android.platform.uiautomatorhelpers.DeviceHelpers.uiDevice
+import android.platform.uiautomatorhelpers.WaitUtils.waitForValueToSettle
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.Direction
 import androidx.test.uiautomator.UiObject2
 import com.google.common.truth.Truth.assertWithMessage
 
 /** Checks the view is in the vertical (Y) centre of the screen (+- 1 px). */
-@Deprecated("Use uiautomatorhelpers, b/376676853")
 fun UiObject2.assertInVerticalCentre() {
     assertWithMessage("${this.resourceName} should be vertically (Y) centred (+- 1px)")
         .that(this.stableBounds.centerY())
@@ -34,7 +33,6 @@ fun UiObject2.assertInVerticalCentre() {
 }
 
 /** Checks the view is in the horizontal (X) centre of the screen (+- 1 px). */
-@Deprecated("Use uiautomatorhelpers, b/376676853")
 fun UiObject2.assertInHorizontalCentre() {
     assertWithMessage("${this.resourceName} should be horizontally (X) centred (+- 1px)")
         .that(this.stableBounds.centerX())
@@ -45,7 +43,6 @@ fun UiObject2.assertInHorizontalCentre() {
  * Checks if centre of the view is on the bottom side by checking y centre is in the bottom half of
  * the screen vertically.
  */
-@Deprecated("Use uiautomatorhelpers, b/376676853")
 fun UiObject2.assertCentreOnBottomSide() {
     assertWithMessage("${this.resourceName} centre should be on the bottom side")
         .that(this.stableBounds.centerY() > uiDevice.displayHeight / 2)
@@ -56,7 +53,6 @@ fun UiObject2.assertCentreOnBottomSide() {
  * Checks if centre of the view is on the top side by checking y centre is in the top half of the
  * screen vertically.
  */
-@Deprecated("Use uiautomatorhelpers, b/376676853")
 fun UiObject2.assertCentreOnTopSide() {
     assertWithMessage("${this.resourceName} centre should be on the top side")
         .that(this.stableBounds.centerY() < uiDevice.displayHeight / 2)
@@ -67,7 +63,6 @@ fun UiObject2.assertCentreOnTopSide() {
  * Checks if top of the view is on the bottom side by checking top bound is in the bottom half of
  * the screen vertically.
  */
-@Deprecated("Use uiautomatorhelpers, b/376676853")
 fun UiObject2.assertTopOnBottomSide() {
     assertWithMessage("${this.resourceName} top should be on the bottom side")
         .that(this.stableBounds.top > uiDevice.displayHeight / 2)
@@ -78,7 +73,6 @@ fun UiObject2.assertTopOnBottomSide() {
  * Checks if top of the view is on the top side by checking top bound is in the top half of the
  * screen vertically.
  */
-@Deprecated("Use uiautomatorhelpers, b/376676853")
 fun UiObject2.assertTopOnTopSide() {
     assertWithMessage("${this.resourceName} top should be on the top side")
         .that(this.stableBounds.top < uiDevice.displayHeight / 2)
@@ -93,7 +87,6 @@ fun UiObject2.assertCenterOnTheRightSide() {
 }
 
 /** Checks if view horizontal (X) centre is on the left side */
-@Deprecated("Use uiautomatorhelpers, b/376676853")
 fun UiObject2.assertCenterOnTheLeftSide() {
     assertWithMessage("${this.resourceName} center should be on the left side")
         .that(this.stableBounds.centerX() < uiDevice.displayWidth / 2)
@@ -104,7 +97,6 @@ fun UiObject2.assertCenterOnTheLeftSide() {
  * Checks if view is on the right side by checking left bound is in the middle of the screen or in
  * the right half of the screen horizontally.
  */
-@Deprecated("Use uiautomatorhelpers, b/376676853")
 fun UiObject2.assertOnTheRightSide() {
     assertWithMessage("${this.resourceName} left should be on the right side")
         .that(this.stableBounds.left >= uiDevice.displayWidth / 2)
@@ -115,7 +107,6 @@ fun UiObject2.assertOnTheRightSide() {
  * Checks if view is on the left side by checking right bound is in the middle of the screen or in
  * the left half of the screen horizontally.
  */
-@Deprecated("Use uiautomatorhelpers, b/376676853")
 fun UiObject2.assertOnTheLeftSide() {
     assertWithMessage("${this.resourceName} right should be on the left side")
         .that(this.stableBounds.right <= uiDevice.displayWidth / 2)
@@ -128,7 +119,6 @@ fun UiObject2.assertOnTheLeftSide() {
  * Before returning, ensures visible bounds stay the same for a few seconds or fails. Useful to get
  * bounds of objects that might be animating.
  */
-@Deprecated("Use uiautomatorhelpers, b/376676853")
 val UiObject2.stableBounds: Rect
     get() = waitForValueToSettle("${this.resourceName} bounds") { visibleBounds }
 
@@ -143,7 +133,6 @@ private const val MAX_FIND_ELEMENT_ATTEMPT = 15
  * Uses [BetterSwipe] to perform the scroll.
  */
 @JvmOverloads
-@Deprecated("Use uiautomatorhelpers, b/376676853")
 fun UiObject2.scrollUntilFound(
     selector: BySelector,
     direction: Direction = Direction.DOWN,

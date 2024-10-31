@@ -2,6 +2,9 @@
   "imports": [
     {
       "path": "vendor/google_testing/integration/tests/scenarios/src/android/platform/test/scenario/sysui"
+    },
+    {
+      "path": "frameworks/base"
     }
   ]
 }
