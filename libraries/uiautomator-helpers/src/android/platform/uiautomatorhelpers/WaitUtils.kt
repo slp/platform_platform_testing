@@ -12,13 +12,13 @@
  * KIND, either express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package android.platform.uiautomator_helpers
+package android.platform.uiautomatorhelpers
 
 import android.os.SystemClock.sleep
 import android.os.SystemClock.uptimeMillis
 import android.os.Trace
-import android.platform.uiautomator_helpers.TracingUtils.trace
-import android.platform.uiautomator_helpers.WaitUtils.LoggerImpl.Companion.withEventualLogging
+import android.platform.uiautomatorhelpers.TracingUtils.trace
+import android.platform.uiautomatorhelpers.WaitUtils.LoggerImpl.Companion.withEventualLogging
 import android.util.Log
 import androidx.test.uiautomator.StaleObjectException
 import java.io.Closeable
@@ -38,7 +38,6 @@ data class WaitReport(val result: WaitResult, val iterations: Int)
  *
  * Those are meant to make tests more understandable from perfetto traces, and less flaky.
  */
-@Deprecated("Use uiautomatorhelpers, b/376676853")
 object WaitUtils {
     private val DEFAULT_DEADLINE = Duration.ofSeconds(10)
     private val POLLING_WAIT = Duration.ofMillis(100)
