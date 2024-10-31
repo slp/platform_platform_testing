@@ -12,7 +12,7 @@
  * KIND, either express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package android.platform.uiautomator_helpers
+package android.platform.uiautomatorhelpers
 
 import android.os.Build
 import java.time.Duration
@@ -24,7 +24,6 @@ private const val CUTTLEFISH_FACTOR = 5L
  *  For physical (non-emulator) devices, the timeout is unchanged,
  *  the if the Build.HARDWARE is Cuttlefish, we increase the factor by 5.
  */
-@Deprecated("Use uiautomatorhelpers, b/376676853")
 object DurationUtils {
 
     /**

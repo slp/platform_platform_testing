@@ -12,7 +12,7 @@
  * KIND, either express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package android.platform.uiautomator_helpers
+package android.platform.uiautomatorhelpers
 
 import android.content.pm.PackageManager
 import androidx.test.platform.app.InstrumentationRegistry
@@ -22,7 +22,6 @@ import androidx.test.platform.app.InstrumentationRegistry
  *
  * @param[permissions] the permission to adopt. Adopt all available permission is it's empty.
  */
-@Deprecated("Use uiautomatorhelpers, b/376676853")
 class ShellPrivilege(vararg permissions: String) : AutoCloseable {
 
     private val instrumentation = InstrumentationRegistry.getInstrumentation()

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package android.platform.uiautomator_helpers
+package android.platform.uiautomatorhelpers
 
 import android.graphics.Rect
-import android.platform.uiautomator_helpers.DeviceHelpers.context
-import android.platform.uiautomator_helpers.DeviceHelpers.uiDevice
-import android.platform.uiautomator_helpers.SwipeUtils.calculateStartEndPoint
-import android.platform.uiautomator_helpers.TracingUtils.trace
+import android.platform.uiautomatorhelpers.DeviceHelpers.context
+import android.platform.uiautomatorhelpers.DeviceHelpers.uiDevice
+import android.platform.uiautomatorhelpers.SwipeUtils.calculateStartEndPoint
+import android.platform.uiautomatorhelpers.TracingUtils.trace
 import android.util.TypedValue
 import androidx.test.uiautomator.Direction
 import androidx.test.uiautomator.UiObject2
@@ -33,7 +33,6 @@ import java.time.temporal.ChronoUnit
  *
  * See [BetterSwipe] for more details on the problem of [UiObject2.fling].
  */
-@Deprecated("Use uiautomatorhelpers, b/376676853")
 object BetterFling {
     private const val DEFAULT_FLING_MARGIN_DP = 30
     private const val DEFAULT_PERCENTAGE = 1.0f
