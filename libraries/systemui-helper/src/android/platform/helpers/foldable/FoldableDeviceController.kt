@@ -26,11 +26,11 @@ import android.hardware.devicestate.DeviceStateManager.INVALID_DEVICE_STATE_IDEN
 import android.hardware.devicestate.DeviceStateRequest
 import android.hardware.devicestate.feature.flags.Flags as DeviceStateManagerFlags
 import android.platform.test.rule.isLargeScreen
-import android.platform.uiautomator_helpers.DeviceHelpers.isScreenOnSettled
-import android.platform.uiautomator_helpers.DeviceHelpers.printInstrumentationStatus
-import android.platform.uiautomator_helpers.DeviceHelpers.uiDevice
-import android.platform.uiautomator_helpers.TracingUtils.trace
-import android.platform.uiautomator_helpers.WaitUtils.ensureThat
+import android.platform.uiautomatorhelpers.DeviceHelpers.isScreenOnSettled
+import android.platform.uiautomatorhelpers.DeviceHelpers.printInstrumentationStatus
+import android.platform.uiautomatorhelpers.DeviceHelpers.uiDevice
+import android.platform.uiautomatorhelpers.TracingUtils.trace
+import android.platform.uiautomatorhelpers.WaitUtils.ensureThat
 import android.util.Log
 import androidx.annotation.FloatRange
 import androidx.test.platform.app.InstrumentationRegistry
@@ -163,7 +163,7 @@ internal class FoldableDeviceController {
 
         assumeTrue(
             "Skipping on non-foldable devices",
-            foldedState != INVALID_DEVICE_STATE_IDENTIFIER
+            foldedState != INVALID_DEVICE_STATE_IDENTIFIER,
         )
 
         halfFoldedState =
@@ -171,7 +171,7 @@ internal class FoldableDeviceController {
                 .firstOrNull { deviceState ->
                     deviceState.hasProperties(
                         PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_INNER_PRIMARY,
-                        PROPERTY_FOLDABLE_HARDWARE_CONFIGURATION_FOLD_IN_HALF_OPEN
+                        PROPERTY_FOLDABLE_HARDWARE_CONFIGURATION_FOLD_IN_HALF_OPEN,
                     )
                 }
                 ?.identifier ?: INVALID_DEVICE_STATE_IDENTIFIER
@@ -208,7 +208,7 @@ internal class FoldableDeviceController {
             deviceStateManager.requestBaseStateOverride(
                 request,
                 context.mainExecutor,
-                deviceStateRequestCallback
+                deviceStateRequestCallback,
             )
             deviceStateLatch.await { "Device state didn't change within the timeout" }
             ensureStateSet(state)

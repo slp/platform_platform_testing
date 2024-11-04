@@ -19,7 +19,7 @@ package android.platform.helpers;
 import static android.platform.helpers.ui.UiAutomatorUtils.getInstrumentation;
 import static android.platform.helpers.ui.UiAutomatorUtils.getUiDevice;
 import static android.platform.helpers.ui.UiSearch.search;
-import static android.platform.uiautomator_helpers.DeviceHelpers.getContext;
+import static android.platform.uiautomatorhelpers.DeviceHelpers.getContext;
 
 import static com.google.common.truth.Truth.assertWithMessage;
 
