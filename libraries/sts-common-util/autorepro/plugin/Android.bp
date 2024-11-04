@@ -1,0 +1,52 @@
+// Copyright (C) 2024 The Android Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+filegroup {
+    name: "autorepro-skel-srcs",
+    srcs: [
+        "**/*",
+    ],
+    exclude_srcs: [
+        "**/.*",
+        "Android.bp",
+    ],
+}
+
+genrule {
+    name: "autorepro-plugin-skel.zip-gen",
+    srcs: [
+        ":autorepro-skel-srcs",
+    ],
+    out: ["autorepro-plugin-skel.zip"],
+    tools: [
+        "soong_zip",
+    ],
+    product_variables: {
+        platform_sdk_version: {
+            cmd: "files=($(in)) " +
+                "&& mkdir -p $(genDir)/tmp/ " +
+                "&& echo $(in) > $(genDir)/tmp/autorepro-plugin-skel.zip.list " +
+                "&& $(location soong_zip) -o $(out) -C $$(dirname $${files[0]}) -l $(genDir)/tmp/autorepro-plugin-skel.zip.list",
+        },
+    },
+}
+
+prebuilt_etc {
+    name: "autorepro-plugin-skel.zip",
+    src: ":autorepro-plugin-skel.zip-gen",
+}
