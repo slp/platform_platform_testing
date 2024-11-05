@@ -19,9 +19,9 @@ import android.platform.helpers.CommonUtils.assertScreenOn
 import android.platform.helpers.Constants.UI_PACKAGE_NAME_SYSUI
 import android.platform.helpers.LockscreenUtils.LockscreenType
 import android.platform.helpers.features.common.HomeLockscreenPage
-import android.platform.uiautomator_helpers.DeviceHelpers.assertVisibility
-import android.platform.uiautomator_helpers.DeviceHelpers.uiDevice
-import android.platform.uiautomator_helpers.DurationUtils.platformAdjust
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertVisibility
+import android.platform.uiautomatorhelpers.DeviceHelpers.uiDevice
+import android.platform.uiautomatorhelpers.DurationUtils.platformAdjust
 import androidx.test.uiautomator.By
 import com.android.app.tracing.traceSection
 import com.android.systemui.Flags
@@ -42,7 +42,7 @@ object SysuiRestarter {
                     "keyguard_indication_area"
                 } else {
                     "keyguard_clock_container"
-                }
+                },
             )
         }
 
@@ -64,7 +64,7 @@ object SysuiRestarter {
             LockscreenUtils.setLockscreen(
                 LockscreenType.SWIPE,
                 /* lockscreenCode= */ null,
-                /* expectedResult= */ false
+                /* expectedResult= */ false,
             )
             sysuiProcessUtils.restart()
             assertLockscreenVisibility(true) { "Lockscreen not visible after restart" }
@@ -80,7 +80,7 @@ object SysuiRestarter {
             LOCKSCREEN_SELECTOR,
             visible,
             timeout = Duration.ofSeconds(10).platformAdjust(),
-            errorProvider = errorMessageProvider
+            errorProvider = errorMessageProvider,
         )
     }
 }
