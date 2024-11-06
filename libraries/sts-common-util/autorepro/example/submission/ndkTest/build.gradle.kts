@@ -1,5 +1,4 @@
 plugins {
-    // my sts sdk plugin
     id("com.android.security.autorepro.ndktest")
 }
 
