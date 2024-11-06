@@ -95,7 +95,9 @@ object TransitionFilters {
                             isLauncherTopLevelTaskLayer(it.layerId, layersTrace)
                     } == 1 &&
                     (openingAppLayers.count() == 1 || openingAppLayers.count() == 5) &&
-                    (closingAppLayers.count() == 1 || closingAppLayers.count() == 5)
+                    // Fullscreen: 1 app + 1 recents
+                    // SplitScreen: 2 apps + 2 split containers + 1 split root + 1 recents
+                    (closingAppLayers.count() == 2 || closingAppLayers.count() == 6)
             }
 
         var quickswitchFromLauncherTransitions =
