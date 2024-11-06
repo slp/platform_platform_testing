@@ -15,9 +15,9 @@ fun getSubprojects(): List<Project> {
         .map { project(it) }
 }
 
-// NOTE! all STS SDK dependencies must be subprojects
+// NOTE! all AutoRepro dependencies must be subprojects
 dependencies {
-    // Automatically add each subproject as an STS SDK Test Resource
+    // Automatically add each subproject as an AutoRepro Test Resource
     getSubprojects().forEach { testResource(it) }
 }
 
