@@ -709,4 +709,7 @@ public class AutomotiveConfigConstants {
 
     // Soft Keyboard UI elements
     public static final String SOFT_KEYBOARD_HIDE_BUTTON = "SOFT_KEYBOARD_HIDE_BUTTON";
+
+    // Car News
+    public static final String NEWS_PACKAGE = "NEWS_PACKAGE";
 }
