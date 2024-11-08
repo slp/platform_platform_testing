@@ -76,3 +76,28 @@ gradlePlugin {
         }
     }
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("pluginMaven") {
+            pom {
+                name = "AutoRepro"
+                description = "Gradle plugin to develop Android VRP reports as Tradefed tests."
+                licenses {
+                    license {
+                        name = "The Apache Software License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        distribution = "repo"
+                    }
+                }
+                developers {
+                    developer {
+                        name = "The Android Open Source Project"
+                    }
+                }
+            }
+        }
+    }
+    // The Google Maven repository has a bespoke publishing process; publish locally.
+    repositories.maven("/tmp/autorepro/maven")
+}
