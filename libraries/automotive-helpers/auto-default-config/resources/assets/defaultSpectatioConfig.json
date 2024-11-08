@@ -12,7 +12,8 @@
     "MEDIA_CENTER_PACKAGE": "com.android.car.media",
     "CONTACTS_PACKAGE": "com.android.contacts",
     "RADIO_PACKAGE": "com.android.car.radio",
-    "SMS_PACKAGE":"com.android.car.messenger"
+    "SMS_PACKAGE":"com.android.car.messenger",
+    "NEWS_PACKAGE":"com.android.car.media"
   },
   "ACTIONS": {
     "CONTACT_LIST_SCROLL_ACTION": "USE_BUTTON",
