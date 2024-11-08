@@ -28,4 +28,5 @@ java_library {
     ],
     srcs: ["src/**/*.java"],
     sdk_version: "test_current",
+    min_sdk_version: "33",
 }
