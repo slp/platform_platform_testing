@@ -25,7 +25,6 @@ android_test {
         "automotive-app-grid-helper",
         "platform-test-junit-rules",
         "platform-test-options",
-        "automotive-google-play-app-helper",
     ],
     srcs: ["src/**/*.java"],
     test_suites: ["catbox"],
