@@ -53,7 +53,9 @@ enum class TransitionType(val value: Int) {
     TASK_FRAGMENT_DRAG_RESIZE(FIRST_CUSTOM.value + 17),
     SPLIT_PASSTHROUGH(FIRST_CUSTOM.value + 18),
     CLEANUP_PIP_EXIT(FIRST_CUSTOM.value + 19),
-    MINIMIZE(FIRST_CUSTOM.value + 20);
+    MINIMIZE(FIRST_CUSTOM.value + 20),
+    START_RECENTS_TRANSITION(FIRST_CUSTOM.value + 21),
+    END_RECENTS_TRANSITION(FIRST_CUSTOM.value + 22);
 
     companion object {
         fun fromInt(value: Int) = entries.first { it.value == value }
