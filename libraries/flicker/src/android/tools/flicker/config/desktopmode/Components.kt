@@ -76,6 +76,12 @@ object Components {
                     associatedTransition.changes.first { it.transitMode == TransitionType.OPEN }
                 FullComponentIdMatcher(change.windowId, change.layerId)
             }
+            ScenarioId("MINIMIZE_APP"),
+            ScenarioId("MINIMIZE_LAST_APP") -> {
+                val change =
+                    associatedTransition.changes.first { it.transitMode == TransitionType.TO_BACK }
+                FullComponentIdMatcher(change.windowId, change.layerId)
+            }
             ScenarioId("CORNER_RESIZE"),
             ScenarioId("CORNER_RESIZE_TO_MINIMUM_SIZE"),
             ScenarioId("CORNER_RESIZE_TO_MAXIMUM_SIZE"),
