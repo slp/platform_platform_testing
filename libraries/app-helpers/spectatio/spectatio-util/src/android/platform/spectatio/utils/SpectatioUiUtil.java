@@ -624,8 +624,11 @@ public class SpectatioUiUtil {
     }
 
     private Rect getScreenBounds() {
-        Point dimensions = mDevice.getDisplaySizeDp();
-        return new Rect(0, 0, dimensions.x, dimensions.y);
+        return new Rect(
+            /* left= */ 0,
+            /* top= */ 0,
+            /* right= */ mDevice.getDisplayWidth(),
+            /* bottom= */ mDevice.getDisplayHeight());
     }
 
     public void swipeRight(UiObject2 uiObject) {
