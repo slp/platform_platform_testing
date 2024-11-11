@@ -62,8 +62,6 @@ open class StandardAppHelper(
 
     override val packageName = componentMatcher.packageName
 
-    val packageNameMatcher = ComponentNameMatcher(componentMatcher.packageName, "")
-
     override val className = componentMatcher.className
 
     protected val uiDevice: UiDevice = UiDevice.getInstance(instrumentation)
