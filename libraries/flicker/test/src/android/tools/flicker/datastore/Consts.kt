@@ -18,8 +18,8 @@ package android.tools.flicker.datastore
 
 import android.tools.Timestamps
 import android.tools.io.TransitionTimeRange
+import android.tools.testutils.TestArtifact
 import android.tools.traces.io.ResultData
-import android.tools.utils.TestArtifact
 
 object Consts {
     internal const val FAILURE = "Expected failure"

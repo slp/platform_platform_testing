@@ -41,13 +41,19 @@ data class ScenarioAssertionImpl(
         withTracing("executeAssertion") {
             val assertionExceptions = assertionData.map { assertionRunner.runAssertion(it) }
 
-            require(
-                assertionExceptions.all {
-                    it == null || it is FlickerAssertionError || it is AssumptionViolatedException
+            val unexpectedExceptions =
+                assertionExceptions.filterNot {
+                    it == null ||
+                        it is FlickerAssertionError ||
+                        it is AssumptionViolatedException ||
+                        it is IllegalArgumentException
                 }
-            ) {
-                "Expected all assertion exceptions to be " +
-                    "FlickerAssertionErrors or AssumptionViolatedExceptions"
+            if (unexpectedExceptions.isNotEmpty()) {
+                throw IllegalArgumentException(
+                    "Expected all assertion exceptions to be " +
+                        "FlickerAssertionErrors or AssumptionViolatedExceptions",
+                    unexpectedExceptions.first()
+                )
             }
 
             val assertionErrors = assertionExceptions.filterIsInstance<FlickerAssertionError>()

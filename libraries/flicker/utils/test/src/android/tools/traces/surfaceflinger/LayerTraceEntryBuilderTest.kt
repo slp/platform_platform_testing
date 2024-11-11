@@ -23,8 +23,8 @@ import android.tools.Timestamps
 import android.tools.datatypes.ActiveBuffer
 import android.tools.datatypes.Size
 import android.tools.datatypes.emptyColor
+import android.tools.testutils.CleanFlickerEnvironmentRule
 import android.tools.traces.surfaceflinger.Display.Companion.BLANK_LAYER_STACK
-import android.tools.utils.CleanFlickerEnvironmentRule
 import com.google.common.truth.Truth
 import org.junit.ClassRule
 import org.junit.FixMethodOrder

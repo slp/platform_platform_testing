@@ -36,6 +36,9 @@ public interface IAutoPhoneHelper extends IAppHelper {
      */
     void pressDialpadIcon();
 
+    /** Checks if the dial pad is open */
+    boolean isDialPadOpen();
+
     /**
      * Assumes mobile device is on home screen, and phone icon is present.
      *

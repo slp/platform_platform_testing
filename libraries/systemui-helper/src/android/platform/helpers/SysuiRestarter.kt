@@ -24,22 +24,27 @@ import android.platform.uiautomator_helpers.DeviceHelpers.uiDevice
 import android.platform.uiautomator_helpers.DurationUtils.platformAdjust
 import androidx.test.uiautomator.By
 import com.android.app.tracing.traceSection
-import com.android.systemui.Flags.migrateClocksToBlueprint
+import com.android.systemui.Flags
 import java.time.Duration
-import java.util.regex.Pattern
 
 /** Restarts system ui. */
 object SysuiRestarter {
 
     private val sysuiProcessUtils = ProcessUtil(UI_PACKAGE_NAME_SYSUI)
 
-    // https://hsv.googleplex.com/5130837462876160?node=117
-    private val PAGE_TITLE_SELECTOR_PATTERN = if (migrateClocksToBlueprint()) {
-        Pattern.compile(String.format("com.android.systemui:id/%s", "keyguard_indication_area"))
-    } else {
-        Pattern.compile(String.format("com.android.systemui:id/%s", "keyguard_clock_container"))
-    }
-    private val PAGE_TITLE_SELECTOR = By.res(PAGE_TITLE_SELECTOR_PATTERN)
+    val LOCKSCREEN_SELECTOR =
+        if (Flags.sceneContainer()) {
+            By.res("element:lockscreen")
+        } else {
+            By.res(
+                "com.android.systemui",
+                if (Flags.migrateClocksToBlueprint()) {
+                    "keyguard_indication_area"
+                } else {
+                    "keyguard_clock_container"
+                }
+            )
+        }
 
     /**
      * Restart System UI by running `am crash com.android.systemui`.
@@ -72,7 +77,7 @@ object SysuiRestarter {
 
     private fun assertLockscreenVisibility(visible: Boolean, errorMessageProvider: () -> String) {
         uiDevice.assertVisibility(
-            PAGE_TITLE_SELECTOR,
+            LOCKSCREEN_SELECTOR,
             visible,
             timeout = Duration.ofSeconds(10).platformAdjust(),
             errorProvider = errorMessageProvider

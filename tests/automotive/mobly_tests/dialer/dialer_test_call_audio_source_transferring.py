@@ -23,6 +23,7 @@ class ChangeAudioSourceTest(bluetooth_base_test.BluetoothBaseTest):
     """Setup steps before any test is executed."""
     # Pair the devices
     self.bt_utils.pair_primary_to_secondary()
+    super().enable_recording()
   def test_switch_audio_sources_while_in_call(self):
     """Test audio source transferring functionality."""
 

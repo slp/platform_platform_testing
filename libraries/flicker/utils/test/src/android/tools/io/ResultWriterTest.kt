@@ -19,17 +19,17 @@ package android.tools.io
 import android.annotation.SuppressLint
 import android.tools.ScenarioBuilder
 import android.tools.Timestamps
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.TEST_SCENARIO
+import android.tools.testutils.TestTraces
+import android.tools.testutils.assertExceptionMessage
+import android.tools.testutils.assertThrows
+import android.tools.testutils.newTestResultWriter
+import android.tools.testutils.outputFileName
 import android.tools.traces.TRACE_CONFIG_REQUIRE_CHANGES
 import android.tools.traces.deleteIfExists
 import android.tools.traces.io.ResultReader
 import android.tools.traces.io.ResultWriter
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.TEST_SCENARIO
-import android.tools.utils.TestTraces
-import android.tools.utils.assertExceptionMessage
-import android.tools.utils.assertThrows
-import android.tools.utils.newTestResultWriter
-import android.tools.utils.outputFileName
 import com.google.common.truth.Truth
 import java.io.File
 import kotlin.io.path.createTempDirectory
@@ -121,7 +121,8 @@ class ResultWriterTest {
 
     @Test
     fun writeWMTrace() {
-        val writer = newTestResultWriter().addTraceResult(TraceType.WM, TestTraces.WMTrace.FILE)
+        val writer =
+            newTestResultWriter().addTraceResult(TraceType.WM, TestTraces.LegacyWMTrace.FILE)
         val result = writer.write()
         val reader = ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)
         Truth.assertWithMessage("File count").that(reader.countFiles()).isEqualTo(1)
@@ -181,7 +182,7 @@ class ResultWriterTest {
     fun writeAllTraces() {
         val writer =
             newTestResultWriter()
-                .addTraceResult(TraceType.WM, TestTraces.WMTrace.FILE)
+                .addTraceResult(TraceType.WM, TestTraces.LegacyWMTrace.FILE)
                 .addTraceResult(TraceType.SF, TestTraces.LayerTrace.FILE)
                 .addTraceResult(TraceType.TRANSACTION, TestTraces.TransactionTrace.FILE)
                 .addTraceResult(

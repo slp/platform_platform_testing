@@ -19,7 +19,6 @@ package android.tools.flicker.junit
 import android.annotation.SuppressLint
 import android.app.Instrumentation
 import android.os.Bundle
-import android.platform.test.annotations.FlakyTest
 import android.tools.Scenario
 import android.tools.Timestamps
 import android.tools.device.apphelpers.BrowserAppHelper
@@ -42,7 +41,8 @@ import android.tools.flicker.legacy.LegacyFlickerTest
 import android.tools.flicker.legacy.LegacyFlickerTestFactory
 import android.tools.getScenarioTraces
 import android.tools.io.Reader
-import android.tools.utils.CleanFlickerEnvironmentRule
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import androidx.test.filters.FlakyTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth
 import org.junit.Assume

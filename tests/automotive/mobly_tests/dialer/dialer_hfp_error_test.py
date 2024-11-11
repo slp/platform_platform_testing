@@ -15,6 +15,7 @@ class DialerHFPError(bluetooth_base_test.BluetoothBaseTest):
     """Setup steps before any test is executed."""
     # Pair caller phone with automotive device
     self.bt_utils.pair_primary_to_secondary()
+    super().enable_recording()
 
 
   def test_dialer_hfp_error(self):
@@ -24,6 +25,11 @@ class DialerHFPError(bluetooth_base_test.BluetoothBaseTest):
     self.target.mbs.btDisable()
     self.call_utils.wait_with_log(5)
     asserts.assert_true(self.call_utils.is_bluetooth_hfp_error_displayed(),'hfp error is displayed')
+
+  def teardown_test(self):
+    # enabling the Bluetooth
+    self.target.mbs.btEnable()
+    super().teardown_test()
 
 if __name__ == '__main__':
     common_main()

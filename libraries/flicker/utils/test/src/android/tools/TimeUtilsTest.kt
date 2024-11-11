@@ -16,8 +16,8 @@
 
 package android.tools
 
+import android.tools.testutils.CleanFlickerEnvironmentRule
 import android.tools.traces.formatRealTimestamp
-import android.tools.utils.CleanFlickerEnvironmentRule
 import com.google.common.truth.Truth
 import org.junit.ClassRule
 import org.junit.FixMethodOrder

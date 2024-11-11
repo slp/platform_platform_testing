@@ -21,14 +21,14 @@ package {
 java_library {
     name: "notes-role-test-helper",
     static_libs: [
+        "androidx.activity_activity-ktx",
         "androidx.core_core-ktx",
         "androidx.test.core",
         "androidx.test.uiautomator_uiautomator",
         "uiautomator-helpers",
     ],
     srcs: [
-	"src/**/*.java",
+        "src/**/*.java",
         "src/**/*.kt",
     ],
 }
-

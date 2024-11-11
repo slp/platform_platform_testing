@@ -20,8 +20,8 @@ import android.tools.Cache
 import android.tools.datatypes.Size
 import android.tools.flicker.subject.layers.LayerSubject
 import android.tools.flicker.subject.layers.LayersTraceSubject
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.getLayerTraceReaderFromAsset
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.getLayerTraceReaderFromAsset
 import com.google.common.truth.Truth
 import org.junit.Before
 import org.junit.ClassRule

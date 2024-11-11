@@ -72,7 +72,6 @@ class MotionTestRule<Toolkit>(
             override fun finished(description: Description?) {
                 testClassName = null
                 testMethodName = null
-                ensureOutputDirectoryMarkerCreated()
             }
         }
 
@@ -129,7 +128,7 @@ class MotionTestRule<Toolkit>(
         requireValidGoldenIdentifier(goldenIdentifier)
 
         val relativeGoldenPath =
-            goldenPathManager.goldenIdentifierResolver(goldenIdentifier, JSON_EXTENSION)
+            goldenPathManager.goldenIdentifierResolver(goldenIdentifier, JSON_ACTUAL_EXTENSION)
         val deviceLocalPath = File(goldenPathManager.deviceLocalPath)
         val goldenFile =
             deviceLocalPath.resolve(recordedMotion.testClassName).resolve(relativeGoldenPath)
@@ -142,10 +141,13 @@ class MotionTestRule<Toolkit>(
         val metadata = JSONObject()
         metadata.put(
             "goldenRepoPath",
-            "${goldenPathManager.assetsPathRelativeToBuildRoot}/$relativeGoldenPath"
+            "${goldenPathManager.assetsPathRelativeToBuildRoot}/${relativeGoldenPath.replace(
+                JSON_ACTUAL_EXTENSION, JSON_EXTENSION)}"
         )
-        metadata.put("filmstripTestIdentifier", debugFilmstripTestIdentifier(recordedMotion))
         metadata.put("goldenIdentifier", goldenIdentifier)
+        metadata.put("testClassName", recordedMotion.testClassName)
+        metadata.put("testMethodName", recordedMotion.testMethodName)
+        metadata.put("deviceLocalPath", deviceLocalPath)
         metadata.put("result", result.name)
 
         recordedMotion.videoRenderer?.let { videoRenderer ->
@@ -178,29 +180,9 @@ class MotionTestRule<Toolkit>(
         }
     }
 
-    /**
-     * The golden screenshot identifier used by []writeDebugFilmstrip]
-     *
-     * Allows tooling to recognize the debug filmstrip related to a motion test
-     */
-    private fun debugFilmstripTestIdentifier(
-        recordedMotion: RecordedMotion,
-    ) = "motion_debug_filmstrip_${recordedMotion.testClassName}"
-
-    private fun ensureOutputDirectoryMarkerCreated() {
-        try {
-            val markerFile =
-                File(goldenPathManager.deviceLocalPath).resolve(".motion_test_output_marker")
-            if (!markerFile.exists()) {
-                markerFile.createNewFile()
-            }
-        } catch (e: IOException) {
-            Log.e(TAG, "Unable to create golden output marker file", e)
-        }
-    }
-
     companion object {
         private const val JSON_EXTENSION = "json"
+        private const val JSON_ACTUAL_EXTENSION = "actual.${JSON_EXTENSION}"
         private const val VIDEO_EXTENSION = "mp4"
         private const val JSON_INDENTATION = 2
         private val GOLDEN_IDENTIFIER_REGEX = "^[A-Za-z0-9_-]+$".toRegex()

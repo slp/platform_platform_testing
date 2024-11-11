@@ -17,13 +17,13 @@
 package android.tools.io
 
 import android.tools.Timestamps
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.assertThrows
+import android.tools.testutils.newTestResultWriter
+import android.tools.testutils.outputFileName
 import android.tools.traces.TRACE_CONFIG_REQUIRE_CHANGES
 import android.tools.traces.deleteIfExists
 import android.tools.traces.io.ResultReader
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.assertThrows
-import android.tools.utils.newTestResultWriter
-import android.tools.utils.outputFileName
 import com.google.common.truth.Truth
 import java.io.FileNotFoundException
 import org.junit.Before

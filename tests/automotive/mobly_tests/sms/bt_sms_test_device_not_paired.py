@@ -26,6 +26,7 @@ class BTSMSDeviceNotPairedTest(bluetooth_base_test.BluetoothBaseTest):
     # Disable BT on devices
     self.target.mbs.btDisable()
     self.discoverer.mbs.btDisable()
+    super().enable_recording()
 
   def test_messenger_device_not_paired(self):
     """Tests launches SMS Audio app and verify <Bluetooth Disconnected> displayed."""

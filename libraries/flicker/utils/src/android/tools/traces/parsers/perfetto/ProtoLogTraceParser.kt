@@ -43,15 +43,28 @@ class ProtoLogTraceParser :
                 input.query(getSqlQueryProtoLogMessages()) { rows ->
                     this.addAll(
                         rows.map {
+                            val entryDebugString =
+                                it.entries.joinToString { entry -> "${entry.key}: ${entry.value}" }
+                            requireNotNull(it["ts"]) {
+                                "Timestamp was null. Entry: $entryDebugString"
+                            }
+                            requireNotNull(it["level"]) {
+                                "Level was null. Entry: $entryDebugString"
+                            }
+                            requireNotNull(it["tag"]) { "Tag was null. Entry: $entryDebugString" }
+                            requireNotNull(it["message"]) {
+                                "Message was null. Entry: $entryDebugString"
+                            }
+
                             ProtoLogMessage(
                                 it["ts"] as Long,
                                 LogLevel.entries.firstOrNull { entry ->
                                     it["level"] == entry.toString()
-                                }
-                                    ?: error("Failed to convert ${it["level"]} to LogLevel enum"),
+                                } ?: error("Failed to convert ${it["level"]} to LogLevel enum"),
                                 it["tag"] as String,
                                 it["message"] as String,
                                 it["stacktrace"]?.let { it as String },
+                                it["location"]?.let { it as String },
                             )
                         }
                     )
@@ -67,6 +80,6 @@ class ProtoLogTraceParser :
 
     companion object {
         private fun getSqlQueryProtoLogMessages() =
-            "SELECT ts, level, tag, message, stacktrace FROM protolog;"
+            "SELECT ts, level, tag, message, stacktrace, location FROM protolog;"
     }
 }

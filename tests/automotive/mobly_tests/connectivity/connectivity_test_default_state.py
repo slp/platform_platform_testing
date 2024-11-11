@@ -29,6 +29,10 @@ from bluetooth_test import bluetooth_base_test
 
 class BluetoothDefaultStateTest(bluetooth_base_test.BluetoothBaseTest):
 
+    def setup_test(self):
+    # The base class setup should not run, to correctly verify the default HU state
+      pass
+
     def test_bluetooth_default_state(self):
         # Confirm that the bluetooth state is ON
         asserts.assert_true(

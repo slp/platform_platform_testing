@@ -18,8 +18,8 @@ package android.tools.traces.wm
 
 import android.tools.Cache
 import android.tools.Timestamps
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.getWmTraceReaderFromAsset
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.getWmTraceReaderFromAsset
 import com.google.common.truth.Truth.assertThat
 import com.google.common.truth.Truth.assertWithMessage
 import java.lang.reflect.Modifier
@@ -35,7 +35,7 @@ import org.junit.runners.MethodSorters
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class WindowManagerTraceTest {
-    private val reader = getWmTraceReaderFromAsset("wm_trace_openchrome.pb", legacyTrace = true)
+    private val reader = getWmTraceReaderFromAsset("wm_trace_openchrome", legacyTrace = true)
     private val trace
         get() = reader.readWmTrace() ?: error("Unable to read WM trace")
 
@@ -96,7 +96,7 @@ class WindowManagerTraceTest {
      */
     @Test
     fun canAccessAllProperties() {
-        listOf("wm_trace_activity_transition.pb", "wm_trace_openchrome2.pb").forEach { traceName ->
+        listOf("wm_trace_activity_transition", "wm_trace_openchrome2").forEach { traceName ->
             val reader = getWmTraceReaderFromAsset(traceName, legacyTrace = true)
             val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
             assertWithMessage("Unable to parse dump").that(trace.entries.size).isGreaterThan(1)
@@ -130,7 +130,7 @@ class WindowManagerTraceTest {
     fun canSlice() {
         val reader =
             getWmTraceReaderFromAsset(
-                "wm_trace_openchrome2.pb",
+                "wm_trace_openchrome2",
                 from = 174686204723645,
                 to = 174686640998584,
                 legacyTrace = true
@@ -146,7 +146,7 @@ class WindowManagerTraceTest {
     fun canSliceWithWrongTimestamps() {
         val reader =
             getWmTraceReaderFromAsset(
-                "wm_trace_openchrome2.pb",
+                "wm_trace_openchrome2",
                 from = 9213763541297,
                 to = 9215895891561,
                 legacyTrace = true

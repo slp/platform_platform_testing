@@ -16,13 +16,22 @@
 
 package android.tools.traces.events
 
+interface ICujType {
+    val id: Int
+    val name: String
+}
+
+data class UnknownCuj(override val id: Int) : ICujType {
+    override val name: String = "UnknownCuj($id)"
+}
+
 /**
  * From com.android.internal.jank.InteractionJankMonitor.
  *
  * NOTE: Make sure order is the same as in {@see com.android.internal.jank.InteractionJankMonitor}.
  */
 // TODO: Can we re-use to enum generated from the proto stats/enums/jank/enums.proto?
-enum class CujType(val id: Int) {
+enum class CujType(override val id: Int) : ICujType {
     CUJ_NOTIFICATION_SHADE_EXPAND_COLLAPSE(0),
     CUJ_NOTIFICATION_SHADE_SCROLL_FLING(2),
     CUJ_NOTIFICATION_SHADE_ROW_EXPAND(3),
@@ -100,12 +109,38 @@ enum class CujType(val id: Int) {
     CUJ_SHADE_EXPAND_FROM_STATUS_BAR(79),
     CUJ_IME_INSETS_SHOW_ANIMATION(80),
     CUJ_IME_INSETS_HIDE_ANIMATION(81),
-
-    // KEEP AS LAST TYPE
-    // used to handle new types that haven't been added here yet but might be dumped by the platform
-    UNKNOWN(-1);
+    CUJ_SPLIT_SCREEN_DOUBLE_TAP_DIVIDER(82),
+    CUJ_LAUNCHER_UNFOLD_ANIM(83),
+    CUJ_PREDICTIVE_BACK_CROSS_ACTIVITY(84),
+    CUJ_PREDICTIVE_BACK_CROSS_TASK(85),
+    CUJ_PREDICTIVE_BACK_HOME(86),
+    // 87 is reserved - previously assigned to deprecated CUJ_LAUNCHER_SEARCH_QSB_OPEN.
+    CUJ_BACK_PANEL_ARROW(88),
+    CUJ_LAUNCHER_CLOSE_ALL_APPS_BACK(89),
+    CUJ_LAUNCHER_SEARCH_QSB_WEB_SEARCH(90),
+    CUJ_LAUNCHER_LAUNCH_APP_PAIR_FROM_WORKSPACE(91),
+    CUJ_LAUNCHER_LAUNCH_APP_PAIR_FROM_TASKBAR(92),
+    CUJ_LAUNCHER_SAVE_APP_PAIR(93),
+    CUJ_LAUNCHER_ALL_APPS_SEARCH_BACK(95),
+    CUJ_LAUNCHER_TASKBAR_ALL_APPS_CLOSE_BACK(96),
+    CUJ_LAUNCHER_TASKBAR_ALL_APPS_SEARCH_BACK(97),
+    CUJ_LAUNCHER_WIDGET_PICKER_CLOSE_BACK(98),
+    CUJ_LAUNCHER_WIDGET_PICKER_SEARCH_BACK(99),
+    CUJ_LAUNCHER_WIDGET_BOTTOM_SHEET_CLOSE_BACK(100),
+    CUJ_LAUNCHER_WIDGET_EDU_SHEET_CLOSE_BACK(101),
+    CUJ_LAUNCHER_PRIVATE_SPACE_LOCK(102),
+    CUJ_LAUNCHER_PRIVATE_SPACE_UNLOCK(103),
+    CUJ_DESKTOP_MODE_MAXIMIZE_WINDOW(104),
+    CUJ_FOLD_ANIM(105),
+    CUJ_DESKTOP_MODE_RESIZE_WINDOW(106),
+    CUJ_DESKTOP_MODE_ENTER_MODE(107),
+    CUJ_DESKTOP_MODE_EXIT_MODE(108),
+    CUJ_DESKTOP_MODE_MINIMIZE_WINDOW(109),
+    CUJ_DESKTOP_MODE_DRAG_WINDOW(110),
+    CUJ_DESKTOP_MODE_SNAP_RESIZE(118);
 
     companion object {
-        fun from(eventId: Int): CujType = values().firstOrNull { it.id == eventId } ?: UNKNOWN
+        fun from(eventId: Int): ICujType =
+            values().firstOrNull { it.id == eventId } ?: UnknownCuj(eventId)
     }
 }

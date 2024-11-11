@@ -23,8 +23,12 @@ import android.tools.Rotation
 import android.tools.traces.getCurrentStateDump
 import android.tools.traces.surfaceflinger.Display
 import android.tools.traces.wm.DisplayContent
+import android.tools.traces.wm.InsetsSource
 import android.util.LruCache
+import android.view.WindowInsets
 import androidx.test.platform.app.InstrumentationRegistry
+import kotlin.math.max
+import kotlin.math.min
 
 object WindowUtils {
 
@@ -32,10 +36,10 @@ object WindowUtils {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
 
     /** Helper functions to retrieve system window sizes and positions. */
-    private val context = instrumentation.context
+    private val context by lazy { instrumentation.context }
 
     private val resources
-        get() = context.getResources()
+        get() = context.resources
 
     /** Get the display bounds */
     val displayBounds: Rect
@@ -44,11 +48,16 @@ object WindowUtils {
             return currState.layerState.physicalDisplay?.layerStackSpace ?: Rect()
         }
 
+    val displayStableBounds: Rect
+        get() {
+            val currState = getCurrentStateDump(clearCacheAfterParsing = false)
+            return currState.wmState.getDefaultDisplay()?.stableBounds ?: Rect()
+        }
+
     /** Gets the current display rotation */
     val displayRotation: Rotation
         get() {
             val currState = getCurrentStateDump(clearCacheAfterParsing = false)
-
             return currState.wmState.getRotation(PlatformConsts.DEFAULT_DISPLAY)
         }
 
@@ -75,6 +84,29 @@ object WindowUtils {
                 displayBoundsCache.put(requestedRotation, retval)
                 return retval
             }
+    }
+
+    fun getInsetDisplayBounds(): Rect {
+        val currState = getCurrentStateDump(clearCacheAfterParsing = false)
+        val display = currState.wmState.getDefaultDisplay() ?: error("Missing physical display")
+
+        val insetDisplayBounds = Rect(display.displayRect)
+        display.insetsSourceProviders.forEach {
+            val insetsSource: InsetsSource = it.source ?: return@forEach
+            val insets: Rect = it.frame ?: return@forEach
+            if (!insetsSource.visible) return@forEach
+
+            when (insetsSource.type) {
+                WindowInsets.Type.statusBars() -> {
+                    insetDisplayBounds.top = max(insetDisplayBounds.top, insets.bottom)
+                }
+                WindowInsets.Type.navigationBars() -> {
+                    insetDisplayBounds.bottom = min(insetDisplayBounds.bottom, insets.top)
+                }
+            }
+        }
+
+        return insetDisplayBounds
     }
 
     /** Gets the status bar height with a specific display cutout. */

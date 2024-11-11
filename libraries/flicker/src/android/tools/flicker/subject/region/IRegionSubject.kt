@@ -133,6 +133,14 @@ interface IRegionSubject {
     fun notBiggerThan(other: Region): IRegionSubject
 
     /**
+     * Asserts that region is not smaller than [other], even if the regions don't overlap.
+     *
+     * @param other Area to compare to
+     * @throws AssertionError
+     */
+    fun notSmallerThan(other: Region): IRegionSubject
+
+    /**
      * Asserts that region is positioned to the right and bottom from [other], but the regions can
      * overlap and region can be smaller than [other]
      *

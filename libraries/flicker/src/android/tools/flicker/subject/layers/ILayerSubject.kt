@@ -100,6 +100,13 @@ interface ILayerSubject<LayerSubjectType, RegionSubjectType> {
     fun hasRoundedCorners(componentMatcher: IComponentMatcher): LayerSubjectType
 
     /**
+     * Asserts that all [Layer]s matching [componentMatcher] have no rounded corners.
+     *
+     * @param componentMatcher Components to search
+     */
+    fun hasNoRoundedCorners(componentMatcher: IComponentMatcher): LayerSubjectType
+
+    /**
      * Obtains a [LayerSubject] for the first occurrence of a [Layer] with [Layer.name] containing
      * [name] in [frameNumber].
      *

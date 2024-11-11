@@ -27,6 +27,8 @@ import android.tools.traces.surfaceflinger.Transform.Companion.isFlagSet
 import android.tools.traces.wm.WindowManagerState
 import android.tools.traces.wm.WindowState
 
+import com.android.wm.shell.Flags
+
 object ConditionsFactory {
 
     /** Check if this is a phone device instead of a folded foldable. */
@@ -45,7 +47,7 @@ object ConditionsFactory {
 
     fun getNavBarComponent(wmState: WindowManagerState): IComponentMatcher {
         var component: IComponentMatcher = ComponentNameMatcher.NAV_BAR
-        if (wmState.isTablet || !isPhoneNavBar()) {
+        if (wmState.isTablet || !isPhoneNavBar() || Flags.enableTaskbarOnPhones()) {
             component = component.or(ComponentNameMatcher.TASK_BAR)
         }
         return component

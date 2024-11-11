@@ -18,11 +18,11 @@ package android.tools.flicker.assertions
 
 import android.tools.Tag
 import android.tools.flicker.subject.layers.LayersTraceSubject
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.assertThrows
+import android.tools.testutils.newTestResultWriter
 import android.tools.traces.TRACE_CONFIG_REQUIRE_CHANGES
 import android.tools.traces.io.ResultReader
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.assertThrows
-import android.tools.utils.newTestResultWriter
 import java.io.FileNotFoundException
 import org.junit.ClassRule
 import org.junit.Test

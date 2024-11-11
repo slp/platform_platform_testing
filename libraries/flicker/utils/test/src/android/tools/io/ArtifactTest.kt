@@ -16,7 +16,7 @@
 
 package android.tools.io
 
-import android.tools.utils.createDefaultArtifactBuilder
+import android.tools.testutils.createDefaultArtifactBuilder
 import com.google.common.truth.Truth
 import kotlin.io.path.createTempDirectory
 import org.junit.Test

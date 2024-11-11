@@ -344,6 +344,15 @@ constructor(
                 .add(ConditionsFactory.isLayerVisible(componentMatcher))
 
         /**
+         * Wait until least one [LayerState] matching [componentMatcher] is visible
+         *
+         * @param componentMatcher Components to search
+         */
+        fun withLayerVisible(
+            componentMatcher: IComponentMatcher
+        ) = add(ConditionsFactory.isLayerVisible(componentMatcher))
+
+        /**
          * Wait until least one layer matching [componentMatcher] has [expectedRegion]
          *
          * @param componentMatcher Components to search

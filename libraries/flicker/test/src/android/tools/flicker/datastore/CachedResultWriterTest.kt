@@ -19,9 +19,9 @@ package android.tools.flicker.datastore
 import android.annotation.SuppressLint
 import android.tools.CleanFlickerEnvironmentRuleWithDataStore
 import android.tools.newTestCachedResultWriter
-import android.tools.utils.TEST_SCENARIO
-import android.tools.utils.assertExceptionMessage
-import android.tools.utils.assertThrows
+import android.tools.testutils.TEST_SCENARIO
+import android.tools.testutils.assertExceptionMessage
+import android.tools.testutils.assertThrows
 import com.google.common.truth.Truth
 import org.junit.Rule
 import org.junit.Test

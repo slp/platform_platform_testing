@@ -21,6 +21,8 @@ package android.tools.traces
 import android.app.UiAutomation
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
+import android.os.Process
+import android.os.SystemClock
 import android.tools.MILLISECOND_AS_NANOSECONDS
 import android.tools.io.TraceType
 import android.tools.traces.monitors.PerfettoTraceMonitor
@@ -29,10 +31,13 @@ import android.tools.traces.surfaceflinger.LayerTraceEntry
 import android.tools.traces.wm.WindowManagerState
 import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
+import com.google.protobuf.InvalidProtocolBufferException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.Optional
 import java.util.TimeZone
+import perfetto.protos.PerfettoConfig.TracingServiceState
 
 fun formatRealTimestamp(timestampNs: Long): String {
     val timestampMs = timestampNs / MILLISECOND_AS_NANOSECONDS
@@ -51,6 +56,20 @@ fun executeShellCommand(cmd: String): ByteArray {
     val fileDescriptor = uiAutomation.executeShellCommand(cmd)
     ParcelFileDescriptor.AutoCloseInputStream(fileDescriptor).use { inputStream ->
         return inputStream.readBytes()
+    }
+}
+
+fun executeShellCommand(cmd: String, stdin: ByteArray): ByteArray {
+    Log.d(LOG_TAG, "Executing shell command $cmd")
+    val uiAutomation: UiAutomation = InstrumentationRegistry.getInstrumentation().uiAutomation
+    val fileDescriptors = uiAutomation.executeShellCommandRw(cmd)
+    val stdoutFileDescriptor = fileDescriptors[0]
+    val stdinFileDescriptor = fileDescriptors[1]
+
+    ParcelFileDescriptor.AutoCloseOutputStream(stdinFileDescriptor).use { it.write(stdin) }
+
+    ParcelFileDescriptor.AutoCloseInputStream(stdoutFileDescriptor).use {
+        return it.readBytes()
     }
 }
 
@@ -101,7 +120,11 @@ fun getCurrentState(
     Log.d(LOG_TAG, "Requesting new device state dump")
     val wmTraceData =
         if (dumpTypes.contains(TraceType.WM_DUMP)) {
-            getCurrentWindowManagerState()
+            if (android.tracing.Flags.perfettoWmDump()) {
+                PerfettoTraceMonitor.newBuilder().enableWindowManagerDump().build().withTracing {}
+            } else {
+                getCurrentWindowManagerState()
+            }
         } else {
             ByteArray(0)
         }
@@ -129,25 +152,75 @@ fun getCurrentState(
 @JvmOverloads
 fun getCurrentStateDumpNullable(
     vararg dumpTypes: TraceType = arrayOf(TraceType.SF_DUMP, TraceType.WM_DUMP),
-    clearCacheAfterParsing: Boolean = true
+    clearCacheAfterParsing: Boolean = true,
 ): NullableDeviceStateDump {
     val currentStateDump = getCurrentState(*dumpTypes)
     return DeviceDumpParser.fromNullableDump(
         currentStateDump.first,
         currentStateDump.second,
-        clearCacheAfterParsing = clearCacheAfterParsing
+        clearCacheAfterParsing = clearCacheAfterParsing,
     )
 }
 
 @JvmOverloads
 fun getCurrentStateDump(
     vararg dumpTypes: TraceType = arrayOf(TraceType.SF_DUMP, TraceType.WM_DUMP),
-    clearCacheAfterParsing: Boolean = true
+    clearCacheAfterParsing: Boolean = true,
 ): DeviceStateDump {
     val currentStateDump = getCurrentState(*dumpTypes)
     return DeviceDumpParser.fromDump(
         currentStateDump.first,
         currentStateDump.second,
-        clearCacheAfterParsing = clearCacheAfterParsing
+        clearCacheAfterParsing = clearCacheAfterParsing,
     )
+}
+
+@JvmOverloads
+fun busyWaitForDataSourceRegistration(
+    dataSourceName: String,
+    busyWaitIntervalMs: Long = 100,
+    timeoutMs: Long = 10000,
+) {
+    var elapsedMs = 0L
+
+    while (!isDataSourceAvailable(dataSourceName)) {
+        SystemClock.sleep(busyWaitIntervalMs)
+        elapsedMs += busyWaitIntervalMs
+        if (elapsedMs >= timeoutMs) {
+            throw java.lang.RuntimeException(
+                "Data source didn't become available. Waited for: $timeoutMs ms"
+            )
+        }
+    }
+}
+
+fun isDataSourceAvailable(dataSourceName: String): Boolean {
+    val proto = executeShellCommand("perfetto --query-raw")
+
+    try {
+        val state = TracingServiceState.parseFrom(proto)
+
+        var producerId = Optional.empty<Int>()
+
+        for (producer in state.producersList) {
+            if (producer.pid == Process.myPid()) {
+                producerId = Optional.of(producer.id)
+                break
+            }
+        }
+
+        if (!producerId.isPresent) {
+            return false
+        }
+
+        for (ds in state.dataSourcesList) {
+            if (ds.dsDescriptor.name.equals(dataSourceName) && ds.producerId == producerId.get()) {
+                return true
+            }
+        }
+    } catch (e: InvalidProtocolBufferException) {
+        throw RuntimeException(e)
+    }
+
+    return false
 }

@@ -19,10 +19,10 @@ package android.tools.flicker.datastore
 import android.annotation.SuppressLint
 import android.tools.CleanFlickerEnvironmentRuleWithDataStore
 import android.tools.io.TraceType
+import android.tools.testutils.TEST_SCENARIO
+import android.tools.testutils.TestTraces
+import android.tools.testutils.newTestResultWriter
 import android.tools.traces.TRACE_CONFIG_REQUIRE_CHANGES
-import android.tools.utils.TEST_SCENARIO
-import android.tools.utils.TestTraces
-import android.tools.utils.newTestResultWriter
 import com.google.common.truth.Truth
 import org.junit.Before
 import org.junit.ClassRule

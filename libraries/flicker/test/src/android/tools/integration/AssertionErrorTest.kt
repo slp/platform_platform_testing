@@ -16,13 +16,13 @@
 
 package android.tools.integration
 
-import android.tools.flicker.datastore.CachedResultReader
 import android.tools.flicker.legacy.LegacyFlickerTest
 import android.tools.flicker.subject.exceptions.SimpleFlickerAssertionError
 import android.tools.io.RunStatus
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.TEST_SCENARIO
 import android.tools.traces.TRACE_CONFIG_REQUIRE_CHANGES
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.TEST_SCENARIO
+import androidx.test.filters.FlakyTest
 import com.google.common.truth.Truth
 import java.io.File
 import org.junit.Before
@@ -35,6 +35,7 @@ import org.junit.Test
  *
  * To run this test: `atest FlickerLibTest:AssertionErrorTest`
  */
+@FlakyTest(bugId = 362942901)
 class AssertionErrorTest {
     private var assertionExecuted = false
     private val testParam = LegacyFlickerTest().also { it.initialize(TEST_SCENARIO.testClass) }
@@ -55,7 +56,7 @@ class AssertionErrorTest {
         val result = runCatching {
             testParam.assertLayers {
                 assertionExecuted = true
-                throw SimpleFlickerAssertionError(Utils.FAILURE)
+                throw SimpleFlickerAssertionError(TestUtils.FAILURE)
             }
         }
 
@@ -64,7 +65,7 @@ class AssertionErrorTest {
         Truth.assertWithMessage("Expected exception")
             .that(result.exceptionOrNull())
             .hasMessageThat()
-            .contains(Utils.FAILURE)
+            .contains(TestUtils.FAILURE)
         val reader =
             android.tools.flicker.datastore.CachedResultReader(
                 TEST_SCENARIO,
@@ -88,9 +89,10 @@ class AssertionErrorTest {
 
     companion object {
         private var transitionExecuted = false
+
         @BeforeClass
         @JvmStatic
-        fun runTransition() = Utils.runTransition { transitionExecuted = true }
+        fun runTransition() = TestUtils.runTransition { transitionExecuted = true }
 
         @ClassRule @JvmField val ENV_CLEANUP = CleanFlickerEnvironmentRule()
     }

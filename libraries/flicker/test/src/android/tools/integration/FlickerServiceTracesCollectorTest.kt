@@ -22,12 +22,12 @@ import android.tools.flicker.FlickerServiceTracesCollector
 import android.tools.flicker.isShellTransitionsEnabled
 import android.tools.flicker.rules.ArtifactSaverRule
 import android.tools.io.TraceType
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.TEST_SCENARIO
+import android.tools.testutils.assertArchiveContainsFiles
+import android.tools.testutils.getLauncherPackageName
+import android.tools.testutils.getSystemUiUidName
 import android.tools.traces.parsers.WindowManagerStateHelper
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.TEST_SCENARIO
-import android.tools.utils.assertArchiveContainsFiles
-import android.tools.utils.getLauncherPackageName
-import android.tools.utils.getSystemUiUidName
 import androidx.test.platform.app.InstrumentationRegistry
 import com.android.systemui.Flags.enableViewCaptureTracing
 import com.google.common.truth.Truth
@@ -115,70 +115,67 @@ class FlickerServiceTracesCollectorTest {
 
     companion object {
         val EXPECTED_TRACES_LAUNCHER_ONLY =
-            if (android.tracing.Flags.perfettoTransitionTracing()) {
-                listOf(
-                    TraceType.WM.fileName,
-                    TraceType.PROTOLOG.fileName,
+            mutableListOf(
                     TraceType.EVENT_LOG.fileName,
                     TraceType.PERFETTO.fileName,
-                    "${getLauncherPackageName()}_0.vc__view_capture_trace.winscope",
                 )
-            } else {
-                listOf(
-                    TraceType.WM.fileName,
-                    TraceType.PROTOLOG.fileName,
-                    TraceType.LEGACY_WM_TRANSITION.fileName,
-                    TraceType.LEGACY_SHELL_TRANSITION.fileName,
-                    TraceType.EVENT_LOG.fileName,
-                    TraceType.PERFETTO.fileName,
-                    "${getLauncherPackageName()}_0.vc__view_capture_trace.winscope",
-                )
-            }
+                .also {
+                    if (!android.tracing.Flags.perfettoProtologTracing()) {
+                        it.add(TraceType.PROTOLOG.fileName)
+                    }
+
+                    if (!android.tracing.Flags.perfettoTransitionTracing()) {
+                        it.add(TraceType.LEGACY_WM_TRANSITION.fileName)
+                        it.add(TraceType.LEGACY_SHELL_TRANSITION.fileName)
+                    }
+
+                    if (!android.tracing.Flags.perfettoViewCaptureTracing()) {
+                        it.add("${getLauncherPackageName()}_0.vc__view_capture_trace.winscope")
+                    }
+
+                    if (!android.tracing.Flags.perfettoWmTracing()) {
+                        it.add(TraceType.WM.fileName)
+                    }
+                }
+                .toList()
 
         val EXPECTED_TRACES_LAUNCHER_FIRST =
-            if (android.tracing.Flags.perfettoTransitionTracing()) {
-                listOf(
+            mutableListOf(
                     TraceType.WM.fileName,
                     TraceType.PROTOLOG.fileName,
                     TraceType.EVENT_LOG.fileName,
                     TraceType.PERFETTO.fileName,
-                    "${getLauncherPackageName()}_0.vc__view_capture_trace.winscope",
-                    "${getSystemUiUidName()}_1.vc__view_capture_trace.winscope",
                 )
-            } else {
-                listOf(
-                    TraceType.WM.fileName,
-                    TraceType.PROTOLOG.fileName,
-                    TraceType.LEGACY_WM_TRANSITION.fileName,
-                    TraceType.LEGACY_SHELL_TRANSITION.fileName,
-                    TraceType.EVENT_LOG.fileName,
-                    TraceType.PERFETTO.fileName,
-                    "${getLauncherPackageName()}_0.vc__view_capture_trace.winscope",
-                    "${getSystemUiUidName()}_1.vc__view_capture_trace.winscope",
-                )
-            }
+                .also {
+                    if (!android.tracing.Flags.perfettoTransitionTracing()) {
+                        it.add(TraceType.LEGACY_WM_TRANSITION.fileName)
+                        it.add(TraceType.LEGACY_SHELL_TRANSITION.fileName)
+                    }
+
+                    if (!android.tracing.Flags.perfettoViewCaptureTracing()) {
+                        it.add("${getLauncherPackageName()}_0.vc__view_capture_trace.winscope")
+                        it.add("${getSystemUiUidName()}_1.vc__view_capture_trace.winscope")
+                    }
+                }
+                .toList()
 
         val EXPECTED_TRACES_SYSUI_FIRST =
-            if (android.tracing.Flags.perfettoTransitionTracing()) {
-                listOf(
+            mutableListOf(
                     TraceType.WM.fileName,
                     TraceType.PROTOLOG.fileName,
                     TraceType.EVENT_LOG.fileName,
                     TraceType.PERFETTO.fileName,
-                    "${getSystemUiUidName()}_0.vc__view_capture_trace.winscope",
-                    "${getLauncherPackageName()}_1.vc__view_capture_trace.winscope",
                 )
-            } else {
-                listOf(
-                    TraceType.WM.fileName,
-                    TraceType.PROTOLOG.fileName,
-                    TraceType.LEGACY_WM_TRANSITION.fileName,
-                    TraceType.LEGACY_SHELL_TRANSITION.fileName,
-                    TraceType.EVENT_LOG.fileName,
-                    TraceType.PERFETTO.fileName,
-                    "${getSystemUiUidName()}_0.vc__view_capture_trace.winscope",
-                    "${getLauncherPackageName()}_1.vc__view_capture_trace.winscope",
-                )
-            }
+                .also {
+                    if (!android.tracing.Flags.perfettoTransitionTracing()) {
+                        it.add(TraceType.LEGACY_WM_TRANSITION.fileName)
+                        it.add(TraceType.LEGACY_SHELL_TRANSITION.fileName)
+                    }
+
+                    if (!android.tracing.Flags.perfettoViewCaptureTracing()) {
+                        it.add("${getSystemUiUidName()}_0.vc__view_capture_trace.winscope")
+                        it.add("${getLauncherPackageName()}_1.vc__view_capture_trace.winscope")
+                    }
+                }
     }
 }

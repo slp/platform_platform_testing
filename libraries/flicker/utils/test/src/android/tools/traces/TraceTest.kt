@@ -20,7 +20,7 @@ import android.tools.Timestamp
 import android.tools.Timestamps
 import android.tools.Trace
 import android.tools.TraceEntry
-import android.tools.utils.assertThrows
+import android.tools.testutils.assertThrows
 import com.google.common.truth.Truth
 import org.junit.Test
 

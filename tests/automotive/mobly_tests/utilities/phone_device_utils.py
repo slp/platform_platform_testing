@@ -32,7 +32,14 @@ class PhoneDeviceUtils:
         """Assumes the phone is on its home screen.
         Opens the phone app, then dial pad, enters the given number, and starts a call"""
         self.phone_device.mbs.pressPhoneIcon()
-        self.phone_device.mbs.pressDialpadIcon()
+        logging.info("Close the video call popup on Phone")
+        self.phone_device.mbs.clickUIElementWithText(constants.NOT_NOW_TEXT)
+        isDialPadOpen = self.phone_device.mbs.isDialPadOpen()
+        logging.info("Check if the dial pad is already open: %s", isDialPadOpen)
+        if not isDialPadOpen :
+            logging.info("Opening the dial pad now")
+            self.phone_device.mbs.pressDialpadIcon()
+        logging.info("Dial pad should be open now %s :", self.phone_device.mbs.isDialPadOpen())
         logging.info("Calling %s from phone device" % number)
         self.phone_device.mbs.enterNumberOnDialpad(number)
         self.phone_device.mbs.pressCallButton()

@@ -54,4 +54,10 @@ public class HomeTest {
     public void testTempetraureWidget() {
         assertTrue("Driver temperature is not displayed", mHomeHelper.get().hasTemperatureWidget());
     }
+
+    @Test
+    public void testHvacPanel() {
+        mHomeHelper.get().openHVAC();
+        assertTrue("HVAC panel is not opened", mHomeHelper.get().isHVACOpen());
+    }
 }

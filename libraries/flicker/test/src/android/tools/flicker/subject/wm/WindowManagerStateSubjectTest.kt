@@ -18,17 +18,17 @@ package android.tools.flicker.subject.wm
 
 import android.graphics.Region
 import android.tools.Cache
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.TestComponents
+import android.tools.testutils.assertFail
+import android.tools.testutils.assertThatErrorContainsDebugInfo
+import android.tools.testutils.assertThrows
+import android.tools.testutils.getWmDumpReaderFromAsset
+import android.tools.testutils.getWmTraceReaderFromAsset
+import android.tools.testutils.newEmptyRootContainer
 import android.tools.traces.component.ComponentNameMatcher
 import android.tools.traces.wm.KeyguardControllerState
 import android.tools.traces.wm.WindowManagerState
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.TestComponents
-import android.tools.utils.assertFail
-import android.tools.utils.assertThatErrorContainsDebugInfo
-import android.tools.utils.assertThrows
-import android.tools.utils.getWmDumpReaderFromAsset
-import android.tools.utils.getWmTraceReaderFromAsset
-import android.tools.utils.newEmptyRootContainer
 import com.google.common.truth.Truth
 import org.junit.Before
 import org.junit.ClassRule
@@ -42,7 +42,7 @@ import org.junit.runners.MethodSorters
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class WindowManagerStateSubjectTest {
-    private val reader = getWmTraceReaderFromAsset("wm_trace_openchrome.pb", legacyTrace = true)
+    private val reader = getWmTraceReaderFromAsset("wm_trace_openchrome", legacyTrace = true)
     private val trace
         get() = reader.readWmTrace() ?: error("Unable to read WM trace")
 
@@ -235,7 +235,7 @@ class WindowManagerStateSubjectTest {
     @Test
     fun canDetectAppWindowVisibilitySubject() {
         val reader =
-            getWmTraceReaderFromAsset("wm_trace_launcher_visible_background.pb", legacyTrace = true)
+            getWmTraceReaderFromAsset("wm_trace_launcher_visible_background", legacyTrace = true)
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val firstEntry = WindowManagerTraceSubject(trace, reader).first()
         val appWindowNames = firstEntry.wmState.appWindows.map { it.name }
@@ -252,7 +252,7 @@ class WindowManagerStateSubjectTest {
     @Test
     fun canDetectLauncherVisibility() {
         val reader =
-            getWmTraceReaderFromAsset("wm_trace_launcher_visible_background.pb", legacyTrace = true)
+            getWmTraceReaderFromAsset("wm_trace_launcher_visible_background", legacyTrace = true)
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val subject = WindowManagerTraceSubject(trace, reader)
         val firstTrace = subject.first()
@@ -311,7 +311,7 @@ class WindowManagerStateSubjectTest {
 
     @Test
     fun canDetectActivityVisibility() {
-        val reader = getWmTraceReaderFromAsset("wm_trace_split_screen.pb", legacyTrace = true)
+        val reader = getWmTraceReaderFromAsset("wm_trace_split_screen", legacyTrace = true)
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val lastEntry = WindowManagerTraceSubject(trace, reader).last()
         lastEntry.isAppWindowVisible(TestComponents.SHELL_SPLIT_SCREEN_PRIMARY)
@@ -352,7 +352,7 @@ class WindowManagerStateSubjectTest {
 
     @Test
     fun canDetectNoVisibleAppWindows() {
-        val reader = getWmTraceReaderFromAsset("wm_trace_unlock.pb", legacyTrace = true)
+        val reader = getWmTraceReaderFromAsset("wm_trace_unlock", legacyTrace = true)
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val firstEntry = WindowManagerTraceSubject(trace, reader).first()
         firstEntry.hasNoVisibleAppWindow()
@@ -360,7 +360,7 @@ class WindowManagerStateSubjectTest {
 
     @Test
     fun canDetectHasVisibleAppWindows() {
-        val reader = getWmTraceReaderFromAsset("wm_trace_unlock.pb", legacyTrace = true)
+        val reader = getWmTraceReaderFromAsset("wm_trace_unlock", legacyTrace = true)
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val lastEntry = WindowManagerTraceSubject(trace, reader).last()
         assertFail("Visible app windows") { lastEntry.hasNoVisibleAppWindow() }
@@ -369,7 +369,7 @@ class WindowManagerStateSubjectTest {
     @Test
     fun canDetectTaskFragment() {
         // Verify if parser can read a dump file with 2 TaskFragments showed side-by-side.
-        val reader = getWmDumpReaderFromAsset("wm_trace_taskfragment.winscope")
+        val reader = getWmDumpReaderFromAsset("wm_trace_taskfragment")
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         // There's only one entry in dump file.
         val entry = WindowManagerTraceSubject(trace, reader).first()
@@ -379,7 +379,7 @@ class WindowManagerStateSubjectTest {
 
     @Test
     fun canDetectIsHomeActivityVisibleTablet() {
-        val reader = getWmDumpReaderFromAsset("tablet/wm_dump_home_screen.winscope")
+        val reader = getWmDumpReaderFromAsset("tablet/wm_dump_home_screen")
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         // There's only one entry in dump file.
         val entry = WindowManagerTraceSubject(trace, reader).first()
@@ -391,7 +391,7 @@ class WindowManagerStateSubjectTest {
 
     @Test
     fun canDetectTaskBarIsVisible() {
-        val reader = getWmDumpReaderFromAsset("tablet/wm_dump_home_screen.winscope")
+        val reader = getWmDumpReaderFromAsset("tablet/wm_dump_home_screen")
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         // There's only one entry in dump file.
         val entry = WindowManagerTraceSubject(trace, reader).first()
@@ -401,8 +401,7 @@ class WindowManagerStateSubjectTest {
 
     @Test
     fun canDetectWindowVisibilityWhen2WindowsHaveSameName() {
-        val reader =
-            getWmTraceReaderFromAsset("wm_trace_2activities_same_name.winscope", legacyTrace = true)
+        val reader = getWmTraceReaderFromAsset("wm_trace_2activities_same_name", legacyTrace = true)
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val componentMatcher =
             ComponentNameMatcher(

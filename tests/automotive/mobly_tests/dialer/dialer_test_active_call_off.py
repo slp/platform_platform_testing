@@ -37,6 +37,7 @@ class DialerActiveCallOff(bluetooth_sms_base_test.BluetoothSMSBaseTest):
     def setup_test(self):
         # Pair the devices
         self.bt_utils.pair_primary_to_secondary()
+        super().enable_recording()
 
     def test_active_call_off(self):
 
@@ -55,7 +56,7 @@ class DialerActiveCallOff(bluetooth_sms_base_test.BluetoothSMSBaseTest):
 
         # Receive and answer the call
         self.call_utils.wait_with_log(5)
-        self.discoverer.mbs.clickUIElementWithText(constants.ACCEPT_CALL_TEXT)
+        self.discoverer.mbs.clickUIElementWithText(constants.ANSWER_CALL_TEXT)
         self.call_utils.wait_with_log(2)
         # Verify that the in-progress call is displayed in full-screen view.
         asserts.assert_false(

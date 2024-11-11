@@ -24,9 +24,9 @@ import android.tools.device.apphelpers.BrowserAppHelper
 import android.tools.device.apphelpers.CameraAppHelper
 import android.tools.flicker.Utils
 import android.tools.flicker.config.gesturenav.Quickswitch
+import android.tools.testutils.CleanFlickerEnvironmentRule
 import android.tools.traces.getDefaultFlickerOutputDir
 import android.tools.traces.parsers.WindowManagerStateHelper
-import android.tools.utils.CleanFlickerEnvironmentRule
 import android.view.Display
 import androidx.test.platform.app.InstrumentationRegistry
 import com.android.launcher3.tapl.LauncherInstrumentation

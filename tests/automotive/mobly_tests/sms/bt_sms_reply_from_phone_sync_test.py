@@ -61,6 +61,7 @@ class SMSReplyFromPhoneSync(bluetooth_sms_base_test.BluetoothSMSBaseTest):
         self.call_utils.open_sms_app()
         self.call_utils.verify_sms_app_unread_message(False)
         self.call_utils.verify_sms_preview_text(True, constants.REPLY_SMS)
+        super().enable_recording()
 
     def teardown_test(self):
          # Go to home screen

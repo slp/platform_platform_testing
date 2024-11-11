@@ -77,11 +77,13 @@ class BTUtils:
 
     def pair_primary_to_secondary(self):
         """Enable discovery on the target so the discoverer can find it."""
+        self.check_device_pairing_state()
         # Turn bluetooth on in both machines
         logging.info('Enabling Bluetooth logs')
         self.enable_bt_logs()
         logging.info('Enabling Bluetooth on both devices')
         self.discoverer.mbs.btEnable()
+        self.wakeup_target_device_screen()
         self.target.mbs.btEnable()
         self.disable_android_auto_popup_on_hu()
         logging.info('Setting devices to be discoverable')
@@ -103,6 +105,7 @@ class BTUtils:
             target_address)
         time.sleep(constants.DEFAULT_WAIT_TIME_FIVE_SECS)
         self.handle_assistant_pop_up()
+        logging.info("BT pairing completed.")
 
     def unpair(self):
         # unpair Discoverer device from Target
@@ -154,3 +157,18 @@ class BTUtils:
         self.media_utils.execute_shell_on_hu_device(constants.BLUETOOTH_TAG)
         self.media_utils.execute_shell_on_hu_device(constants.BLUETOOTH_NOOPERABLE)
         self.media_utils.execute_shell_on_hu_device(constants.BLUETOOTH_BTSNOOP_DEFAULT_MODE)
+
+    def check_device_pairing_state(self):
+        logging.info('Checking the bt pairing status')
+        if  self.discoverer.mbs.btGetPairedDevices() :
+            logging.info('Device is still paired, unpair the device')
+            self.unpair()
+
+    def is_target_device_screen_on(self):
+        logging.info('Checking the target screen state')
+        return 'Awake' in self.media_utils.execute_shell_on_device(constants.DUMPSYS_POWER).decode('utf8')
+
+    def wakeup_target_device_screen(self):
+        if not self.is_target_device_screen_on():
+          logging.info('Target screen is off, waking it up')
+          self.media_utils.execute_shell_on_device(constants.KEYCODE_WAKEUP)

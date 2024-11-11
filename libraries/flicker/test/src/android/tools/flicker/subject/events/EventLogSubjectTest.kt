@@ -18,11 +18,11 @@ package android.tools.flicker.subject.events
 
 import android.tools.Timestamps
 import android.tools.flicker.assertions.SubjectsParser
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.ParsedTracesReader
+import android.tools.testutils.TestArtifact
 import android.tools.traces.events.EventLog
 import android.tools.traces.events.FocusEvent
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.ParsedTracesReader
-import android.tools.utils.TestArtifact
 import org.junit.ClassRule
 import org.junit.Test
 

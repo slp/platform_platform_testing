@@ -49,8 +49,7 @@ class UxRestrictionReceiveAnswerDeclineCallTest(bluetooth_sms_base_test.Bluetoot
     self.common_utils.click_on_ui_element_with_text('Allow')
 
   def setup_test(self):
-
-    #set driving mode
+    # set driving mode
     self.call_utils.enable_driving_mode()
 
   def test_answer_incoming_call(self):

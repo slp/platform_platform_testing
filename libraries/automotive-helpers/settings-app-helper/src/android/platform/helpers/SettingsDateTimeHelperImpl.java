@@ -19,7 +19,8 @@ package android.platform.helpers;
 import static junit.framework.Assert.assertTrue;
 
 import android.app.Instrumentation;
-import android.content.ContentResolver;
+import android.app.time.Capabilities;
+import android.app.time.TimeManager;
 import android.platform.helpers.ScrollUtility.ScrollActions;
 import android.platform.helpers.ScrollUtility.ScrollDirection;
 import android.text.format.DateFormat;
@@ -30,6 +31,8 @@ import androidx.test.uiautomator.UiObject;
 import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.UiScrollable;
 import androidx.test.uiautomator.UiSelector;
+
+import com.android.car.settings.Flags;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -115,9 +118,7 @@ public class SettingsDateTimeHelperImpl extends AbstractStandardAppHelper
         assertTrue("set date menu is not clickable", setDateMenu.isEnabled()); // from UI
         getSpectatioUiUtil().clickAndWait(setDateMenu);
         getSpectatioUiUtil().wait1Second();
-        assertTrue(
-                "automatic date & time is not switched off",
-                !isAutomaticOn("auto_time")); // from API
+        assertTrue("automatic date & time is not switched off", !isAutomaticOn()); // from API
         int year = date.getYear();
         Month month = date.getMonth();
         int day = date.getDayOfMonth();
@@ -205,9 +206,7 @@ public class SettingsDateTimeHelperImpl extends AbstractStandardAppHelper
         UiObject2 setTimeMenu = getSetTimeMenu();
         assertTrue("set time menu is not clickable", setTimeMenu.isEnabled()); // from UI
         getSpectatioUiUtil().clickAndWait(setTimeMenu);
-        assertTrue(
-                "automatic date & time is not switched off",
-                !isAutomaticOn("auto_time")); // from API
+        assertTrue("automatic date & time is not switched off", !isAutomaticOn()); // from API
         String minute_string = "" + minute;
         String am_pm = "";
         am_pm = am ? "AM" : "PM";
@@ -244,9 +243,7 @@ public class SettingsDateTimeHelperImpl extends AbstractStandardAppHelper
         UiObject2 setTimeMenu = getSetTimeMenu();
         assertTrue("set time menu is not clickable", setTimeMenu.isEnabled()); // from UI
         getSpectatioUiUtil().clickAndWait(setTimeMenu);
-        assertTrue(
-                "automatic date & time is not switched off",
-                !isAutomaticOn("auto_time")); // from API
+        assertTrue("automatic date & time is not switched off", !isAutomaticOn()); // from API
         String minute_string = "" + minute;
         if (minute < 10) {
             minute_string = "0" + minute;
@@ -413,22 +410,24 @@ public class SettingsDateTimeHelperImpl extends AbstractStandardAppHelper
     /** {@inheritDoc} */
     @Override
     public void setTimeZone(String timezone) {
-        UiObject2 autoTimeZoneSwitchWidget = getAutoTimeZoneSwitchWidget();
         UiObject2 autoTimeZoneMenu =
                 getMenu(
                         getUiElementFromConfig(
-                                AutomotiveConfigConstants
-                                        .DATE_TIME_SETTINGS_SET_TIME_ZONE_AUTOMATICALLY));
-        if (getAutoTimeZoneSwitchWidget().isChecked()) {
+                                Flags.updateDateAndTimePage()
+                                        ? AutomotiveConfigConstants
+                                                .DATE_TIME_SETTINGS_SET_TIME_AUTOMATICALLY
+                                        : AutomotiveConfigConstants
+                                                .DATE_TIME_SETTINGS_SET_TIME_ZONE_AUTOMATICALLY));
+        if (Flags.updateDateAndTimePage()
+                ? getAutoDateTimeSwitchWidget().isChecked()
+                : getAutoTimeZoneSwitchWidget().isChecked()) {
             getSpectatioUiUtil().clickAndWait(autoTimeZoneMenu);
         }
         UiObject2 selectTimeZoneMenu = getSelectTimeZoneMenu();
         assertTrue(
                 "select time zone menu is not clickable",
                 selectTimeZoneMenu.isEnabled()); // from UI
-        assertTrue(
-                "automatic time zone is not switched off",
-                !isAutomaticOn("auto_time_zone")); // from API
+        assertTrue("automatic time zone is not switched off", !isAutomaticOn()); // from API
         getSpectatioUiUtil().clickAndWait(selectTimeZoneMenu);
         BySelector selector = By.clickable(true).hasDescendant(By.text(timezone));
         ScrollActions scrollAction =
@@ -557,7 +556,11 @@ public class SettingsDateTimeHelperImpl extends AbstractStandardAppHelper
     private UiObject2 getAutoTimeZoneSwitchWidget() {
         return getSwitchWidget(
                 getUiElementFromConfig(
-                        AutomotiveConfigConstants.DATE_TIME_SETTINGS_SET_TIME_ZONE_AUTOMATICALLY));
+                        Flags.updateDateAndTimePage()
+                                ? AutomotiveConfigConstants
+                                        .DATE_TIME_SETTINGS_SET_TIME_AUTOMATICALLY
+                                : AutomotiveConfigConstants
+                                        .DATE_TIME_SETTINGS_SET_TIME_ZONE_AUTOMATICALLY));
     }
 
     private UiObject2 getUseTwentyFourHourFormatSwitchWidget() {
@@ -586,15 +589,32 @@ public class SettingsDateTimeHelperImpl extends AbstractStandardAppHelper
         return obj.findObject(mSummarySelector).getText();
     }
 
-    private boolean isAutomaticOn(String name) {
-        ContentResolver cr = mInstrumentation.getContext().getContentResolver();
-        int status = 0;
+    private boolean isAutomaticOn() {
+        TimeManager timeManager = mInstrumentation.getContext().getSystemService(TimeManager.class);
+        boolean status;
         try {
-            status = android.provider.Settings.Global.getInt(cr, name);
+            status = timeManager
+                            .getTimeCapabilitiesAndConfig()
+                            .getCapabilities()
+                            .getConfigureAutoDetectionEnabledCapability()
+                                    == Capabilities.CAPABILITY_POSSESSED
+                    && timeManager
+                            .getTimeCapabilitiesAndConfig()
+                            .getConfiguration()
+                            .isAutoDetectionEnabled()
+                    && timeManager
+                            .getTimeZoneCapabilitiesAndConfig()
+                            .getCapabilities()
+                            .getConfigureAutoDetectionEnabledCapability()
+                                    == Capabilities.CAPABILITY_POSSESSED
+                    && timeManager
+                            .getTimeZoneCapabilitiesAndConfig()
+                            .getConfiguration()
+                            .isAutoDetectionEnabled();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return status == 1 ? true : false;
+        return status;
     }
 
 }

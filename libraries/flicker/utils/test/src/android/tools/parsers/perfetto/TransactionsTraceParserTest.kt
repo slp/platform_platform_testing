@@ -17,10 +17,10 @@
 package android.tools.parsers.perfetto
 
 import android.tools.Cache
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.readAsset
 import android.tools.traces.parsers.perfetto.TraceProcessorSession
 import android.tools.traces.parsers.perfetto.TransactionsTraceParser
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.readAsset
 import com.google.common.truth.Truth
 import org.junit.Before
 import org.junit.ClassRule

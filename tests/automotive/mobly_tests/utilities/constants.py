@@ -31,6 +31,7 @@ AUTOMOTIVE_DEVICE_NAME = 'discoverer'
 REBOOT = 'reboot'
 DIALER_THREE_DIGIT_NUMBER = "511"
 INFORMATION_THREE_DIGIT_NUMBER = "411"
+DIALER_LARGE_DIGIT_NUMBER="8007770133"
 EXPECTED_CONTACT_FULL_NAME = "John Smith"
 EXPECTED_CONTACT_FIRST_NAME = "John"
 EXPECTED_CONTACT_LAST_NAME = "Smith"
@@ -46,6 +47,7 @@ DECLINE_CALL_TEXT = "Decline"
 ANSWER_CALL_TEXT = "Answer"
 ACCEPT_CALL_TEXT = "Accept"
 DISABLE_ANDROID_AUTO_POP_UP = "pm disable --user 10 com.google.android.embedded.projection"
+NOT_NOW_TEXT ="Not Now"
 
 BTSNOOP_LOG_PATH_ON_DEVICE = '/data/misc/bluetooth/logs/btsnoop_hci.log'
 BTSNOOP_LAST_LOG_PATH_ON_DEVICE = (
@@ -102,7 +104,7 @@ IMPOST_CONTACTS_SHELL_COMAND = (
 )
 
 # Screen recording
-SCREEN_RECORDING_COMMAND = 'screenrecord'
+SCREEN_RECORDING_COMMAND = 'screenrecord --time-limit 180'
 RECORDED_VIDEO_FILE_LOCATION = '/sdcard/'
 RECORDED_VIDEO_FILE_OUTPUT_FILE = '_screenrecord_output_mp4_'
 STOP_VIDEO_RECORDING = f'pkill -SIGINT {SCREEN_RECORDING_COMMAND}'
@@ -118,6 +120,8 @@ KEYCODE_MEDIA_PREVIOUS = 'input keyevent KEYCODE_MEDIA_PREVIOUS'
 KEYCODE_MEDIA_PAUSE = 'input keyevent KEYCODE_MEDIA_PAUSE'
 KEYCODE_MEDIA_PLAY = 'input keyevent KEYCODE_MEDIA_PLAY'
 KEYCODE_MEDIA_STOP = 'input keyevent KEYCODE_MEDIA_STOP'
+KEYCODE_WAKEUP = 'input keyevent KEYCODE_WAKEUP'
+DUMPSYS_POWER= 'dumpsys power|grep mWakefulness'
 
 # YouTube Media
 YOUTUBE_MUSIC_PACKAGE = 'com.google.android.apps.youtube.music'
@@ -163,3 +167,17 @@ DIALER_DIALPAD_LABEL = "Dialpad"
 BLUETOOTH_TAG="setprop persist.log.tag.bluetooth verbose"
 BLUETOOTH_NOOPERABLE="setprop persist.bluetooth.btsnoopenable true"
 BLUETOOTH_BTSNOOP_DEFAULT_MODE="settings put global bluetooth_btsnoop_default_mode full"
+
+
+# Media Logs
+PLAYBACK_VIEW_MODEL="setprop persist.log.tag.PlaybackViewModel DEBUG"
+MEDIA_BROWSER_CONNECTOR="setprop persist.log.tag.MediaBrowserConnector DEBUG"
+SETTINGS_CLOCK_SECONDS="settings put secure clock_seconds 1"
+
+
+# Bluetooth State Verification commands
+BLUETOOTH_CONNECTION_STATE = "dumpsys bluetooth_manager | grep ConnectionState"
+BLUETOOTH_MAP = "dumpsys bluetooth_manager | grep -E MceStateMachine"
+BLUETOOTH_HFP ="dumpsys bluetooth_manager | grep HfpClientConnectionService"
+BLUETOOTH_AVRCP =  "dumpsys bluetooth_manager | grep AvrcpControllerStateMachine"
+

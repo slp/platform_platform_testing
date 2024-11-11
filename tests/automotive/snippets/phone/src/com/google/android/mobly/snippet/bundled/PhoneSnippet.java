@@ -81,6 +81,12 @@ public class PhoneSnippet implements Snippet {
         mPhoneHelper.get().pressDialpadIcon();
     }
 
+    /** Checks if the dial pad is open */
+    @Rpc(description = "Checks if the dial pad is open.")
+    public boolean isDialPadOpen() {
+        return mPhoneHelper.get().isDialPadOpen();
+    }
+
     /** (Directly) enter a number into the dial pad) */
     @Rpc(description = "Enter phone number on dial pad.")
     public void enterNumberOnDialpad(String numberToDial) {

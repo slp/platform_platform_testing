@@ -55,6 +55,7 @@ class UtilityClassTest(bluetooth_base_test.BluetoothBaseTest):
         super().setup_test()
         # Pair caller phone with automotive device
         self.bt_utils.pair_primary_to_secondary()
+        super().enable_recording()
 
     def test_call_utility(self):
         # Navigate to the phone app page

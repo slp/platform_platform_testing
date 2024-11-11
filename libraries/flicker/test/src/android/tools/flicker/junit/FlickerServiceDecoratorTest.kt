@@ -34,8 +34,8 @@ import android.tools.flicker.config.FlickerServiceConfig
 import android.tools.flicker.config.ScenarioId
 import android.tools.flicker.extractors.ScenarioExtractor
 import android.tools.io.Reader
-import android.tools.utils.KotlinMockito
-import android.tools.utils.assertThrows
+import android.tools.testutils.KotlinMockito
+import android.tools.testutils.assertThrows
 import com.google.common.truth.Truth
 import org.junit.Ignore
 import org.junit.Test
@@ -82,8 +82,7 @@ class FlickerServiceDecoratorTest {
                 Mockito.anyInt(),
                 KotlinMockito.argThat<Bundle> {
                     this.getString(Instrumentation.REPORT_KEY_STREAMRESULT)
-                        ?.contains("Running setup")
-                        ?: false
+                        ?.contains("Running setup") ?: false
                 }
             )
         Mockito.verify(instrumentation)
@@ -91,8 +90,7 @@ class FlickerServiceDecoratorTest {
                 Mockito.anyInt(),
                 KotlinMockito.argThat {
                     this.getString(Instrumentation.REPORT_KEY_STREAMRESULT)
-                        ?.contains("Running transition")
-                        ?: false
+                        ?.contains("Running transition") ?: false
                 }
             )
         Mockito.verify(instrumentation)
@@ -100,8 +98,7 @@ class FlickerServiceDecoratorTest {
                 Mockito.anyInt(),
                 KotlinMockito.argThat {
                     this.getString(Instrumentation.REPORT_KEY_STREAMRESULT)
-                        ?.contains("Running teardown")
-                        ?: false
+                        ?.contains("Running teardown") ?: false
                 }
             )
     }

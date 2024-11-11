@@ -82,7 +82,7 @@ class RegionTraceSubject(val trace: RegionTrace, override val reader: Reader? = 
 
     /** {@inheritDoc} */
     override fun coversAtMost(other: Region): RegionTraceSubject = apply {
-        addAssertion("coversAtMost($other, $componentsAsString") { it.coversAtMost(other) }
+        addAssertion("coversAtMost($other, $componentsAsString)") { it.coversAtMost(other) }
     }
 
     /** {@inheritDoc} */
@@ -90,19 +90,24 @@ class RegionTraceSubject(val trace: RegionTrace, override val reader: Reader? = 
 
     /** {@inheritDoc} */
     override fun notBiggerThan(other: Region): RegionTraceSubject = apply {
-        addAssertion("notBiggerThan($other, $componentsAsString") { it.notBiggerThan(other) }
+        addAssertion("notBiggerThan($other, $componentsAsString)") { it.notBiggerThan(other) }
+    }
+
+    /** {@inheritDoc} */
+    override fun notSmallerThan(other: Region): RegionTraceSubject = apply {
+        addAssertion("notSmallerThan($other, $componentsAsString)") { it.notSmallerThan(other) }
     }
 
     /** {@inheritDoc} */
     override fun isToTheRightBottom(other: Region, threshold: Int): RegionTraceSubject = apply {
-        addAssertion("isToTheRightBottom($other, $componentsAsString") {
+        addAssertion("isToTheRightBottom($other, $componentsAsString)") {
             it.isToTheRightBottom(other, threshold)
         }
     }
 
     /** {@inheritDoc} */
     override fun regionsCenterPointInside(other: Rect): RegionTraceSubject = apply {
-        addAssertion("regionsCenterPointInside($other, $componentsAsString") {
+        addAssertion("regionsCenterPointInside($other, $componentsAsString)") {
             it.regionsCenterPointInside(other)
         }
     }
@@ -122,12 +127,12 @@ class RegionTraceSubject(val trace: RegionTrace, override val reader: Reader? = 
 
     /** {@inheritDoc} */
     override fun coversExactly(other: Rect): RegionTraceSubject = apply {
-        addAssertion("coversExactly($other, $componentsAsString") { it.coversExactly(other) }
+        addAssertion("coversExactly($other, $componentsAsString)") { it.coversExactly(other) }
     }
 
     /** {@inheritDoc} */
     override fun overlaps(other: Region): RegionTraceSubject = apply {
-        addAssertion("overlaps($other, $componentsAsString") { it.overlaps(other) }
+        addAssertion("overlaps($other, $componentsAsString)") { it.overlaps(other) }
     }
 
     /** {@inheritDoc} */
@@ -135,7 +140,7 @@ class RegionTraceSubject(val trace: RegionTrace, override val reader: Reader? = 
 
     /** {@inheritDoc} */
     override fun notOverlaps(other: Region): RegionTraceSubject = apply {
-        addAssertion("notOverlaps($other, $componentsAsString") { it.notOverlaps(other) }
+        addAssertion("notOverlaps($other, $componentsAsString)") { it.notOverlaps(other) }
     }
 
     /** {@inheritDoc} */
@@ -146,24 +151,26 @@ class RegionTraceSubject(val trace: RegionTrace, override val reader: Reader? = 
 
     /** {@inheritDoc} */
     override fun isSameAspectRatio(other: Region, threshold: Double): RegionTraceSubject = apply {
-        addAssertion("isSameAspectRatio($other, $componentsAsString") {
+        addAssertion("isSameAspectRatio($other, $componentsAsString)") {
             it.isSameAspectRatio(other, threshold)
         }
     }
 
     override fun hasSameLeftPosition(displayRect: Rect): RegionTraceSubject = apply {
-        addAssertion("hasSameLeftPosition($displayRect") { it.hasSameLeftPosition(displayRect) }
+        addAssertion("hasSameLeftPosition($displayRect)") { it.hasSameLeftPosition(displayRect) }
     }
 
     override fun hasSameBottomPosition(displayRect: Rect): RegionTraceSubject = apply {
-        addAssertion("hasSameBottomPosition($displayRect") { it.hasSameBottomPosition(displayRect) }
+        addAssertion("hasSameBottomPosition($displayRect)") {
+            it.hasSameBottomPosition(displayRect)
+        }
     }
 
     override fun hasSameRightPosition(displayRect: Rect): RegionTraceSubject = apply {
-        addAssertion("hasSameRightPosition($displayRect") { it.hasSameRightPosition(displayRect) }
+        addAssertion("hasSameRightPosition($displayRect)") { it.hasSameRightPosition(displayRect) }
     }
 
     override fun hasSameTopPosition(displayRect: Rect): RegionTraceSubject = apply {
-        addAssertion("hasSameTopPosition($displayRect") { it.hasSameTopPosition(displayRect) }
+        addAssertion("hasSameTopPosition($displayRect)") { it.hasSameTopPosition(displayRect) }
     }
 }

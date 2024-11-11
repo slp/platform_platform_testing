@@ -215,4 +215,11 @@ public interface IMapsHelper extends IAppHelper {
     public default boolean isOnMapsMainPage(boolean sidePanelOpened) {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
+
+    /**
+     * Setup expectation: On the home screen.
+     *
+     * <p>Get the UiObject2 of scroll view container.
+     */
+    UiObject2 getHomeScrollViewContainer();
 }

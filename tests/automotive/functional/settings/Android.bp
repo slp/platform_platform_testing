@@ -31,6 +31,7 @@ android_test {
         "platform-test-options",
         "automotive-facet-bar-helper",
         "automotive-app-grid-helper",
+        "com_android_car_settings_flags_lib",
     ],
     srcs: ["src/**/*.java"],
     test_suites: [

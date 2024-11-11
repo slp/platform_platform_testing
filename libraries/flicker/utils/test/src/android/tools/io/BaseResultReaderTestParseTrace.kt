@@ -19,16 +19,16 @@ package android.tools.io
 import android.tools.Timestamp
 import android.tools.Timestamps
 import android.tools.Trace
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.TestTraces
+import android.tools.testutils.assertExceptionMessage
+import android.tools.testutils.assertThrows
+import android.tools.testutils.newTestResultWriter
+import android.tools.testutils.outputFileName
 import android.tools.traces.TRACE_CONFIG_REQUIRE_CHANGES
 import android.tools.traces.deleteIfExists
 import android.tools.traces.io.ResultReader
 import android.tools.traces.io.ResultWriter
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.TestTraces
-import android.tools.utils.assertExceptionMessage
-import android.tools.utils.assertThrows
-import android.tools.utils.newTestResultWriter
-import android.tools.utils.outputFileName
 import com.google.common.truth.Truth
 import java.io.File
 import org.junit.Before
@@ -48,6 +48,7 @@ abstract class BaseResultReaderTestParseTrace {
         get() = "$traceName contained 0 entries, expected at least 2"
 
     protected abstract fun doParse(reader: ResultReader): Trace<*>?
+
     protected abstract fun getTime(traceTime: Timestamp): Long
 
     protected open fun setupWriter(writer: ResultWriter): ResultWriter {

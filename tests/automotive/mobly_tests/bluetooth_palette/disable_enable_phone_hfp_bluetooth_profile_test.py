@@ -25,6 +25,7 @@ class DisableEnableHFPBluetoothProfile(bluetooth_base_test.BluetoothBaseTest):
     # Pair caller phone with automotive device
     self.call_utils.press_home()
     self.bt_utils.pair_primary_to_secondary()
+    super().enable_recording()
 
   def test_disable_enable_phone_hfp_bluetooth_profile(self):
     """Disable - Enable Phone-HFP Bluetooth profile"""

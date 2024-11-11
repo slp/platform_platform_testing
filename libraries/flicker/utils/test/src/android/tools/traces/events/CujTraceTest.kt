@@ -17,7 +17,7 @@
 package android.tools.traces.events
 
 import android.tools.Timestamps
-import android.tools.utils.CleanFlickerEnvironmentRule
+import android.tools.testutils.CleanFlickerEnvironmentRule
 import com.google.common.truth.Truth
 import org.junit.ClassRule
 import org.junit.Test
@@ -173,9 +173,25 @@ class CujTraceTest {
         Truth.assertThat(trace.entries).isEmpty()
     }
 
+    @Test
+    fun canHandleUnknownType() {
+        val UNKNOWN_TAG_ID = 8888
+
+        val trace =
+            CujTrace.from(
+                listOf(
+                    createCujEvent(1, UnknownCuj(UNKNOWN_TAG_ID), CujEvent.JANK_CUJ_BEGIN_TAG),
+                    createCujEvent(2, UnknownCuj(UNKNOWN_TAG_ID), CujEvent.JANK_CUJ_END_TAG),
+                )
+            )
+
+        Truth.assertThat(trace.entries).hasSize(1)
+        Truth.assertThat(trace.entries.first().cuj.id).isEqualTo(UNKNOWN_TAG_ID)
+    }
+
     private fun createCujEvent(
         timestamp: Long,
-        cuj: CujType,
+        cuj: ICujType,
         type: String,
         tag: String? = null
     ): CujEvent {

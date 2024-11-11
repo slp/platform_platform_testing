@@ -274,6 +274,24 @@ class RegionSubject(
     }
 
     /** {@inheritDoc} */
+    override fun notSmallerThan(other: Region): RegionSubject = apply {
+        val testArea = other.bounds.area
+        val area = region.bounds.area
+
+        if (area < testArea) {
+            val errorMsgBuilder =
+                ExceptionMessageBuilder()
+                    .forSubject(this)
+                    .forIncorrectRegion("region. $region area should not be smaller than $testArea")
+                    .setExpected(testArea)
+                    .setActual(area)
+                    .addExtraDescription("Expected region", other)
+                    .addExtraDescription("Actual region", regionEntry.region)
+            throw IncorrectRegionException(errorMsgBuilder)
+        }
+    }
+
+    /** {@inheritDoc} */
     override fun isToTheRightBottom(other: Region, threshold: Int): RegionSubject = apply {
         val horizontallyPositionedToTheRight = other.bounds.left - threshold <= region.bounds.left
         val verticallyPositionedToTheBottom = other.bounds.top - threshold <= region.bounds.top

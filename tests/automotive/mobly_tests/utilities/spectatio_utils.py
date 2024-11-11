@@ -127,8 +127,14 @@ class CallUtils:
     def open_bluetooth_settings(self):
         """Assumes we are on the home screen.
         Navigate to the Bluetooth setting page"""
-        logging.info("Opening bluetooth settings (via the Status Bar)")
+        logging.info("Opening bluetooth settings (via the home screen)")
         self.device.mbs.openBluetoothSettings()
+
+    def open_bluetooth_settings_form_status_bar(self):
+        """Assumes we are on the home screen.
+        Navigate to the Bluetooth setting page"""
+        logging.info("Opening bluetooth settings (via the Status Bar)")
+        self.device.mbs.openBluetoothSettingsFromStatusBar()
 
     def press_active_call_toggle(self):
         logging.info("Pressing the Active Call toggle")
@@ -361,6 +367,16 @@ class CallUtils:
         self.device.mbs.cancelBluetoothAudioConncetion()
         logging.info('Clicked on <Cancel> label present on bluetooth Audio page')
 
+    def handle_bluetooth_audio_pop_up(self):
+        """ Close on BT audio popup if present on bluetooth Audio page"""
+        logging.info('Adding wait to check the Bluetooth Audio popup')
+        time.sleep(constants.DEFAULT_WAIT_TIME_FIVE_SECS)
+        is_bluetooth_media_popup_present = self.is_connect_to_bluetooth_label_visible_on_bluetooth_audio_page()
+        if is_bluetooth_media_popup_present:
+          logging.info('BT Audio popup present, cancelling that.')
+          self.click_cancel_label_visible_on_bluetooth_audio_page()
+
+
     def update_device_timezone(self, expected_timezone):
         logging.info('Update the device timezone to %s',
                      expected_timezone)
@@ -416,6 +432,7 @@ class CallUtils:
     def verify_dialing_number(self, expected_dialing_number):
         """Replace all non-digits characters to null"""
         actual_dialing_number = re.sub(r'\D', '', str(self.get_dialing_number()))
+        logging.info('dialing number: %s',self.get_dialing_number())
         logging.info(
             'Expected dialing number: %s, Actual: %s',
             expected_dialing_number,
@@ -632,9 +649,11 @@ class CallUtils:
     def delete_dialed_number_on_dial_pad(self):
         logging.info('Deleting dialed number on Dial Pad')
         self.device.mbs.deleteDialedNumber()
+
     # End call on IVI using adb shell command
     def end_call_using_adb_command(self, device_target):
         self.execute_shell_on_device(device_target, 'input keyevent KEYCODE_ENDCALL')
+        self.execute_shell_on_device(device_target, 'input keyevent KEYCODE_POWER')
 
     # Make a call most recent history
     def call_most_recent_call_history(self):
@@ -652,9 +671,11 @@ class CallUtils:
         self.device.mbs.changeAudioSourceToCarSpeakers()
 
     def enable_driving_mode(self):
+        logging.info('Enabling the drive mode')
         self.device.mbs.enableDrivingMode()
 
     def disable_driving_mode(self):
+        logging.info('Disabling the drive mode')
         self.device.mbs.disableDrivingMode()
 
     # Check if microphone chip is displayed on status bar
@@ -693,3 +714,19 @@ class CallUtils:
 
     def press_phone_home_icon_using_adb_command(self, device_target):
         self.execute_shell_on_device(device_target, 'input keyevent KEYCODE_HOME')
+
+    def get_bt_profile_status_using_adb_command(self, device_target, profile):
+        try:
+           bt_profile_status = self.execute_shell_on_device(device_target, profile).decode('utf8')
+           logging.debug(bt_profile_status)
+           return bt_profile_status
+        except adb.AdbError:
+           logging.info("Adb returned null")
+
+    def get_bt_connection_status_using_adb_command(self, device_target):
+            try:
+               bt_connection_status = self.execute_shell_on_device(device_target, constants.BLUETOOTH_CONNECTION_STATE).decode('utf8')
+               logging.debug(bt_connection_status)
+               return bt_connection_status
+            except adb.AdbError:
+               logging.info("Adb returned null")

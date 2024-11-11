@@ -79,7 +79,7 @@ class MotionTestRuleTest {
             TimeSeriesVerificationResult.PASSED
         )
         val expectedFile =
-            File(goldenPathManager.deviceLocalPath).resolve("FooClass/updated_golden.json")
+            File(goldenPathManager.deviceLocalPath).resolve("FooClass/updated_golden.actual.json")
 
         assertThat(expectedFile.exists()).isTrue()
     }
@@ -92,7 +92,7 @@ class MotionTestRuleTest {
             TimeSeriesVerificationResult.PASSED
         )
         val expectedFile =
-            File(goldenPathManager.deviceLocalPath).resolve("FooClass/updated_golden.json")
+            File(goldenPathManager.deviceLocalPath).resolve("FooClass/updated_golden.actual.json")
 
         val fileContentsWithoutMetadata =
             JSONObject(expectedFile.readText()).apply { remove("//metadata") }
@@ -114,16 +114,27 @@ class MotionTestRuleTest {
             TimeSeriesVerificationResult.MISSING_REFERENCE
         )
         val expectedFile =
-            File(goldenPathManager.deviceLocalPath).resolve("FooClass/updated_golden.json")
+            File(goldenPathManager.deviceLocalPath).resolve("FooClass/updated_golden.actual.json")
 
         val fileContents = JSONObject(expectedFile.readText())
+        val metadataJson = fileContents.get("//metadata") as JSONObject
 
-        assertThat(fileContents.get("//metadata") as JSONObject)
+        assertThat(metadataJson.has("deviceLocalPath")).isTrue()
+        // should be `/data/user/0/platform.test.motion.tests/files/goldens`, but the gradle
+        // setup ends up using `platform.test.motion.test` (without the `s`), even though the
+        // testNamespace property is configured otherwise. Verifying the presence of this
+        // property manually, to ensure the test passes both on gradle and soong. The difference
+        // itself does not matter
+        val deviceLocalPath = metadataJson.remove("deviceLocalPath") as String
+        assertThat(deviceLocalPath).startsWith("/data/user/0/platform.test.motion.test")
+
+        assertThat(metadataJson)
             .isEqualTo(
                 JSONObject().apply {
                     put("goldenRepoPath", "assets/updated_golden.json")
-                    put("filmstripTestIdentifier", "motion_debug_filmstrip_FooClass")
                     put("goldenIdentifier", "updated_golden")
+                    put("testClassName", "FooClass")
+                    put("testMethodName", "bar_test")
                     put("result", "MISSING_REFERENCE")
                 }
             )
@@ -153,21 +164,32 @@ class MotionTestRuleTest {
         )
 
         val expectedVideo =
-            File(goldenPathManager.deviceLocalPath).resolve("FooClass/updated_golden.mp4")
+            File(goldenPathManager.deviceLocalPath).resolve("FooClass/updated_golden.actual.mp4")
         assertThat(expectedVideo.exists()).isTrue()
 
         val expectedFile =
-            File(goldenPathManager.deviceLocalPath).resolve("FooClass/updated_golden.json")
+            File(goldenPathManager.deviceLocalPath).resolve("FooClass/updated_golden.actual.json")
         val fileContents = JSONObject(expectedFile.readText())
+        val metadataJson = fileContents.get("//metadata") as JSONObject
 
-        assertThat(fileContents.get("//metadata") as JSONObject)
+        assertThat(metadataJson.has("deviceLocalPath")).isTrue()
+        // should be `/data/user/0/platform.test.motion.tests/files/goldens`, but the gradle
+        // setup ends up using `platform.test.motion.test` (without the `s`), even though the
+        // testNamespace property is configured otherwise. Verifying the presence of this
+        // property manually, to ensure the test passes both on gradle and soong. The difference
+        // itself does not matter
+        val deviceLocalPath = metadataJson.remove("deviceLocalPath") as String
+        assertThat(deviceLocalPath).startsWith("/data/user/0/platform.test.motion.test")
+
+        assertThat(metadataJson)
             .isEqualTo(
                 JSONObject().apply {
                     put("goldenRepoPath", "assets/updated_golden.json")
-                    put("filmstripTestIdentifier", "motion_debug_filmstrip_FooClass")
                     put("goldenIdentifier", "updated_golden")
+                    put("testClassName", "FooClass")
+                    put("testMethodName", "bar_test")
                     put("result", "MISSING_REFERENCE")
-                    put("videoLocation", "FooClass/updated_golden.mp4")
+                    put("videoLocation", "FooClass/updated_golden.actual.mp4")
                 }
             )
     }

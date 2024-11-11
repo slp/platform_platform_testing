@@ -33,10 +33,11 @@ class BluetoothDialTest(bluetooth_base_test.BluetoothBaseTest):
     def setup_test(self):
         # Pair the devices
         self.bt_utils.pair_primary_to_secondary()
+        super().enable_recording()
 
     def test_dial_large_digits_number(self):
         #Variable
-        dialer_test_phone_number = constants.DIALER_THREE_DIGIT_NUMBER
+        dialer_test_phone_number = constants.INFORMATION_THREE_DIGIT_NUMBER
         #Tests the calling three digits number functionality
         logging.info(
             'Calling from %s calling to %s',

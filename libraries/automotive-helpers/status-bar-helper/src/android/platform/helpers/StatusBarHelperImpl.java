@@ -70,6 +70,31 @@ public class StatusBarHelperImpl extends AbstractStandardAppHelper implements IA
 
     /** {@inheritDoc} */
     @Override
+    public void openSoundPaletteOnStatusBar() {
+        BySelector soundButtonSelector =
+                getUiElementFromConfig(AutomotiveConfigConstants.STATUS_BAR_SOUND_BUTTON);
+        UiObject2 soundButton = getSpectatioUiUtil().findUiObject(soundButtonSelector);
+        getSpectatioUiUtil()
+                .validateUiObject(soundButton, AutomotiveConfigConstants.STATUS_BAR_SOUND_BUTTON);
+        getSpectatioUiUtil().clickAndWait(soundButton);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean hasSoundButton() {
+        BySelector soundButtonSelector =
+                getUiElementFromConfig(AutomotiveConfigConstants.STATUS_BAR_SOUND_BUTTON);
+        return (getSpectatioUiUtil().hasUiElement(soundButtonSelector));
+    }
+
+    @Override
+    public boolean isUIButtonPresentOnSoundPalette(String targetSelector) {
+        BySelector uiButtonSelector = getUiElementFromConfig(targetSelector);
+        return (getSpectatioUiUtil().hasUiElement(uiButtonSelector));
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public boolean hasBluetoothSwitch() {
         BySelector bluetoothSwitchSelector =
                 getUiElementFromConfig(AutomotiveConfigConstants.STATUS_BAR_BLUETOOTH_TOGGLE_ON);
@@ -406,6 +431,7 @@ public class StatusBarHelperImpl extends AbstractStandardAppHelper implements IA
                 getSpectatioUiUtil()
                         .executeShellCommand(
                                 getCommandFromConfig(AutomotiveConfigConstants.DAY_MODE_COMMAND));
+
         boolean result = dayModeResult.contains("changed to: day");
         return result;
     }
@@ -462,5 +488,28 @@ public class StatusBarHelperImpl extends AbstractStandardAppHelper implements IA
                         disabledMediaProfile, AutomotiveConfigConstants.DISABLED_MEDIA_PROFILE);
         getSpectatioUiUtil().clickAndWait(disabledMediaProfile);
         getSpectatioUiUtil().wait5Seconds();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void openSoundSettings() {
+        BySelector soundSettingsSelector =
+                getUiElementFromConfig(AutomotiveConfigConstants.SOUND_PALETTE_SOUND_SETTINGS);
+        UiObject2 soundSettingsObject = getSpectatioUiUtil().findUiObject(soundSettingsSelector);
+        getSpectatioUiUtil()
+                .validateUiObject(
+                        soundSettingsObject,
+                        AutomotiveConfigConstants.SOUND_PALETTE_SOUND_SETTINGS);
+        getSpectatioUiUtil().clickAndWait(soundSettingsObject);
+        getSpectatioUiUtil().wait5Seconds();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean hasSoundSettingsPageTitle() {
+        BySelector soundSettingsPageTitleSelector =
+                getUiElementFromConfig(
+                        AutomotiveConfigConstants.SOUND_PALETTE_SOUND_SETTINGS_PAGE_TITLE);
+        return (getSpectatioUiUtil().hasUiElement(soundSettingsPageTitleSelector));
     }
 }

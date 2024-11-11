@@ -25,6 +25,7 @@
 
 """
 
+import logging
 from mobly import asserts
 from utilities import constants
 from utilities.main_utils import common_main
@@ -37,13 +38,21 @@ class BluetoothDisconnectFromSettingsTest(bluetooth_base_test.BluetoothBaseTest)
         super().setup_test()
         # Pair the devices
         self.bt_utils.pair_primary_to_secondary()
+        super().enable_recording()
 
     def test_disconnect_from_settings(self):
+        # Log BT Connection State after pairing
+        bt_connection_state=self.call_utils.get_bt_connection_status_using_adb_command(self.discoverer)
+        logging.info("BT State after pairing : <%s>", bt_connection_state)
+
         # Allow time for connection to fully sync.
         self.call_utils.wait_with_log(constants.WAIT_THIRTY_SECONDS)
 
+        bt_connection_state=self.call_utils.get_bt_connection_status_using_adb_command(self.discoverer)
+        logging.info("BT Connection State after wait time : <%s>", bt_connection_state)
+
         # Navigate to Bluetooth Settings
-        self.call_utils.open_bluetooth_settings()
+        self.call_utils.open_bluetooth_settings_form_status_bar()
         self.call_utils.wait_with_log(constants.WAIT_TWO_SECONDS)
         # Press the Bluetooth toggle button to disconnect
         # (Recall that the toggle is the leftmost of the three buttons listed with the name)

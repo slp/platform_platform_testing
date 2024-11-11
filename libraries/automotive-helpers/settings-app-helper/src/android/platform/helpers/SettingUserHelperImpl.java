@@ -93,12 +93,11 @@ public class SettingUserHelperImpl extends AbstractStandardAppHelper implements 
     // opens permission page of a user
     @Override
     public void openPermissionsPage(String user) {
-        if (isUserPresent(user)) {
-            BySelector userSelector = By.text(user);
-            UiObject2 userObject = getSpectatioUiUtil().findUiObject(userSelector);
-            getSpectatioUiUtil().validateUiObject(userObject, String.format("User %s", user));
-            getSpectatioUiUtil().clickAndWait(userObject);
-        }
+        clickbutton(AutomotiveConfigConstants.USER_SETTINGS_MANAGE_OTHER_PROFILES);
+        BySelector userSelector = By.text(user);
+        UiObject2 userObject = getSpectatioUiUtil().findUiObject(userSelector);
+        getSpectatioUiUtil().validateUiObject(userObject, String.format("User %s", user));
+        getSpectatioUiUtil().clickAndWait(userObject);
     }
 
     // delete an existing user

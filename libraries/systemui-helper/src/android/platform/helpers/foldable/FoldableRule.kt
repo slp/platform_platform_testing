@@ -61,8 +61,14 @@ class FoldableRule(private val ensureScreenOn: Boolean = false) : TestWatcher() 
         }
     }
 
+    /**
+     * Folds a foldable device
+     * @param turnOffDisplayAfterFold if true, then triggers the device to go to sleep
+     * @param ensureFinished if true, waits for the display switch to happen
+     *                       and for the fold animation to play
+     */
     @JvmOverloads
-    fun fold(turnOffDisplayAfterFold: Boolean = true) {
+    fun fold(turnOffDisplayAfterFold: Boolean = true, ensureFinished: Boolean = true) {
         trace("FoldableRule#fold") {
             check(!controller.isFolded) { "Trying to fold when already folded" }
             if (ensureScreenOn) {
@@ -75,6 +81,13 @@ class FoldableRule(private val ensureScreenOn: Boolean = false) : TestWatcher() 
 
             if (turnOffDisplayAfterFold) {
                 uiDevice.sleep()
+            }
+
+            if (!ensureFinished) {
+                return
+            }
+
+            if (turnOffDisplayAfterFold) {
                 SystemClock.sleep(ANIMATION_TIMEOUT) // Wait for fold + screen off animations
                 ensureThat("screen is off after folding") { !screenOn }
             } else {
