@@ -17,12 +17,19 @@ package {
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 
-LOCAK_SDK_VERSION = ["current"]
 android_test {
     name: "PerformanceLaunch",
-    platform_apis: true,
     certificate: "platform",
-    srcs: ["src/**/*.java"],
+    srcs: [
+        "src/**/SimpleActivity.java",
+        "src/**/SimpleSurfaceGLActivity.java",
+        "src/**/ImageActivity.java",
+        "src/**/EmptyActivity.java",
+        "src/**/ComplexLayoutActivity.java",
+        "src/**/helper/*.java"
+   ],
 
     test_suites: ["device-tests"],
+    sdk_version: "35",
+    min_sdk_version: "30",
 }
