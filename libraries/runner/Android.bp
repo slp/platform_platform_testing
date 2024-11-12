@@ -22,15 +22,33 @@ android_library {
     manifest: "AndroidManifest.xml",
     platform_apis: true,
     min_sdk_version: "Tiramisu",
-    lint: { test: true },
+    lint: {
+        test: true,
+    },
     optimize: {
-        enabled: false
+        enabled: false,
     },
     srcs: [
         "src/main/java/**/*.java",
     ],
     libs: [
-      "Robolectric_all-target_upstream",
+        "Robolectric_all-target_upstream",
     ],
-    static_libs: [ ],
+    static_libs: [],
+}
+
+android_test {
+    name: "platform-parametric-runner-lib-test",
+    team: "trendy_team_test_infrastructure",
+    srcs: [
+        "src/test/java/**/*.java",
+        "src/test/java/**/*.kt",
+    ],
+    static_libs: [
+        "platform-parametric-runner-lib",
+    ],
+
+    sdk_version: "current",
+
+    test_suites: ["general-tests"],
 }
