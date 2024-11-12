@@ -283,4 +283,18 @@ public interface IAutoStatusBarHelper extends IAppHelper {
      * <p>Checks if sound settings page title is present
      */
     boolean hasSoundSettingsPageTitle();
+
+    /**
+     * Setup expectations: None
+     *
+     * <p>Get the current time Zone
+     */
+    String getCurrentTimeZone();
+
+    /**
+     * Setup expectations: None
+     *
+     * <p>Get the Device current time Zone
+     */
+    String getDeviceCurrentTimeZone();
 }
