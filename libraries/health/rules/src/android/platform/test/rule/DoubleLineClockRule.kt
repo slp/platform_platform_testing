@@ -6,7 +6,8 @@ import android.provider.Settings
  * Rule that allows to set the double line clock on the lockscreen to be enabled/disabled. Also
  * resets the setting to its original value at the end of the test.
  */
-class DoubleLineClockRule :
+class DoubleLineClockRule(initialValue: Boolean? = null) :
     SecureSettingRule<Boolean>(
         settingName = Settings.Secure.LOCKSCREEN_USE_DOUBLE_LINE_CLOCK,
+        initialValue = initialValue,
     )
