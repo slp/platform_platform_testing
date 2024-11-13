@@ -36,9 +36,7 @@ dependencyResolutionManagement {
 plugins {
     // Apply the foojay-resolver plugin to allow automatic download of JDKs
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.4.0"
-    id("com.android.security.autorepro.submission") version "1.0.0" apply false
-    id("com.android.security.autorepro.apptest") version "1.0.0" apply false
-    id("com.android.security.autorepro.javahosttest") version "1.0.0" apply false
+    id("com.android.security.autorepro.submission") version "1.0.0-alpha1" apply false
 }
 
 rootProject.name = "autorepro-example"
