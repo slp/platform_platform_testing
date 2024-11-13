@@ -33,17 +33,17 @@ public interface ICamera2Helper extends IAppHelper {
         VIDEO("video"),
         STILL_CAPTURE("still-capture");
 
-        private String name;
+        private final String mName;
 
         /** Stores the provided name as an enum field. */
         ModeType(String name) {
-            this.name = name;
+            this.mName = name;
         }
 
         /** Returns a programmer-friendly name for the {@code ModeType}. */
         @Override
         public String toString() {
-            return name;
+            return mName;
         }
 
         /**
@@ -64,17 +64,17 @@ public interface ICamera2Helper extends IAppHelper {
         FRONT("front"),
         BACK("back");
 
-        private String name;
+        private final String mName;
 
         /** Stores the provided name as an enum field. */
         CameraType(String name) {
-            this.name = name;
+            this.mName = name;
         }
 
         /** Returns a programmer-friendly name for the {@CameraType}. */
         @Override
         public String toString() {
-            return name;
+            return mName;
         }
 
         /**

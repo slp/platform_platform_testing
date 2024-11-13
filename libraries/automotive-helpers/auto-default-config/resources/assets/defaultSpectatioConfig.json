@@ -74,7 +74,8 @@
     "NIGHT_MODE_COMMAND": "dumpsys activity service com.android.car/.CarService day-night-mode  night",
     "DAY_MODE_COMMAND": "dumpsys activity service com.android.car/.CarService day-night-mode  day",
     "OPEN_SYSTEM_UI": "am crash com.android.systemui",
-    "OPEN_CAR_UI": "am crash com.android.car"
+    "OPEN_CAR_UI": "am crash com.android.car",
+    "DATE_COMMAND": "date"
   },
   "UI_ELEMENTS": {
     "MAKE_CALL": {

@@ -481,6 +481,11 @@ public class SpectatioUiUtil {
         return mDevice.hasObject(By.pkg(packageName).depth(0));
     }
 
+    /** Click at the specified location on the device */
+    public void click(int x, int y) throws IOException {
+        mDevice.click(x, y);
+    }
+
     public void swipeUp() {
         // Swipe Up From bottom of screen to the top in one step
         swipe(SwipeDirection.BOTTOM_TO_TOP, /*numOfSteps*/ MAX_SWIPE_STEPS);
@@ -579,7 +584,7 @@ public class SpectatioUiUtil {
                 padYStart = bounds.bottom / 4 * 3;
                 break;
             case DEFAULT:
-                break; // handled above the switch
+                break; // handled above the switch.
         }
 
         switch (swipeDirection) {
@@ -623,9 +628,13 @@ public class SpectatioUiUtil {
         return swipePoints;
     }
 
+    /** Returns a Rect representing the bounds of the screen */
     private Rect getScreenBounds() {
-        Point dimensions = mDevice.getDisplaySizeDp();
-        return new Rect(0, 0, dimensions.x, dimensions.y);
+        return new Rect(
+            /* left= */ 0,
+            /* top= */ 0,
+            /* right= */ mDevice.getDisplayWidth(),
+            /* bottom= */ mDevice.getDisplayHeight());
     }
 
     public void swipeRight(UiObject2 uiObject) {
@@ -794,14 +803,15 @@ public class SpectatioUiUtil {
         return null;
     }
 
-    private String getViewHierarchy() {
+    /** Returns the view hierarchy as XML, as output by `adb shell uiautomator dump`. */
+    public String getViewHierarchy() {
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             mDevice.dumpWindowHierarchy(outputStream);
             outputStream.close();
             return outputStream.toString();
         } catch (IOException ex) {
-            throw new IllegalStateException("Unable to get view hierarchy.");
+            throw new IllegalStateException("Unable to get view hierarchy.", ex);
         }
     }
 
