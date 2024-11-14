@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="autorepro_nonroot_arm64" type="JarApplication">
+    <option name="JAR_PATH" value="$PROJECT_DIR$/submission/build/test_suites_arm64/android-sts/tools/sts-tradefed.jar" />
+    <option name="PROGRAM_PARAMETERS" value="run commandAndExit autorepro-nonroot --log-level debug --log-level-display debug" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <option name="ALTERNATIVE_JRE_PATH" />
+    <method v="2">
+      <option name="Gradle.BeforeRunTask" enabled="false" tasks="assembleAutoReproTradefed-test_suites_arm64" externalProjectPath="$PROJECT_DIR$/submission" vmOptions="" scriptParameters="" />
+    </method>
+  </configuration>
+</component>
