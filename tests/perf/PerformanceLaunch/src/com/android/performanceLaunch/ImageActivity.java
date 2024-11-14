@@ -16,7 +16,6 @@
 
 package com.android.performanceLaunch;
 
-import com.android.performanceLaunch.R;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -26,10 +25,10 @@ public class ImageActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "onCreate");
+        Trace.beginSection("onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_background);
-        Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+        Trace.endSection();
     }
 
 }

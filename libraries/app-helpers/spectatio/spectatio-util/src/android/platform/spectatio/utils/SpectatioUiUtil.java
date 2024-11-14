@@ -629,7 +629,7 @@ public class SpectatioUiUtil {
     }
 
     /** Returns a Rect representing the bounds of the screen */
-    private Rect getScreenBounds() {
+    public Rect getScreenBounds() {
         return new Rect(
             /* left= */ 0,
             /* top= */ 0,

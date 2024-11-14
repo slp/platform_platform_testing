@@ -16,7 +16,6 @@
 
 package android.platform.spectatio.configs.validators;
 
-import com.google.common.base.VerifyException;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
@@ -47,44 +46,30 @@ public class ValidateSpectatioConfigForUnknownProperties implements TypeAdapterF
         try {
             // Patch the reflection to be compatible with the changes in
             // ReflectiveTypeAdapterFactory
-            // introduced by cl/483676181.
-            // Another patch to the reflection to be compatible with changes in cl/571967573.
-            Field f = findField(ReflectiveTypeAdapterFactory.Adapter.class, "fieldsData");
+            // introduced by
+            // https://android-review.git.corp.google.com/c/platform/external/gson/+/2298458
+            Field f = ReflectiveTypeAdapterFactory.Adapter.class.getDeclaredField("boundFields");
             f.setAccessible(true);
-            Object fieldsData = f.get(gson.getDelegateAdapter(this, type));
-            Field deserializedFieldsField = findField(fieldsData.getClass(), "deserializedFields");
-            deserializedFieldsField.setAccessible(true);
+
             Map boundFieldsMap =
-                    new LinkedHashMap((Map) deserializedFieldsField.get(fieldsData)) {
+                    new LinkedHashMap((Map) f.get(delegate)) {
                         @Override
                         public Object get(Object key) {
-                            Object value = super.get(key);
-                            if (value == null) {
-                                throw new VerifyException(
+                            if (!super.containsKey(key) || super.get(key) == null) {
+                                throw new RuntimeException(
                                         String.format(
                                                 "Unknown property %s in Spectatio JSON Config.",
                                                 key));
                             }
-                            return value;
+                            return super.get(key);
                         }
                     };
-            deserializedFieldsField.set(fieldsData, boundFieldsMap);
+
+            f.set(delegate, boundFieldsMap);
         } catch (Exception ex) {
-            throw new VerifyException(ex);
+            throw new RuntimeException(ex);
         }
 
         return delegate;
-    }
-
-    private static Field findField(Class<?> startingClass, String fieldName)
-            throws NoSuchFieldException {
-        for (Class<?> c = startingClass; c != null; c = c.getSuperclass()) {
-            try {
-                return c.getDeclaredField(fieldName);
-            } catch (NoSuchFieldException e) {
-                // OK: continue with superclasses
-            }
-        }
-        throw new NoSuchFieldException(fieldName + " starting from " + startingClass.getName());
     }
 }
