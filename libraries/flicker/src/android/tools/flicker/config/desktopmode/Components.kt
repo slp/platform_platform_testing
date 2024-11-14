@@ -51,7 +51,7 @@ object Components {
         ComponentTemplate("NON_RESIZABLE_APP") {
             ComponentNameMatcher(
                 "com.android.server.wm.flicker.testapp",
-                "com.android.server.wm.flicker.testapp.NonResizeableActivity"
+                "com.android.server.wm.flicker.testapp.NonResizeableActivity",
             )
         }
 
@@ -59,13 +59,13 @@ object Components {
         ComponentTemplate("DesktopWallpaper") {
             ComponentNameMatcher(
                 SYSTEMUI_PACKAGE,
-                "com.android.wm.shell.desktopmode.DesktopWallpaperActivity"
+                "com.android.wm.shell.desktopmode.DesktopWallpaperActivity",
             )
         }
 
     private fun getDesktopAppForScenario(
         type: ScenarioId,
-        associatedTransition: Transition
+        associatedTransition: Transition,
     ): IComponentMatcher {
         return when (type) {
             ScenarioId("END_DRAG_TO_DESKTOP") -> {
