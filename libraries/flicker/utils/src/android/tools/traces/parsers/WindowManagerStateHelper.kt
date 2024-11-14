@@ -434,6 +434,17 @@ constructor(
         /** Waits until the keyguard is showing */
         fun withKeyguardShowing() = add("withKeyguardShowing") { it.wmState.isKeyguardShowing }
 
+        /** Waits until the given app is the top visible app window. */
+        fun withTopVisibleApp(
+            componentMatcher: IComponentMatcher
+        ): StateSyncBuilder {
+            return add("withTopVisibleApp") {
+                val topVisible = it.wmState.topVisibleAppWindow
+                return@add topVisible != null &&
+                        componentMatcher.windowMatchesAnyOf(topVisible)
+            }
+        }
+
         /**
          * Wait for the activities to appear in proper stacks and for valid state in AM and WM.
          *
