@@ -50,3 +50,17 @@ java_library {
     // b/267831518: Pin tradefed and dependencies to Java 11.
     java_version: "11",
 }
+
+java_library_static {
+    name: "xts-annotations",
+    host_supported: true,
+    srcs: [
+        "src/com/android/compatibility/common/util/GmsTest.java",
+        "src/com/android/compatibility/common/util/CddTest.java",
+        "src/com/android/compatibility/common/util/VsrTest.java",
+        "src/com/android/compatibility/common/util/ApiTest.java",
+    ],
+    sdk_version: "current", // To allow use from CTS
+    // b/267831518: Pin tradefed and dependencies to Java 11.
+    java_version: "11",
+}
