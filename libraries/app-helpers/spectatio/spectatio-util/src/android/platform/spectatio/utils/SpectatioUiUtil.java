@@ -21,9 +21,11 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.os.UserHandle;
 import android.platform.spectatio.exceptions.MissingUiElementException;
 import android.util.Log;
 import android.view.KeyEvent;
+import com.google.escapevelocity.Template;
 
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.BySelector;
@@ -35,10 +37,16 @@ import androidx.test.uiautomator.Until;
 import com.google.common.base.Strings;
 
 import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class SpectatioUiUtil {
     private static final String LOG_TAG = SpectatioUiUtil.class.getSimpleName();
@@ -283,17 +291,50 @@ public class SpectatioUiUtil {
      */
     public String executeShellCommand(String command) {
         validateText(command, /* type= */ "Command");
+        String populatedCommand = populateShellCommand(command);
+        Log.d(
+                LOG_TAG,
+                String.format(
+                        "Initial command: %s. Populated command: %s",
+                        command, populatedCommand));
         try {
-            return mDevice.executeShellCommand(command);
+            return mDevice.executeShellCommand(populatedCommand);
         } catch (IOException e) {
             // ignore
             Log.e(
                     LOG_TAG,
                     String.format(
                             "The shell command failed to run: %s, Error: %s",
-                            command, e.getMessage()));
+                            populatedCommand, e.getMessage()));
             return "";
         }
+    }
+
+    private String populateShellCommand(String command) {
+        String populatedCommand = command;
+
+        // Map of supported substitutions
+        Map<String, String> vars = new HashMap<>();
+        vars.put("user_id", String.valueOf(UserHandle.CURRENT.myUserId()));
+
+        try (InputStreamReader reader =
+                new InputStreamReader(
+                        new ByteArrayInputStream(command.getBytes(StandardCharsets.UTF_8)))) {
+            Template template = Template.parseFrom(reader);
+            populatedCommand = template.evaluate(vars);
+            Log.d(
+                    LOG_TAG,
+                    String.format(
+                            "Initial command: %s. Populated command: %s",
+                            command, populatedCommand));
+        } catch (IOException e) {
+            Log.e(
+                    LOG_TAG,
+                    String.format(
+                            "Error populating the shell command template %s, Error: %s",
+                            command, e.getMessage()));
+        }
+        return populatedCommand;
     }
 
     /** Find and return the UI Object that matches the given selector */

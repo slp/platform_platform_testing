@@ -25,6 +25,7 @@ java_library {
         "androidx.test.uiautomator_uiautomator",
         "gson",
         "guava",
+        "escapevelocity",
     ],
     srcs: ["src/**/*.java"],
     sdk_version: "test_current",
