@@ -18,6 +18,7 @@ JAVA_LIBRARIES=${SCRIPT_DIR}"/${SCRIPT_TO_TOP}/out/soong/.intermediates/platform
 SDK=${SCRIPT_DIR}"/${SCRIPT_TO_TOP}/out/host/linux-x86/sdk/sdk*/android-sdk*"
 SDK_REPO=${SCRIPT_DIR}"/${SCRIPT_TO_TOP}/out/host/linux-x86/sdk-repo"
 FONT_DIR=${SCRIPT_DIR}"/${SCRIPT_TO_TOP}/out/host/common/obj/PACKAGING/fonts_intermediates"
+HYPHEN_DATA_DIR=${SCRIPT_DIR}"/${SCRIPT_TO_TOP}/out/host/common/obj/PACKAGING/hyphen_intermediates"
 KEYBOARD_DIR=${SCRIPT_DIR}"/${SCRIPT_TO_TOP}/out/host/common/obj/PACKAGING/keyboards_intermediates"
 ICU_DATA_PATH=${SCRIPT_DIR}"/${SCRIPT_TO_TOP}/out/host/linux-x86/com.android.i18n/etc/icu/icudt71l.dat"
 TMP_DIR=$(mktemp -d)
@@ -48,6 +49,7 @@ ${STUDIO_JDK}/bin/java -ea \
     -Dnative.lib.path=${NATIVE_LIBRARIES} \
     -Dfont.dir=${FONT_DIR} \
     -Dicu.data.path=${ICU_DATA_PATH} \
+    -Dhyphen.data.dir=${HYPHEN_DATA_DIR} \
     -Dkeyboard.dir=${KEYBOARD_DIR} \
     -Dplatform.dir=${PLATFORM} \
     -Dtest_res.dir=${SCRIPT_DIR}/res \

@@ -95,6 +95,11 @@ object Components {
                 val change = associatedTransition.changes.first()
                 FullComponentIdMatcher(change.windowId, change.layerId)
             }
+            ScenarioId("BRING_APPS_TO_FRONT") -> {
+                val change =
+                    associatedTransition.changes.first { it.transitMode == TransitionType.TO_FRONT }
+                FullComponentIdMatcher(change.windowId, change.layerId)
+            }
             else -> error("Unsupported transition type")
         }
     }
