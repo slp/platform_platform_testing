@@ -21,6 +21,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.tools.traces.component.ComponentNameMatcher
+import android.tools.traces.component.IComponentNameMatcher
 import androidx.test.platform.app.InstrumentationRegistry
 
 /**
@@ -35,13 +36,10 @@ class BrowserAppHelper
 @JvmOverloads
 constructor(
     instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation(),
-    pkgManager: PackageManager = instrumentation.context.packageManager
-) :
-    StandardAppHelper(
-        instrumentation,
-        getBrowserName(pkgManager),
-        getBrowserComponent(pkgManager)
-    ) {
+    pkgManager: PackageManager = instrumentation.context.packageManager,
+    appName: String = getBrowserName(pkgManager),
+    appComponent: IComponentNameMatcher = getBrowserComponent(pkgManager),
+) : StandardAppHelper(instrumentation, appName, appComponent) {
     override val openAppIntent =
         pkgManager.getLaunchIntentForPackage(packageName)
             ?: error("Unable to find intent for browser")
@@ -62,7 +60,7 @@ constructor(
             return resolveInfo.loadLabel(pkgManager).toString()
         }
 
-        private fun getBrowserComponent(pkgManager: PackageManager): ComponentNameMatcher {
+        private fun getBrowserComponent(pkgManager: PackageManager): IComponentNameMatcher {
             val intent = getBrowserIntent()
             val resolveInfo =
                 pkgManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
