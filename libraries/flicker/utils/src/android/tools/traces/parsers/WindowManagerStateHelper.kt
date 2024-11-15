@@ -46,6 +46,8 @@ import android.tools.traces.wm.WindowState
 import android.util.Log
 import android.view.Display
 import androidx.test.platform.app.InstrumentationRegistry
+import java.util.function.Predicate
+import java.util.function.Supplier
 
 /** Helper class to wait on [WindowManagerState] or [LayerTraceEntry] conditions */
 open class WindowManagerStateHelper
@@ -55,13 +57,13 @@ constructor(
     private val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation(),
     private val clearCacheAfterParsing: Boolean = true,
     /** Predicate to supply a new UI information */
-    private val deviceDumpSupplier: () -> DeviceStateDump = {
+    private val deviceDumpSupplier: Supplier<DeviceStateDump> = Supplier {
         getCurrentStateDump(clearCacheAfterParsing = clearCacheAfterParsing)
     },
     /** Number of attempts to satisfy a wait condition */
     private val numRetries: Int = DEFAULT_RETRY_LIMIT,
     /** Interval between wait for state dumps during wait conditions */
-    private val retryIntervalMs: Long = DEFAULT_RETRY_INTERVAL_MS
+    private val retryIntervalMs: Long = DEFAULT_RETRY_INTERVAL_MS,
 ) {
     private var internalState: DeviceStateDump? = null
 
@@ -69,7 +71,7 @@ constructor(
     val currentState: DeviceStateDump
         get() {
             if (internalState == null) {
-                internalState = deviceDumpSupplier.invoke()
+                internalState = deviceDumpSupplier.get()
             } else {
                 StateSyncBuilder().withValidState().waitFor()
             }
@@ -107,7 +109,7 @@ constructor(
         private var lastMessage = ""
 
         private fun createConditionBuilder(): WaitCondition.Builder<DeviceStateDump> =
-            WaitCondition.Builder(deviceDumpSupplier, numRetries)
+            WaitCondition.Builder(numRetries) { deviceDumpSupplier.get() }
                 .onStart { Trace.beginSection(it) }
                 .onEnd { Trace.endSection() }
                 .onSuccess { updateCurrState(it) }
@@ -138,7 +140,7 @@ constructor(
          * @param condition to wait for
          */
         @JvmOverloads
-        fun add(message: String = "", condition: (DeviceStateDump) -> Boolean): StateSyncBuilder =
+        fun add(message: String = "", condition: Predicate<DeviceStateDump>): StateSyncBuilder =
             add(Condition(message, condition))
 
         /**

@@ -18,12 +18,13 @@ package android.tools.traces.monitors
 
 import android.tools.Timestamps
 import android.tools.traces.io.ResultWriter
+import java.util.function.Consumer
 
 /**
  * A monitor that doesn't actually collect any traces and instead get the resultSetter sets the
  * trace file directly when called.
  */
-class NoTraceMonitor(private val resultSetter: (ResultWriter) -> Unit) : ITransitionMonitor {
+class NoTraceMonitor(private val resultSetter: Consumer<ResultWriter>) : ITransitionMonitor {
     override fun start() {
         // Does nothing
     }
@@ -31,6 +32,6 @@ class NoTraceMonitor(private val resultSetter: (ResultWriter) -> Unit) : ITransi
     override fun stop(writer: ResultWriter) {
         writer.setTransitionStartTime(Timestamps.min())
         writer.setTransitionEndTime(Timestamps.max())
-        this.resultSetter.invoke(writer)
+        this.resultSetter.accept(writer)
     }
 }

@@ -17,6 +17,7 @@
 package android.tools.flicker.subject.inputmethod
 
 import android.tools.flicker.subject.FlickerSubject
+import android.tools.function.AssertionPredicate
 import android.tools.io.Reader
 import android.tools.traces.inputmethod.ImeClientEntry
 import android.tools.traces.inputmethod.ImeClientTrace
@@ -33,17 +34,20 @@ import android.tools.traces.inputmethod.ImeClientTrace
  *      .invoke { myCustomAssertion(this) }
  *  ```
  */
-class ImeClientEntrySubject(
+class ImeClientEntrySubject
+@JvmOverloads
+constructor(
     val entry: ImeClientEntry,
     val trace: ImeClientTrace?,
-    override val reader: Reader? = null
+    override val reader: Reader? = null,
 ) : FlickerSubject(), IImeClientSubject<ImeClientEntrySubject> {
     override val timestamp = entry.timestamp
 
     /** Executes a custom [assertion] on the current subject */
-    operator fun invoke(assertion: (ImeClientEntry) -> Unit): ImeClientEntrySubject = apply {
-        assertion(this.entry)
-    }
+    operator fun invoke(assertion: AssertionPredicate<ImeClientEntry>): ImeClientEntrySubject =
+        apply {
+            assertion.verify(this.entry)
+        }
 
     /** {@inheritDoc} */
     override fun isEmpty(): ImeClientEntrySubject = apply {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:JvmName("DataTypeUtils")
+
 package android.tools.datatypes
 
 import android.graphics.Color

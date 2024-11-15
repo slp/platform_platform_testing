@@ -25,10 +25,7 @@ open class WindowMovesOutOfTop(private val component: ComponentTemplate) :
     AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
-        flicker.assertWm {
-            isAppWindowOnTop(component.build(scenarioInstance))
-                .then()
-                .isAppWindowNotOnTop(component.build(scenarioInstance))
-        }
+        val matcher = component.get(scenarioInstance)
+        flicker.assertWm { isAppWindowOnTop(matcher).then().isAppWindowNotOnTop(matcher) }
     }
 }

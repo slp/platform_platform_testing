@@ -25,6 +25,6 @@ class LayerIsVisibleAtStart(private val component: ComponentTemplate) :
     AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
-        flicker.assertLayersStart { isVisible(component.build(scenarioInstance)) }
+        flicker.assertLayersStart { isVisible(component.get(scenarioInstance)) }
     }
 }

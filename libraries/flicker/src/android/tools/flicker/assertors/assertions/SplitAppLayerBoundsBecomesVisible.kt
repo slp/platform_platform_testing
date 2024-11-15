@@ -30,8 +30,8 @@ class SplitAppLayerBoundsBecomesVisible(
     val isPrimaryApp: Boolean
 ) : AssertionTemplateWithComponent(component) {
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
-        val splitScreenDivider = SPLIT_SCREEN_DIVIDER.build(scenarioInstance)
-        val app = component.build(scenarioInstance)
+        val splitScreenDivider = SPLIT_SCREEN_DIVIDER.get(scenarioInstance)
+        val app = component.get(scenarioInstance)
 
         val landscapePosLeft: Boolean
         val portraitPosTop: Boolean

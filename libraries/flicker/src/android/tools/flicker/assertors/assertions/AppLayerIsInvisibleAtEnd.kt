@@ -25,6 +25,6 @@ class AppLayerIsInvisibleAtEnd(private val component: ComponentTemplate) :
     AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
-        flicker.assertLayersEnd { isInvisible(component.build(scenarioInstance)) }
+        flicker.assertLayersEnd { isInvisible(component.get(scenarioInstance)) }
     }
 }

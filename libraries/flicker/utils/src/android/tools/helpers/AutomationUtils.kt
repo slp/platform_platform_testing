@@ -158,7 +158,7 @@ fun UiDevice.waitForIME(): Boolean {
 
 private fun openQuickStepAndLongPressOverviewIcon(
     device: UiDevice,
-    wmHelper: WindowManagerStateHelper
+    wmHelper: WindowManagerStateHelper,
 ) {
     if (device.isQuickstepEnabled()) {
         device.openQuickstep(wmHelper)
@@ -191,7 +191,7 @@ fun UiDevice.openQuickStepAndClearRecentAppsFromOverview(wmHelper: WindowManager
             this.displayHeight / 2,
             this.displayWidth,
             this.displayHeight / 2,
-            5
+            5,
         )
         // If "Clear all"  button appears, use it
         val clearAllSelector = By.res(this.launcherPackageName, "clear_all")

@@ -21,6 +21,7 @@ enum class NavBar(val description: String, val value: String) {
     MODE_GESTURAL("GESTURAL_NAV", PlatformConsts.MODE_GESTURAL);
 
     companion object {
+        @JvmStatic
         fun getByValue(value: String) {
             when (value) {
                 PlatformConsts.MODE_3BUTTON -> MODE_3BUTTON

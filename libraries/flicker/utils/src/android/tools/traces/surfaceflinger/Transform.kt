@@ -201,6 +201,7 @@ class Transform private constructor(val type: Int?, val matrix: Matrix33) {
         const val ROT_90_VAL = 0x0400 // (1 << 2 << 8)
         const val ROT_INVALID_VAL = 0x8000 // (0x80 << 8)
 
+        @JvmStatic
         fun isSimpleTransform(type: Int?): Boolean {
             return type?.isFlagClear(ROT_INVALID_VAL or SCALE_VAL) ?: false
         }
@@ -213,6 +214,7 @@ class Transform private constructor(val type: Int?, val matrix: Matrix33) {
             return this and bits == bits
         }
 
+        @JvmStatic
         fun from(type: Int?, matrix: Matrix33): Transform = withCache { Transform(type, matrix) }
     }
 }

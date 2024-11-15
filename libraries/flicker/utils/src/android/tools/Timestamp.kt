@@ -188,6 +188,7 @@ internal constructor(
     }
 
     companion object {
+        @JvmStatic
         fun formatElapsedTimestamp(timestampNs: Long): String {
             var remainingNs = timestampNs
             val prettyTimestamp = StringBuilder()

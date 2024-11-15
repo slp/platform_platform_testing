@@ -17,17 +17,18 @@
 package android.tools.flicker.assertors
 
 import android.tools.flicker.ScenarioInstance
+import android.tools.function.Supplier
 import android.tools.traces.component.IComponentMatcher
 
 data class ComponentTemplate(
     val name: String,
-    val build: (scenarioInstance: ScenarioInstance) -> IComponentMatcher
-) {
+    private val matcher: Supplier<ScenarioInstance, IComponentMatcher>,
+) : Supplier<ScenarioInstance, IComponentMatcher> by matcher {
     override fun equals(other: Any?): Boolean {
-        return other is ComponentTemplate && name == other.name && build == other.build
+        return other is ComponentTemplate && name == other.name && matcher == other.matcher
     }
 
     override fun hashCode(): Int {
-        return name.hashCode() * 39 + build.hashCode()
+        return name.hashCode() * 39 + matcher.hashCode()
     }
 }

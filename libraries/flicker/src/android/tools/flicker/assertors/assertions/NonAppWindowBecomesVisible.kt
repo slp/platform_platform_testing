@@ -28,10 +28,7 @@ class NonAppWindowBecomesVisible(private val component: ComponentTemplate) :
     AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
-        flicker.assertWm {
-            isNonAppWindowInvisible(component.build(scenarioInstance))
-                .then()
-                .isAppWindowVisible(component.build(scenarioInstance))
-        }
+        val matcher = component.get(scenarioInstance)
+        flicker.assertWm { isNonAppWindowInvisible(matcher).then().isAppWindowVisible(matcher) }
     }
 }

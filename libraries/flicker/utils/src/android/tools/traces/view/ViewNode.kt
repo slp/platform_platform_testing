@@ -85,6 +85,7 @@ private constructor(
         "ViewNode(classNameIndex=$classNameIndex, hashCode=$hashcode, id='$id', bounds=$bounds)"
 
     companion object {
+        @JvmStatic
         fun from(
             classNameIndex: Int,
             hashCode: Int,

@@ -66,6 +66,7 @@ open class WindowConfiguration(
         val EMPTY: WindowConfiguration
             get() = withCache { WindowConfiguration() }
 
+        @JvmStatic
         fun from(
             appBounds: Rect?,
             bounds: Rect?,

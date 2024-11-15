@@ -30,7 +30,7 @@ class HasAtMostOneWindowMatching(private val component: ComponentTemplate) :
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
         flicker.assertWm {
             invoke("HasAtMostOneWindowMatching") {
-                val matcher = component.build(scenarioInstance)
+                val matcher = component.get(scenarioInstance)
                 val windowCount =
                     it.wmState.windowStates.count { window -> matcher.windowMatchesAnyOf(window) }
                 require(windowCount <= 1) { "Matched more than 1 $matcher" }

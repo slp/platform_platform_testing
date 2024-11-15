@@ -32,8 +32,8 @@ class FocusChanges(
     // TODO: Make parent call this when appropriate
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
         val layersTrace = scenarioInstance.reader.readLayersTrace()
-        val fromComponent = fromComponent.build(scenarioInstance)
-        val toComponent = toComponent.build(scenarioInstance)
+        val fromComponent = fromComponent.get(scenarioInstance)
+        val toComponent = toComponent.get(scenarioInstance)
 
         val fromPackage =
             if (fromComponent is IComponentNameMatcher) {

@@ -29,7 +29,7 @@ class AppLayerCoversFullScreenAtEnd(private val component: ComponentTemplate) :
             val displayBounds =
                 entry.physicalDisplayBounds ?: error("Missing physical display bounds")
 
-            visibleRegion(component.build(scenarioInstance).or(ComponentNameMatcher.LETTERBOX))
+            visibleRegion(component.get(scenarioInstance).or(ComponentNameMatcher.LETTERBOX))
                 .coversExactly(displayBounds)
         }
     }
