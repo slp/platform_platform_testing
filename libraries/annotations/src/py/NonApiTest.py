@@ -15,7 +15,7 @@
 """NonApiTest decorator."""
 
 from typing import List
-from ReasonType import ReasonType
+from .ReasonType import ReasonType
 
 
 class NonApiTest(object):
