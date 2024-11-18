@@ -23,6 +23,9 @@ import android.tools.testutils.assertThatErrorContainsDebugInfo
 import android.tools.testutils.assertThrows
 import android.tools.testutils.getWmTraceReaderFromAsset
 import android.tools.traces.component.ComponentNameMatcher
+import android.tools.traces.component.SurfaceViewBackgroundMatcher
+import android.tools.traces.surfaceflinger.Layer
+import android.tools.traces.surfaceflinger.LayerProperties
 import com.google.common.truth.Truth
 import org.junit.Before
 import org.junit.ClassRule
@@ -212,6 +215,28 @@ class WindowManagerTraceSubjectTest {
         Truth.assertWithMessage("Visibility should have changed only 1x in the trace")
             .that(visibilityChange.count { it })
             .isEqualTo(1)
+    }
+
+    @Test
+    fun testSurfaceViewBackgroundMatcher() {
+        val cameraActivity = "com.google.android.GoogleCamera/" +
+                "com.google.android.apps.camera.legacy.app.activity.main.CameraActivity"
+        val bg = Layer(name="Background for e46b52e SurfaceView[$cameraActivity]#2064",
+                id=1, parentId=3, z=4, currFrame=1, properties=LayerProperties.EMPTY)
+        val sv = Layer(name="e46b52e SurfaceView[$cameraActivity]#2063",
+                id=2, parentId=3, z=6, currFrame=1, properties=LayerProperties.EMPTY)
+
+        Truth.assertWithMessage("SurfaceView background layer match")
+                .that(SurfaceViewBackgroundMatcher().layerMatchesAnyOf(bg))
+                .isTrue()
+
+        Truth.assertWithMessage("SurfaceView layer should not match")
+                .that(SurfaceViewBackgroundMatcher().layerMatchesAnyOf(sv))
+                .isFalse()
+
+        Truth.assertWithMessage("SurfaceView and its background layer match as a set")
+                .that(SurfaceViewBackgroundMatcher().layerMatchesAnyOf(setOf(bg, sv)))
+                .isTrue()
     }
 
     @Test

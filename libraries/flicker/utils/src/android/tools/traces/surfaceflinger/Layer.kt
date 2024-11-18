@@ -24,6 +24,7 @@ import android.tools.datatypes.containsWithThreshold
 import android.tools.datatypes.crop
 import android.tools.traces.component.ComponentName
 import androidx.core.graphics.toRect
+import com.android.internal.annotations.VisibleForTesting
 
 /**
  * Represents a single layer with links to its parent and child layers.
@@ -32,7 +33,8 @@ import androidx.core.graphics.toRect
  * Java/Android functionality
  */
 class Layer
-private constructor(
+@VisibleForTesting
+public constructor(
     val name: String,
     val id: Int,
     val parentId: Int,
