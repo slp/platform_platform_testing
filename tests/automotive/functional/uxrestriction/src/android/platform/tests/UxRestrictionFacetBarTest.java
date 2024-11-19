@@ -113,4 +113,32 @@ public class UxRestrictionFacetBarTest {
                         .get()
                         .isAppInForeground(IAutoFacetBarHelper.VERIFY_OPEN_APP.NOTIFICATION));
     }
+
+    @Test
+    public void testRestrictedBluetoothPalette() {
+        mFacetBarHelper.get().clickOnFacetIcon(IAutoFacetBarHelper.FACET_BAR.BLUETOOTH);
+        assertTrue(
+                "Bluetooth palette did not open.",
+                mFacetBarHelper
+                        .get()
+                        .isAppInForeground(IAutoFacetBarHelper.VERIFY_OPEN_APP.BLUETOOTH));
+    }
+
+    @Test
+    public void testRestrictedWifiPalette() {
+        mFacetBarHelper.get().clickOnFacetIcon(IAutoFacetBarHelper.FACET_BAR.WIFI);
+        assertTrue(
+                "Wifi palette did not open.",
+                mFacetBarHelper.get().isAppInForeground(IAutoFacetBarHelper.VERIFY_OPEN_APP.WIFI));
+    }
+
+    @Test
+    public void testRestrictedBrighnessPalette() {
+        mFacetBarHelper.get().clickOnFacetIcon(IAutoFacetBarHelper.FACET_BAR.BRIGHTNESS);
+        assertTrue(
+                "Wifi palette did not open.",
+                mFacetBarHelper
+                        .get()
+                        .isAppInForeground(IAutoFacetBarHelper.VERIFY_OPEN_APP.BRIGHTNESS));
+    }
 }

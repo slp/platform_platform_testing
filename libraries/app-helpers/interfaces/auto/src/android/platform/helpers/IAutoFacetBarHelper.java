@@ -23,7 +23,10 @@ public interface IAutoFacetBarHelper extends IAppHelper {
         PHONE("PHONE"),
         APP_GRID("APP_GRID"),
         HVAC("HVAC"),
-        NOTIFICATION("NOTIFICATION");
+        NOTIFICATION("NOTIFICATION"),
+        BLUETOOTH("BLUETOOTH"),
+        WIFI("WIFI"),
+        BRIGHTNESS("BRIGHTNESS");
 
         private String mFacetIcon;
 
@@ -45,7 +48,10 @@ public interface IAutoFacetBarHelper extends IAppHelper {
         PHONE("PHONE"),
         APP_GRID("APP_GRID"),
         HVAC("HVAC"),
-        NOTIFICATION("NOTIFICATION");
+        NOTIFICATION("NOTIFICATION"),
+        BLUETOOTH("BLUETOOTH"),
+        WIFI("WIFI"),
+        BRIGHTNESS("BRIGHTNESS");
 
         private String mAppResource;
 
