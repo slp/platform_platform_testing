@@ -567,6 +567,21 @@
       "VALUE": "hvac_panel",
       "PACKAGE": "com.android.systemui"
     },
+    "STATUS_BAR_DISPLAY_SETTINGS": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "qc_display_footer_button",
+      "PACKAGE": "com.android.systemui"
+    },
+    "STATUS_BAR_WIFI_SETTINGS": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "qc_connectivity_footer_button",
+      "PACKAGE": "com.android.systemui"
+    },
+    "WIFI_FACET_BUTTON": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "connectivity_panel_button",
+      "PACKAGE": "com.android.systemui"
+    },
     "NOTIFICATION_FACET_BUTTON": {
       "TYPE": "RESOURCE_ID",
       "VALUE": "notifications",

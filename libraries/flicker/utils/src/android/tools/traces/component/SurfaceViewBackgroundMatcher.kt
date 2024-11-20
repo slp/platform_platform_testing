@@ -36,7 +36,7 @@ class SurfaceViewBackgroundMatcher : IComponentMatcher {
     /** {@inheritDoc} */
     override fun layerMatchesAnyOf(layers: Collection<Layer>): Boolean {
         return layers.any {
-            it.name.matches(Regex("^Background for \\w+ SurfaceView"))
+            it.name.matches(Regex("^Background for \\w+ SurfaceView.*$"))
         }
     }
 

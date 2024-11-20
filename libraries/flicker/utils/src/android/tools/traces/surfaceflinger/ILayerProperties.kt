@@ -29,7 +29,7 @@ import android.tools.datatypes.isNotEmpty
  * than the full layers
  */
 interface ILayerProperties {
-    val visibleRegion: Region?
+    val visibleRegion: Region
     val activeBuffer: ActiveBuffer
     val flags: Int
     val bounds: RectF

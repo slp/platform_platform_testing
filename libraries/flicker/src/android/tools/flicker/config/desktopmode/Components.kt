@@ -39,6 +39,14 @@ object Components {
             getDesktopAppForScenario(scenarioInstance.type, associatedTransition)
         }
 
+    val SIMPLE_APP =
+        ComponentTemplate("SIMPLE_APP") {
+            ComponentNameMatcher(
+                "com.android.server.wm.flicker.testapp",
+                "com.android.server.wm.flicker.testapp.SimpleActivity",
+            )
+        }
+
     val NON_RESIZABLE_APP =
         ComponentTemplate("NON_RESIZABLE_APP") {
             ComponentNameMatcher(
@@ -71,6 +79,7 @@ object Components {
                     associatedTransition.changes.first { it.transitMode == TransitionType.CLOSE }
                 FullComponentIdMatcher(change.windowId, change.layerId)
             }
+            ScenarioId("OPEN_UNLIMITED_APPS"),
             ScenarioId("CASCADE_APP") -> {
                 val change =
                     associatedTransition.changes.first { it.transitMode == TransitionType.OPEN }

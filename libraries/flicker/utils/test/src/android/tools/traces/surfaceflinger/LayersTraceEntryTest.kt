@@ -27,7 +27,7 @@ import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runners.MethodSorters
 
-/** Contains [LayerTraceEntry] tests. To run this test: `atest FlickerLibTest:LayersTraceTest` */
+/** Contains [LayerTraceEntry] tests. To run this test: `atest FlickerLibTest:LayersTraceEntryTest` */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class LayersTraceEntryTest {
     @Before
