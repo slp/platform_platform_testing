@@ -100,7 +100,8 @@ object Components {
             ScenarioId("SNAP_RESIZE_LEFT_WITH_BUTTON"),
             ScenarioId("SNAP_RESIZE_RIGHT_WITH_BUTTON"),
             ScenarioId("MAXIMIZE_APP"),
-            ScenarioId("MAXIMIZE_APP_NON_RESIZABLE") -> {
+            ScenarioId("MAXIMIZE_APP_NON_RESIZABLE"),
+            ScenarioId("MINIMIZE_AUTO_PIP_APP") -> {
                 val change = associatedTransition.changes.first()
                 FullComponentIdMatcher(change.windowId, change.layerId)
             }
