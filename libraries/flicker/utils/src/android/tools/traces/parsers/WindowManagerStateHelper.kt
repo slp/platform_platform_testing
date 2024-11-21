@@ -101,11 +101,14 @@ constructor(
     fun getWindowRegion(componentMatcher: IComponentMatcher): Region =
         getWindow(componentMatcher)?.frameRegion ?: Region()
 
+    /** Factory function to create a new [StateSyncBuilder] object from a state helper */
+    fun StateSyncBuilder(): StateSyncBuilder = StateSyncBuilder(deviceDumpSupplier)
+
     /**
      * Class to build conditions for waiting on specific [WindowManagerTrace] and [LayersTrace]
      * conditions
      */
-    inner class StateSyncBuilder {
+    inner class StateSyncBuilder(private val deviceDumpSupplier: Supplier<DeviceStateDump>) {
         private val conditionBuilder = createConditionBuilder()
         private var lastMessage = ""
 
