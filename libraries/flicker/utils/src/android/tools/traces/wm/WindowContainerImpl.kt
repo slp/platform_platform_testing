@@ -34,7 +34,7 @@ class WindowContainerImpl(
     _isVisible: Boolean,
     private val configurationContainer: ConfigurationContainer,
     _children: Collection<WindowContainer>,
-    override val computedZ: Int
+    override val computedZ: Int,
 ) : ConfigurationContainer by configurationContainer, WindowContainer {
     override val id: Int = if (token.isEmpty()) -1 else token.toInt(16)
 
@@ -49,8 +49,10 @@ class WindowContainerImpl(
     override val isVisible: Boolean = _isVisible
     override val name: String
         get() = title
+
     override val stableId: String
         get() = "${this::class.simpleName} $token $title"
+
     override val isFullscreen: Boolean = false
     override val bounds: Rect = Rect()
 

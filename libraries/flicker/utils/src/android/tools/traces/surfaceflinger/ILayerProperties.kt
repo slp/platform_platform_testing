@@ -51,8 +51,10 @@ interface ILayerProperties {
 
     val isScaling: Boolean
         get() = transform.isScaling
+
     val isTranslating: Boolean
         get() = transform.isTranslating
+
     val isRotating: Boolean
         get() = transform.isRotating
 
@@ -125,6 +127,7 @@ interface ILayerProperties {
         get() {
             return fillsColor || drawsShadows
         }
+
     /**
      * Checks if the [Layer] has zero requested or inherited alpha
      *

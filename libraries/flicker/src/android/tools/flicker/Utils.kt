@@ -43,7 +43,7 @@ object Utils {
     @JvmField
     val ALL_MONITORS: List<TraceMonitor> =
         mutableListOf<TraceMonitor>(
-                ScreenRecorder(InstrumentationRegistry.getInstrumentation().targetContext),
+                ScreenRecorder(InstrumentationRegistry.getInstrumentation().targetContext)
             )
             .apply {
                 val perfettoMonitorBuilder = PerfettoTraceMonitor.newBuilder()
@@ -90,7 +90,7 @@ object Utils {
         scenario: Scenario,
         outputDir: File = createTempDirectory().toFile(),
         monitors: List<TraceMonitor> = ALL_MONITORS,
-        actions: Consumer<ResultWriter>
+        actions: Consumer<ResultWriter>,
     ): Reader {
         val writer = ResultWriter().forScenario(scenario).withOutputDir(outputDir).setRunComplete()
         monitors.fold({ actions.accept(writer) }) { action, monitor ->
@@ -115,7 +115,7 @@ fun String.camelToSnakeCase(): String {
 fun isAppTransitionChange(
     transitionChange: TransitionChange,
     layersTrace: LayersTrace?,
-    wmTrace: WindowManagerTrace?
+    wmTrace: WindowManagerTrace?,
 ): Boolean {
     require(layersTrace != null || wmTrace != null) {
         "Requires at least one of wm of layers trace to not be null"

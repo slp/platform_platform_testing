@@ -21,5 +21,5 @@ import android.tools.flicker.assertors.AssertionTemplate
 
 data class AssertionEntry(
     val template: AssertionTemplate,
-    var stabilityGroup: AssertionInvocationGroup
+    var stabilityGroup: AssertionInvocationGroup,
 )

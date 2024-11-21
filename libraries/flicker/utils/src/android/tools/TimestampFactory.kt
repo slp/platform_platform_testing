@@ -24,7 +24,9 @@ class TimestampFactory(private val realTimestampFormatter: (Long) -> String = { 
     }
 
     fun min(): Timestamp = min
+
     fun max(): Timestamp = max
+
     fun empty(): Timestamp = empty
 
     fun from(
@@ -36,7 +38,7 @@ class TimestampFactory(private val realTimestampFormatter: (Long) -> String = { 
             elapsedNanos ?: 0L,
             systemUptimeNanos ?: 0L,
             unixNanos ?: 0L,
-            realTimestampFormatter
+            realTimestampFormatter,
         )
     }
 
@@ -48,7 +50,7 @@ class TimestampFactory(private val realTimestampFormatter: (Long) -> String = { 
         return from(
             (elapsedNanos ?: "0").toLong(),
             (systemUptimeNanos ?: "0").toLong(),
-            (unixNanos ?: "0").toLong()
+            (unixNanos ?: "0").toLong(),
         )
     }
 
@@ -56,7 +58,7 @@ class TimestampFactory(private val realTimestampFormatter: (Long) -> String = { 
         return Timestamp(
             elapsedNanos = elapsedNanos,
             unixNanos = elapsedNanos + elapsedOffsetNanos,
-            realTimestampFormatter = realTimestampFormatter
+            realTimestampFormatter = realTimestampFormatter,
         )
     }
 
@@ -64,7 +66,7 @@ class TimestampFactory(private val realTimestampFormatter: (Long) -> String = { 
         val elapsedNanosLong = elapsedNanos.toLong()
         return from(
             elapsedNanos = elapsedNanosLong,
-            unixNanos = elapsedNanosLong + elapsedOffsetNanos.toLong()
+            unixNanos = elapsedNanosLong + elapsedOffsetNanos.toLong(),
         )
     }
 }

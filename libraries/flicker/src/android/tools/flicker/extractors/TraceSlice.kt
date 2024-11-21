@@ -24,7 +24,7 @@ data class TraceSlice(
     val startTimestamp: Timestamp,
     val endTimestamp: Timestamp,
     val associatedTransition: Transition? = null,
-    val associatedCuj: ICujType? = null
+    val associatedCuj: ICujType? = null,
 ) {
     init {
         require(startTimestamp.hasAllTimestamps) {

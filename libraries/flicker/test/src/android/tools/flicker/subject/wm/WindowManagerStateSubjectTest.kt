@@ -339,8 +339,8 @@ class WindowManagerStateSubjectTest {
                     KeyguardControllerState.from(
                         isAodShowing = false,
                         isKeyguardShowing = false,
-                        keyguardOccludedStates = mapOf()
-                    )
+                        keyguardOccludedStates = mapOf(),
+                    ),
             )
 
         val mockComponent = ComponentNameMatcher("", "Mock")
@@ -406,7 +406,7 @@ class WindowManagerStateSubjectTest {
         val componentMatcher =
             ComponentNameMatcher(
                 "com.android.server.wm.flicker.testapp",
-                "com.android.server.wm.flicker.testapp.NotificationActivity"
+                "com.android.server.wm.flicker.testapp.NotificationActivity",
             )
         WindowManagerTraceSubject(trace, reader)
             .isAppWindowInvisible(componentMatcher)

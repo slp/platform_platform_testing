@@ -52,7 +52,7 @@ class DisplayContent(
     val lastOrientation: Int,
     val cutout: DisplayCutout?,
     val insetsSourceProviders: Array<InsetsSourceProvider>,
-    private val windowContainer: WindowContainer
+    private val windowContainer: WindowContainer,
 ) : WindowContainer by windowContainer {
     override val name: String = displayId.toString()
     override val isVisible: Boolean = false

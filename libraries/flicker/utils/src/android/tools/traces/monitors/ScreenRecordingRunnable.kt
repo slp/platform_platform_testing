@@ -38,7 +38,7 @@ class ScreenRecordingRunnable(
     private val outputFile: File,
     context: Context,
     private val width: Int = 720,
-    private val height: Int = 1280
+    private val height: Int = 1280,
 ) : Runnable {
     private val displayManager = context.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -63,7 +63,7 @@ class ScreenRecordingRunnable(
             inputSurface,
             DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
             null,
-            null
+            null,
         )
     private val muxer = createMuxer()
     private var metadataTrackIndex = -1
@@ -165,7 +165,7 @@ class ScreenRecordingRunnable(
             LOG_TAG,
             "Writing winscope metadata (size=${timestampsMonotonicUs.size} " +
                 ", monotonic timestamps range [us] = " +
-                "${timestampsMonotonicUs.first()}-${timestampsMonotonicUs.last()})"
+                "${timestampsMonotonicUs.first()}-${timestampsMonotonicUs.last()})",
         )
 
         val monotonicTimeNs = TimeUnit.MILLISECONDS.toNanos(SystemClock.uptimeMillis())
@@ -211,7 +211,7 @@ class ScreenRecordingRunnable(
         val displayMode = windowManager.defaultDisplay.mode
         format.setInteger(
             MediaFormat.KEY_COLOR_FORMAT,
-            MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
+            MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface,
         )
         format.setInteger(MediaFormat.KEY_BIT_RATE, BIT_RATE)
         format.setFloat(MediaFormat.KEY_FRAME_RATE, displayMode.refreshRate)

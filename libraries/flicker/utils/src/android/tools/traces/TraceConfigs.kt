@@ -22,7 +22,7 @@ data class TraceConfigs(
     val wmTrace: TraceConfig,
     val layersTrace: TraceConfig,
     val transitionsTrace: TraceConfig,
-    val transactionsTrace: TraceConfig
+    val transactionsTrace: TraceConfig,
 ) {
     fun applyToAll(function: Consumer<TraceConfig>) {
         function.accept(wmTrace)

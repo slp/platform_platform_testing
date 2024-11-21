@@ -18,7 +18,7 @@ package android.tools.device.flicker.rules
 
 @Deprecated(
     "Please use the version in the android.tools.flicker.rules package instead",
-    replaceWith = ReplaceWith("android.tools.flicker.rules.FlickerServiceRule")
+    replaceWith = ReplaceWith("android.tools.flicker.rules.FlickerServiceRule"),
 )
 class FlickerServiceRule(enabled: Boolean = true, failTestOnFlicker: Boolean = enabled) :
     android.tools.flicker.rules.FlickerServiceRule(enabled, failTestOnFlicker)

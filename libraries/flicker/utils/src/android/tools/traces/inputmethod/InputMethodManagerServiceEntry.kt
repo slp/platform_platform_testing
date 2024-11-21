@@ -51,11 +51,12 @@ open class InputMethodManagerServiceEntry(
     val imeWindowVisibility: Int,
     val isShowImeWithHardKeyboard: Boolean,
     val isAccessibilityRequestingNoSoftKeyboard: Boolean,
-    val elapsedTimestamp: Long
+    val elapsedTimestamp: Long,
 ) : TraceEntry {
     override val timestamp = Timestamps.from(systemUptimeNanos = elapsedTimestamp)
     val stableId: String
         get() = this::class.simpleName ?: error("Unable to determine class")
+
     val name: String
         get() = timestamp.toString()
 

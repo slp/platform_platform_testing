@@ -38,12 +38,12 @@ class FocusEvent(
     val reason: String,
     processId: Int,
     uid: String,
-    threadId: Int
+    threadId: Int,
 ) : Event(timestamp, processId, uid, threadId, INPUT_FOCUS_TAG) {
     enum class Type {
         GAINED,
         LOST,
-        REQUESTED
+        REQUESTED,
     }
 
     override fun toString(): String {
@@ -60,7 +60,7 @@ class FocusEvent(
             processId: Int,
             uid: String,
             threadId: Int,
-            data: Collection<String>
+            data: Collection<String>,
         ) =
             FocusEvent(
                 timestamp,
@@ -69,7 +69,7 @@ class FocusEvent(
                 data.drop(1).first().removePrefix("reason="),
                 processId,
                 uid,
-                threadId
+                threadId,
             )
 
         private fun getWindowFromData(data: String): String {

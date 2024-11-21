@@ -34,5 +34,5 @@ val LauncherAllAppsScroll =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )

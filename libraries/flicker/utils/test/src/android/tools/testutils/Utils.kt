@@ -77,7 +77,7 @@ inline fun <reified ExceptionType> assertThrows(r: () -> Unit): ExceptionType {
             t is Exception ->
                 throw AssertionError(
                     "Expected ${ExceptionType::class.java}, but got '${t.javaClass}'",
-                    t
+                    t,
                 )
             // Re-throw Errors and other non-Exception throwables.
             else -> throw t
@@ -148,7 +148,7 @@ fun getWmTraceReaderFromAsset(
                 .parse(
                     session,
                     Timestamps.from(elapsedNanos = from),
-                    Timestamps.from(elapsedNanos = to)
+                    Timestamps.from(elapsedNanos = to),
                 )
         }
     }
@@ -165,7 +165,7 @@ fun getWmTraceReaderFromAsset(
                 Timestamps.from(elapsedNanos = from),
                 Timestamps.from(elapsedNanos = to),
                 addInitialEntry,
-                clearCache = false
+                clearCache = false,
             )
     }
 
@@ -178,7 +178,7 @@ fun getWmTraceReaderFromAsset(
 
     return ParsedTracesReader(
         artifact = TestArtifact(relativePathWithoutExtension),
-        wmTrace = trace
+        wmTrace = trace,
     )
 }
 
@@ -206,7 +206,7 @@ fun getWmDumpReaderFromAsset(relativePathWithoutExtension: String): Reader {
         }
     return ParsedTracesReader(
         artifact = TestArtifact(relativePathWithoutExtension),
-        wmTrace = wmTrace
+        wmTrace = wmTrace,
     )
 }
 
@@ -214,7 +214,7 @@ fun getLayerTraceReaderFromAsset(
     relativePath: String,
     ignoreOrphanLayers: Boolean = true,
     from: Timestamp = Timestamps.min(),
-    to: Timestamp = Timestamps.max()
+    to: Timestamp = Timestamps.max(),
 ): Reader {
     val layersTrace =
         TraceProcessorSession.loadPerfettoTrace(readAsset(relativePath)) { session ->
@@ -271,7 +271,7 @@ fun outputFileName(status: RunStatus) =
 fun createDefaultArtifactBuilder(
     status: RunStatus,
     outputDir: File = createTempDirectory().toFile(),
-    files: Map<ResultArtifactDescriptor, File> = emptyMap()
+    files: Map<ResultArtifactDescriptor, File> = emptyMap(),
 ) =
     ArtifactBuilder()
         .withScenario(TEST_SCENARIO)
@@ -298,6 +298,6 @@ fun newEmptyRootContainer(orientation: Int = 0, layerId: Int = 0) =
             _isVisible = true,
             _children = emptyList(),
             configurationContainer = ConfigurationContainerImpl.EMPTY,
-            computedZ = 0
+            computedZ = 0,
         )
     )

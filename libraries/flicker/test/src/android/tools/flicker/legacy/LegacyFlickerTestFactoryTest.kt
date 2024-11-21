@@ -54,7 +54,7 @@ class LegacyFlickerTestFactoryTest {
                 Rotation.ROTATION_0,
                 Rotation.ROTATION_90,
                 Rotation.ROTATION_180,
-                Rotation.ROTATION_270
+                Rotation.ROTATION_270,
             )
         val actual = LegacyFlickerTestFactory.rotationTests(supportedRotations = rotations)
         // Should have config for each rotation pair

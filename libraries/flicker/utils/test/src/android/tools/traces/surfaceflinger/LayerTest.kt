@@ -66,7 +66,7 @@ class LayerTest {
                 makeLayerWithDefaults(
                         excludeCompositionState = false,
                         visibleRegion = Region(),
-                        activeBuffer = ActiveBuffer.from(100, 100, 1, 0)
+                        activeBuffer = ActiveBuffer.from(100, 100, 1, 0),
                     )
                     .isVisible
             )
@@ -75,7 +75,7 @@ class LayerTest {
                 makeLayerWithDefaults(
                         excludeCompositionState = false,
                         visibleRegion = Region(0, 0, 100, 100),
-                        activeBuffer = ActiveBuffer.from(100, 100, 1, 0)
+                        activeBuffer = ActiveBuffer.from(100, 100, 1, 0),
                     )
                     .isVisible
             )
@@ -88,7 +88,7 @@ class LayerTest {
                 makeLayerWithDefaults(
                         excludeCompositionState = true,
                         bounds = RectF(),
-                        activeBuffer = ActiveBuffer.from(100, 100, 1, 0)
+                        activeBuffer = ActiveBuffer.from(100, 100, 1, 0),
                     )
                     .isVisible
             )
@@ -97,7 +97,7 @@ class LayerTest {
                 makeLayerWithDefaults(
                         excludeCompositionState = true,
                         bounds = RectF(0f, 0f, 100f, 100f),
-                        activeBuffer = ActiveBuffer.from(100, 100, 1, 0)
+                        activeBuffer = ActiveBuffer.from(100, 100, 1, 0),
                     )
                     .isVisible
             )
@@ -107,7 +107,7 @@ class LayerTest {
                         excludeCompositionState = true,
                         visibleRegion = Region(0, 0, 100, 100),
                         bounds = RectF(),
-                        activeBuffer = ActiveBuffer.from(100, 100, 1, 0)
+                        activeBuffer = ActiveBuffer.from(100, 100, 1, 0),
                     )
                     .isVisible
             )
@@ -119,7 +119,7 @@ class LayerTest {
         excludeCompositionState: Boolean = false,
         visibleRegion: Region = Region(),
         bounds: RectF = RectF(),
-        activeBuffer: ActiveBuffer = ActiveBuffer.EMPTY
+        activeBuffer: ActiveBuffer = ActiveBuffer.EMPTY,
     ): Layer {
         return Layer.from(
             "",
@@ -145,7 +145,7 @@ class LayerTest {
             false,
             -1,
             -1,
-            excludeCompositionState
+            excludeCompositionState,
         )
     }
 }

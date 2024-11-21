@@ -34,5 +34,5 @@ val LockscreenTransitionToAod =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )

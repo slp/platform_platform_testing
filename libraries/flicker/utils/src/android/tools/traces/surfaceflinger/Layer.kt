@@ -62,12 +62,16 @@ public constructor(
     private val _coveredBy = mutableListOf<Layer>()
     val children: Collection<Layer>
         get() = _children
+
     val occludedBy: Collection<Layer>
         get() = _occludedBy
+
     val partiallyOccludedBy: Collection<Layer>
         get() = _partiallyOccludedBy
+
     val coveredBy: Collection<Layer>
         get() = _coveredBy
+
     var isMissing: Boolean = false
         internal set
 
@@ -340,7 +344,7 @@ public constructor(
             isRelativeOf: Boolean,
             zOrderRelativeOfId: Int,
             stackId: Int,
-            excludesCompositionState: Boolean
+            excludesCompositionState: Boolean,
         ): Layer {
             val properties =
                 LayerProperties.from(
@@ -362,7 +366,7 @@ public constructor(
                     isRelativeOf,
                     zOrderRelativeOfId,
                     stackId,
-                    excludesCompositionState
+                    excludesCompositionState,
                 )
             return Layer(name, id, parentId, z, currFrame, properties)
         }

@@ -84,7 +84,7 @@ class SetupTeardownRuleTest {
     companion object {
         private fun createRule(
             setupCommands: List<FlickerTestData.() -> Unit>,
-            teardownCommands: List<FlickerTestData.() -> Unit>
+            teardownCommands: List<FlickerTestData.() -> Unit>,
         ): SetupTeardownRule {
             val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
             val mockedFlicker = Mockito.mock(AbstractFlickerTestData::class.java)
@@ -95,7 +95,7 @@ class SetupTeardownRuleTest {
                 instrumentation,
                 setupCommands,
                 teardownCommands,
-                WindowManagerStateHelper()
+                WindowManagerStateHelper(),
             )
         }
 

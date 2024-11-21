@@ -87,7 +87,7 @@ class TransitionsTraceParser :
 
         private fun buildTransition(
             transitionRows: List<Row>,
-            handlerMapping: Map<Int, String>
+            handlerMapping: Map<Int, String>,
         ): Transition {
             val args = Args.build(transitionRows)
             return Transition(
@@ -118,7 +118,7 @@ class TransitionsTraceParser :
                                         it.getChild("window_id")?.getInt()
                                             ?: error(
                                                 "Missing window id ${it.getChild("window_id")}"
-                                            )
+                                            ),
                                     )
                                 }
                                 ?.ifEmpty { null },
@@ -132,7 +132,7 @@ class TransitionsTraceParser :
                         abortTime = args.getChild("shell_abort_time_ns")?.getLong()?.toTimestamp(),
                         handler = args.getChild("handler")?.getInt()?.let { handlerMapping[it] },
                         mergeTarget = args.getChild("merge_target")?.getInt(),
-                    )
+                    ),
             )
         }
 

@@ -91,6 +91,7 @@ class FlickerServiceJUnit4ClassRunnerTest {
         Mockito.verify(notifier, Mockito.atLeast(2))
             .fireTestFinished(ArgumentMatchers.argThat { it.methodName.contains("FaaS") })
     }
+
     /** Below are all the mock test classes uses for testing purposes */
     @RunWith(FlickerServiceJUnit4ClassRunner::class)
     open class SimpleTest {
@@ -130,7 +131,7 @@ class FlickerServiceJUnit4ClassRunnerTest {
                                     object : AssertionTemplate("myBlockingAssertion") {
                                         override fun doEvaluate(
                                             scenarioInstance: ScenarioInstance,
-                                            flicker: FlickerTest
+                                            flicker: FlickerTest,
                                         ) {
                                             flicker.assertWm {
                                                 // Random test
@@ -141,16 +142,16 @@ class FlickerServiceJUnit4ClassRunnerTest {
                                     object : AssertionTemplate("myNonBlockingAssertion") {
                                         override fun doEvaluate(
                                             scenarioInstance: ScenarioInstance,
-                                            flicker: FlickerTest
+                                            flicker: FlickerTest,
                                         ) {
                                             flicker.assertWm {
                                                 // Random test
                                                 visibleWindowsShownMoreThanOneConsecutiveEntry()
                                             }
                                         }
-                                    } to AssertionInvocationGroup.NON_BLOCKING
+                                    } to AssertionInvocationGroup.NON_BLOCKING,
                                 ),
-                            enabled = true
+                            enabled = true,
                         )
                     )
             }

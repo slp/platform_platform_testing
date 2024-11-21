@@ -191,7 +191,7 @@ constructor(
         @JvmOverloads
         fun withFullScreenApp(
             componentMatcher: IComponentMatcher,
-            displayId: Int = Display.DEFAULT_DISPLAY
+            displayId: Int = Display.DEFAULT_DISPLAY,
         ) =
             withFullScreenAppCondition(componentMatcher)
                 .withAppTransitionIdle(displayId)
@@ -207,7 +207,7 @@ constructor(
         @JvmOverloads
         fun withFreeformApp(
             componentMatcher: IComponentMatcher,
-            displayId: Int = Display.DEFAULT_DISPLAY
+            displayId: Int = Display.DEFAULT_DISPLAY,
         ) =
             withFreeformAppCondition(componentMatcher)
                 .withAppTransitionIdle(displayId)
@@ -293,7 +293,7 @@ constructor(
         @JvmOverloads
         fun withActivityRemoved(
             componentMatcher: IComponentMatcher,
-            displayId: Int = Display.DEFAULT_DISPLAY
+            displayId: Int = Display.DEFAULT_DISPLAY,
         ) =
             withAppTransitionIdle(displayId)
                 .add(ConditionsFactory.containsActivity(componentMatcher).negate())
@@ -322,7 +322,7 @@ constructor(
         @JvmOverloads
         fun withWindowSurfaceDisappeared(
             componentMatcher: IComponentMatcher,
-            displayId: Int = Display.DEFAULT_DISPLAY
+            displayId: Int = Display.DEFAULT_DISPLAY,
         ) =
             withAppTransitionIdle(displayId)
                 .add(ConditionsFactory.isWindowSurfaceShown(componentMatcher).negate())
@@ -339,7 +339,7 @@ constructor(
         @JvmOverloads
         fun withWindowSurfaceAppeared(
             componentMatcher: IComponentMatcher,
-            displayId: Int = Display.DEFAULT_DISPLAY
+            displayId: Int = Display.DEFAULT_DISPLAY,
         ) =
             withAppTransitionIdle(displayId)
                 .add(ConditionsFactory.isWindowSurfaceShown(componentMatcher))
@@ -350,9 +350,8 @@ constructor(
          *
          * @param componentMatcher Components to search
          */
-        fun withLayerVisible(
-            componentMatcher: IComponentMatcher
-        ) = add(ConditionsFactory.isLayerVisible(componentMatcher))
+        fun withLayerVisible(componentMatcher: IComponentMatcher) =
+            add(ConditionsFactory.isLayerVisible(componentMatcher))
 
         /**
          * Wait until least one layer matching [componentMatcher] has [expectedRegion]
@@ -437,13 +436,10 @@ constructor(
         fun withKeyguardShowing() = add("withKeyguardShowing") { it.wmState.isKeyguardShowing }
 
         /** Waits until the given app is the top visible app window. */
-        fun withTopVisibleApp(
-            componentMatcher: IComponentMatcher
-        ): StateSyncBuilder {
+        fun withTopVisibleApp(componentMatcher: IComponentMatcher): StateSyncBuilder {
             return add("withTopVisibleApp") {
                 val topVisible = it.wmState.topVisibleAppWindow
-                return@add topVisible != null &&
-                        componentMatcher.windowMatchesAnyOf(topVisible)
+                return@add topVisible != null && componentMatcher.windowMatchesAnyOf(topVisible)
             }
         }
 
@@ -476,6 +472,7 @@ constructor(
                     .setActivityType(WindowConfiguration.ACTIVITY_TYPE_STANDARD)
                     .build()
             )
+
         fun withFreeformAppCondition(componentMatcher: IComponentMatcher) =
             waitForValidStateCondition(
                 WaitForValidActivityState.Builder(componentMatcher)
@@ -495,7 +492,7 @@ constructor(
         /** @return true if it should wait for some activities to become visible. */
         private fun shouldWaitForActivities(
             state: DeviceStateDump,
-            vararg waitForActivitiesVisible: WaitForValidActivityState
+            vararg waitForActivitiesVisible: WaitForValidActivityState,
         ): Boolean {
             if (waitForActivitiesVisible.isEmpty()) {
                 return false

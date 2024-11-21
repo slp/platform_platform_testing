@@ -76,7 +76,7 @@ object ConditionsFactory {
             listOf(
                 isNavOrTaskBarWindowVisible(),
                 isNavOrTaskBarLayerVisible(),
-                isNavOrTaskBarLayerOpaque()
+                isNavOrTaskBarLayerOpaque(),
             )
         )
 
@@ -236,21 +236,21 @@ object ConditionsFactory {
                 hasRotationCondition,
                 isLayerVisible(ComponentNameMatcher.ROTATION).negate(),
                 isLayerVisible(ComponentNameMatcher.BACK_SURFACE).negate(),
-                hasLayersAnimating().negate()
+                hasLayersAnimating().negate(),
             )
         )
     }
 
     fun isWindowVisible(
         componentMatcher: IComponentMatcher,
-        displayId: Int = 0
+        displayId: Int = 0,
     ): Condition<DeviceStateDump> =
         ConditionList(
             containsActivity(componentMatcher),
             containsWindow(componentMatcher),
             isActivityVisible(componentMatcher),
             isWindowSurfaceShown(componentMatcher),
-            isAppTransitionIdle(displayId)
+            isAppTransitionIdle(displayId),
         )
 
     fun isLayerVisible(componentMatcher: IComponentMatcher): Condition<DeviceStateDump> =
@@ -284,7 +284,7 @@ object ConditionsFactory {
 
     fun isLayerTransformFlagSet(
         componentMatcher: IComponentMatcher,
-        transform: Int
+        transform: Int,
     ): Condition<DeviceStateDump> =
         Condition(
             "isLayerTransformFlagSet[" +
@@ -307,7 +307,7 @@ object ConditionsFactory {
             listOf(
                 isLayerTransformFlagSet(layerId, Transform.SCALE_VAL).negate(),
                 isLayerTransformFlagSet(layerId, Transform.TRANSLATE_VAL).negate(),
-                isLayerTransformFlagSet(layerId, Transform.ROTATE_VAL).negate()
+                isLayerTransformFlagSet(layerId, Transform.ROTATE_VAL).negate(),
             )
         )
 
@@ -323,7 +323,7 @@ object ConditionsFactory {
                 result
             },
             isLayerVisible(ComponentNameMatcher.SNAPSHOT).negate(),
-            isLayerVisible(ComponentNameMatcher.SPLASH_SCREEN).negate()
+            isLayerVisible(ComponentNameMatcher.SPLASH_SCREEN).negate(),
         )
     }
 
@@ -354,7 +354,7 @@ object ConditionsFactory {
                 isLayerVisible(ComponentNameMatcher.IME),
                 isLayerOpaque(ComponentNameMatcher.IME),
                 isImeSurfaceShown(),
-                isWindowSurfaceShown(ComponentNameMatcher.IME)
+                isWindowSurfaceShown(ComponentNameMatcher.IME),
             )
         )
 

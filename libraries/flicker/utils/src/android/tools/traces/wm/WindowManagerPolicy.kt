@@ -39,7 +39,7 @@ private constructor(
     val rotation: Rotation = Rotation.ROTATION_0,
     val rotationMode: Int = 0,
     val screenOnFully: Boolean = false,
-    val windowManagerDrawComplete: Boolean = false
+    val windowManagerDrawComplete: Boolean = false,
 ) {
     val isOrientationNoSensor: Boolean
         get() = orientation == SCREEN_ORIENTATION_NOSENSOR
@@ -144,7 +144,7 @@ private constructor(
             rotation: Rotation = Rotation.ROTATION_0,
             rotationMode: Int = 0,
             screenOnFully: Boolean = false,
-            windowManagerDrawComplete: Boolean = false
+            windowManagerDrawComplete: Boolean = false,
         ): WindowManagerPolicy = withCache {
             WindowManagerPolicy(
                 focusedAppToken,
@@ -159,7 +159,7 @@ private constructor(
                 rotation,
                 rotationMode,
                 screenOnFully,
-                windowManagerDrawComplete
+                windowManagerDrawComplete,
             )
         }
     }

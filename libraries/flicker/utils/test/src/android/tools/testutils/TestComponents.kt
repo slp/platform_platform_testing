@@ -26,7 +26,7 @@ object TestComponents {
     val CHROME_FIRST_RUN =
         ComponentNameMatcher(
             "com.android.chrome",
-            "org.chromium.chrome.browser.firstrun.FirstRunActivity"
+            "org.chromium.chrome.browser.firstrun.FirstRunActivity",
         )
 
     val CHROME_SPLASH_SCREEN = ComponentNameMatcher("", "Splash Screen com.android.chrome")
@@ -38,13 +38,13 @@ object TestComponents {
     val IME_ACTIVITY =
         ComponentNameMatcher(
             "com.android.server.wm.flicker.testapp",
-            "com.android.server.wm.flicker.testapp.ImeActivity"
+            "com.android.server.wm.flicker.testapp.ImeActivity",
         )
 
     val LAUNCHER =
         ComponentNameMatcher(
             "com.google.android.apps.nexuslauncher",
-            "com.google.android.apps.nexuslauncher.NexusLauncherActivity"
+            "com.google.android.apps.nexuslauncher.NexusLauncherActivity",
         )
 
     val PIP_OVERLAY = ComponentNameMatcher("", "pip-dismiss-overlay")
@@ -52,13 +52,13 @@ object TestComponents {
     val SIMPLE_APP =
         ComponentNameMatcher(
             "com.android.server.wm.flicker.testapp",
-            "com.android.server.wm.flicker.testapp.SimpleActivity"
+            "com.android.server.wm.flicker.testapp.SimpleActivity",
         )
 
     val NON_RESIZEABLE_APP =
         ComponentNameMatcher(
             "com.android.server.wm.flicker.testapp",
-            "com.android.server.wm.flicker.testapp.NonResizeableActivity"
+            "com.android.server.wm.flicker.testapp.NonResizeableActivity",
         )
 
     private const val SHELL_PKG_NAME = "com.android.wm.shell.flicker.testapp"
@@ -78,6 +78,6 @@ object TestComponents {
     val WALLPAPER =
         ComponentNameMatcher(
             "",
-            "com.breel.wallpapers18.soundviz.wallpaper.variations.SoundVizWallpaperV2"
+            "com.breel.wallpapers18.soundviz.wallpaper.variations.SoundVizWallpaperV2",
         )
 }

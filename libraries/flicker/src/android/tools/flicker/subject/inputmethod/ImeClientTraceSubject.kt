@@ -61,7 +61,7 @@ constructor(val trace: ImeClientTrace, override val reader: Reader? = null) :
     operator fun invoke(
         name: String,
         isOptional: Boolean = false,
-        assertion: AssertionPredicate<ImeClientEntrySubject>
+        assertion: AssertionPredicate<ImeClientEntrySubject>,
     ): ImeClientTraceSubject = apply { addAssertion(name, isOptional, assertion) }
 
     /**

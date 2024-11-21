@@ -34,5 +34,5 @@ val NotificationHeadsUpAppear =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )

@@ -44,7 +44,7 @@ class LegacyFlickerServiceDecoratorTest {
             TestWithParameters(
                 "test",
                 TestClass(TestUtils.DummyTestClassValid::class.java),
-                listOf(TestUtils.VALID_ARGS_EMPTY)
+                listOf(TestUtils.VALID_ARGS_EMPTY),
             )
         val mockTransitionRunner = Mockito.mock(ITransitionRunner::class.java)
         val decorator =
@@ -54,7 +54,7 @@ class LegacyFlickerServiceDecoratorTest {
                 mockTransitionRunner,
                 skipNonBlocking = false,
                 arguments = InstrumentationRegistry.getArguments(),
-                inner = null
+                inner = null,
             )
         var failures = decorator.doValidateConstructor()
         Truth.assertWithMessage("Failure count").that(failures).isEmpty()
@@ -69,7 +69,7 @@ class LegacyFlickerServiceDecoratorTest {
             TestWithParameters(
                 "test",
                 TestClass(LegacyFlickerJUnit4ClassRunnerTest.SimpleFaasTest::class.java),
-                listOf(TestUtils.VALID_ARGS_EMPTY)
+                listOf(TestUtils.VALID_ARGS_EMPTY),
             )
         val transitionRunner = LegacyFlickerJUnit4ClassRunner(test, TEST_SCENARIO).transitionRunner
         val decorator =
@@ -79,7 +79,7 @@ class LegacyFlickerServiceDecoratorTest {
                 transitionRunner,
                 skipNonBlocking = false,
                 arguments = InstrumentationRegistry.getArguments(),
-                inner = null
+                inner = null,
             )
         val methods =
             decorator.getTestMethods(

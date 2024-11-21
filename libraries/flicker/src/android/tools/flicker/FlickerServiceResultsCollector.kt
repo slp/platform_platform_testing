@@ -48,7 +48,7 @@ constructor(
         FlickerService(FlickerConfig().use(FlickerServiceConfig.DEFAULT)),
     instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation(),
     private val collectMetricsPerTest: Boolean = true,
-    private val reportOnlyForPassingTests: Boolean = true
+    private val reportOnlyForPassingTests: Boolean = true,
 ) : BaseMetricListener(), IFlickerServiceResultsCollector {
     private var hasFailedTest = false
     private var testSkipped = false
@@ -153,7 +153,7 @@ constructor(
                 testData,
                 results,
                 testScenario ?: error("Test scenario should not be null"),
-                testData
+                testData,
             )
         }
     }
@@ -177,7 +177,7 @@ constructor(
                 runData,
                 results,
                 testRunScenario ?: error("Test run scenario should not be null"),
-                runData
+                runData,
             )
         }
     }
@@ -185,7 +185,7 @@ constructor(
     private fun collectFlickerMetrics(
         dataRecord: DataRecord,
         reader: Reader,
-        description: Description? = null
+        description: Description? = null,
     ): Collection<AssertionResult>? {
         return errorReportingBlock {
             return@errorReportingBlock try {
@@ -241,7 +241,7 @@ constructor(
 
     private fun collectMetrics(
         data: DataRecord,
-        aggregatedResults: Map<String, AggregatedFlickerResult>
+        aggregatedResults: Map<String, AggregatedFlickerResult>,
     ) {
         val it = aggregatedResults.entries.iterator()
 
@@ -286,7 +286,7 @@ constructor(
         record: DataRecord,
         results: Collection<AssertionResult>?,
         scenario: Scenario,
-        dataRecord: DataRecord
+        dataRecord: DataRecord,
     ) {
         val status = if (executionErrors.isEmpty()) OK_STATUS_CODE else EXECUTION_ERROR_STATUS_CODE
         record.addStringMetric(FAAS_STATUS_KEY, status.toString())

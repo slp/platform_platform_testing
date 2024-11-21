@@ -34,5 +34,5 @@ val SplashscreenExitAnimation =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )

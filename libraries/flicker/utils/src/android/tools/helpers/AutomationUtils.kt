@@ -313,7 +313,7 @@ fun UiDevice.resizeSplitScreen(windowHeightRatio: Rational) {
         divider.visibleBounds.centerY(),
         this.displayWidth / 2,
         destHeight,
-        10
+        10,
     )
     this.wait(Until.findObject(dividerSelector), FIND_TIMEOUT)
     // Wait for animation to complete.

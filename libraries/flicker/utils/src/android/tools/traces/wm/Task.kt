@@ -43,21 +43,25 @@ class Task(
     val createdByOrganizer: Boolean,
     val minWidth: Int,
     val minHeight: Int,
-    private val windowContainer: WindowContainer
+    private val windowContainer: WindowContainer,
 ) : WindowContainer by windowContainer {
     override val isVisible: Boolean = false
     override val name: String = taskId.toString()
     override val isEmpty: Boolean
         get() = tasks.isEmpty() && activities.isEmpty()
+
     override val stableId: String
         get() = "${this::class.simpleName} $token $title $taskId"
 
     val isRootTask: Boolean
         get() = taskId == rootTaskId
+
     val tasks: Collection<Task>
         get() = this.children.reversed().filterIsInstance<Task>()
+
     val taskFragments: Collection<TaskFragment>
         get() = this.children.reversed().filterIsInstance<TaskFragment>()
+
     val activities: Collection<Activity>
         get() = this.children.reversed().filterIsInstance<Activity>()
 
@@ -66,6 +70,7 @@ class Task(
     //       so the indices are inverted
     val topTask: Task?
         get() = tasks.firstOrNull()
+
     val resumedActivities: Collection<String>
         get() {
             val result = mutableListOf<String>()

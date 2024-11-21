@@ -23,10 +23,16 @@ import org.junit.runner.notification.Failure
 
 interface IFlickerServiceResultsCollector {
     val executionErrors: List<Throwable>
+
     fun testStarted(description: Description)
+
     fun testFailure(failure: Failure)
+
     fun testSkipped(description: Description)
+
     fun testFinished(description: Description)
+
     fun resultsForTest(description: Description): Collection<AssertionResult>
+
     fun detectedScenariosForTest(description: Description): Collection<ScenarioId>
 }

@@ -72,5 +72,5 @@ abstract class AssertionTemplate @JvmOverloads constructor(name: String? = null)
 
 data class Assertion(
     val flickerAssertions: List<AssertionData>,
-    val genericAssertions: List<Throwable>
+    val genericAssertions: List<Throwable>,
 )

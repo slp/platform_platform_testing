@@ -59,32 +59,32 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
             INPUT_FOCUS_TAG,
             "Focus entering 111 com.android.phone/" +
                 "com.android.phone.settings.fdn.FdnSetting (server)",
-            "reason=test"
+            "reason=test",
         )
         EventLog.writeEvent(
             INPUT_FOCUS_TAG,
             "Focus leaving 222 com.google.android.apps.nexuslauncher/" +
                 "com.google.android.apps.nexuslauncher.NexusLauncherActivity (server)",
-            "reason=test"
+            "reason=test",
         )
         EventLog.writeEvent(
             INPUT_FOCUS_TAG,
             "Focus entering 333 com.android.phone/" +
                 "com.android.phone.settings.fdn.FdnSetting (server)",
-            "reason=test"
+            "reason=test",
         )
         monitor.start()
         EventLog.writeEvent(
             INPUT_FOCUS_TAG,
             "Focus leaving 4749f88 com.android.phone/" +
                 "com.android.phone.settings.fdn.FdnSetting (server)",
-            "reason=test"
+            "reason=test",
         )
         EventLog.writeEvent(
             INPUT_FOCUS_TAG,
             "Focus entering 7c01447 com.android.phone/" +
                 "com.android.phone.settings.fdn.FdnSetting (server)",
-            "reason=test"
+            "reason=test",
         )
         val writer = newTestResultWriter()
         monitor.stop(writer)
@@ -92,7 +92,7 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
             INPUT_FOCUS_TAG,
             "Focus entering 2aa30cd com.android.phone/" +
                 "com.android.phone.settings.fdn.FdnSetting (server)",
-            "reason=test"
+            "reason=test",
         )
         val result = writer.write()
 
@@ -103,12 +103,12 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
         assertEquals(2, eventLog.focusEvents.size)
         assertEquals(
             "4749f88 com.android.phone/com.android.phone.settings.fdn.FdnSetting (server)",
-            eventLog.focusEvents.first().window
+            eventLog.focusEvents.first().window,
         )
         assertEquals(FocusEvent.Type.LOST, eventLog.focusEvents.first().type)
         assertEquals(
             "7c01447 com.android.phone/com.android.phone.settings.fdn.FdnSetting (server)",
-            eventLog.focusEvents.drop(1).first().window
+            eventLog.focusEvents.drop(1).first().window,
         )
         assertEquals(FocusEvent.Type.GAINED, eventLog.focusEvents.drop(1).first().type)
         assertTrue(
@@ -125,13 +125,13 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
             INPUT_FOCUS_TAG,
             "Focus leaving 11111 com.android.phone/" +
                 "com.android.phone.settings.fdn.FdnSetting (server)",
-            "reason=test"
+            "reason=test",
         )
         EventLog.writeEvent(
             INPUT_FOCUS_TAG,
             "Focus entering 22222 com.android.phone/" +
                 "com.android.phone.settings.fdn.FdnSetting (server)",
-            "reason=test"
+            "reason=test",
         )
         monitor.stop(newTestResultWriter())
 
@@ -140,13 +140,13 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
             INPUT_FOCUS_TAG,
             "Focus leaving 479f88 com.android.phone/" +
                 "com.android.phone.settings.fdn.FdnSetting (server)",
-            "reason=test"
+            "reason=test",
         )
         EventLog.writeEvent(
             INPUT_FOCUS_TAG,
             "Focus entering 7c01447 com.android.phone/" +
                 "com.android.phone.settings.fdn.FdnSetting (server)",
-            "reason=test"
+            "reason=test",
         )
         val writer = newTestResultWriter()
         monitor.stop(writer)
@@ -159,12 +159,12 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
         assertEquals(2, eventLog.focusEvents.size)
         assertEquals(
             "479f88 com.android.phone/com.android.phone.settings.fdn.FdnSetting (server)",
-            eventLog.focusEvents.first().window
+            eventLog.focusEvents.first().window,
         )
         assertEquals(FocusEvent.Type.LOST, eventLog.focusEvents.first().type)
         assertEquals(
             "7c01447 com.android.phone/com.android.phone.settings.fdn.FdnSetting (server)",
-            eventLog.focusEvents.drop(1).first().window
+            eventLog.focusEvents.drop(1).first().window,
         )
         assertEquals(FocusEvent.Type.GAINED, eventLog.focusEvents.drop(1).first().type)
         assertTrue(
@@ -180,19 +180,19 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
             INPUT_FOCUS_TAG,
             "Focus leaving 4749f88 com.android.phone/" +
                 "com.android.phone.settings.fdn.FdnSetting (server)",
-            "reason=test"
+            "reason=test",
         )
         EventLog.writeEvent(
             INPUT_FOCUS_TAG,
             "Focus request 111 com.android.phone/" +
                 "com.android.phone.settings.fdn.FdnSetting (server)",
-            "reason=test"
+            "reason=test",
         )
         EventLog.writeEvent(
             INPUT_FOCUS_TAG,
             "Focus entering 7c01447 com.android.phone/" +
                 "com.android.phone.settings.fdn.FdnSetting (server)",
-            "reason=test"
+            "reason=test",
         )
         val writer = newTestResultWriter()
         monitor.stop(writer)
@@ -205,12 +205,12 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
         assertEquals(2, eventLog.focusEvents.size)
         assertEquals(
             "4749f88 com.android.phone/com.android.phone.settings.fdn.FdnSetting (server)",
-            eventLog.focusEvents.first().window
+            eventLog.focusEvents.first().window,
         )
         assertEquals(FocusEvent.Type.LOST, eventLog.focusEvents.first().type)
         assertEquals(
             "7c01447 com.android.phone/com.android.phone.settings.fdn.FdnSetting (server)",
-            eventLog.focusEvents.drop(1).first().window
+            eventLog.focusEvents.drop(1).first().window,
         )
         assertEquals(FocusEvent.Type.GAINED, eventLog.focusEvents.drop(1).first().type)
         assertTrue(
@@ -227,19 +227,19 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
             INPUT_FOCUS_TAG,
             "Focus leaving 4749f88 com.android.phone/" +
                 "com.android.phone.settings.fdn.FdnSetting (server)",
-            "reason=test"
+            "reason=test",
         )
         EventLog.writeEvent(
             INPUT_FOCUS_TAG,
             "Focus request 111 com.android.phone/" +
                 "com.android.phone.settings.fdn.FdnSetting (server)",
-            "reason=test"
+            "reason=test",
         )
         EventLog.writeEvent(
             INPUT_FOCUS_TAG,
             "Focus entering 7c01447 com.android.phone/" +
                 "com.android.phone.settings.fdn.FdnSetting (server)",
-            "reason=test"
+            "reason=test",
         )
         val writer = newTestResultWriter()
         monitor.stop(writer)
@@ -259,7 +259,7 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
             INPUT_FOCUS_TAG,
             "Focus leaving 4749f88 com.android.phone/" +
                 "com.android.phone.settings.fdn.FdnSetting (server)",
-            "reason=test"
+            "reason=test",
         )
 
         monitor.start()
@@ -268,7 +268,7 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
             INPUT_FOCUS_TAG,
             "Focus entering 7c01447 com.android.phone/" +
                 "com.android.phone.settings.fdn.FdnSetting (server)",
-            "reason=test"
+            "reason=test",
         )
 
         val writer = newTestResultWriter()
@@ -292,7 +292,7 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
             INPUT_FOCUS_TAG,
             "Focus leaving 4749f88 com.android.phone/" +
                 "com.android.phone.settings.fdn.FdnSetting (server)",
-            "reason=test"
+            "reason=test",
         )
 
         writer.setTransitionStartTime(now())
@@ -301,7 +301,7 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
             INPUT_FOCUS_TAG,
             "Focus entering 7c01447 com.android.phone/" +
                 "com.android.phone.settings.fdn.FdnSetting (server)",
-            "reason=test"
+            "reason=test",
         )
 
         writer.setTransitionEndTime(now())
@@ -310,7 +310,7 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
             INPUT_FOCUS_TAG,
             "Focus entering 7c01447 com.android.phone/" +
                 "com.android.phone.settings.fdn.FdnSetting (server)",
-            "reason=test"
+            "reason=test",
         )
 
         monitor.stop(writer)
@@ -334,14 +334,14 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
             now.unixNanos,
             now.elapsedNanos,
             now.systemUptimeNanos,
-            ""
+            "",
         )
         now = now()
         EventLogTags.writeJankCujEventsEndRequest(
             CujType.CUJ_NOTIFICATION_APP_START.ordinal,
             now.unixNanos,
             now.elapsedNanos,
-            now.systemUptimeNanos
+            now.systemUptimeNanos,
         )
         monitor.stop(writer)
         val result = writer.write()
@@ -363,19 +363,19 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
             now.unixNanos,
             now.elapsedNanos,
             now.systemUptimeNanos,
-            ""
+            "",
         )
         EventLogTags.writeJankCujEventsEndRequest(
             CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL.id,
             now.unixNanos + 1,
             now.elapsedNanos + 1,
-            now.systemUptimeNanos + 1
+            now.systemUptimeNanos + 1,
         )
         EventLogTags.writeJankCujEventsCancelRequest(
             CujType.CUJ_LOCKSCREEN_LAUNCH_CAMERA.id,
             now.unixNanos + 2,
             now.elapsedNanos + 2,
-            now.systemUptimeNanos + 2
+            now.systemUptimeNanos + 2,
         )
         monitor.stop(writer)
         val result = writer.write()
@@ -416,21 +416,21 @@ class EventLogMonitorTest : TraceMonitorTest<EventLogMonitor>() {
             now.unixNanos,
             now.elapsedNanos,
             now.systemUptimeNanos,
-            ""
+            "",
         )
         now = now()
         EventLogTags.writeJankCujEventsEndRequest(
             unknownCujId,
             now.unixNanos,
             now.elapsedNanos,
-            now.systemUptimeNanos
+            now.systemUptimeNanos,
         )
         now = now()
         EventLogTags.writeJankCujEventsCancelRequest(
             unknownCujId,
             now.unixNanos,
             now.elapsedNanos,
-            now.systemUptimeNanos
+            now.systemUptimeNanos,
         )
         monitor.stop(writer)
         val result = writer.write()

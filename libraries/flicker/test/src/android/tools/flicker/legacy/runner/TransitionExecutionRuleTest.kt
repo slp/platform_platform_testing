@@ -189,7 +189,7 @@ class TransitionExecutionRuleTest {
 
         private fun createRule(
             commands: List<FlickerTestData.() -> Unit>,
-            writer: ResultWriter = newTestResultWriter()
+            writer: ResultWriter = newTestResultWriter(),
         ): TransitionExecutionRule {
             val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
             val mockedFlicker = Mockito.mock(AbstractFlickerTestData::class.java)
@@ -201,7 +201,7 @@ class TransitionExecutionRuleTest {
                 TEST_SCENARIO,
                 instrumentation,
                 commands,
-                WindowManagerStateHelper()
+                WindowManagerStateHelper(),
             )
         }
 

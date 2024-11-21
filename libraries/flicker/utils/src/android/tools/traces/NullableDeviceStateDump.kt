@@ -28,5 +28,5 @@ open class NullableDeviceStateDump(
     open val wmState: WindowManagerState?,
 
     /** Parsed [LayerTraceEntry] */
-    open val layerState: LayerTraceEntry?
+    open val layerState: LayerTraceEntry?,
 )

@@ -101,7 +101,7 @@ constructor(
     /** {@inheritDoc} */
     override fun visibleRegion(
         componentMatcher: IComponentMatcher?,
-        useCompositionEngineRegionOnly: Boolean
+        useCompositionEngineRegionOnly: Boolean,
     ): RegionSubject {
         val selectedLayers =
             if (componentMatcher == null) {
@@ -119,7 +119,7 @@ constructor(
                     .forSubject(this)
                     .forInvalidElement(
                         componentMatcher?.toLayerIdentifier() ?: "<any>",
-                        expectElementExists = true
+                        expectElementExists = true,
                     )
                     .addExtraDescription(
                         Fact("Use composition engine region", useCompositionEngineRegionOnly)
@@ -145,7 +145,7 @@ constructor(
                     .forSubject(this)
                     .forInvalidElement(
                         componentMatcher.toLayerIdentifier(),
-                        expectElementExists = true
+                        expectElementExists = true,
                     )
             throw InvalidElementException(errorMsgBuilder)
         }
@@ -162,7 +162,7 @@ constructor(
                     .forSubject(this)
                     .forInvalidElement(
                         componentMatcher.toLayerIdentifier(),
-                        expectElementExists = false
+                        expectElementExists = false,
                     )
                     .setActual(foundElements.map { Fact("Found", it) })
             throw InvalidElementException(errorMsgBuilder)
@@ -186,7 +186,7 @@ constructor(
                     .forSubject(this)
                     .forIncorrectVisibility(
                         componentMatcher.toLayerIdentifier(),
-                        expectElementVisible = true
+                        expectElementVisible = true,
                     )
                     .setActual(failedEntries)
             throw IncorrectVisibilityException(errorMsgBuilder)
@@ -217,7 +217,7 @@ constructor(
                 .forSubject(this)
                 .forIncorrectVisibility(
                     componentMatcher.toLayerIdentifier(),
-                    expectElementVisible = false
+                    expectElementVisible = false,
                 )
                 .setActual(failedEntries)
         throw IncorrectVisibilityException(errorMsgBuilder)
@@ -236,13 +236,13 @@ constructor(
             if (matchingSubjects.isEmpty()) {
                 errorMsgBuilder.forInvalidElement(
                     componentMatcher.toLayerIdentifier(),
-                    expectElementExists = true
+                    expectElementExists = true,
                 )
             } else {
                 errorMsgBuilder
                     .forIncorrectVisibility(
                         "Splash screen for ${componentMatcher.toLayerIdentifier()}",
-                        expectElementVisible = true
+                        expectElementVisible = true,
                     )
                     .setActual(
                         matchingSubjects

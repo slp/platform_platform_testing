@@ -35,5 +35,5 @@ val SplitScreenExit =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(TransitionFilters.EXIT_SPLIT_SCREEN_FILTER)
                 )
-                .build()
+                .build(),
     )

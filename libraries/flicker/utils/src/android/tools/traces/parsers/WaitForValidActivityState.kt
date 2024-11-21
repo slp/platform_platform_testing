@@ -25,7 +25,7 @@ data class WaitForValidActivityState(
     @JvmField val windowIdentifier: String?,
     @JvmField val stackId: Int,
     @JvmField val windowingMode: Int,
-    @JvmField val activityType: Int
+    @JvmField val activityType: Int,
 ) {
     constructor(
         activityName: IComponentMatcher
@@ -34,7 +34,7 @@ data class WaitForValidActivityState(
         windowIdentifier = activityName.toWindowIdentifier(),
         stackId = ActivityTaskManager.INVALID_STACK_ID,
         windowingMode = WindowConfiguration.WINDOWING_MODE_UNDEFINED,
-        activityType = WindowConfiguration.ACTIVITY_TYPE_UNDEFINED
+        activityType = WindowConfiguration.ACTIVITY_TYPE_UNDEFINED,
     )
 
     private constructor(
@@ -44,7 +44,7 @@ data class WaitForValidActivityState(
         windowIdentifier = builder.windowIdentifier,
         stackId = builder.stackId,
         windowingMode = builder.windowingMode,
-        activityType = builder.activityType
+        activityType = builder.activityType,
     )
 
     override fun toString(): String {

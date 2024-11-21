@@ -18,11 +18,7 @@ package android.tools.traces.wm
 
 import android.tools.traces.surfaceflinger.LayersTrace
 
-class TransitionChange(
-    val transitMode: TransitionType,
-    val layerId: Int,
-    val windowId: Int,
-) {
+class TransitionChange(val transitMode: TransitionType, val layerId: Int, val windowId: Int) {
 
     override fun toString(): String = Formatter(null, null).format(this)
 

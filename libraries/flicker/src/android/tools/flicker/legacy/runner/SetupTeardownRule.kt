@@ -45,7 +45,7 @@ class SetupTeardownRule(
     private val instrumentation: Instrumentation,
     private val setupCommands: List<FlickerTestData.() -> Any> = flicker.transitionSetup,
     private val teardownCommands: List<FlickerTestData.() -> Any> = flicker.transitionTeardown,
-    private val wmHelper: WindowManagerStateHelper = flicker.wmHelper
+    private val wmHelper: WindowManagerStateHelper = flicker.wmHelper,
 ) : TestRule {
     override fun apply(base: Statement?, description: Description?): Statement {
         return object : Statement() {

@@ -37,7 +37,7 @@ class ComponentNameMatcher(var component: ComponentName) : IComponentNameMatcher
 
     constructor(
         packageName: String,
-        className: String
+        className: String,
     ) : this(ComponentName(packageName, className))
 
     constructor(className: String) : this("", className)
@@ -157,8 +157,7 @@ class ComponentNameMatcher(var component: ComponentName) : IComponentNameMatcher
 
         @JvmField val SPLIT_DIVIDER = ComponentNameMatcher("", "StageCoordinatorSplitDivider")
 
-        @JvmField
-        val DEFAULT_TASK_DISPLAY_AREA = ComponentNameMatcher("", "DefaultTaskDisplayArea")
+        @JvmField val DEFAULT_TASK_DISPLAY_AREA = ComponentNameMatcher("", "DefaultTaskDisplayArea")
 
         /**
          * Creates a component matcher from a window or layer name.

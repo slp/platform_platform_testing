@@ -38,7 +38,7 @@ data class LegacyFlickerTest(
     private val runnerProvider: (Scenario) -> AssertionRunner = {
         val reader = resultReaderProvider(it)
         CachedAssertionRunner(it, reader)
-    }
+    },
 ) : BaseFlickerTest() {
     var scenario: ScenarioImpl = ScenarioBuilder().createEmptyScenario() as ScenarioImpl
         private set

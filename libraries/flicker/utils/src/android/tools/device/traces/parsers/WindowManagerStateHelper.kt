@@ -21,7 +21,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 
 @Deprecated(
     "Please use the version in the android.tools.traces.parsers package instead",
-    replaceWith = ReplaceWith("android.tools.traces.parsers.WindowManagerStateHelper")
+    replaceWith = ReplaceWith("android.tools.traces.parsers.WindowManagerStateHelper"),
 )
 class WindowManagerStateHelper
 @JvmOverloads

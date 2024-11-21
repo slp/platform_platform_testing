@@ -55,7 +55,7 @@ interface FlickerTest {
 
     fun assertWmVisibleRegion(
         componentMatcher: IComponentMatcher,
-        assertion: RegionTraceSubject.() -> Unit
+        assertion: RegionTraceSubject.() -> Unit,
     )
 
     /**
@@ -99,7 +99,7 @@ interface FlickerTest {
     fun assertLayersVisibleRegion(
         componentMatcher: IComponentMatcher,
         useCompositionEngineRegionOnly: Boolean = true,
-        assertion: RegionTraceSubject.() -> Unit
+        assertion: RegionTraceSubject.() -> Unit,
     )
 
     /**

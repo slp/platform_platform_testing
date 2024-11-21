@@ -18,8 +18,12 @@ package android.tools
 
 interface ICache {
     data class Backup(val cache: MutableMap<Any, Any>)
+
     fun <T : Any> get(element: T): T
+
     fun clear()
+
     fun backup(): Backup
+
     fun restore(backup: Backup)
 }

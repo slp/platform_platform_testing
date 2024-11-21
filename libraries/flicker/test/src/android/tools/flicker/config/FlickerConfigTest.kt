@@ -58,7 +58,7 @@ class FlickerConfigTest {
         registry.registerScenario(
             SOME_SCENARIO,
             EXTRACTOR_FOR_SOME_SCENARIO,
-            mapOf(assertion to AssertionInvocationGroup.BLOCKING)
+            mapOf(assertion to AssertionInvocationGroup.BLOCKING),
         )
 
         val entries = registry.getEntries()
@@ -109,7 +109,7 @@ class FlickerConfigTest {
         registry.registerScenario(
             SOME_SCENARIO,
             EXTRACTOR_FOR_SOME_SCENARIO,
-            mapOf(assertion to AssertionInvocationGroup.BLOCKING)
+            mapOf(assertion to AssertionInvocationGroup.BLOCKING),
         )
         registry.unregisterAssertion(SOME_SCENARIO, assertion.id)
 
@@ -141,12 +141,12 @@ class FlickerConfigTest {
         registry.registerScenario(
             SOME_SCENARIO,
             EXTRACTOR_FOR_SOME_SCENARIO,
-            mapOf(assertion to AssertionInvocationGroup.BLOCKING)
+            mapOf(assertion to AssertionInvocationGroup.BLOCKING),
         )
         registry.overrideAssertionStabilityGroup(
             SOME_SCENARIO,
             assertion.id,
-            AssertionInvocationGroup.NON_BLOCKING
+            AssertionInvocationGroup.NON_BLOCKING,
         )
 
         val entries = registry.getEntries()
@@ -188,12 +188,12 @@ class FlickerConfigTest {
         registry.registerScenario(
             SOME_SCENARIO,
             EXTRACTOR_FOR_SOME_SCENARIO,
-            mapOf(assertion1 to AssertionInvocationGroup.BLOCKING)
+            mapOf(assertion1 to AssertionInvocationGroup.BLOCKING),
         )
         registry.registerAssertions(
             SOME_SCENARIO,
             assertion2,
-            stabilityGroup = AssertionInvocationGroup.NON_BLOCKING
+            stabilityGroup = AssertionInvocationGroup.NON_BLOCKING,
         )
 
         val entries = registry.getEntries()
@@ -250,7 +250,7 @@ class FlickerConfigTest {
         registry.registerScenario(
             SOME_SCENARIO,
             EXTRACTOR_FOR_SOME_SCENARIO,
-            mapOf(assertion to AssertionInvocationGroup.BLOCKING)
+            mapOf(assertion to AssertionInvocationGroup.BLOCKING),
         )
 
         val error =
@@ -258,7 +258,7 @@ class FlickerConfigTest {
                 registry.registerScenario(
                     SOME_SCENARIO,
                     EXTRACTOR_FOR_SOME_SCENARIO,
-                    mapOf(assertion to AssertionInvocationGroup.BLOCKING)
+                    mapOf(assertion to AssertionInvocationGroup.BLOCKING),
                 )
             }
         Truth.assertThat(error)
@@ -280,7 +280,7 @@ class FlickerConfigTest {
         registry.registerScenario(
             SOME_SCENARIO,
             EXTRACTOR_FOR_SOME_SCENARIO,
-            mapOf(assertion to AssertionInvocationGroup.BLOCKING)
+            mapOf(assertion to AssertionInvocationGroup.BLOCKING),
         )
 
         val error =
@@ -328,12 +328,12 @@ class FlickerConfigTest {
         registry.registerScenario(
             SOME_SCENARIO,
             EXTRACTOR_FOR_SOME_SCENARIO,
-            mapOf(assertion to AssertionInvocationGroup.BLOCKING)
+            mapOf(assertion to AssertionInvocationGroup.BLOCKING),
         )
         registry.registerScenario(
             SOME_OTHER_SCENARIO,
             EXTRACTOR_FOR_SOME_OTHER_SCENARIO,
-            mapOf(assertion to AssertionInvocationGroup.BLOCKING)
+            mapOf(assertion to AssertionInvocationGroup.BLOCKING),
         )
     }
 
@@ -347,7 +347,7 @@ class FlickerConfigTest {
                     }
                 },
             assertions = mapOf(),
-            enabled = true
+            enabled = true,
         )
     }
 

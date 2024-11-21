@@ -34,7 +34,7 @@ object TransitionFilters {
         ts.filter { t ->
             t.changes.any {
                 it.transitMode == TransitionType.OPEN || // cold launch
-                it.transitMode == TO_FRONT // warm launch
+                    it.transitMode == TO_FRONT // warm launch
             }
         }
     }
@@ -129,10 +129,10 @@ object TransitionFilters {
                         it.wmData.merge(
                             WmTransitionData(
                                 createTime = createTimeAdjustedForTolerance,
-                                sendTime = createTimeAdjustedForTolerance
+                                sendTime = createTimeAdjustedForTolerance,
                             )
                         ),
-                    shellData = it.shellData
+                    shellData = it.shellData,
                 )
             }
 
@@ -179,7 +179,7 @@ object TransitionFilters {
                     type = transition.wmData.type,
                     changes = listOf(closingAppChange, openingAppChange),
                 ),
-                transition.shellData
+                transition.shellData,
             )
         )
     }
@@ -190,8 +190,7 @@ object TransitionFilters {
                 entry.flattenedLayers.firstOrNull { layer ->
                     ComponentNameMatcher.LAUNCHER.or(ComponentNameMatcher.AOSP_LAUNCHER)
                         .layerMatchesAnyOf(layer)
-                }
-                    ?: return@any false
+                } ?: return@any false
 
             var curLayer = launcherLayer
             while (!curLayer.isTask && curLayer.parent != null) {

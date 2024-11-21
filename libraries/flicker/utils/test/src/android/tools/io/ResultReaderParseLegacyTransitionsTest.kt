@@ -29,7 +29,7 @@ class ResultReaderParseLegacyTransitionsTest : BaseResultReaderTestParseTrace() 
     override val assetFiles =
         mapOf(
             TraceType.LEGACY_WM_TRANSITION to TestTraces.LegacyTransitionTrace.WM_FILE,
-            TraceType.LEGACY_SHELL_TRANSITION to TestTraces.LegacyTransitionTrace.SHELL_FILE
+            TraceType.LEGACY_SHELL_TRANSITION to TestTraces.LegacyTransitionTrace.SHELL_FILE,
         )
     override val traceName = "Transitions trace"
     override val startTimeTrace = TestTraces.LegacyTransitionTrace.START_TIME

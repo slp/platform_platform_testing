@@ -38,7 +38,7 @@ interface IStandardAppHelper : IComponentNameMatcher {
     fun launchViaIntent(
         expectedPackageName: String = "",
         action: String? = null,
-        stringExtras: Map<String, String> = mapOf()
+        stringExtras: Map<String, String> = mapOf(),
     )
 
     /**
@@ -54,7 +54,7 @@ interface IStandardAppHelper : IComponentNameMatcher {
             wmHelper
                 .StateSyncBuilder()
                 .add(ConditionsFactory.isWMStateComplete())
-                .withAppTransitionIdle()
+                .withAppTransitionIdle(),
     )
 
     /**
@@ -69,7 +69,7 @@ interface IStandardAppHelper : IComponentNameMatcher {
             wmHelper
                 .StateSyncBuilder()
                 .add(ConditionsFactory.isWMStateComplete())
-                .withAppTransitionIdle()
+                .withAppTransitionIdle(),
     )
 
     fun isAvailable(): Boolean

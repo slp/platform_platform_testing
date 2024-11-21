@@ -68,7 +68,7 @@ internal fun getTraceReaderFromScenario(scenario: String): Reader {
             LegacyTransitionTraceParser()
                 .parse(
                     scenarioTraces.wmTransitions.readBytes(),
-                    scenarioTraces.shellTransitions.readBytes()
+                    scenarioTraces.shellTransitions.readBytes(),
                 ),
         transactionsTrace = transactionsTrace,
         eventLog = EventLogParser().parse(scenarioTraces.eventLog.readBytes()),
@@ -87,7 +87,7 @@ fun getScenarioTraces(scenario: String): FlickerBuilder.TraceFiles {
             "layers_and_transactions_trace$PERFETTO_EXT" to { perfettoTrace = it },
             "wm_transition_trace$WINSCOPE_EXT" to { wmTransitionTrace = it },
             "shell_transition_trace$WINSCOPE_EXT" to { shellTransitionTrace = it },
-            "eventlog$WINSCOPE_EXT" to { eventLog = it }
+            "eventlog$WINSCOPE_EXT" to { eventLog = it },
         )
     for ((traceFileName, resultSetter) in traces.entries) {
         val traceBytes = readAsset("scenarios/$scenario/$traceFileName")
@@ -109,7 +109,7 @@ fun createMockedFlicker(
     setup: List<FlickerTestData.() -> Unit> = emptyList(),
     teardown: List<FlickerTestData.() -> Unit> = emptyList(),
     transitions: List<FlickerTestData.() -> Unit> = emptyList(),
-    extraMonitor: ITransitionMonitor? = null
+    extraMonitor: ITransitionMonitor? = null,
 ): FlickerTestData {
     val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
     val uiDevice: UiDevice = UiDevice.getInstance(instrumentation)
@@ -117,7 +117,7 @@ fun createMockedFlicker(
     val monitors: MutableList<ITransitionMonitor> =
         mutableListOf(
             WindowManagerTraceMonitor(),
-            PerfettoTraceMonitor.newBuilder().enableLayersTrace().build()
+            PerfettoTraceMonitor.newBuilder().enableLayersTrace().build(),
         )
     extraMonitor?.let { monitors.add(it) }
     Mockito.`when`(mockedFlicker.wmHelper).thenReturn(WindowManagerStateHelper())

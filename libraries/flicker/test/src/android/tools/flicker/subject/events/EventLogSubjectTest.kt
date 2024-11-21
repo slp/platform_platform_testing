@@ -45,7 +45,7 @@ class EventLogSubjectTest {
                                 "test",
                                 0,
                                 "0",
-                                0
+                                0,
                             ),
                             FocusEvent(
                                 Timestamps.from(unixNanos = 0),
@@ -54,7 +54,7 @@ class EventLogSubjectTest {
                                 "test",
                                 0,
                                 "0",
-                                0
+                                0,
                             ),
                             FocusEvent(
                                 Timestamps.from(unixNanos = 0),
@@ -63,7 +63,7 @@ class EventLogSubjectTest {
                                 "test",
                                 0,
                                 "0",
-                                0
+                                0,
                             ),
                             FocusEvent(
                                 Timestamps.from(unixNanos = 0),
@@ -72,10 +72,10 @@ class EventLogSubjectTest {
                                 "test",
                                 0,
                                 "0",
-                                0
-                            )
+                                0,
+                            ),
                         )
-                    )
+                    ),
             )
         val subjectsParser = SubjectsParser(reader)
 
