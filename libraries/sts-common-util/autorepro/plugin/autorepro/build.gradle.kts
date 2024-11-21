@@ -54,10 +54,6 @@ version = "1.0.0-alpha1"
 // Define the individual sub-plugins
 gradlePlugin {
     plugins {
-        create("basePlugin") {
-            id = "com.android.security.autorepro.base"
-            implementationClass = "com.android.security.autorepro.BasePlugin"
-        }
         create("submissionPlugin") {
             id = "com.android.security.autorepro.submission"
             implementationClass = "com.android.security.autorepro.SubmissionPlugin"

@@ -55,7 +55,7 @@ class JavaHostTestPlugin : Plugin<Project> {
                     val writer = BufferedWriter(task.outputs.files.singleFile.writer())
                     // Note: this module has no extension so using Kotlin Unit as void/null
                     val moduleManifest =
-                        BasePlugin.ModuleManifest<Unit>(project, "JavaHostTest", Unit)
+                        PluginBase.ModuleManifest<Unit>(project, "JavaHostTest", Unit)
                     writer.use { out -> out.write(Gson().toJson(moduleManifest)) }
                 }
             }
@@ -72,10 +72,10 @@ class JavaHostTestPlugin : Plugin<Project> {
                 task.into(project.layout.buildDirectory.dir("android-sts/testcases"))
             }
         val copyTestcasesResourcesTasks =
-            BasePlugin.Abi.entries.map { abi -> Pair(abi, copyTestcasesResourcesTask) }
+            PluginBase.Abi.entries.map { abi -> Pair(abi, copyTestcasesResourcesTask) }
 
-        project.plugins.apply("com.android.security.autorepro.base")
-        BasePlugin.applyConfiguration(
+        // The artifact will be published to the "testResource" configuration.
+        PluginBase.applyConfiguration(
             project = project,
             sourceDirectoryArtifact = project.layout.projectDirectory.dir("src/main"),
             manifestArtifact = writeManifestTask,
