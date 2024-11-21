@@ -418,7 +418,7 @@ public class StatusBarHelperImpl extends AbstractStandardAppHelper implements IA
     @Override
     public String getCurrentTimeWithTimeZone(String timezone) {
         ZonedDateTime currentTimeInZone = ZonedDateTime.now(ZoneId.of(timezone));
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mma");
         String time = currentTimeInZone.format(formatter);
         // To trim the 0 prefixed to match the clock time in Status bar
         String timePattern = "^0+(?!$)";
