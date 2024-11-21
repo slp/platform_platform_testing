@@ -20,7 +20,10 @@ package {
 
 filegroup {
     name: "flickerlib-helpers-src",
-    srcs: ["src/android/tools/**/helpers/*.kt"],
+    srcs: [
+        "src/android/tools/**/helpers/*.kt",
+        "src/android/tools/**/helpers/*.java",
+    ],
 }
 
 java_library {

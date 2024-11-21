@@ -37,7 +37,7 @@ class NetflixAppHelper(
     pkgManager: PackageManager = instrumentation.context.packageManager,
     appName: String = getNetflixLauncherName(pkgManager),
     appComponent: IComponentNameMatcher = getNetflixComponent(pkgManager),
-) : StandardAppHelper(instrumentation, appName, appComponent) {
+) : BasePipAppHelper(instrumentation, appName, appComponent) {
 
     fun waitForVideoPlaying() {
         getPauseButton()

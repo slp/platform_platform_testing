@@ -37,7 +37,7 @@ constructor(
     pkgManager: PackageManager = instrumentation.context.packageManager,
     appName: String = getMapLauncherName(pkgManager),
     appComponent: IComponentNameMatcher = getMapComponent(pkgManager),
-) : StandardAppHelper(instrumentation, appName, appComponent) {
+) : BasePipAppHelper(instrumentation, appName, appComponent) {
 
     /** Search for a specific query in Maps and select the first address matching the query */
     fun doSearch(query: String) {
