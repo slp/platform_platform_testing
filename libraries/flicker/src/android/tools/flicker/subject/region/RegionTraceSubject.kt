@@ -19,6 +19,7 @@ package android.tools.flicker.subject.region
 import android.graphics.Rect
 import android.graphics.Region
 import android.tools.flicker.subject.FlickerTraceSubject
+import android.tools.function.AssertionPredicate
 import android.tools.io.Reader
 import android.tools.traces.region.RegionTrace
 
@@ -26,7 +27,9 @@ import android.tools.traces.region.RegionTrace
  * Subject for [RegionTrace] objects, used to make assertions over behaviors that occur on a
  * sequence of regions.
  */
-class RegionTraceSubject(val trace: RegionTrace, override val reader: Reader? = null) :
+class RegionTraceSubject
+@JvmOverloads
+constructor(val trace: RegionTrace, override val reader: Reader? = null) :
     FlickerTraceSubject<RegionSubject>(), IRegionSubject {
 
     override val subjects by lazy { trace.entries.map { RegionSubject(it, it.timestamp, reader) } }
@@ -173,4 +176,11 @@ class RegionTraceSubject(val trace: RegionTrace, override val reader: Reader? = 
     override fun hasSameTopPosition(displayRect: Rect): RegionTraceSubject = apply {
         addAssertion("hasSameTopPosition($displayRect)") { it.hasSameTopPosition(displayRect) }
     }
+
+    @JvmOverloads
+    operator fun invoke(
+        name: String,
+        isOptional: Boolean = false,
+        assertion: AssertionPredicate<RegionSubject>,
+    ): RegionTraceSubject = apply { addAssertion(name, isOptional, assertion) }
 }

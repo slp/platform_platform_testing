@@ -20,6 +20,7 @@ import android.tools.Timestamp
 import android.tools.flicker.assertions.Fact
 import android.tools.flicker.subject.FlickerSubject
 import android.tools.flicker.subject.region.RegionSubject
+import android.tools.function.AssertionPredicate
 import android.tools.io.Reader
 import android.tools.traces.wm.WindowState
 
@@ -41,10 +42,12 @@ import android.tools.traces.wm.WindowState
  *        { myCustomAssertion(this) }
  * ```
  */
-class WindowStateSubject(
-    override val reader: Reader? = null,
+class WindowStateSubject
+@JvmOverloads
+constructor(
     override val timestamp: Timestamp,
-    val windowState: WindowState
+    val windowState: WindowState,
+    override val reader: Reader? = null,
 ) : FlickerSubject() {
     val isVisible: Boolean = windowState.isVisible
     val isInvisible: Boolean = !windowState.isVisible
@@ -55,8 +58,8 @@ class WindowStateSubject(
     override val selfFacts = listOf(Fact("Window title", windowState.title))
 
     /** If the [windowState] exists, executes a custom [assertion] on the current subject */
-    operator fun invoke(assertion: (WindowState) -> Unit): WindowStateSubject = apply {
-        assertion(this.windowState)
+    operator fun invoke(assertion: AssertionPredicate<WindowState>): WindowStateSubject = apply {
+        assertion.verify(this.windowState)
     }
 
     override fun toString(): String {

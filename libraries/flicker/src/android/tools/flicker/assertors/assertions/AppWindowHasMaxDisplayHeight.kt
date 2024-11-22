@@ -27,7 +27,7 @@ class AppWindowHasMaxDisplayHeight(private val component: ComponentTemplate) :
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
         flicker.assertWmEnd {
             val expectedBounds = WindowUtils.getInsetDisplayBounds(scenarioInstance.startRotation)
-            visibleRegion(component.build(scenarioInstance))
+            visibleRegion(component.get(scenarioInstance))
                 .hasSameTopPosition(expectedBounds)
                 .hasSameBottomPosition(expectedBounds)
         }

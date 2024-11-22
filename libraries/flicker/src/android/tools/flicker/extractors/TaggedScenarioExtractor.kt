@@ -34,7 +34,7 @@ class TaggedScenarioExtractor(
     private val ignoreIfNoMatchingTransition: Boolean = false,
 ) : ScenarioExtractor {
     companion object {
-        val LOG_TAG = "FlickerTaggedScenarioExtractor"
+        const val LOG_TAG = "FlickerTaggedScenarioExtractor"
     }
 
     override fun extract(reader: Reader): List<TraceSlice> {

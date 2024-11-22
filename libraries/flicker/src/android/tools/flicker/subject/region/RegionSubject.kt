@@ -28,6 +28,7 @@ import android.tools.datatypes.uncoveredRegion
 import android.tools.flicker.subject.FlickerSubject
 import android.tools.flicker.subject.exceptions.ExceptionMessageBuilder
 import android.tools.flicker.subject.exceptions.IncorrectRegionException
+import android.tools.function.AssertionPredicate
 import android.tools.io.Reader
 import android.tools.traces.region.RegionEntry
 import androidx.core.graphics.toRect
@@ -36,13 +37,16 @@ import kotlin.math.abs
 /**
  * Subject for [Region] objects, used to make assertions over behaviors that occur on a rectangle.
  */
-class RegionSubject(
+class RegionSubject
+@JvmOverloads
+constructor(
     val regionEntry: RegionEntry,
     override val timestamp: Timestamp,
     override val reader: Reader? = null,
 ) : FlickerSubject(), IRegionSubject {
 
     /** Custom constructor for existing android regions */
+    @JvmOverloads
     constructor(
         region: Region?,
         timestamp: Timestamp,
@@ -50,6 +54,7 @@ class RegionSubject(
     ) : this(RegionEntry(region ?: Region(), timestamp), timestamp, reader)
 
     /** Custom constructor for existing rects */
+    @JvmOverloads
     constructor(
         rect: Rect?,
         timestamp: Timestamp,
@@ -57,6 +62,7 @@ class RegionSubject(
     ) : this(Region(rect ?: Rect()), timestamp, reader)
 
     /** Custom constructor for existing rects */
+    @JvmOverloads
     constructor(
         rect: RectF?,
         timestamp: Timestamp,
@@ -64,6 +70,7 @@ class RegionSubject(
     ) : this(rect?.toRect(), timestamp, reader)
 
     /** Custom constructor for existing regions */
+    @JvmOverloads
     constructor(
         regions: Collection<Region>,
         timestamp: Timestamp,
@@ -107,6 +114,10 @@ class RegionSubject(
                     .setActual(regionEntry.region)
             throw IncorrectRegionException(errorMsgBuilder)
         }
+    }
+
+    operator fun invoke(assertion: AssertionPredicate<Region>): RegionSubject = apply {
+        assertion.verify(regionEntry.region)
     }
 
     /** Subtracts [other] from this subject [region] */

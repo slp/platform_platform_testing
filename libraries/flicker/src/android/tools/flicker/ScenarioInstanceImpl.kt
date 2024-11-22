@@ -28,7 +28,9 @@ import android.tools.traces.events.ICujType
 import android.tools.traces.wm.Transition
 import android.tools.withTracing
 
-data class ScenarioInstanceImpl(
+data class ScenarioInstanceImpl
+@JvmOverloads
+constructor(
     override val config: FlickerConfigEntry,
     override val startRotation: Rotation,
     override val endRotation: Rotation,
@@ -74,6 +76,7 @@ data class ScenarioInstanceImpl(
     override fun toString() = key
 
     companion object {
+        @JvmStatic
         fun fromSlice(
             traceSlice: TraceSlice,
             reader: Reader,

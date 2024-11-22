@@ -29,10 +29,9 @@ class AppWindowReplacesLauncherAsTopWindow(private val component: ComponentTempl
     AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
+        val matcher = component.get(scenarioInstance)
         flicker.assertWm {
-            isAppWindowOnTop(ComponentNameMatcher.LAUNCHER)
-                .then()
-                .isAppWindowOnTop(component.build(scenarioInstance))
+            isAppWindowOnTop(ComponentNameMatcher.LAUNCHER).then().isAppWindowOnTop(matcher)
         }
     }
 }

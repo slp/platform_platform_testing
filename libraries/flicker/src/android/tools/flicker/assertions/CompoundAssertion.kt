@@ -16,8 +16,11 @@
 
 package android.tools.flicker.assertions
 
+import android.tools.function.AssertionPredicate
+
 /** Utility class to store assertions composed of multiple individual assertions */
-class CompoundAssertion<T>(assertion: (T) -> Unit, name: String, optional: Boolean) : Assertion<T> {
+class CompoundAssertion<T>(assertion: AssertionPredicate<T>, name: String, optional: Boolean) :
+    Assertion<T> {
     private val assertions = mutableListOf<NamedAssertion<T>>()
 
     init {
@@ -63,7 +66,7 @@ class CompoundAssertion<T>(assertion: (T) -> Unit, name: String, optional: Boole
     }
 
     /** Adds a new assertion to the list */
-    fun add(assertion: (T) -> Unit, name: String, optional: Boolean) {
+    fun add(assertion: AssertionPredicate<T>, name: String, optional: Boolean) {
         assertions.add(NamedAssertion(assertion, name, optional))
     }
 

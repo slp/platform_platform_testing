@@ -27,7 +27,7 @@ class AppWindowHasMaxBoundsInOnlyOneDimension(private val component: ComponentTe
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
         flicker.assertWmEnd {
             val maxDisplayBounds = WindowUtils.getInsetDisplayBounds(scenarioInstance.startRotation)
-            val windowBounds = visibleRegion(component.build(scenarioInstance)).region.bounds
+            val windowBounds = visibleRegion(component.get(scenarioInstance)).region.bounds
 
             val hasMaxHeight =
                 windowBounds.top == maxDisplayBounds.top &&

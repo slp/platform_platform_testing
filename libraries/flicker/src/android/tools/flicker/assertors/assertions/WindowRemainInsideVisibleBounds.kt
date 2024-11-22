@@ -30,8 +30,7 @@ class WindowRemainInsideVisibleBounds(private val component: ComponentTemplate) 
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
         val displayBounds = Rect() // TODO: Get display bounds from wmSubject
-        flicker.assertWm {
-            visibleRegion(component.build(scenarioInstance)).coversAtMost(displayBounds)
-        }
+        val matcher = component.get(scenarioInstance)
+        flicker.assertWm { visibleRegion(matcher).coversAtMost(displayBounds) }
     }
 }

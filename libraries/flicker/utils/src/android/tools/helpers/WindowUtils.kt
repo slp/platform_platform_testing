@@ -64,6 +64,7 @@ object WindowUtils {
      *
      * @param requestedRotation Device rotation
      */
+    @JvmStatic
     fun getDisplayBounds(requestedRotation: Rotation): Rect {
         return displayBoundsCache[requestedRotation]
             ?: let {
@@ -84,6 +85,7 @@ object WindowUtils {
             }
     }
 
+    @JvmStatic
     fun getInsetDisplayBounds(requestedRotation: Rotation): Rect {
         val currState = getCurrentStateDump(clearCacheAfterParsing = false)
         val display = currState.wmState.getDefaultDisplay() ?: error("Missing physical display")
@@ -138,6 +140,7 @@ object WindowUtils {
      *
      * @param display the main display
      */
+    @JvmStatic
     fun getExpectedStatusBarPosition(display: DisplayContent): Region {
         val height = getExpectedStatusBarHeight(display)
         return Region(0, 0, display.displayRect.width(), height)
@@ -148,6 +151,7 @@ object WindowUtils {
      *
      * @param display the main display
      */
+    @JvmStatic
     fun getNavigationBarPosition(display: Display): Region {
         return getNavigationBarPosition(display, isGesturalNavigationEnabled)
     }
@@ -158,6 +162,7 @@ object WindowUtils {
      * @param display the main display
      * @param isGesturalNavigation whether gestural navigation is enabled
      */
+    @JvmStatic
     fun getNavigationBarPosition(display: Display, isGesturalNavigation: Boolean): Region {
         val navBarWidth = getDimensionPixelSize("navigation_bar_width")
         val displayHeight = display.layerStackSpace.height()
@@ -183,6 +188,7 @@ object WindowUtils {
      *
      * @param requestedRotation Device rotation
      */
+    @JvmStatic
     fun estimateNavigationBarPosition(requestedRotation: Rotation): Region {
         val displayBounds = displayBounds
         val displayWidth: Int
@@ -220,12 +226,14 @@ object WindowUtils {
             return resources.getInteger(resourceId) == 2
         }
 
+    @JvmStatic
     fun getDimensionPixelSize(resourceName: String): Int {
         val resourceId = resources.getIdentifier(resourceName, "dimen", "android")
         return resources.getDimensionPixelSize(resourceId)
     }
 
     /** Gets the navigation bar frame height */
+    @JvmStatic
     fun getNavigationBarFrameHeight(rotation: Rotation, isGesturalNavigation: Boolean): Int {
         return if (rotation.isRotated()) {
             if (isGesturalNavigation) {

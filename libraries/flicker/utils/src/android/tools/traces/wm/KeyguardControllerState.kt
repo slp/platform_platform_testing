@@ -55,6 +55,7 @@ private constructor(
     }
 
     companion object {
+        @JvmStatic
         fun from(
             isAodShowing: Boolean,
             isKeyguardShowing: Boolean,

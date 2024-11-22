@@ -26,11 +26,13 @@ import android.tools.flicker.subject.exceptions.InvalidElementException
 import android.tools.flicker.subject.exceptions.InvalidPropertyException
 import android.tools.flicker.subject.exceptions.SubjectAssertionError
 import android.tools.flicker.subject.region.RegionSubject
+import android.tools.function.AssertionPredicate
 import android.tools.io.Reader
 import android.tools.traces.component.ComponentNameMatcher
 import android.tools.traces.component.IComponentMatcher
 import android.tools.traces.wm.WindowManagerState
 import android.tools.traces.wm.WindowState
+import java.util.function.Predicate
 
 /**
  * Subject for [WindowManagerState] objects, used to make assertions over behaviors that occur on a
@@ -56,14 +58,16 @@ import android.tools.traces.wm.WindowState
  *        .invoke { myCustomAssertion(this) }
  * ```
  */
-class WindowManagerStateSubject(
+class WindowManagerStateSubject
+@JvmOverloads
+constructor(
     val wmState: WindowManagerState,
     override val reader: Reader? = null,
     val trace: WindowManagerTraceSubject? = null,
 ) : FlickerSubject(), IWindowManagerSubject<WindowManagerStateSubject, RegionSubject> {
     override val timestamp = wmState.timestamp
 
-    val subjects by lazy { wmState.windowStates.map { WindowStateSubject(reader, timestamp, it) } }
+    val subjects by lazy { wmState.windowStates.map { WindowStateSubject(timestamp, it, reader) } }
 
     val appWindows: List<WindowStateSubject>
         get() = subjects.filter { wmState.appWindows.contains(it.windowState) }
@@ -84,10 +88,9 @@ class WindowManagerStateSubject(
         get() = subjects.filter { wmState.visibleAppWindows.contains(it.windowState) }
 
     /** Executes a custom [assertion] on the current subject */
-    operator fun invoke(assertion: (WindowManagerState) -> Unit): WindowManagerStateSubject =
-        apply {
-            assertion(this.wmState)
-        }
+    operator fun invoke(
+        assertion: AssertionPredicate<WindowManagerState>
+    ): WindowManagerStateSubject = apply { assertion.verify(this.wmState) }
 
     /** {@inheritDoc} */
     override fun isEmpty(): WindowManagerStateSubject = apply {
@@ -458,9 +461,7 @@ class WindowManagerStateSubject(
     /** {@inheritDoc} */
     override fun isKeyguardShowing(): WindowManagerStateSubject = apply {
         check { "Keyguard or AOD showing" }
-            .that(
-                wmState.isKeyguardShowing || wmState.isAodShowing,
-            )
+            .that(wmState.isKeyguardShowing || wmState.isAodShowing)
             .isEqual(true)
     }
 
@@ -473,34 +474,6 @@ class WindowManagerStateSubject(
     override fun isNonAppWindowInvisible(
         componentMatcher: IComponentMatcher
     ): WindowManagerStateSubject = apply { checkWindowIsInvisible(nonAppWindows, componentMatcher) }
-
-    private fun checkWindowIsVisible(
-        subjectList: List<WindowStateSubject>,
-        componentMatcher: IComponentMatcher
-    ) {
-        // Check existence of window.
-        contains(subjectList, componentMatcher)
-
-        val foundWindows =
-            subjectList.filter { componentMatcher.windowMatchesAnyOf(it.windowState) }
-
-        val visibleWindows =
-            wmState.visibleWindows.filter { visibleWindow ->
-                foundWindows.any { it.windowState == visibleWindow }
-            }
-
-        if (visibleWindows.isEmpty()) {
-            val errorMsgBuilder =
-                ExceptionMessageBuilder()
-                    .forSubject(this)
-                    .forIncorrectVisibility(
-                        componentMatcher.toWindowIdentifier(),
-                        expectElementVisible = true
-                    )
-                    .setActual(foundWindows.map { Fact("Is invisible", it.name) })
-            throw IncorrectVisibilityException(errorMsgBuilder)
-        }
-    }
 
     private fun checkWindowIsInvisible(
         subjectList: List<WindowStateSubject>,
@@ -705,8 +678,8 @@ class WindowManagerStateSubject(
      *
      * @param predicate to search for a subject
      */
-    fun windowState(predicate: (WindowState) -> Boolean): WindowStateSubject? =
-        subjects.firstOrNull { predicate(it.windowState) }
+    fun windowState(predicate: Predicate<WindowState>): WindowStateSubject? =
+        subjects.firstOrNull { predicate.test(it.windowState) }
 
     override fun toString(): String {
         return "WindowManagerStateSubject($wmState)"

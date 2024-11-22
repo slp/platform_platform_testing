@@ -30,6 +30,8 @@ class ActiveBuffer private constructor(width: Int, height: Int, val stride: Int,
     companion object {
         val EMPTY: ActiveBuffer
             get() = withCache { ActiveBuffer(width = 0, height = 0, stride = 0, format = 0) }
+
+        @JvmStatic
         fun from(width: Int, height: Int, stride: Int, format: Int): ActiveBuffer = withCache {
             ActiveBuffer(width, height, stride, format)
         }

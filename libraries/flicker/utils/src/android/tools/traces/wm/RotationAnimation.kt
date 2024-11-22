@@ -23,6 +23,7 @@ enum class RotationAnimation(val value: Int) {
     ROTATION_ANIMATION_SEAMLESS(3);
 
     companion object {
+        @JvmStatic
         fun fromName(name: String?): RotationAnimation? {
             return name?.let { RotationAnimation.values().find { it.name == name } }
         }

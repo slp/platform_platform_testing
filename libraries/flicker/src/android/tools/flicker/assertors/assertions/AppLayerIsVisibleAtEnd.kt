@@ -31,7 +31,7 @@ class AppLayerIsVisibleAtEnd(private val component: ComponentTemplate) :
         flicker.assertLayersEnd {
             isVisible(
                 ComponentNameMatcher.SNAPSHOT.or(ComponentNameMatcher.SPLASH_SCREEN)
-                    .or(component.build(scenarioInstance))
+                    .or(component.get(scenarioInstance))
             )
         }
     }

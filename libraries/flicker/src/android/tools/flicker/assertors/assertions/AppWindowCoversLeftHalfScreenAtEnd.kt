@@ -30,7 +30,7 @@ class AppWindowCoversLeftHalfScreenAtEnd(private val component: ComponentTemplat
                 WindowUtils.getInsetDisplayBounds(scenarioInstance.startRotation).apply {
                     right = centerX()
                 }
-            visibleRegion(component.build(scenarioInstance)).coversExactly(expectedBounds)
+            visibleRegion(component.get(scenarioInstance)).coversExactly(expectedBounds)
         }
     }
 }

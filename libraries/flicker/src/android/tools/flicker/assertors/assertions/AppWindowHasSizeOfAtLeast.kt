@@ -31,7 +31,7 @@ class AppWindowHasSizeOfAtLeast(
         flicker.assertLayersEnd {
             val minimumSize = Region(0, 0, minimumWidth, minimumHeight)
 
-            visibleRegion(component.build(scenarioInstance)).notSmallerThan(minimumSize)
+            visibleRegion(component.get(scenarioInstance)).notSmallerThan(minimumSize)
         }
     }
 }

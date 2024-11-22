@@ -24,6 +24,6 @@ class AppWindowOnTopAtEnd(private val component: ComponentTemplate) :
     AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
-        flicker.assertWmEnd { isAppWindowOnTop(component.build(scenarioInstance)) }
+        flicker.assertWmEnd { isAppWindowOnTop(component.get(scenarioInstance)) }
     }
 }
