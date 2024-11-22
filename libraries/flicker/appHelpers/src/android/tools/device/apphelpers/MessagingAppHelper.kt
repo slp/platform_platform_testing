@@ -21,6 +21,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.tools.traces.component.ComponentNameMatcher
+import android.tools.traces.component.IComponentNameMatcher
 import androidx.test.platform.app.InstrumentationRegistry
 
 /**
@@ -32,13 +33,10 @@ class MessagingAppHelper
 @JvmOverloads
 constructor(
     instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation(),
-    pkgManager: PackageManager = instrumentation.context.packageManager
-) :
-    StandardAppHelper(
-        instrumentation,
-        getMessagesName(pkgManager),
-        getMessagesComponent(pkgManager),
-    ) {
+    pkgManager: PackageManager = instrumentation.context.packageManager,
+    appName: String = getMessagesName(pkgManager),
+    appComponent: IComponentNameMatcher = getMessagesComponent(pkgManager),
+) : StandardAppHelper(instrumentation, appName, appComponent) {
     override val openAppIntent =
         pkgManager.getLaunchIntentForPackage(packageName) ?: error("Unable to find intent for SMS")
 
