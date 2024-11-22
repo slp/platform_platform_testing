@@ -43,9 +43,6 @@ class AppTestPlugin : Plugin<Project> {
         val namespace = "com.android.security"
         val appTest = project.extensions.create("appTest", AppTestExtension::class.java)
 
-        // The APK artifact will be published to the "testResource" configuration
-        project.plugins.apply("com.android.security.autorepro.base")
-
         val writeManifestTask =
             project.tasks.register("writeManifestTask") { task ->
                 task.outputs.file(
@@ -54,7 +51,7 @@ class AppTestPlugin : Plugin<Project> {
                 task.doLast {
                     val writer = BufferedWriter(task.outputs.files.singleFile.writer())
                     val moduleManifest =
-                        BasePlugin.ModuleManifest<AppTestExtension>(project, "AppTest", appTest)
+                        PluginBase.ModuleManifest<AppTestExtension>(project, "AppTest", appTest)
                     writer.use { out -> out.write(Gson().toJson(moduleManifest)) }
                 }
             }
@@ -144,8 +141,10 @@ class AppTestPlugin : Plugin<Project> {
                         }
 
                     val copyAppTestcaseResourceTasks =
-                        BasePlugin.Abi.entries.map { abi -> Pair(abi, copyAppTestcaseResourceTask) }
-                    BasePlugin.applyConfiguration(
+                        PluginBase.Abi.entries.map { abi -> Pair(abi, copyAppTestcaseResourceTask) }
+
+                    // The APK artifact will be published to the "testResource" configuration.
+                    PluginBase.applyConfiguration(
                         project = project,
                         sourceDirectoryArtifact = project.layout.projectDirectory.dir("src/main"),
                         manifestArtifact = writeManifestTask,
