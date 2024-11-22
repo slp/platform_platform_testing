@@ -15,11 +15,10 @@
  */
 package com.android.security.autorepro
 
-import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.attributes.Attribute
 
-class BasePlugin : Plugin<Project> {
+class PluginBase {
     class AbiAttributes(name: String, bitness: Int) {
         val name = name
         val bitness = bitness
@@ -42,6 +41,16 @@ class BasePlugin : Plugin<Project> {
             manifestArtifact: Any,
             resourceArtifacts: List<Pair<Abi, Any>>,
         ) {
+            // Export a configuration for users to add dependencies.
+            // "testResource" represents Soong modules for the Tradefed testcases/ directory.
+            // See "android_test_helper_app" and "cc_test" Soong modules.
+            // Dependencies should map 1:1 to tradefed Android.bp files for easy reconstruction.
+            project.configurations.create(AUTOREPRO_TESTCASES_RESOURCE_CONFIGURATION_NAME) {
+                configuration ->
+                configuration.isCanBeConsumed = true
+                configuration.isCanBeResolved = false
+            }
+
             val testResourceConfiguration =
                 project.configurations.getByName(AUTOREPRO_TESTCASES_RESOURCE_CONFIGURATION_NAME)
             val abiAttribute = Attribute.of("com.android.security.autorepro.abi", Abi::class.java)
@@ -68,18 +77,6 @@ class BasePlugin : Plugin<Project> {
                     }
                 }
             }
-        }
-    }
-
-    override fun apply(project: Project) {
-        // Export a configuration for users to add dependencies.
-        // "testResource" represents Soong modules for the Tradefed testcases/ directory.
-        // See "android_test_helper_app" and "cc_test" Soong modules.
-        // Dependencies should map 1:1 to tradefed Android.bp files for easy reconstruction.
-        project.configurations.create(AUTOREPRO_TESTCASES_RESOURCE_CONFIGURATION_NAME) {
-            configuration ->
-            configuration.isCanBeConsumed = true
-            configuration.isCanBeResolved = false
         }
     }
 

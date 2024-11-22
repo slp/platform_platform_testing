@@ -36,7 +36,6 @@ class NdkTestPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val nativeTest = project.extensions.create("nativeTest", NdkTestExtension::class.java)
 
-        project.plugins.apply("com.android.security.autorepro.base")
         val ndkTest = project.extensions.create("appTest", NdkTestExtension::class.java)
 
         val writeManifestTask =
@@ -47,7 +46,7 @@ class NdkTestPlugin : Plugin<Project> {
                 task.doLast {
                     val writer = BufferedWriter(task.outputs.files.singleFile.writer())
                     val moduleManifest =
-                        BasePlugin.ModuleManifest<NdkTestExtension>(project, "NdkTest", ndkTest)
+                        PluginBase.ModuleManifest<NdkTestExtension>(project, "NdkTest", ndkTest)
                     writer.use { out -> out.write(Gson().toJson(moduleManifest)) }
                 }
             }
@@ -79,7 +78,7 @@ class NdkTestPlugin : Plugin<Project> {
                 if (variantName == "debug") {
                     val aarDir = variant.artifacts.get(SingleArtifact.AAR)
                     val copyNdkTestcaseResourceTasks =
-                        BasePlugin.Abi.entries.map { abi ->
+                        PluginBase.Abi.entries.map { abi ->
                             val abiName = abi.attr.name
                             val aarPrefabPath =
                                 "prefab/modules/$projectName/libs/android.$abiName/$projectName"
@@ -109,7 +108,9 @@ class NdkTestPlugin : Plugin<Project> {
                                 }
                             Pair(abi, copyNdkTestcaseResourceTask)
                         }
-                    BasePlugin.applyConfiguration(
+
+                    // The artifact will be published to the "testResource" configuration.
+                    PluginBase.applyConfiguration(
                         project = project,
                         sourceDirectoryArtifact = project.layout.projectDirectory.dir("src"),
                         manifestArtifact = writeManifestTask,
