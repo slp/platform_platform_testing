@@ -19,6 +19,7 @@ package android.tools.traces.component
 import android.tools.traces.surfaceflinger.Layer
 import android.tools.traces.wm.Activity
 import android.tools.traces.wm.WindowContainer
+import java.util.function.Predicate
 
 interface IComponentMatcher {
     fun or(other: IComponentMatcher): IComponentMatcher {
@@ -103,7 +104,7 @@ interface IComponentMatcher {
      *         defined execution of it.
      * ```
      */
-    fun check(layers: Collection<Layer>, condition: (Collection<Layer>) -> Boolean): Boolean
+    fun check(layers: Collection<Layer>, condition: Predicate<Collection<Layer>>): Boolean
 
     fun filterLayers(layers: Collection<Layer>): Collection<Layer> =
         layers.filter { layerMatchesAnyOf(it) }

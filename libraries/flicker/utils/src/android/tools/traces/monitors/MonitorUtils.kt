@@ -76,7 +76,7 @@ fun withWMTracing(
     logFrequency: WindowManagerConfig.LogFrequency =
         WindowManagerConfig.LogFrequency.LOG_FREQUENCY_FRAME,
     debugFile: File? = null,
-    predicate: () -> Unit,
+    predicate: Runnable,
 ): WindowManagerTrace {
     val reader =
         PerfettoTraceMonitor.newBuilder()
@@ -103,7 +103,7 @@ fun withWMTracing(
 fun withSFTracing(
     flags: List<SurfaceFlingerLayersConfig.TraceFlag>? = null,
     debugFile: File? = null,
-    predicate: () -> Unit,
+    predicate: Runnable,
 ): LayersTrace {
     val reader =
         PerfettoTraceMonitor.newBuilder()
@@ -125,7 +125,7 @@ fun withSFTracing(
  * @param predicate Commands to execute
  * @throws UnsupportedOperationException If tracing is already activated
  */
-fun withTransactionsTracing(debugFile: File? = null, predicate: () -> Unit): TransactionsTrace {
+fun withTransactionsTracing(debugFile: File? = null, predicate: Runnable): TransactionsTrace {
     val reader =
         PerfettoTraceMonitor.newBuilder()
             .enableTransactionsTrace()
@@ -166,7 +166,7 @@ fun withTracing(
             }
             .toList(),
     debugFile: File? = null,
-    predicate: () -> Unit,
+    predicate: Runnable,
 ): Reader {
     val tmpFile = File.createTempFile("recordTraces", "")
     val writer =
@@ -176,7 +176,7 @@ fun withTracing(
 
     try {
         traceMonitors.forEach { it.start() }
-        predicate()
+        predicate.run()
     } finally {
         traceMonitors.forEach { it.stop(writer) }
     }
@@ -193,7 +193,7 @@ fun withTracing(
  * @return a pair containing the WM and SF traces
  * @throws UnsupportedOperationException If tracing is already activated
  */
-fun recordTraces(predicate: () -> Unit): ResultReader {
+fun recordTraces(predicate: Runnable): ResultReader {
     return PerfettoTraceMonitor.newBuilder()
         .enableLayersTrace()
         .enableWindowManagerTrace()

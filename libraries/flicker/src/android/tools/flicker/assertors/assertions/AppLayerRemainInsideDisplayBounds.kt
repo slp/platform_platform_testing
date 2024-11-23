@@ -27,12 +27,11 @@ class AppLayerRemainInsideDisplayBounds(private val component: ComponentTemplate
     AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
+        val matcher = component.get(scenarioInstance)
         flicker.assertLayers {
             containsAtLeastOneDisplay().invoke("appLayerRemainInsideDisplayBounds") { subject ->
                 subject.entry.displays.forEach { display ->
-                    subject
-                        .visibleRegion(component.build(scenarioInstance))
-                        .coversAtMost(display.layerStackSpace)
+                    subject.visibleRegion(matcher).coversAtMost(display.layerStackSpace)
                 }
             }
         }

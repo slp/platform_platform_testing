@@ -49,7 +49,7 @@ class AppWindowHasDesktopModeInitialBoundsAtTheEnd(private val component: Compon
             // Position the task in screen bounds
             outBounds.offset(xOffset, yOffset)
 
-            visibleRegion(component.build(scenarioInstance)).coversExactly(outBounds)
+            visibleRegion(component.get(scenarioInstance)).coversExactly(outBounds)
         }
     }
 }

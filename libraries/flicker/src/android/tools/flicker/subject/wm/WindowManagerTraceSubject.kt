@@ -19,12 +19,14 @@ package android.tools.flicker.subject.wm
 import android.tools.Rotation
 import android.tools.flicker.subject.FlickerTraceSubject
 import android.tools.flicker.subject.region.RegionTraceSubject
+import android.tools.function.AssertionPredicate
 import android.tools.io.Reader
 import android.tools.traces.component.ComponentNameMatcher
 import android.tools.traces.component.IComponentMatcher
 import android.tools.traces.region.RegionTrace
 import android.tools.traces.wm.WindowManagerTrace
 import android.tools.traces.wm.WindowState
+import java.util.function.Predicate
 
 /**
  * Subject for [WindowManagerTrace] objects, used to make assertions over behaviors that occur
@@ -51,10 +53,9 @@ import android.tools.traces.wm.WindowState
  *    }
  * ```
  */
-class WindowManagerTraceSubject(
-    val trace: WindowManagerTrace,
-    override val reader: Reader? = null
-) :
+class WindowManagerTraceSubject
+@JvmOverloads
+constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) :
     FlickerTraceSubject<WindowManagerStateSubject>(),
     IWindowManagerSubject<WindowManagerTraceSubject, RegionTraceSubject> {
 
@@ -106,8 +107,8 @@ class WindowManagerTraceSubject(
      *
      * To search
      */
-    fun windowStates(predicate: (WindowState) -> Boolean): List<WindowStateSubject> {
-        return subjects.mapNotNull { it.windowState { window -> predicate(window) } }
+    fun windowStates(predicate: Predicate<WindowState>): List<WindowStateSubject> {
+        return subjects.mapNotNull { it.windowState { window -> predicate.test(window) } }
     }
 
     /** {@inheritDoc} */
@@ -586,7 +587,7 @@ class WindowManagerTraceSubject(
     operator fun invoke(
         name: String,
         isOptional: Boolean = false,
-        assertion: (WindowManagerStateSubject) -> Unit
+        assertion: AssertionPredicate<WindowManagerStateSubject>,
     ): WindowManagerTraceSubject = apply { addAssertion(name, isOptional, assertion) }
 
     /** Run the assertions for all trace entries within the specified time range */

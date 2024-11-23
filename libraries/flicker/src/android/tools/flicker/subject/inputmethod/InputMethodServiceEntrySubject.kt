@@ -17,6 +17,7 @@
 package android.tools.flicker.subject.inputmethod
 
 import android.tools.flicker.subject.FlickerSubject
+import android.tools.function.AssertionPredicate
 import android.tools.io.Reader
 import android.tools.traces.inputmethod.InputMethodServiceEntry
 import android.tools.traces.inputmethod.InputMethodServiceTrace
@@ -33,7 +34,9 @@ import android.tools.traces.inputmethod.InputMethodServiceTrace
  *      .invoke { myCustomAssertion(this) }
  * ```
  */
-class InputMethodServiceEntrySubject(
+class InputMethodServiceEntrySubject
+@JvmOverloads
+constructor(
     val entry: InputMethodServiceEntry,
     val trace: InputMethodServiceTrace?,
     override val reader: Reader? = null
@@ -42,8 +45,8 @@ class InputMethodServiceEntrySubject(
 
     /** Executes a custom [assertion] on the current subject */
     operator fun invoke(
-        assertion: (InputMethodServiceEntry) -> Unit
-    ): InputMethodServiceEntrySubject = apply { assertion(this.entry) }
+        assertion: AssertionPredicate<InputMethodServiceEntry>
+    ): InputMethodServiceEntrySubject = apply { assertion.verify(this.entry) }
 
     /** {@inheritDoc} */
     override fun isEmpty(): InputMethodServiceEntrySubject = apply {

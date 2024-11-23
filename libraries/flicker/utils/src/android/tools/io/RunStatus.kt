@@ -39,6 +39,7 @@ enum class RunStatus(val prefix: String, val isFailure: Boolean) {
     }
 
     companion object {
+        @JvmStatic
         fun fromFileName(fileName: String): RunStatus? {
             if (!fileName.contains("__")) {
                 return UNDEFINED

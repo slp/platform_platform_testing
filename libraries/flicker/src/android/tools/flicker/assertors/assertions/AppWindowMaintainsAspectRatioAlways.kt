@@ -23,10 +23,9 @@ import android.tools.flicker.assertors.ComponentTemplate
 class AppWindowMaintainsAspectRatioAlways(private val component: ComponentTemplate) :
     AssertionTemplateWithComponent(component) {
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
+        val matcher = component.get(scenarioInstance)
         flicker.assertLayers {
-            val desktopWindowLayerList = layers {
-                component.build(scenarioInstance).layerMatchesAnyOf(it) && it.isVisible
-            }
+            val desktopWindowLayerList = layers { matcher.layerMatchesAnyOf(it) && it.isVisible }
             desktopWindowLayerList.zipWithNext { previous, current ->
                 current.visibleRegion.isSameAspectRatio(previous.visibleRegion)
             }

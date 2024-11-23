@@ -27,7 +27,7 @@ class AppWindowInsideDisplayBoundsAtEnd(private val component: ComponentTemplate
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
         flicker.assertWmEnd {
             val display = wmState.getDefaultDisplay()!!
-            visibleRegion(component.build(scenarioInstance)).coversAtMost(display.displayRect)
+            visibleRegion(component.get(scenarioInstance)).coversAtMost(display.displayRect)
         }
     }
 }

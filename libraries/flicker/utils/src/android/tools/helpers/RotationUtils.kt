@@ -27,6 +27,7 @@ import android.tools.Rotation
  */
 object RotationUtils {
     /** Rotates an Insets according to the given rotation. */
+    @JvmStatic
     fun rotateInsets(insets: Insets?, rotation: Rotation): Insets {
         if (insets == null || insets === Insets.NONE) {
             return Insets.NONE
@@ -49,6 +50,7 @@ object RotationUtils {
      * oldRotation to newRotation. This assumes that parentBounds is at 0,0 and remains at 0,0 after
      * rotation. The bounds will be at the same physical position in parentBounds.
      */
+    @JvmStatic
     fun rotateBounds(
         inBounds: Rect,
         parentBounds: Rect,
@@ -61,6 +63,7 @@ object RotationUtils {
      * the parent starts at 0,0 and remains at 0,0 after the rotation. The inOutBounds will remain
      * at the same physical position within the parent.
      */
+    @JvmStatic
     fun rotateBounds(
         inBounds: Rect,
         parentWidth: Int,
@@ -100,10 +103,12 @@ object RotationUtils {
      * 90-degree counter-clockwise increments. This assumes that parentBounds is at 0,0 and remains
      * at 0,0 after rotation. The bounds will be at the same physical position in parentBounds.
      */
+    @JvmStatic
     fun rotateBounds(inBounds: Rect, parentBounds: Rect, rotation: Rotation): Rect =
         rotateBounds(inBounds, parentBounds.right, parentBounds.bottom, rotation)
 
     /** @return the rotation needed to rotate from oldRotation to newRotation. */
+    @JvmStatic
     fun deltaRotation(oldRotation: Rotation, newRotation: Rotation): Rotation {
         var delta = newRotation.value - oldRotation.value
         if (delta < 0) delta += 4

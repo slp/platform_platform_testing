@@ -178,6 +178,7 @@ class DisplayContent(
         /** From [com.android.systemui.shared.recents.utilities.Utilities] */
         const val TABLET_MIN_DPS = 600f
 
+        @JvmStatic
         fun dpiFromPx(size: Float, densityDpi: Int): Float {
             val densityRatio: Float = densityDpi.toFloat() / DENSITY_DEFAULT
             return size / densityRatio

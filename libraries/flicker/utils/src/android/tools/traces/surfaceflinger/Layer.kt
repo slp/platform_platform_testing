@@ -315,6 +315,7 @@ public constructor(
     }
 
     companion object {
+        @JvmStatic
         fun from(
             name: String,
             id: Int,

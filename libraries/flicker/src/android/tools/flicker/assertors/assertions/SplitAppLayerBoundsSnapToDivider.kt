@@ -30,9 +30,10 @@ class SplitAppLayerBoundsSnapToDivider(private val component: ComponentTemplate)
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
         val wmTrace = scenarioInstance.reader.readWmTrace() ?: return
 
+        val matcher = component.get(scenarioInstance)
         flicker.assertLayers {
             invoke("splitAppLayerBoundsSnapToDivider") {
-                it.visibleRegion(component.build(scenarioInstance))
+                it.visibleRegion(matcher)
                     .coversAtMost(it.calculateExpectedDisplaySize(scenarioInstance, wmTrace))
             }
         }
@@ -47,7 +48,7 @@ class SplitAppLayerBoundsSnapToDivider(private val component: ComponentTemplate)
             val landscapePosLeft = !wmTrace.isTablet
             val portraitPosTop = true // TODO: Figure out how to know if we are top or bottom app
 
-            val splitScreenDivider = SPLIT_SCREEN_DIVIDER.build(scenarioInstance)
+            val splitScreenDivider = SPLIT_SCREEN_DIVIDER.get(scenarioInstance)
 
             val displaySize =
                 entry.displays

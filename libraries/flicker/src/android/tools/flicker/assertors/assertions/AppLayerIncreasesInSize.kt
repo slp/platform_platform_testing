@@ -25,7 +25,7 @@ class AppLayerIncreasesInSize(private val component: ComponentTemplate) :
     AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
-        val layerMatcher = component.build(scenarioInstance)
+        val layerMatcher = component.get(scenarioInstance)
         flicker.assertLayers {
             val layerList = layers { layerMatcher.layerMatchesAnyOf(it) && it.isVisible }
             layerList.zipWithNext { previous, current ->

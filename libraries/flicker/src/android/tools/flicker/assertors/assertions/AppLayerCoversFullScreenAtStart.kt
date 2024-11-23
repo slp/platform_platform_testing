@@ -28,7 +28,7 @@ class AppLayerCoversFullScreenAtStart(private val component: ComponentTemplate) 
         flicker.assertLayersStart {
             val displayBounds =
                 entry.physicalDisplayBounds ?: error("Missing physical display bounds")
-            visibleRegion(component.build(scenarioInstance).or(ComponentNameMatcher.LETTERBOX))
+            visibleRegion(component.get(scenarioInstance).or(ComponentNameMatcher.LETTERBOX))
                 .coversExactly(displayBounds)
         }
     }

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:JvmName("IOConsts")
+
 package android.tools.io
 
 import android.tools.FLICKER_TAG

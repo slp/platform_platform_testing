@@ -28,16 +28,11 @@ class PipWindowBecomesInvisible(private val component: ComponentTemplate) :
     AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
+        val matcher = component.get(scenarioInstance)
         flicker.assertWm {
-            invoke("hasPipWindow") {
-                    it.isPinned(component.build(scenarioInstance))
-                        .isAppWindowVisible(component.build(scenarioInstance))
-                }
+            invoke("hasPipWindow") { it.isPinned(matcher).isAppWindowVisible(matcher) }
                 .then()
-                .invoke("!hasPipWindow") {
-                    it.isNotPinned(component.build(scenarioInstance))
-                        .isAppWindowInvisible(component.build(scenarioInstance))
-                }
+                .invoke("!hasPipWindow") { it.isNotPinned(matcher).isAppWindowInvisible(matcher) }
         }
     }
 }

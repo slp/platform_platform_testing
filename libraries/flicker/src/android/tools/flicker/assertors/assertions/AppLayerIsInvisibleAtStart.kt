@@ -25,6 +25,6 @@ class AppLayerIsInvisibleAtStart(private val component: ComponentTemplate) :
     AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
-        flicker.assertLayersStart { isInvisible(component.build(scenarioInstance)) }
+        flicker.assertLayersStart { isInvisible(component.get(scenarioInstance)) }
     }
 }

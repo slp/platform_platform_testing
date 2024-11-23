@@ -16,6 +16,8 @@
 
 package android.tools.traces
 
+import java.util.function.Predicate
+
 /**
  * The utility class to wait a condition with customized options. The default retry policy is 5
  * times with interval 1 second.
@@ -44,17 +46,16 @@ package android.tools.traces
  * @param message The message to show what is waiting for.
  * @param condition If it returns true, that means the condition is satisfied.
  */
-open class Condition<T>(
-    protected open val message: String = "",
-    protected open val condition: (T) -> Boolean
-) {
+open class Condition<T>
+@JvmOverloads
+constructor(protected open val message: String = "", protected open val condition: Predicate<T>) {
     /** @return if [value] satisfies the condition */
     fun isSatisfied(value: T): Boolean {
-        return condition.invoke(value)
+        return condition.test(value)
     }
 
     /** @return the negation of the current assertion */
-    fun negate(): Condition<T> = Condition(message = "!$message") { !this.condition.invoke(it) }
+    fun negate(): Condition<T> = Condition(message = "!$message") { !this.condition.test(it) }
 
     /** @return a formatted message for the passing or failing condition on a state */
     open fun getMessage(value: T): String = "$message(passed=${isSatisfied(value)})"

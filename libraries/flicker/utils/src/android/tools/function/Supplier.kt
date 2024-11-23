@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 The Android Open Source Project
+ * Copyright (C) 2024 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package android.tools.flicker.assertors.assertions
+package android.tools.function
 
-import android.tools.flicker.config.common.Components
-import android.tools.flicker.config.common.Components.LAUNCHER
-
-/** Checks that [Components.LAUNCHER] starts not on top and moves to top during the transition */
-class LauncherWindowMovesToTop : WindowMovesToTop(LAUNCHER)
+fun interface Supplier<Arg, Return> {
+    fun get(element: Arg): Return
+}

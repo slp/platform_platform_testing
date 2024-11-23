@@ -28,7 +28,7 @@ class WindowBecomesPinned(private val component: ComponentTemplate) :
     AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
-        val component = component.build(scenarioInstance)
+        val component = component.get(scenarioInstance)
         flicker.assertWm { isNotPinned(component).then().isPinned(component) }
     }
 }

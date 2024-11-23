@@ -16,6 +16,8 @@
 
 package android.tools.traces
 
+import java.util.function.Predicate
+
 /**
  * The utility class to validate a set of conditions
  *
@@ -37,8 +39,8 @@ class ConditionList<T>(val conditions: List<Condition<T>>) : Condition<T>("", { 
             }\n)"
         }
 
-    override val condition: (T) -> Boolean
-        get() = { value -> conditions.all { condition -> condition.isSatisfied(value) } }
+    override val condition: Predicate<T>
+        get() = Predicate { value -> conditions.all { condition -> condition.isSatisfied(value) } }
 
     override fun getMessage(value: T): String {
         return "(\n${

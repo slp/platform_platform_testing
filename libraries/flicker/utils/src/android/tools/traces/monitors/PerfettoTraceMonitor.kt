@@ -324,6 +324,7 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
             return Builder()
         }
 
+        @JvmStatic
         fun stopAllSessions() {
             allPerfettoPidsLock.lock()
             try {
@@ -335,6 +336,7 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
             }
         }
 
+        @JvmStatic
         fun killPerfettoProcess(pid: Int) {
             if (isPerfettoProcessUp(pid)) {
                 executeShellCommand("kill $pid")

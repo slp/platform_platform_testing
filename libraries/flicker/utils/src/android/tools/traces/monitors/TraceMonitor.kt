@@ -17,6 +17,7 @@
 package android.tools.traces.monitors
 
 import android.tools.ScenarioBuilder
+import android.tools.function.Supplier
 import android.tools.io.TraceType
 import android.tools.traces.io.IResultData
 import android.tools.traces.io.IoUtils
@@ -87,11 +88,11 @@ abstract class TraceMonitor : ITransitionMonitor {
      * @param predicate Commands to execute
      * @throws UnsupportedOperationException If tracing is already activated
      */
-    fun withTracing(writer: ResultWriter, predicate: () -> Unit) {
+    fun withTracing(writer: ResultWriter, predicate: Runnable) {
         android.tools.withTracing("${this::class.simpleName}#withTracing") {
             try {
                 this.start()
-                predicate()
+                predicate.run()
             } finally {
                 this.stop(writer)
             }
@@ -107,13 +108,13 @@ abstract class TraceMonitor : ITransitionMonitor {
      * @throws UnsupportedOperationException If tracing is already activated
      */
     fun withTracing(
-        resultReaderProvider: (IResultData) -> ResultReader,
-        predicate: () -> Unit,
+        resultReaderProvider: Supplier<IResultData, ResultReader>,
+        predicate: Runnable,
     ): ResultReader {
         val writer = createWriter()
         withTracing(writer, predicate)
         val result = writer.write()
-        return resultReaderProvider.invoke(result)
+        return resultReaderProvider.get(result)
     }
 
     private fun createWriter(): ResultWriter {
