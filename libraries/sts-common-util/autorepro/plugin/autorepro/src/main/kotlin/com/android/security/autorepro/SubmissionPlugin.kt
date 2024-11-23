@@ -47,7 +47,7 @@ class SubmissionPlugin : Plugin<Project> {
     val pluginJarUrl = this.javaClass.getProtectionDomain().getCodeSource().getLocation()
 
     val abiAttribute =
-        Attribute.of("com.android.security.autorepro.abi", BasePlugin.Abi::class.java)
+        Attribute.of("com.android.security.autorepro.abi", PluginBase.Abi::class.java)
     var testResourceConfiguration: Configuration? = null
 
     fun dependencyProjectConfiguration(
@@ -80,7 +80,7 @@ class SubmissionPlugin : Plugin<Project> {
     fun registerAssembleAutoReproTradefedTask(
         project: Project,
         target: String,
-        abis: Set<BasePlugin.Abi>,
+        abis: Set<PluginBase.Abi>,
     ) {
         val copyAutoReproTradefedToolsTask =
             project.tasks.register<Copy>("copyAutoReproTradefedTools-$target", Copy::class.java) {
@@ -261,8 +261,8 @@ class SubmissionPlugin : Plugin<Project> {
         val targetToMultiAbiSets =
             mapOf(
                 "test_suites_arm64" to
-                    setOf(BasePlugin.Abi.ABI_ARMEABI_V7A, BasePlugin.Abi.ABI_ARM64_V8A),
-                "test_suites_x86_64" to setOf(BasePlugin.Abi.ABI_X86, BasePlugin.Abi.ABI_X86_64),
+                    setOf(PluginBase.Abi.ABI_ARMEABI_V7A, PluginBase.Abi.ABI_ARM64_V8A),
+                "test_suites_x86_64" to setOf(PluginBase.Abi.ABI_X86, PluginBase.Abi.ABI_X86_64),
             )
         targetToMultiAbiSets.entries.forEach { mapEntry ->
             val (target, abis) = mapEntry
