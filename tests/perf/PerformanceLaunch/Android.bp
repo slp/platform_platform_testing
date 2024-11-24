@@ -21,11 +21,15 @@ android_test {
     name: "PerformanceLaunch",
     certificate: "platform",
     srcs: [
+        "src/**/ComplexLayoutActivity.java",
+        "src/**/DispatchActivity.java",
+        "src/**/EmptyActivity.java",
+        "src/**/EmptyWebViewActivity.java",
+        "src/**/ImageActivity.java",
+        "src/**/ManyConfigResourceActivity.java",
         "src/**/SimpleActivity.java",
         "src/**/SimpleSurfaceGLActivity.java",
-        "src/**/ImageActivity.java",
-        "src/**/EmptyActivity.java",
-        "src/**/ComplexLayoutActivity.java",
+        "src/**/SimpleWebViewActivity.java",
         "src/**/helper/*.java"
    ],
 
