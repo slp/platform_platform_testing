@@ -510,8 +510,10 @@ public class AutomotiveConfigConstants {
     public static final String HVAC_FACET_BUTTON = "HVAC_FACET_BUTTON";
     public static final String HVAC_PANEL = "HVAC_PANEL";
     public static final String WIFI_FACET_BUTTON = "WIFI_FACET_BUTTON";
+    public static final String SOUND_FACET_BUTTON = "SOUND_FACET_BUTTON";
     public static final String STATUS_BAR_WIFI_SETTINGS = "STATUS_BAR_WIFI_SETTINGS";
     public static final String STATUS_BAR_DISPLAY_SETTINGS = "STATUS_BAR_DISPLAY_SETTINGS";
+    public static final String STATUS_BAR_SOUND_SETTINGS = "STATUS_BAR_SOUND_SETTINGS";
 
     // APP info Setting UI ELEMENTS
     public static final String RECENTLY_OPENED_UI_ELEMENT = "RECENTLY_OPENED_UI_ELEMENT";

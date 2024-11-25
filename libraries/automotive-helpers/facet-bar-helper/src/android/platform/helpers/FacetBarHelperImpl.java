@@ -39,6 +39,7 @@ public class FacetBarHelperImpl extends AbstractStandardAppHelper implements IAu
         FACET_BAR.BLUETOOTH.setFacetIcon(AutomotiveConfigConstants.STATUS_BAR_BLUETOOTH_BUTTON);
         FACET_BAR.WIFI.setFacetIcon(AutomotiveConfigConstants.WIFI_FACET_BUTTON);
         FACET_BAR.BRIGHTNESS.setFacetIcon(AutomotiveConfigConstants.STATUS_BAR_BRIGHTNESS_BUTTON);
+        FACET_BAR.SOUND.setFacetIcon(AutomotiveConfigConstants.SOUND_FACET_BUTTON);
 
         // Set App Verification
         VERIFY_OPEN_APP.HOME.setAppResourceForVerification(
@@ -55,6 +56,8 @@ public class FacetBarHelperImpl extends AbstractStandardAppHelper implements IAu
                 AutomotiveConfigConstants.STATUS_BAR_WIFI_SETTINGS);
         VERIFY_OPEN_APP.BRIGHTNESS.setAppResourceForVerification(
                 AutomotiveConfigConstants.STATUS_BAR_DISPLAY_SETTINGS);
+        VERIFY_OPEN_APP.SOUND.setAppResourceForVerification(
+                AutomotiveConfigConstants.STATUS_BAR_SOUND_SETTINGS);
     }
 
     /** {@inheritDoc} */

@@ -136,9 +136,17 @@ public class UxRestrictionFacetBarTest {
     public void testRestrictedBrighnessPalette() {
         mFacetBarHelper.get().clickOnFacetIcon(IAutoFacetBarHelper.FACET_BAR.BRIGHTNESS);
         assertTrue(
-                "Wifi palette did not open.",
+                "Brightness palette did not open.",
                 mFacetBarHelper
                         .get()
                         .isAppInForeground(IAutoFacetBarHelper.VERIFY_OPEN_APP.BRIGHTNESS));
+    }
+
+    @Test
+    public void testRestrictedSoundPalette() {
+        mFacetBarHelper.get().clickOnFacetIcon(IAutoFacetBarHelper.FACET_BAR.SOUND);
+        assertTrue(
+                "Sound palette did not open.",
+                mFacetBarHelper.get().isAppInForeground(IAutoFacetBarHelper.VERIFY_OPEN_APP.SOUND));
     }
 }
