@@ -19,6 +19,7 @@ package android.tools.traces.parsers
 import android.app.ActivityTaskManager
 import android.app.Instrumentation
 import android.app.WindowConfiguration
+import android.graphics.Rect
 import android.graphics.Region
 import android.os.SystemClock
 import android.os.Trace
@@ -359,18 +360,24 @@ constructor(
          *
          * @param componentMatcher Components to search
          * @param expectedRegion of the target surface
+         * @param compareFn custom comparator to compare `visibleRegion` vs `expectedRegion`
          */
-        fun withSurfaceVisibleRegion(componentMatcher: IComponentMatcher, expectedRegion: Region) =
-            add(
-                Condition("surfaceRegion") {
-                    val layer =
-                        it.layerState.visibleLayers.firstOrNull { layer ->
-                            componentMatcher.layerMatchesAnyOf(layer)
-                        }
-
-                    layer?.visibleRegion == expectedRegion
-                }
-            )
+        fun withSurfaceMatchingVisibleRegion(
+            componentMatcher: IComponentMatcher,
+            expectedRegion: Region,
+            compareFn: (Region, Region) -> Boolean = { surfaceRegion, expected ->
+                surfaceRegion == expected
+            },
+        ) = add(Condition("surfaceRegion") {
+            val layer = it.layerState.visibleLayers.firstOrNull { layer ->
+                componentMatcher.layerMatchesAnyOf(layer)
+            }
+            layer?.let {
+                // TODO(pablogamito): Remove non-null assertion once visibleRegion in
+                // LayerProperties is no longer nullable.
+                compareFn(layer.visibleRegion!!, expectedRegion)
+            } ?: false
+        })
 
         /**
          * Waits until the IME window and layer are visible
