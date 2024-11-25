@@ -44,7 +44,7 @@ data class InputMethodServiceTrace(override val entries: Collection<InputMethodS
      */
     override fun slice(
         startTimestamp: Timestamp,
-        endTimestamp: Timestamp
+        endTimestamp: Timestamp,
     ): InputMethodServiceTrace {
         return InputMethodServiceTrace(
             this.entries

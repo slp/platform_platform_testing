@@ -71,7 +71,7 @@ class ParsedTracesReader(
             eventLog?.slice(startTimestamp, endTimestamp),
             protoLogTrace?.slice(startTimestamp, endTimestamp),
             layerDumps,
-            wmDumps
+            wmDumps,
         )
     }
 

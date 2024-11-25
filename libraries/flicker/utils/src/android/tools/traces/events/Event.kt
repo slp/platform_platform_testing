@@ -34,5 +34,5 @@ open class Event(
     val processId: Int,
     val uid: String,
     val threadId: Int,
-    val eventTag: String
+    val eventTag: String,
 ) : TraceEntry

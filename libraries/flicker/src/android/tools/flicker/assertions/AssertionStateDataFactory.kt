@@ -35,7 +35,7 @@ open class AssertionStateDataFactory(private val stateSubject: KClass<out Flicke
         AssertionDataImpl(
             tag = Tag.START,
             expectedSubjectClass = stateSubject,
-            assertion = assertion
+            assertion = assertion,
         )
 
     /**

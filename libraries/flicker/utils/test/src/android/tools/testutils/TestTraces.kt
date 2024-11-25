@@ -81,14 +81,10 @@ object TestTraces {
             Timestamps.from(
                 elapsedNanos = 2770105426934 - 1000,
                 systemUptimeNanos = 0,
-                unixNanos = 0
-            )
-        val INVALID_SLICE_TIME =
-            Timestamps.from(
-                elapsedNanos = 2770105426934 + 1,
-                systemUptimeNanos = 0,
                 unixNanos = 0,
             )
+        val INVALID_SLICE_TIME =
+            Timestamps.from(elapsedNanos = 2770105426934 + 1, systemUptimeNanos = 0, unixNanos = 0)
         val END_TIME =
             Timestamps.from(elapsedNanos = 2770105426934, systemUptimeNanos = 0, unixNanos = 0)
 
@@ -108,14 +104,10 @@ object TestTraces {
             Timestamps.from(
                 elapsedNanos = 479583450794 + 5000,
                 systemUptimeNanos = 0,
-                unixNanos = 0
-            )
-        val INVALID_SLICE_TIME =
-            Timestamps.from(
-                elapsedNanos = 487330863192 + 1,
-                systemUptimeNanos = 0,
                 unixNanos = 0,
             )
+        val INVALID_SLICE_TIME =
+            Timestamps.from(elapsedNanos = 487330863192 + 1, systemUptimeNanos = 0, unixNanos = 0)
         val END_TIME =
             Timestamps.from(elapsedNanos = 487330863192, systemUptimeNanos = 0, unixNanos = 0)
 
@@ -132,14 +124,10 @@ object TestTraces {
             Timestamps.from(
                 elapsedNanos = 3663230963946 + 5000,
                 systemUptimeNanos = 0,
-                unixNanos = 0
-            )
-        val INVALID_SLICE_TIME =
-            Timestamps.from(
-                elapsedNanos = 3672045108074 + 1,
-                systemUptimeNanos = 0,
                 unixNanos = 0,
             )
+        val INVALID_SLICE_TIME =
+            Timestamps.from(elapsedNanos = 3672045108074 + 1, systemUptimeNanos = 0, unixNanos = 0)
         val END_TIME =
             Timestamps.from(elapsedNanos = 3672045108074, systemUptimeNanos = 0, unixNanos = 0)
 
@@ -159,6 +147,6 @@ object TestTraces {
             transitionsTrace =
                 TraceConfig(required = false, allowNoChange = false, usingExistingTraces = false),
             transactionsTrace =
-                TraceConfig(required = false, allowNoChange = false, usingExistingTraces = false)
+                TraceConfig(required = false, allowNoChange = false, usingExistingTraces = false),
         )
 }

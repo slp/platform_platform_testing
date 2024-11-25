@@ -49,7 +49,7 @@ class LegacyFlickerDecoratorTest {
             TestWithParameters(
                 "test",
                 TestClass(TestUtils.DummyTestClassValid::class.java),
-                listOf(TestUtils.VALID_ARGS_EMPTY)
+                listOf(TestUtils.VALID_ARGS_EMPTY),
             )
         val mockTransitionRunner = Mockito.mock(ITransitionRunner::class.java)
         val inner = Mockito.mock(IFlickerJUnitDecorator::class.java)
@@ -68,7 +68,7 @@ class LegacyFlickerDecoratorTest {
             TestWithParameters(
                 "test",
                 TestClass(TestUtils.DummyTestClassValid::class.java),
-                listOf(TestUtils.VALID_ARGS_EMPTY)
+                listOf(TestUtils.VALID_ARGS_EMPTY),
             )
         val mockTransitionRunner = Mockito.mock(ITransitionRunner::class.java)
         val inner = Mockito.mock(IFlickerJUnitDecorator::class.java)
@@ -86,12 +86,7 @@ class LegacyFlickerDecoratorTest {
         val description = decorator.getChildDescription(method)
         val invokerTest = TestUtils.DummyTestClassValid(LegacyFlickerTest())
 
-        decorator
-            .getMethodInvoker(
-                method,
-                test = invokerTest,
-            )
-            .evaluate()
+        decorator.getMethodInvoker(method, test = invokerTest).evaluate()
 
         Mockito.verify(mockTransitionRunner).runTransition(scenario, invokerTest, description)
     }
@@ -104,7 +99,7 @@ class LegacyFlickerDecoratorTest {
             TestWithParameters(
                 "test",
                 TestClass(TestUtils.DummyTestClassValid::class.java),
-                listOf(TestUtils.VALID_ARGS_EMPTY)
+                listOf(TestUtils.VALID_ARGS_EMPTY),
             )
         val transitionRunner = LegacyFlickerJUnit4ClassRunner(test, scenario).transitionRunner
 
@@ -121,10 +116,7 @@ class LegacyFlickerDecoratorTest {
 
         repeat(3) {
             decorator
-                .getMethodInvoker(
-                    method,
-                    test = TestUtils.DummyTestClassValid(LegacyFlickerTest()),
-                )
+                .getMethodInvoker(method, test = TestUtils.DummyTestClassValid(LegacyFlickerTest()))
                 .evaluate()
         }
 
@@ -143,7 +135,7 @@ class LegacyFlickerDecoratorTest {
         assertFailProviderMethod(
             TestUtils.DummyTestClassEmpty::class,
             expectedExceptions =
-                listOf("One object should be annotated with @FlickerBuilderProvider")
+                listOf("One object should be annotated with @FlickerBuilderProvider"),
         )
     }
 
@@ -152,7 +144,7 @@ class LegacyFlickerDecoratorTest {
         assertFailProviderMethod(
             TestUtils.DummyTestClassMultipleProvider::class,
             expectedExceptions =
-                listOf("Only one object should be annotated with @FlickerBuilderProvider")
+                listOf("Only one object should be annotated with @FlickerBuilderProvider"),
         )
     }
 
@@ -160,7 +152,7 @@ class LegacyFlickerDecoratorTest {
     fun failStaticProviderMethod() {
         assertFailProviderMethod(
             TestUtils.DummyTestClassProviderStatic::class,
-            expectedExceptions = listOf("Method myMethod() should not be static")
+            expectedExceptions = listOf("Method myMethod() should not be static"),
         )
     }
 
@@ -172,8 +164,8 @@ class LegacyFlickerDecoratorTest {
                 listOf(
                     "Method myMethod() should be public",
                     "Method myMethod() should return a " +
-                        "${FlickerBuilder::class.java.simpleName} object"
-                )
+                        "${FlickerBuilder::class.java.simpleName} object",
+                ),
         )
     }
 
@@ -196,7 +188,7 @@ class LegacyFlickerDecoratorTest {
                 test.testClass,
                 scenario = null,
                 mockTransitionRunner,
-                inner = null
+                inner = null,
             )
         val failures = decorator.doValidateInstanceMethods()
         Truth.assertWithMessage("Failure count").that(failures).hasSize(expectedExceptions.count())
@@ -218,7 +210,7 @@ class LegacyFlickerDecoratorTest {
                 test.testClass,
                 scenario = null,
                 mockTransitionRunner,
-                inner = null
+                inner = null,
             )
         val failures = decorator.doValidateConstructor()
 

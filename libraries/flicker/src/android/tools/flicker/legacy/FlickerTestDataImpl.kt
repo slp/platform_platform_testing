@@ -22,8 +22,8 @@ import android.tools.traces.parsers.WindowManagerStateHelper
 import android.tools.traces.surfaceflinger.LayersTrace
 import android.tools.traces.wm.WindowManagerTrace
 import androidx.test.uiautomator.UiDevice
-import org.junit.rules.TestRule
 import java.io.File
+import org.junit.rules.TestRule
 
 /**
  * Defines the runner for the flicker tests. This component is responsible for running the flicker
@@ -49,5 +49,5 @@ open class FlickerTestDataImpl(
     /** JUnit rules to be executed around transition */
     override val rules: List<TestRule>,
     /** Helper object for WM Synchronization */
-    override val wmHelper: WindowManagerStateHelper
+    override val wmHelper: WindowManagerStateHelper,
 ) : AbstractFlickerTestData()

@@ -34,5 +34,5 @@ val NotificationRowExpand =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )

@@ -178,7 +178,7 @@ private constructor(
                 onRetry,
                 onSuccess,
                 onStart,
-                onEnd
+                onEnd,
             )
     }
 }

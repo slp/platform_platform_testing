@@ -23,6 +23,6 @@ internal object AppLaunch {
             AppLaunchFromNotification,
             AppLaunchFromRecents,
             AppLaunchFromStatusBarCallChip,
-            AppLaunchFromWidget
+            AppLaunchFromWidget,
         )
 }

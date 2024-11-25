@@ -322,7 +322,7 @@ class LegacyFlickerJUnit4ClassRunnerTest {
                                     object : AssertionTemplate("BlockingAssertion") {
                                         override fun doEvaluate(
                                             scenarioInstance: ScenarioInstance,
-                                            flicker: FlickerTest
+                                            flicker: FlickerTest,
                                         ) {
                                             flicker.assertLayers {}
                                         }
@@ -330,12 +330,12 @@ class LegacyFlickerJUnit4ClassRunnerTest {
                                     object : AssertionTemplate("NonBlockingAssertion") {
                                         override fun doEvaluate(
                                             scenarioInstance: ScenarioInstance,
-                                            flicker: FlickerTest
+                                            flicker: FlickerTest,
                                         ) {
                                             flicker.assertLayersEnd {}
                                         }
-                                    } to AssertionInvocationGroup.NON_BLOCKING
-                                )
+                                    } to AssertionInvocationGroup.NON_BLOCKING,
+                                ),
                         )
                     )
         }
@@ -418,7 +418,7 @@ class LegacyFlickerJUnit4ClassRunnerTest {
 
         private fun createRunner(
             baseTest: TestWithParameters,
-            arguments: Bundle = InstrumentationRegistry.getArguments()
+            arguments: Bundle = InstrumentationRegistry.getArguments(),
         ) =
             FlickerParametersRunnerFactory()
                 .createRunnerForTestWithParameters(baseTest, arguments = arguments)

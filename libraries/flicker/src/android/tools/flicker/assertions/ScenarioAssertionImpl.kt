@@ -31,7 +31,7 @@ data class ScenarioAssertionImpl(
     private val assertionData: Collection<AssertionData>,
     override val stabilityGroup: AssertionInvocationGroup,
     private val assertionExtraData: Map<String, String>,
-    private val assertionRunner: AssertionRunner = ReaderAssertionRunner(reader)
+    private val assertionRunner: AssertionRunner = ReaderAssertionRunner(reader),
 ) : ScenarioAssertion {
     init {
         require(assertionData.isNotEmpty()) { "Expected at least one assertion data object." }
@@ -52,7 +52,7 @@ data class ScenarioAssertionImpl(
                 throw IllegalArgumentException(
                     "Expected all assertion exceptions to be " +
                         "FlickerAssertionErrors or AssumptionViolatedExceptions",
-                    unexpectedExceptions.first()
+                    unexpectedExceptions.first(),
                 )
             }
 
@@ -69,7 +69,7 @@ data class ScenarioAssertionImpl(
                     assumptionViolations =
                         assertionExceptions.filterIsInstance<AssumptionViolatedException>(),
                     assertionErrors,
-                    stabilityGroup
+                    stabilityGroup,
                 )
                 .also { log(it) }
         }
@@ -82,13 +82,13 @@ data class ScenarioAssertionImpl(
                 Log.w(
                     "$FLICKER_TAG-SERVICE",
                     "${result.name} ASSUMPTION VIOLATION :: " +
-                        result.assumptionViolations.map { it.message }
+                        result.assumptionViolations.map { it.message },
                 )
             AssertionResult.Status.PASS -> Log.d("$FLICKER_TAG-SERVICE", "${result.name} PASSED")
             AssertionResult.Status.FAIL ->
                 Log.e(
                     "$FLICKER_TAG-SERVICE",
-                    "${result.name} FAILED :: " + result.assertionErrors.map { it.message }
+                    "${result.name} FAILED :: " + result.assertionErrors.map { it.message },
                 )
         }
     }

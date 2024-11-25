@@ -30,7 +30,7 @@ open class WindowConfiguration(
     val bounds: Rect = Rect(),
     val maxBounds: Rect = Rect(),
     val windowingMode: Int = 0,
-    val activityType: Int = 0
+    val activityType: Int = 0,
 ) {
     val isEmpty: Boolean
         get() =
@@ -72,14 +72,14 @@ open class WindowConfiguration(
             bounds: Rect?,
             maxBounds: Rect?,
             windowingMode: Int,
-            activityType: Int
+            activityType: Int,
         ): WindowConfiguration = withCache {
             WindowConfiguration(
                 appBounds ?: Rect(),
                 bounds ?: Rect(),
                 maxBounds ?: Rect(),
                 windowingMode,
-                activityType
+                activityType,
             )
         }
     }

@@ -25,7 +25,7 @@ class ResultReaderParseWMTest : BaseResultReaderTestParseTrace() {
     override val assetFiles =
         mapOf(
             TraceType.PERFETTO to TestTraces.WMTrace.FILE,
-            TraceType.WM to TestTraces.LegacyWMTrace.FILE
+            TraceType.WM to TestTraces.LegacyWMTrace.FILE,
         )
     override val traceName = "WM trace"
     override val startTimeTrace = TestTraces.WMTrace.START_TIME

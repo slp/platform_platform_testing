@@ -207,11 +207,11 @@ constructor(val trace: LayersTrace, override val reader: Reader? = null) :
     /** See [isSplashScreenVisibleFor] */
     fun isSplashScreenVisibleFor(
         componentMatcher: IComponentNameMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): LayersTraceSubject = apply {
         addAssertion(
             "isSplashScreenVisibleFor(${componentMatcher.toLayerIdentifier()})",
-            isOptional
+            isOptional,
         ) {
             it.isSplashScreenVisibleFor(componentMatcher)
         }
@@ -228,14 +228,14 @@ constructor(val trace: LayersTrace, override val reader: Reader? = null) :
     /** {@inheritDoc} */
     override fun visibleRegion(
         componentMatcher: IComponentMatcher?,
-        useCompositionEngineRegionOnly: Boolean
+        useCompositionEngineRegionOnly: Boolean,
     ): RegionTraceSubject {
         val regionTrace =
             RegionTrace(
                 componentMatcher,
                 subjects.map {
                     it.visibleRegion(componentMatcher, useCompositionEngineRegionOnly).regionEntry
-                }
+                },
             )
         return RegionTraceSubject(regionTrace, reader)
     }
@@ -265,7 +265,7 @@ constructor(val trace: LayersTrace, override val reader: Reader? = null) :
     operator fun invoke(
         name: String,
         isOptional: Boolean = false,
-        assertion: AssertionPredicate<LayerTraceEntrySubject>
+        assertion: AssertionPredicate<LayerTraceEntrySubject>,
     ): LayersTraceSubject = apply { addAssertion(name, isOptional, assertion) }
 
     fun hasFrameSequence(name: String, frameNumbers: Iterable<Long>): LayersTraceSubject =
@@ -273,7 +273,7 @@ constructor(val trace: LayersTrace, override val reader: Reader? = null) :
 
     fun hasFrameSequence(
         componentMatcher: IComponentMatcher,
-        frameNumbers: Iterable<Long>
+        frameNumbers: Iterable<Long>,
     ): LayersTraceSubject = apply {
         val firstFrame = frameNumbers.first()
         val entries =
@@ -303,7 +303,7 @@ constructor(val trace: LayersTrace, override val reader: Reader? = null) :
                     .forSubject(this)
                     .forInvalidElement(
                         componentMatcher.toLayerIdentifier(),
-                        expectElementExists = true
+                        expectElementExists = true,
                     )
                     .addExtraDescription("With frame sequence", frameNumbers.joinToString(","))
             throw InvalidElementException(errorMsgBuilder)
@@ -325,7 +325,7 @@ constructor(val trace: LayersTrace, override val reader: Reader? = null) :
     @JvmOverloads
     fun getEntryBySystemUpTime(
         timestamp: Long,
-        byElapsedTimestamp: Boolean = false
+        byElapsedTimestamp: Boolean = false,
     ): LayerTraceEntrySubject {
         return if (byElapsedTimestamp) {
             subjects.first { it.entry.elapsedTimestamp == timestamp }
@@ -348,7 +348,7 @@ constructor(val trace: LayersTrace, override val reader: Reader? = null) :
                 ComponentNameMatcher.FLOATING_ROTATION_BUTTON,
                 ComponentNameMatcher.WIRED_CHARGING_ANIMATION,
                 EdgeExtensionComponentMatcher(),
-                SurfaceViewBackgroundMatcher()
+                SurfaceViewBackgroundMatcher(),
             )
     }
 }

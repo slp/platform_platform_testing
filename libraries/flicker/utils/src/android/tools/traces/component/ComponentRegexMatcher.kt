@@ -22,12 +22,9 @@ import android.tools.traces.wm.WindowContainer
 import java.util.function.Predicate
 
 /** ComponentMatcher based on a regular expression for a name */
-data class ComponentRegexMatcher(
-    private val regex: Regex
-) : IComponentMatcher {
+data class ComponentRegexMatcher(private val regex: Regex) : IComponentMatcher {
 
-    private val identifierDescription: String =
-        "Regular expression: $regex"
+    private val identifierDescription: String = "Regular expression: $regex"
 
     /** {@inheritDoc} */
     override fun windowMatchesAnyOf(windows: Collection<WindowContainer>): Boolean =
@@ -59,8 +56,6 @@ data class ComponentRegexMatcher(
     companion object {
         @JvmField
         val FOLD_OVERLAY_MATCHER =
-            ComponentRegexMatcher(
-                regex = "^fold-animation-overlay.*".toRegex()
-            )
+            ComponentRegexMatcher(regex = "^fold-animation-overlay.*".toRegex())
     }
 }

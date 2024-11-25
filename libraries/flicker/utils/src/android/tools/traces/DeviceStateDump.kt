@@ -25,5 +25,5 @@ import android.tools.traces.wm.WindowManagerState
  */
 class DeviceStateDump(
     override val wmState: WindowManagerState,
-    override val layerState: LayerTraceEntry
+    override val layerState: LayerTraceEntry,
 ) : NullableDeviceStateDump(wmState, layerState)

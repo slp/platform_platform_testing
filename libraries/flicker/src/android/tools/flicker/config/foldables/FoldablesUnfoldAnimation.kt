@@ -32,7 +32,7 @@ val FoldablesUnfoldAnimation =
             TaggedScenarioExtractorBuilder()
                 .setTargetTag(CujType.CUJ_UNFOLD_ANIM)
                 .setTransitionMatcher(
-                    TaggedCujTransitionMatcher(associatedTransitionRequired = false),
+                    TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )

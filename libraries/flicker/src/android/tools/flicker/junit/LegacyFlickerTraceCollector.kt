@@ -31,7 +31,7 @@ class LegacyFlickerTraceCollector(private val scenario: Scenario) : TracesCollec
         Log.d("FAAS", "LegacyFlickerTraceCollector#stop")
         return android.tools.flicker.datastore.CachedResultReader(
             scenario,
-            TRACE_CONFIG_REQUIRE_CHANGES
+            TRACE_CONFIG_REQUIRE_CHANGES,
         )
     }
 

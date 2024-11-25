@@ -28,8 +28,8 @@ class CachedResultReader(
     private val reader: Reader =
         ResultReaderWithLru(
             android.tools.flicker.datastore.DataStore.getResult(scenario),
-            traceConfig
-        )
+            traceConfig,
+        ),
 ) : Reader by reader {
     override fun toString(): String = "$scenario ($reader)"
 }

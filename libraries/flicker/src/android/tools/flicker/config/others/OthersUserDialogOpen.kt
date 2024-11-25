@@ -34,5 +34,5 @@ val OthersUserDialogOpen =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )

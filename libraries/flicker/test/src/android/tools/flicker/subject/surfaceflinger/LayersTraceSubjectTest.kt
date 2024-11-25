@@ -203,7 +203,7 @@ class LayersTraceSubjectTest {
         val launcherComponent =
             ComponentNameMatcher(
                 "com.google.android.apps.nexuslauncher",
-                "com.google.android.apps.nexuslauncher.NexusLauncherActivity#1"
+                "com.google.android.apps.nexuslauncher.NexusLauncherActivity#1",
             )
         LayersTraceSubject(trace, reader)
             .visibleLayersShownMoreThanOneConsecutiveEntry(listOf(launcherComponent))
@@ -338,7 +338,7 @@ class LayersTraceSubjectTest {
             getLayerTraceReaderFromAsset(
                 "layers_trace_snapshotStartingWindowLayerCoversExactlyApp.perfetto-trace",
                 from = Timestamps.from(systemUptimeNanos = 1688243428961872440),
-                to = Timestamps.from(systemUptimeNanos = 1688243432147782644)
+                to = Timestamps.from(systemUptimeNanos = 1688243432147782644),
             )
         val component =
             ComponentNameMatcher(FLICKER_APP_PACKAGE, "$FLICKER_APP_PACKAGE.ImeActivity")

@@ -34,5 +34,5 @@ val LockscreenUnlockAnimation =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )

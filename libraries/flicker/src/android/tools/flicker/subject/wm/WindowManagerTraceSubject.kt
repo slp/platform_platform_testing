@@ -118,7 +118,7 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** See [notContains] */
     fun notContains(
         componentMatcher: IComponentMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion("notContains(${componentMatcher.toWindowIdentifier()})", isOptional) {
             it.notContains(componentMatcher)
@@ -133,11 +133,11 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** See [isAboveAppWindowVisible] */
     fun isAboveAppWindowVisible(
         componentMatcher: IComponentMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion(
             "isAboveAppWindowVisible(${componentMatcher.toWindowIdentifier()})",
-            isOptional
+            isOptional,
         ) {
             it.isAboveAppWindowVisible(componentMatcher)
         }
@@ -151,11 +151,11 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** See [isAboveAppWindowInvisible] */
     fun isAboveAppWindowInvisible(
         componentMatcher: IComponentMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion(
             "isAboveAppWindowInvisible(${componentMatcher.toWindowIdentifier()})",
-            isOptional
+            isOptional,
         ) {
             it.isAboveAppWindowInvisible(componentMatcher)
         }
@@ -169,11 +169,11 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** See [isBelowAppWindowVisible] */
     fun isBelowAppWindowVisible(
         componentMatcher: IComponentMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion(
             "isBelowAppWindowVisible(${componentMatcher.toWindowIdentifier()})",
-            isOptional
+            isOptional,
         ) {
             it.isBelowAppWindowVisible(componentMatcher)
         }
@@ -187,11 +187,11 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** See [isBelowAppWindowInvisible] */
     fun isBelowAppWindowInvisible(
         componentMatcher: IComponentMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion(
             "isBelowAppWindowInvisible(${componentMatcher.toWindowIdentifier()})",
-            isOptional
+            isOptional,
         ) {
             it.isBelowAppWindowInvisible(componentMatcher)
         }
@@ -205,11 +205,11 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** See [isNonAppWindowVisible] */
     fun isNonAppWindowVisible(
         componentMatcher: IComponentMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion(
             "isNonAppWindowVisible(${componentMatcher.toWindowIdentifier()})",
-            isOptional
+            isOptional,
         ) {
             it.isNonAppWindowVisible(componentMatcher)
         }
@@ -223,11 +223,11 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** See [isNonAppWindowInvisible] */
     fun isNonAppWindowInvisible(
         componentMatcher: IComponentMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion(
             "isNonAppWindowInvisible(${componentMatcher.toWindowIdentifier()})",
-            isOptional
+            isOptional,
         ) {
             it.isNonAppWindowInvisible(componentMatcher)
         }
@@ -240,7 +240,7 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** See [isAppWindowOnTop] */
     fun isAppWindowOnTop(
         componentMatcher: IComponentMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion("isAppWindowOnTop(${componentMatcher.toWindowIdentifier()})", isOptional) {
             it.isAppWindowOnTop(componentMatcher)
@@ -255,7 +255,7 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** See [isAppWindowNotOnTop] */
     fun isAppWindowNotOnTop(
         componentMatcher: IComponentMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion("appWindowNotOnTop(${componentMatcher.toWindowIdentifier()})", isOptional) {
             it.isAppWindowNotOnTop(componentMatcher)
@@ -270,7 +270,7 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** See [isAppWindowVisible] */
     fun isAppWindowVisible(
         componentMatcher: IComponentMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion("isAppWindowVisible(${componentMatcher.toWindowIdentifier()})", isOptional) {
             it.isAppWindowVisible(componentMatcher)
@@ -304,11 +304,11 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** See [isAppSnapshotStartingWindowVisibleFor] */
     fun isAppSnapshotStartingWindowVisibleFor(
         componentMatcher: IComponentMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion(
             "isAppSnapshotStartingWindowVisibleFor(${componentMatcher.toWindowIdentifier()})",
-            isOptional
+            isOptional,
         ) {
             it.isAppSnapshotStartingWindowVisibleFor(componentMatcher)
         }
@@ -322,7 +322,7 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** See [isAppWindowInvisible] */
     fun isAppWindowInvisible(
         componentMatcher: IComponentMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion("isAppWindowInvisible(${componentMatcher.toWindowIdentifier()})", isOptional) {
             it.isAppWindowInvisible(componentMatcher)
@@ -340,7 +340,7 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** {@inheritDoc} */
     override fun isAboveWindow(
         aboveWindowComponentMatcher: IComponentMatcher,
-        belowWindowComponentMatcher: IComponentMatcher
+        belowWindowComponentMatcher: IComponentMatcher,
     ): WindowManagerTraceSubject = apply {
         val aboveWindowTitle = aboveWindowComponentMatcher.toWindowIdentifier()
         val belowWindowTitle = belowWindowComponentMatcher.toWindowIdentifier()
@@ -354,7 +354,7 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
         val regionTrace =
             RegionTrace(
                 componentMatcher,
-                subjects.map { it.visibleRegion(componentMatcher).regionEntry }
+                subjects.map { it.visibleRegion(componentMatcher).regionEntry },
             )
 
         return RegionTraceSubject(regionTrace, reader)
@@ -367,7 +367,7 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** See [contains] */
     fun contains(
         componentMatcher: IComponentMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion("contains(${componentMatcher.toWindowIdentifier()})", isOptional) {
             it.contains(componentMatcher)
@@ -382,11 +382,11 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** See [containsAboveAppWindow] */
     fun containsAboveAppWindow(
         componentMatcher: IComponentMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion(
             "containsAboveAppWindow(${componentMatcher.toWindowIdentifier()})",
-            isOptional
+            isOptional,
         ) {
             it.containsAboveAppWindow(componentMatcher)
         }
@@ -399,7 +399,7 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** See [containsAppWindow] */
     fun containsAppWindow(
         componentMatcher: IComponentMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion("containsAppWindow(${componentMatcher.toWindowIdentifier()})", isOptional) {
             it.containsAboveAppWindow(componentMatcher)
@@ -414,11 +414,11 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** See [containsBelowAppWindow] */
     fun containsBelowAppWindow(
         componentMatcher: IComponentMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion(
             "containsBelowAppWindows(${componentMatcher.toWindowIdentifier()})",
-            isOptional
+            isOptional,
         ) {
             it.containsBelowAppWindow(componentMatcher)
         }
@@ -432,7 +432,7 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** See [containsNonAppWindow] */
     fun containsNonAppWindow(
         componentMatcher: IComponentMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion("containsNonAppWindow(${componentMatcher.toWindowIdentifier()})", isOptional) {
             it.containsNonAppWindow(componentMatcher)
@@ -465,7 +465,7 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     fun hasRotation(
         rotation: Rotation,
         displayId: Int,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion("hasRotation($rotation, display=$displayId)", isOptional) {
             it.hasRotation(rotation, displayId)
@@ -479,7 +479,7 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** See [isNotPinned] */
     fun isNotPinned(
         componentMatcher: IComponentMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion("isNotPinned(${componentMatcher.toWindowIdentifier()})", isOptional) {
             it.isNotPinned(componentMatcher)
@@ -511,7 +511,7 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** See [isPinned] */
     fun isPinned(
         componentMatcher: IComponentMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion("isPinned(${componentMatcher.toWindowIdentifier()})", isOptional) {
             it.isPinned(componentMatcher)
@@ -548,7 +548,7 @@ constructor(val trace: WindowManagerTrace, override val reader: Reader? = null) 
     /** See [notContainsAppWindow] */
     fun notContainsAppWindow(
         componentMatcher: IComponentMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): WindowManagerTraceSubject = apply {
         addAssertion("notContainsAppWindow(${componentMatcher.toWindowIdentifier()})", isOptional) {
             it.notContainsAppWindow(componentMatcher)

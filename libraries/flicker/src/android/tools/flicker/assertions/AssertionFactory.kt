@@ -74,7 +74,7 @@ class AssertionFactory {
      */
     fun createWmTagAssertion(
         tag: String,
-        assertion: WindowManagerStateSubject.() -> Unit
+        assertion: WindowManagerStateSubject.() -> Unit,
     ): AssertionData =
         withTracing("createWmTagAssertion") {
             wmAssertionFactory.createTagAssertion(tag, assertion as FlickerSubject.() -> Unit)
@@ -88,7 +88,7 @@ class AssertionFactory {
      */
     fun createWmVisibleRegionAssertion(
         componentMatcher: IComponentMatcher,
-        assertion: RegionTraceSubject.() -> Unit
+        assertion: RegionTraceSubject.() -> Unit,
     ): AssertionData =
         withTracing("createWmVisibleRegionAssertion") {
             val closedAssertion: WindowManagerTraceSubject.() -> Unit = {
@@ -145,7 +145,7 @@ class AssertionFactory {
      */
     fun createLayersTagAssertion(
         tag: String,
-        assertion: LayerTraceEntrySubject.() -> Unit
+        assertion: LayerTraceEntrySubject.() -> Unit,
     ): AssertionData =
         withTracing("createLayersTagAssertion") {
             layersAssertionFactory.createTagAssertion(tag, assertion as FlickerSubject.() -> Unit)
@@ -164,7 +164,7 @@ class AssertionFactory {
     fun createLayersVisibleRegionAssertion(
         componentMatcher: IComponentMatcher,
         useCompositionEngineRegionOnly: Boolean = true,
-        assertion: RegionTraceSubject.() -> Unit
+        assertion: RegionTraceSubject.() -> Unit,
     ): AssertionData =
         withTracing("createLayersVisibleRegionAssertion") {
             val closedAssertion: LayersTraceSubject.() -> Unit = {
@@ -193,7 +193,7 @@ class AssertionFactory {
         withTracing("createEventLogAssertion") {
             eventLogAssertionFactory.createTagAssertion(
                 Tag.ALL,
-                assertion as FlickerSubject.() -> Unit
+                assertion as FlickerSubject.() -> Unit,
             )
         }
 }

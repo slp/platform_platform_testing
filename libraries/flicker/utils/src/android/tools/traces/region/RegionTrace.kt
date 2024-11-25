@@ -30,7 +30,7 @@ import android.tools.traces.component.IComponentMatcher
  */
 data class RegionTrace(
     val components: IComponentMatcher?,
-    override val entries: Collection<RegionEntry>
+    override val entries: Collection<RegionEntry>,
 ) : Trace<RegionEntry> {
 
     override fun slice(startTimestamp: Timestamp, endTimestamp: Timestamp): Trace<RegionEntry> {
@@ -38,7 +38,7 @@ data class RegionTrace(
             components,
             entries
                 .dropWhile { it.timestamp < startTimestamp }
-                .dropLastWhile { it.timestamp > endTimestamp }
+                .dropLastWhile { it.timestamp > endTimestamp },
         )
     }
 }

@@ -73,7 +73,7 @@ class FlickerServiceDecoratorTest {
                 skipNonBlocking = false,
                 inner = innerDecorator,
                 instrumentation = instrumentation,
-                flickerService = flickerService
+                flickerService = flickerService,
             )
         decorator.getTestMethods(test)
 
@@ -83,7 +83,7 @@ class FlickerServiceDecoratorTest {
                 KotlinMockito.argThat<Bundle> {
                     this.getString(Instrumentation.REPORT_KEY_STREAMRESULT)
                         ?.contains("Running setup") ?: false
-                }
+                },
             )
         Mockito.verify(instrumentation)
             .sendStatus(
@@ -91,7 +91,7 @@ class FlickerServiceDecoratorTest {
                 KotlinMockito.argThat {
                     this.getString(Instrumentation.REPORT_KEY_STREAMRESULT)
                         ?.contains("Running transition") ?: false
-                }
+                },
             )
         Mockito.verify(instrumentation)
             .sendStatus(
@@ -99,7 +99,7 @@ class FlickerServiceDecoratorTest {
                 KotlinMockito.argThat {
                     this.getString(Instrumentation.REPORT_KEY_STREAMRESULT)
                         ?.contains("Running teardown") ?: false
-                }
+                },
             )
     }
 
@@ -142,7 +142,7 @@ class FlickerServiceDecoratorTest {
                 skipNonBlocking = false,
                 inner = innerDecorator,
                 instrumentation = instrumentation,
-                flickerService = flickerService
+                flickerService = flickerService,
             )
 
         // This should not throw
@@ -188,7 +188,7 @@ class FlickerServiceDecoratorTest {
                         object : AssertionTemplate("myMockAssertion") {
                             override fun doEvaluate(
                                 scenarioInstance: ScenarioInstance,
-                                flicker: FlickerTest
+                                flicker: FlickerTest,
                             ) {
                                 flicker.assertLayers {
                                     // Does nothing
@@ -196,7 +196,7 @@ class FlickerServiceDecoratorTest {
                             }
                         } to AssertionInvocationGroup.BLOCKING
                     ),
-                enabled = true
+                enabled = true,
             )
 
         val mockScenarioInstance1 =
@@ -206,7 +206,7 @@ class FlickerServiceDecoratorTest {
                 endRotation = Rotation.ROTATION_0,
                 startTimestamp = CrossPlatform.timestamp.from(10),
                 endTimestamp = CrossPlatform.timestamp.from(20),
-                reader = Mockito.mock(Reader::class.java)
+                reader = Mockito.mock(Reader::class.java),
             )
 
         val mockScenarioInstance2 =
@@ -216,7 +216,7 @@ class FlickerServiceDecoratorTest {
                 endRotation = Rotation.ROTATION_0,
                 startTimestamp = CrossPlatform.timestamp.from(10),
                 endTimestamp = CrossPlatform.timestamp.from(20),
-                reader = Mockito.mock(Reader::class.java)
+                reader = Mockito.mock(Reader::class.java),
             )
 
         Mockito.`when`(flickerService.detectScenarios(KotlinMockito.any(Reader::class.java)))
@@ -230,7 +230,7 @@ class FlickerServiceDecoratorTest {
                 skipNonBlocking = false,
                 inner = innerDecorator,
                 instrumentation = instrumentation,
-                flickerService = flickerService
+                flickerService = flickerService,
             )
 
         val methods = decorator.getTestMethods(test)

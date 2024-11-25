@@ -55,7 +55,7 @@ class MockLayerTraceEntryBuilder() {
                 transform = Transform.EMPTY,
                 isVirtual = false,
                 dpiX = 416.0,
-                dpiY = 416.0
+                dpiY = 416.0,
             )
         )
         this.layers.add(displayLayer)
@@ -75,7 +75,7 @@ class MockLayerTraceEntryBuilder() {
             where = "",
             displays = displays,
             vSyncId = 100,
-            _rootLayers = layers
+            _rootLayers = layers,
         )
     }
 

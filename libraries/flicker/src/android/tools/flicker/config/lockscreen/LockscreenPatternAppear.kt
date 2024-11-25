@@ -34,5 +34,5 @@ val LockscreenPatternAppear =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )

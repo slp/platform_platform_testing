@@ -56,7 +56,7 @@ constructor(
         FlickerServiceResultsCollector(
             flickerService = FlickerService(config),
             tracesCollector = FlickerServiceTracesCollector(getDefaultFlickerOutputDir()),
-            instrumentation = InstrumentationRegistry.getInstrumentation()
+            instrumentation = InstrumentationRegistry.getInstrumentation(),
         ),
 ) : TestWatcher() {
     private val enabled: Boolean =
@@ -66,14 +66,12 @@ constructor(
     private val failTestOnFlicker: Boolean =
         InstrumentationRegistry.getArguments().getString("faas:failTestOnFlicker")?.let {
             it.toBoolean()
-        }
-            ?: failTestOnFlicker
+        } ?: failTestOnFlicker
 
     private val failTestOnServiceError: Boolean =
         InstrumentationRegistry.getArguments().getString("faas:failTestOnServiceError")?.let {
             it.toBoolean()
-        }
-            ?: failTestOnServiceError
+        } ?: failTestOnServiceError
 
     private var testFailed = false
     private var testSkipped = false

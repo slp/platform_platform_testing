@@ -118,7 +118,7 @@ constructor(
                     .forSubject(this)
                     .forInvalidElement(
                         componentMatcher?.toWindowIdentifier() ?: "<any>",
-                        expectElementExists = true
+                        expectElementExists = true,
                     )
             throw InvalidElementException(errorMsgBuilder)
         }
@@ -155,7 +155,7 @@ constructor(
     /** {@inheritDoc} */
     override fun isAboveWindow(
         aboveWindowComponentMatcher: IComponentMatcher,
-        belowWindowComponentMatcher: IComponentMatcher
+        belowWindowComponentMatcher: IComponentMatcher,
     ): WindowManagerStateSubject = apply {
         contains(aboveWindowComponentMatcher)
         contains(belowWindowComponentMatcher)
@@ -217,7 +217,7 @@ constructor(
                         .forSubject(this)
                         .forInvalidElement(
                             componentMatcher.toWindowIdentifier(),
-                            expectElementExists = true
+                            expectElementExists = true,
                         )
                         .addExtraDescription("Type", "App window")
                 throw InvalidElementException(errorMsgBuilder)
@@ -317,7 +317,7 @@ constructor(
                         .forSubject(this)
                         .forInvalidElement(
                             componentMatcher.toActivityIdentifier(),
-                            expectElementExists = true
+                            expectElementExists = true,
                         )
                 throw InvalidElementException(errorMsgBuilder)
             }
@@ -348,7 +348,7 @@ constructor(
                     .forSubject(this)
                     .forInvalidElement(
                         componentMatcher.toActivityIdentifier(),
-                        expectElementExists = false
+                        expectElementExists = false,
                     )
             throw InvalidElementException(errorMsgBuilder)
         }
@@ -364,7 +364,7 @@ constructor(
                         .forSubject(this)
                         .forInvalidElement(
                             componentMatcher.toWindowIdentifier(),
-                            expectElementExists = false
+                            expectElementExists = false,
                         )
                 throw InvalidElementException(errorMsgBuilder)
             }
@@ -477,7 +477,7 @@ constructor(
 
     private fun checkWindowIsInvisible(
         subjectList: List<WindowStateSubject>,
-        componentMatcher: IComponentMatcher
+        componentMatcher: IComponentMatcher,
     ) {
         val foundWindows =
             subjectList.filter { componentMatcher.windowMatchesAnyOf(it.windowState) }
@@ -493,7 +493,7 @@ constructor(
                     .forSubject(this)
                     .forIncorrectVisibility(
                         componentMatcher.toWindowIdentifier(),
-                        expectElementVisible = false
+                        expectElementVisible = false,
                     )
                     .setActual(visibleWindows.map { Fact("Is visible", it.name) })
             throw IncorrectVisibilityException(errorMsgBuilder)
@@ -502,7 +502,7 @@ constructor(
 
     private fun contains(
         subjectList: List<WindowStateSubject>,
-        componentMatcher: IComponentMatcher
+        componentMatcher: IComponentMatcher,
     ) {
         if (!componentMatcher.windowMatchesAnyOf(subjectList.map { it.windowState })) {
             val errorMsgBuilder =
@@ -510,7 +510,7 @@ constructor(
                     .forSubject(this)
                     .forInvalidElement(
                         componentMatcher.toWindowIdentifier(),
-                        expectElementExists = true
+                        expectElementExists = true,
                     )
             throw InvalidElementException(errorMsgBuilder)
         }
@@ -518,7 +518,7 @@ constructor(
 
     private fun createIncorrectVisibilityException(
         componentMatcher: IComponentMatcher,
-        expectElementVisible: Boolean
+        expectElementVisible: Boolean,
     ) =
         IncorrectVisibilityException(
             ExceptionMessageBuilder()
@@ -532,7 +532,7 @@ constructor(
                 .forSubject(this)
                 .forInvalidElement(
                     componentMatcher.toWindowIdentifier(),
-                    expectElementExists = true
+                    expectElementExists = true,
                 )
         )
 
@@ -598,7 +598,7 @@ constructor(
                     .forSubject(this)
                     .forInvalidElement(
                         componentMatcher.toActivityIdentifier(),
-                        expectElementExists = true
+                        expectElementExists = true,
                     )
             throw InvalidElementException(errorMsgBuilder)
         }
@@ -613,7 +613,7 @@ constructor(
                     .forSubject(this)
                     .forInvalidElement(
                         ComponentNameMatcher.SNAPSHOT.toWindowIdentifier(),
-                        expectElementExists = true
+                        expectElementExists = true,
                     )
             throw InvalidElementException(errorMsgBuilder)
         }
@@ -624,7 +624,7 @@ constructor(
                     .forSubject(this)
                     .forIncorrectVisibility(
                         componentMatcher.toActivityIdentifier(),
-                        expectElementVisible = true
+                        expectElementVisible = true,
                     )
             throw IncorrectVisibilityException(errorMsgBuilder)
         }
@@ -635,7 +635,7 @@ constructor(
                     .forSubject(this)
                     .forIncorrectVisibility(
                         ComponentNameMatcher.SNAPSHOT.toWindowIdentifier(),
-                        expectElementVisible = true
+                        expectElementVisible = true,
                     )
             throw IncorrectVisibilityException(errorMsgBuilder)
         }

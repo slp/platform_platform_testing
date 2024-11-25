@@ -63,7 +63,7 @@ class EventLogParser : AbstractParser<Collection<String>, EventLog>() {
         uid: String,
         tid: Int,
         tag: String,
-        eventData: String
+        eventData: String,
     ): Event {
         return when (tag) {
             INPUT_FOCUS_TAG -> {

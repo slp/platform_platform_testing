@@ -36,7 +36,7 @@ internal constructor(
     override val endRotation: Rotation,
     override val navBarMode: NavBar,
     config: Map<String, Any?>,
-    override val description: String
+    override val description: String,
 ) : Scenario {
     private val _extraConfig = config.toMutableMap()
 
@@ -58,7 +58,7 @@ internal constructor(
             if (!extraConfig.containsKey(IS_TABLET)) {
                 Log.e(
                     FLICKER_TAG,
-                    "$IS_TABLET property not initialized. Use [setIsTablet] to initialize"
+                    "$IS_TABLET property not initialized. Use [setIsTablet] to initialize",
                 )
             }
             return extraConfig[IS_TABLET] as Boolean? ?: false

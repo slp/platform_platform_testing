@@ -34,5 +34,5 @@ val OthersOneHandedExitTransition =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )

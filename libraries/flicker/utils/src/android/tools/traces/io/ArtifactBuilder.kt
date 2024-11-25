@@ -133,13 +133,13 @@ class ArtifactBuilder {
                     addFile(
                         zipOutputStream,
                         artifact,
-                        nameInArchive = descriptor.fileNameInArtifact
+                        nameInArchive = descriptor.fileNameInArtifact,
                     )
                     writtenFileNames.add(descriptor.fileNameInArtifact)
                 } else {
                     Log.d(
                         FLICKER_IO_TAG,
-                        "Not adding duplicated ${descriptor.fileNameInArtifact} to zip"
+                        "Not adding duplicated ${descriptor.fileNameInArtifact} to zip",
                     )
                 }
             }

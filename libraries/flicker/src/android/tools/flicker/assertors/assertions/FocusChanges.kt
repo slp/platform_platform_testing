@@ -26,7 +26,7 @@ val ANY_MATCH_COMPONENT = ComponentTemplate("ANY") { _ -> ComponentNameMatcher("
 
 class FocusChanges(
     private val fromComponent: ComponentTemplate = ANY_MATCH_COMPONENT,
-    private val toComponent: ComponentTemplate = ANY_MATCH_COMPONENT
+    private val toComponent: ComponentTemplate = ANY_MATCH_COMPONENT,
 ) : AssertionTemplateWithComponent(fromComponent, toComponent) {
 
     // TODO: Make parent call this when appropriate

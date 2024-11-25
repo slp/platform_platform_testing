@@ -68,7 +68,7 @@ constructor(
                     reader,
                     template.createAssertions(this),
                     stabilityGroup,
-                    assertionExtraData
+                    assertionExtraData,
                 )
             }
         }
@@ -80,7 +80,7 @@ constructor(
         fun fromSlice(
             traceSlice: TraceSlice,
             reader: Reader,
-            config: FlickerConfigEntry
+            config: FlickerConfigEntry,
         ): ScenarioInstanceImpl {
             val layersTrace = reader.readLayersTrace() ?: error("Missing layers trace")
             val startTimestamp = traceSlice.startTimestamp
@@ -99,7 +99,7 @@ constructor(
                 endTimestamp = endTimestamp,
                 associatedCuj = traceSlice.associatedCuj,
                 associatedTransition = traceSlice.associatedTransition,
-                reader = reader.slice(startTimestamp, endTimestamp)
+                reader = reader.slice(startTimestamp, endTimestamp),
             )
         }
     }

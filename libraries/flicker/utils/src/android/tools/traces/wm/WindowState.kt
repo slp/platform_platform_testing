@@ -45,12 +45,13 @@ class WindowState(
     val givenContentInsets: Rect,
     val crop: Rect,
     private val windowContainer: WindowContainer,
-    val isAppWindow: Boolean
+    val isAppWindow: Boolean,
 ) : WindowContainer by windowContainer {
     override val isVisible: Boolean = windowContainer.isVisible && attributes.alpha > 0
 
     override val isFullscreen: Boolean
         get() = this.attributes.flags.and(PlatformConsts.FLAG_FULLSCREEN) > 0
+
     val isStartingWindow: Boolean = windowType == PlatformConsts.WINDOW_TYPE_STARTING
     val isExitingWindow: Boolean = windowType == PlatformConsts.WINDOW_TYPE_EXITING
     val isDebuggerWindow: Boolean = windowType == PlatformConsts.WINDOW_TYPE_DEBUGGER

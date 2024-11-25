@@ -57,8 +57,8 @@ class MockWindowStateBuilder() {
                 KeyguardControllerState.from(
                     isAodShowing = false,
                     isKeyguardShowing = false,
-                    keyguardOccludedStates = emptyMap()
-                )
+                    keyguardOccludedStates = emptyMap(),
+                ),
         )
     }
 

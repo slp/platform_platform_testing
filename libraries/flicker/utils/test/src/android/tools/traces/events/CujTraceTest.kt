@@ -32,12 +32,12 @@ class CujTraceTest {
                     createCujEvent(
                         1,
                         CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL,
-                        CujEvent.JANK_CUJ_BEGIN_TAG
+                        CujEvent.JANK_CUJ_BEGIN_TAG,
                     ),
                     createCujEvent(
                         2,
                         CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL,
-                        CujEvent.JANK_CUJ_END_TAG
+                        CujEvent.JANK_CUJ_END_TAG,
                     ),
                 )
             )
@@ -58,12 +58,12 @@ class CujTraceTest {
                         1,
                         CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL,
                         CujEvent.JANK_CUJ_BEGIN_TAG,
-                        tag = "MySubType"
+                        tag = "MySubType",
                     ),
                     createCujEvent(
                         2,
                         CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL,
-                        CujEvent.JANK_CUJ_END_TAG
+                        CujEvent.JANK_CUJ_END_TAG,
                     ),
                 )
             )
@@ -84,12 +84,12 @@ class CujTraceTest {
                     createCujEvent(
                         1,
                         CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL,
-                        CujEvent.JANK_CUJ_BEGIN_TAG
+                        CujEvent.JANK_CUJ_BEGIN_TAG,
                     ),
                     createCujEvent(
                         2,
                         CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL,
-                        CujEvent.JANK_CUJ_CANCEL_TAG
+                        CujEvent.JANK_CUJ_CANCEL_TAG,
                     ),
                 )
             )
@@ -109,17 +109,17 @@ class CujTraceTest {
                     createCujEvent(
                         1,
                         CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL,
-                        CujEvent.JANK_CUJ_CANCEL_TAG
+                        CujEvent.JANK_CUJ_CANCEL_TAG,
                     ),
                     createCujEvent(
                         2,
                         CujType.CUJ_BIOMETRIC_PROMPT_TRANSITION,
-                        CujEvent.JANK_CUJ_END_TAG
+                        CujEvent.JANK_CUJ_END_TAG,
                     ),
                     createCujEvent(
                         3,
                         CujType.CUJ_LAUNCHER_APP_CLOSE_TO_HOME,
-                        CujEvent.JANK_CUJ_BEGIN_TAG
+                        CujEvent.JANK_CUJ_BEGIN_TAG,
                     ),
                 )
             )
@@ -135,12 +135,12 @@ class CujTraceTest {
                     createCujEvent(
                         2,
                         CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL,
-                        CujEvent.JANK_CUJ_END_TAG
+                        CujEvent.JANK_CUJ_END_TAG,
                     ),
                     createCujEvent(
                         1,
                         CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL,
-                        CujEvent.JANK_CUJ_BEGIN_TAG
+                        CujEvent.JANK_CUJ_BEGIN_TAG,
                     ),
                 )
             )
@@ -160,12 +160,12 @@ class CujTraceTest {
                     createCujEvent(
                         1,
                         CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL,
-                        CujEvent.JANK_CUJ_END_TAG
+                        CujEvent.JANK_CUJ_END_TAG,
                     ),
                     createCujEvent(
                         2,
                         CujType.CUJ_LAUNCHER_ALL_APPS_SCROLL,
-                        CujEvent.JANK_CUJ_BEGIN_TAG
+                        CujEvent.JANK_CUJ_BEGIN_TAG,
                     ),
                 )
             )
@@ -193,17 +193,9 @@ class CujTraceTest {
         timestamp: Long,
         cuj: ICujType,
         type: String,
-        tag: String? = null
+        tag: String? = null,
     ): CujEvent {
-        return CujEvent(
-            Timestamps.from(unixNanos = timestamp),
-            cuj,
-            0,
-            "root",
-            0,
-            type,
-            tag,
-        )
+        return CujEvent(Timestamps.from(unixNanos = timestamp), cuj, 0, "root", 0, type, tag)
     }
 
     companion object {

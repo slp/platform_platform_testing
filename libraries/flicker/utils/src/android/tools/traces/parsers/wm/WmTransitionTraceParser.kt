@@ -29,7 +29,10 @@ import com.android.server.wm.shell.nano.TransitionTraceProto
 /** Parser for [TransitionsTrace] objects */
 class WmTransitionTraceParser :
     AbstractTraceParser<
-        TransitionTraceProto, Transition, android.tools.traces.wm.Transition, TransitionsTrace
+        TransitionTraceProto,
+        Transition,
+        android.tools.traces.wm.Transition,
+        TransitionsTrace,
     >() {
     override val traceName: String = "Transition trace (WM)"
 
@@ -78,7 +81,7 @@ class WmTransitionTraceParser :
         input: TransitionTraceProto,
         from: Timestamp,
         to: Timestamp,
-        addInitialEntry: Boolean
+        addInitialEntry: Boolean,
     ): TransitionsTrace {
         val uncompressedTransitionsTrace = super.doParse(input, from, to, addInitialEntry)
         return uncompressedTransitionsTrace.asCompressed()
@@ -95,11 +98,7 @@ class WmTransitionTraceParser :
                 null
             } else {
                 entry.targets.map {
-                    TransitionChange(
-                        TransitionType.fromInt(it.mode),
-                        it.layerId,
-                        it.windowId,
-                    )
+                    TransitionChange(TransitionType.fromInt(it.mode), it.layerId, it.windowId)
                 }
             }
 

@@ -22,6 +22,6 @@ internal object Suw {
             SuwLoadingScreenForStatus,
             SuwLoadingToNextFlow,
             SuwLoadingToShowInfoWithActions,
-            SuwShowFunctionScreenWithActions
+            SuwShowFunctionScreenWithActions,
         )
 }

@@ -53,7 +53,7 @@ class TaggedCujTransitionMatcher(
                 "${
                     transitions.joinToString(",\n") {
                             Transition.Formatter(reader.readLayersTrace(),
-                                    reader.readWmTrace()).format(it)
+                                    reader.readWmTrace(),).format(it)
                         }.prependIndent()
                     }\n" +
                 "]"
@@ -76,7 +76,7 @@ class TaggedCujTransitionMatcher(
                                 "the following transitions (CUJ=${cujEntry.cuj.name}" +
                                 "[${cujEntry.startTimestamp},${cujEntry.endTimestamp}]):\n " +
                                 formattedTransitions(transitions),
-                            e
+                            e,
                         )
                     }
 
@@ -149,7 +149,7 @@ object TransitionTransforms {
                 isTrampolinedOpenTransition(
                     transitions.first(),
                     transitions.drop(1).first(),
-                    reader
+                    reader,
                 )
         ) {
             // Remove the trampoline transition
@@ -183,7 +183,7 @@ object TransitionTransforms {
     private fun isTrampolinedOpenTransition(
         firstTransition: Transition,
         secondTransition: Transition,
-        reader: Reader
+        reader: Reader,
     ): Boolean {
         val candidateTaskLayers =
             firstTransition.changes

@@ -34,5 +34,5 @@ val OthersBiometricPromptTransition =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )

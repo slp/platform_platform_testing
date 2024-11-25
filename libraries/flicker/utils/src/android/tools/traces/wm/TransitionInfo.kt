@@ -17,8 +17,5 @@
 package android.tools.traces.wm
 
 data class TransitionInfo(val transitionId: Int, val changes: List<Change>) {
-    data class Change(
-        val layerId: Int,
-        val transitMode: TransitMode,
-    )
+    data class Change(val layerId: Int, val transitMode: TransitMode)
 }

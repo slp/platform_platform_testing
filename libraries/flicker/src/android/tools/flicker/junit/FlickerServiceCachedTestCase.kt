@@ -49,13 +49,13 @@ class FlickerServiceCachedTestCase(
 
             metricBundle.putString(
                 getKeyForAssertionResult(result),
-                if (result.status == AssertionResult.Status.PASS) "0" else "1"
+                if (result.status == AssertionResult.Status.PASS) "0" else "1",
             )
             SendToInstrumentation.sendBundle(instrumentation, metricBundle)
 
             Assume.assumeTrue(
                 "FaaS Test was non blocking - skipped",
-                !skipNonBlocking || result.stabilityGroup == AssertionInvocationGroup.BLOCKING
+                !skipNonBlocking || result.stabilityGroup == AssertionInvocationGroup.BLOCKING,
             )
             result.assertionErrors.firstOrNull()?.let { throw it }
         } catch (e: Throwable) {

@@ -52,7 +52,7 @@ class FlickerServiceJUnit4ClassRunner
 constructor(
     testClass: Class<*>?,
     paramString: String? = null,
-    private val arguments: Bundle = InstrumentationRegistry.getArguments()
+    private val arguments: Bundle = InstrumentationRegistry.getArguments(),
 ) : BlockJUnit4ClassRunner(testClass), IFlickerJUnitDecorator {
 
     private val onlyBlocking: Boolean
@@ -63,7 +63,7 @@ constructor(
             this.testClass,
             paramString = paramString,
             onlyBlocking,
-            inner = this
+            inner = this,
         )
 
     private var initialized: Boolean? = null

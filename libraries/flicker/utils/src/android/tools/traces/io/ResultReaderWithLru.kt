@@ -40,7 +40,7 @@ import java.io.IOException
 open class ResultReaderWithLru(
     result: IResultData,
     traceConfig: TraceConfigs,
-    private val reader: ResultReader = ResultReader(result, traceConfig)
+    private val reader: ResultReader = ResultReader(result, traceConfig),
 ) : Reader by reader {
     /** {@inheritDoc} */
     @Throws(IOException::class)
@@ -74,7 +74,7 @@ open class ResultReaderWithLru(
 
     private fun <TraceType> LruCache<CacheKey, TraceType>.logAndReadTrace(
         key: CacheKey,
-        predicate: () -> TraceType?
+        predicate: () -> TraceType?,
     ): TraceType? {
         return withTracing("logAndReadTrace") {
             var value = this[key]
@@ -98,7 +98,7 @@ open class ResultReaderWithLru(
         data class CacheKey(
             private val artifact: String,
             internal val descriptor: ResultArtifactDescriptor,
-            private val transitionTimeRange: TransitionTimeRange
+            private val transitionTimeRange: TransitionTimeRange,
         )
 
         private val wmTraceCache = LruCache<CacheKey, WindowManagerTrace>(5)

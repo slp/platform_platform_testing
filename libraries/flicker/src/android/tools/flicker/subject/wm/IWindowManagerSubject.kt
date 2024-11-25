@@ -65,7 +65,7 @@ interface IWindowManagerSubject<WMSubjectType, RegionSubjectType> {
      */
     fun isAboveWindow(
         aboveWindowComponentMatcher: IComponentMatcher,
-        belowWindowComponentMatcher: IComponentMatcher
+        belowWindowComponentMatcher: IComponentMatcher,
     ): WMSubjectType
 
     /**
@@ -111,7 +111,7 @@ interface IWindowManagerSubject<WMSubjectType, RegionSubjectType> {
      */
     fun hasRotation(
         rotation: Rotation,
-        displayId: Int = PlatformConsts.DEFAULT_DISPLAY
+        displayId: Int = PlatformConsts.DEFAULT_DISPLAY,
     ): WMSubjectType
 
     /**

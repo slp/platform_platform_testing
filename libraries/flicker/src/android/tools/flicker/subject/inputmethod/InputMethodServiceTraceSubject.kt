@@ -61,7 +61,7 @@ constructor(val trace: InputMethodServiceTrace, override val reader: Reader? = n
     operator fun invoke(
         name: String,
         isOptional: Boolean = false,
-        assertion: AssertionPredicate<InputMethodServiceEntrySubject>
+        assertion: AssertionPredicate<InputMethodServiceEntrySubject>,
     ): InputMethodServiceTraceSubject = apply { addAssertion(name, isOptional, assertion) }
 
     /**

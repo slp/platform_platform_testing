@@ -34,5 +34,5 @@ val SuwShowFunctionScreenWithActions =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )
