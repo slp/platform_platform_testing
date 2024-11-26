@@ -577,9 +577,19 @@
       "VALUE": "qc_connectivity_footer_button",
       "PACKAGE": "com.android.systemui"
     },
+    "STATUS_BAR_SOUND_SETTINGS": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "qc_sound_footer_button",
+      "PACKAGE": "com.android.systemui"
+    },
     "WIFI_FACET_BUTTON": {
       "TYPE": "RESOURCE_ID",
       "VALUE": "connectivity_panel_button",
+      "PACKAGE": "com.android.systemui"
+    },
+    "SOUND_FACET_BUTTON": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "volume_panel",
       "PACKAGE": "com.android.systemui"
     },
     "NOTIFICATION_FACET_BUTTON": {
