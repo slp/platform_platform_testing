@@ -34,5 +34,5 @@ val APP_CLOSE_TO_HOME =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(TransitionFilters.CLOSE_APP_TO_LAUNCHER_FILTER)
                 )
-                .build()
+                .build(),
     )

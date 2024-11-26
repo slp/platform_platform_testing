@@ -39,7 +39,7 @@ class InputMethodManagerServiceEntrySubject
 constructor(
     val entry: InputMethodManagerServiceEntry,
     val trace: InputMethodManagerServiceTrace?,
-    override val reader: Reader? = null
+    override val reader: Reader? = null,
 ) : FlickerSubject(), IInputMethodManagerServiceSubject<InputMethodManagerServiceEntrySubject> {
     override val timestamp = entry.timestamp
 

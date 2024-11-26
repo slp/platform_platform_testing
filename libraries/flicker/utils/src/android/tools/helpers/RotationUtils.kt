@@ -55,7 +55,7 @@ object RotationUtils {
         inBounds: Rect,
         parentBounds: Rect,
         oldRotation: Rotation,
-        newRotation: Rotation
+        newRotation: Rotation,
     ): Rect = rotateBounds(inBounds, parentBounds, deltaRotation(oldRotation, newRotation))
 
     /**
@@ -68,7 +68,7 @@ object RotationUtils {
         inBounds: Rect,
         parentWidth: Int,
         parentHeight: Int,
-        rotation: Rotation
+        rotation: Rotation,
     ): Rect {
         val origLeft = inBounds.left
         val origTop = inBounds.top
@@ -79,21 +79,21 @@ object RotationUtils {
                     /* left */ inBounds.top,
                     /* top */ parentWidth - inBounds.right,
                     /* right */ inBounds.bottom,
-                    /* bottom */ parentWidth - origLeft
+                    /* bottom */ parentWidth - origLeft,
                 )
             Rotation.ROTATION_180 ->
                 Rect(
                     /* left */ parentWidth - inBounds.right,
                     /* right */ parentWidth - origLeft,
                     /* top */ parentHeight - inBounds.bottom,
-                    /* bottom */ parentHeight - origTop
+                    /* bottom */ parentHeight - origTop,
                 )
             Rotation.ROTATION_270 ->
                 Rect(
                     /* left */ parentHeight - inBounds.bottom,
                     /* bottom */ inBounds.right,
                     /* right */ parentHeight - inBounds.top,
-                    /* top */ origLeft
+                    /* top */ origLeft,
                 )
         }
     }

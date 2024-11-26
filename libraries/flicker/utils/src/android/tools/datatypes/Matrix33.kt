@@ -35,7 +35,7 @@ private constructor(
     val tx: Float = 0F,
     val dsdy: Float,
     val dtdy: Float,
-    val ty: Float = 0F
+    val ty: Float = 0F,
 ) : DataType() {
     override val isEmpty =
         dsdx == 0f && dtdx == 0f && tx == 0f && dsdy == 0f && dtdy == 0f && ty == 0f
@@ -80,7 +80,7 @@ private constructor(
             tx: Float,
             dsdy: Float,
             dtdy: Float,
-            ty: Float
+            ty: Float,
         ): Matrix33 = withCache { Matrix33(dsdx, dtdx, tx, dsdy, dtdy, ty) }
     }
 }

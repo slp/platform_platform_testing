@@ -53,7 +53,7 @@ object FlickerServiceConfig {
                 SplitScreen.SCENARIOS,
                 Suw.SCENARIOS,
                 Taskbar.SCENARIOS,
-                Wallpaper.SCENARIOS
+                Wallpaper.SCENARIOS,
             )
             .flatten()
 }

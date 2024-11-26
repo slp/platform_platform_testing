@@ -40,7 +40,7 @@ class ScenarioAssertionTest {
                 assertionData = listOf(mockAssertionData),
                 stabilityGroup = AssertionInvocationGroup.BLOCKING,
                 assertionExtraData = mapOf("extraKey" to "extraValue"),
-                assertionRunner = mockAssertionRunner
+                assertionRunner = mockAssertionRunner,
             )
 
         Mockito.`when`(mockAssertionRunner.runAssertion(mockAssertionData))
@@ -73,7 +73,7 @@ class ScenarioAssertionTest {
                 reader = mockReader,
                 assertionData = assertionTemplate.createAssertions(mockScenarioInstance),
                 stabilityGroup = AssertionInvocationGroup.BLOCKING,
-                assertionExtraData = mapOf()
+                assertionExtraData = mapOf(),
             )
 
         val result = scenarioAssertion.execute()
@@ -103,7 +103,7 @@ class ScenarioAssertionTest {
                 reader = mockReader,
                 assertionData = assertionTemplate.createAssertions(mockScenarioInstance),
                 stabilityGroup = AssertionInvocationGroup.BLOCKING,
-                assertionExtraData = mapOf()
+                assertionExtraData = mapOf(),
             )
 
         val result = scenarioAssertion.execute()

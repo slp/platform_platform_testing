@@ -26,5 +26,5 @@ val EntireTrace =
         assertions = AssertionTemplates.ENTIRE_TRACE_ASSERTIONS,
         extractor = EntireTraceExtractor(),
         enabled = true,
-        scenarioId = ScenarioId("ENTIRE_TRACE")
+        scenarioId = ScenarioId("ENTIRE_TRACE"),
     )

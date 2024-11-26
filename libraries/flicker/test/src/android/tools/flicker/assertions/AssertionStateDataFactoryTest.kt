@@ -42,17 +42,17 @@ open class AssertionStateDataFactoryTest {
         validate(
             wmAssertionFactory.createStartStateAssertion {},
             WindowManagerStateSubject::class,
-            Tag.START
+            Tag.START,
         )
         validate(
             layersAssertionFactory.createStartStateAssertion {},
             LayerTraceEntrySubject::class,
-            Tag.START
+            Tag.START,
         )
         validate(
             eventLogAssertionFactory.createStartStateAssertion {},
             EventLogSubject::class,
-            Tag.START
+            Tag.START,
         )
     }
 
@@ -61,17 +61,17 @@ open class AssertionStateDataFactoryTest {
         validate(
             wmAssertionFactory.createEndStateAssertion {},
             WindowManagerStateSubject::class,
-            Tag.END
+            Tag.END,
         )
         validate(
             layersAssertionFactory.createEndStateAssertion {},
             LayerTraceEntrySubject::class,
-            Tag.END
+            Tag.END,
         )
         validate(
             eventLogAssertionFactory.createEndStateAssertion {},
             EventLogSubject::class,
-            Tag.END
+            Tag.END,
         )
     }
 
@@ -80,12 +80,12 @@ open class AssertionStateDataFactoryTest {
         validate(
             wmAssertionFactory.createTagAssertion(TAG) {},
             WindowManagerStateSubject::class,
-            TAG
+            TAG,
         )
         validate(
             layersAssertionFactory.createTagAssertion(TAG) {},
             LayerTraceEntrySubject::class,
-            TAG
+            TAG,
         )
         validate(eventLogAssertionFactory.createTagAssertion(TAG) {}, EventLogSubject::class, TAG)
     }
@@ -93,7 +93,7 @@ open class AssertionStateDataFactoryTest {
     protected fun validate(
         assertionData: AssertionDataImpl,
         expectedSubject: KClass<*>,
-        expectedTag: String
+        expectedTag: String,
     ) {
         Truth.assertWithMessage("Subject")
             .that(assertionData.expectedSubjectClass)

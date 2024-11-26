@@ -51,7 +51,7 @@ class ScenarioInstanceTest {
                                 object : AssertionTemplate("myAssertionSingle") {
                                     override fun doEvaluate(
                                         scenarioInstance: ScenarioInstance,
-                                        flicker: FlickerTest
+                                        flicker: FlickerTest,
                                     ) {
                                         flicker.assertLayers {
                                             throw SimpleFlickerAssertionError(errorMessage)
@@ -61,7 +61,7 @@ class ScenarioInstanceTest {
                                 object : AssertionTemplate("myAssertionMultiple") {
                                     override fun doEvaluate(
                                         scenarioInstance: ScenarioInstance,
-                                        flicker: FlickerTest
+                                        flicker: FlickerTest,
                                     ) {
                                         flicker.assertLayers {
                                             // No errors
@@ -76,9 +76,9 @@ class ScenarioInstanceTest {
                                             // No errors
                                         }
                                     }
-                                } to AssertionInvocationGroup.BLOCKING
+                                } to AssertionInvocationGroup.BLOCKING,
                             ),
-                        enabled = true
+                        enabled = true,
                     ),
                 startRotation = Rotation.ROTATION_0,
                 endRotation = Rotation.ROTATION_90,
@@ -135,7 +135,7 @@ class ScenarioInstanceTest {
                                 object : AssertionTemplate("myAssertion1") {
                                     override fun doEvaluate(
                                         scenarioInstance: ScenarioInstance,
-                                        flicker: FlickerTest
+                                        flicker: FlickerTest,
                                     ) {
                                         throw SimpleFlickerAssertionError(errorMessage)
                                     }
@@ -143,16 +143,16 @@ class ScenarioInstanceTest {
                                 object : AssertionTemplate("myAssertion2") {
                                     override fun doEvaluate(
                                         scenarioInstance: ScenarioInstance,
-                                        flicker: FlickerTest
+                                        flicker: FlickerTest,
                                     ) {
                                         flicker.assertLayers {
                                             throw SimpleFlickerAssertionError("Some flicker error")
                                         }
                                         throw SimpleFlickerAssertionError(errorMessage)
                                     }
-                                } to AssertionInvocationGroup.BLOCKING
+                                } to AssertionInvocationGroup.BLOCKING,
                             ),
-                        enabled = true
+                        enabled = true,
                     ),
                 startRotation = Rotation.ROTATION_0,
                 endRotation = Rotation.ROTATION_90,

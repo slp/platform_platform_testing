@@ -43,7 +43,7 @@ class ViewFrameBuilder {
                     node.left,
                     node.top,
                     /* right */ node.left + node.width,
-                    /* bottom */ node.top + node.height
+                    /* bottom */ node.top + node.height,
                 ),
             scroll = Point(node.scrollX, node.scrollY),
             translation = PointF(node.translationX, node.translationY),
@@ -53,7 +53,7 @@ class ViewFrameBuilder {
             clipChildren = node.clipChildren,
             visibility = node.visibility,
             elevation = node.elevation.toDouble(),
-            children = node.childrenList.map { parseViewNode(it) }
+            children = node.childrenList.map { parseViewNode(it) },
         )
 
     fun build(): ViewFrame {
@@ -64,7 +64,7 @@ class ViewFrameBuilder {
 
         return ViewFrame(
             timestamp = Timestamps.from(systemUptimeNanos = systemUptimeNanos),
-            root = parseViewNode(root)
+            root = parseViewNode(root),
         )
     }
 }

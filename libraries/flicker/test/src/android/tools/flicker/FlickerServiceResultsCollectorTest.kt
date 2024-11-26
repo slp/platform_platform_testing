@@ -79,7 +79,7 @@ class FlickerServiceResultsCollectorTest {
         Mockito.verify(testData)
             .addStringMetric(
                 Mockito.eq(FlickerServiceResultsCollector.FAAS_RESULTS_FILE_PATH_KEY),
-                Mockito.anyString()
+                Mockito.anyString(),
             )
         // No other calls to addStringMetric
         Mockito.verify(testData, Mockito.times(2))
@@ -227,7 +227,7 @@ class FlickerServiceResultsCollectorTest {
             listOf(
                 mockSuccessfulAssertionResult,
                 mockSuccessfulAssertionResult,
-                mockFailedAssertionResult
+                mockFailedAssertionResult,
             )
         val collector = createCollector(assertionResults = assertionResults)
         val runData = DataRecord()
@@ -358,7 +358,7 @@ class FlickerServiceResultsCollectorTest {
                     wmTrace = MockWindowManagerTraceBuilder().build(),
                     layersTrace = MockLayersTraceBuilder().build(),
                     transitionsTrace = TransitionsTrace(emptyList()),
-                    transactionsTrace = null
+                    transactionsTrace = null,
                 )
             )
         val mockFlickerService = Mockito.mock(FlickerService::class.java)

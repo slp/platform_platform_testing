@@ -90,7 +90,7 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
             keyguardControllerState =
                 buildKeyguardControllerState(
                     service.getChild("root_window_container")?.getChild("keyguard_controller")
-                )
+                ),
         )
     }
 
@@ -132,7 +132,7 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
                 windowManagerPolicyProto.getChild("screen_on_fully")?.getBoolean() ?: false,
             windowManagerDrawComplete =
                 windowManagerPolicyProto.getChild("window_manager_draw_complete")?.getBoolean()
-                    ?: false
+                    ?: false,
         )
     }
 
@@ -142,7 +142,7 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
                 windowContainerProto = rootWindowContainerProto.getChild("window_container"),
                 windowContainerChildProtos =
                     rootWindowContainerProto.getChild("window_container")?.getChildren("children"),
-                isActivityInTree = false
+                isActivityInTree = false,
             ) ?: error("Window container should not be null")
 
         return RootWindowContainer(windowContainer)
@@ -153,7 +153,7 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
         windowContainerChildProtos: List<Args>?,
         isActivityInTree: Boolean,
         nameOverride: String? = null,
-        visibleOverride: Boolean? = null
+        visibleOverride: Boolean? = null,
     ): WindowContainer? {
         if (windowContainerProto == null) {
             return null
@@ -183,7 +183,7 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
             layerId =
                 windowContainerProto.getChild("surfaceControl")?.getChild("layerId")?.getInt() ?: 0,
             _children = children,
-            computedZ = computedZCounter++
+            computedZ = computedZCounter++,
         )
     }
 
@@ -198,7 +198,7 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
             mergedOverrideConfiguration =
                 buildConfiguration(
                     configurationContainerProto?.getChild("merged_override_configuration")
-                )
+                ),
         )
     }
 
@@ -217,7 +217,7 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
             smallestScreenWidthDp =
                 configurationProto.getChild("smallest_screen_width_dp")?.getInt() ?: 0,
             screenLayout = configurationProto.getChild("screen_layout")?.getInt() ?: 0,
-            uiMode = configurationProto.getChild("ui_mode")?.getInt() ?: 0
+            uiMode = configurationProto.getChild("ui_mode")?.getInt() ?: 0,
         )
     }
 
@@ -231,7 +231,7 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
             bounds = buildRect(windowConfigurationProto.getChild("bounds")),
             maxBounds = buildRect(windowConfigurationProto.getChild("max_bounds")),
             windowingMode = windowConfigurationProto.getChild("windowing_mode")?.getInt() ?: 0,
-            activityType = windowConfigurationProto.getChild("activity_type")?.getInt() ?: 0
+            activityType = windowConfigurationProto.getChild("activity_type")?.getInt() ?: 0,
         )
     }
 
@@ -247,43 +247,43 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
                     val displayId = it.getChild("display_id")?.getInt() ?: 0
                     val keyguardOccuded = it.getChild("keyguard_occluded")?.getBoolean() ?: false
                     displayId to keyguardOccuded
-                } ?: emptyMap()
+                } ?: emptyMap(),
         )
     }
 
     private fun buildWindowContainerChild(
         windowContainerChildProto: Args,
-        isActivityInTree: Boolean
+        isActivityInTree: Boolean,
     ): WindowContainer? {
         return buildDisplayContent(
             windowContainerChildProto.getChild("display_content"),
-            isActivityInTree
+            isActivityInTree,
         )
             ?: buildDisplayArea(
                 windowContainerChildProto.getChild("display_area"),
-                isActivityInTree
+                isActivityInTree,
             )
             ?: buildTask(windowContainerChildProto.getChild("task"), isActivityInTree)
             ?: buildTaskFragment(
                 windowContainerChildProto.getChild("task_fragment"),
-                isActivityInTree
+                isActivityInTree,
             )
             ?: buildActivity(windowContainerChildProto.getChild("activity"))
             ?: buildWindowToken(
                 windowContainerChildProto.getChild("window_token"),
-                isActivityInTree
+                isActivityInTree,
             )
             ?: buildWindowState(windowContainerChildProto.getChild("window"), isActivityInTree)
             ?: buildWindowContainer(
                 windowContainerChildProto.getChild("window_container"),
                 windowContainerChildProtos = null,
-                isActivityInTree = isActivityInTree
+                isActivityInTree = isActivityInTree,
             )
     }
 
     private fun buildDisplayContent(
         displayContentProto: Args?,
-        isActivityInTree: Boolean
+        isActivityInTree: Boolean,
     ): DisplayContent? {
         if (displayContentProto == null) {
             return null
@@ -320,7 +320,7 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
                     displayContentProto
                         .getChild("display_info")
                         ?.getChild("logical_height")
-                        ?.getInt() ?: 0
+                        ?.getInt() ?: 0,
                 ),
             appRect =
                 Rect(
@@ -329,7 +329,7 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
                     displayContentProto.getChild("display_info")?.getChild("app_width")?.getInt()
                         ?: 0,
                     displayContentProto.getChild("display_info")?.getChild("app_height")?.getInt()
-                        ?: 0
+                        ?: 0,
                 ),
             dpi = displayContentProto.getChild("dpi")?.getInt() ?: 0,
             flags = displayContentProto.getChild("display_info")?.getChild("flags")?.getInt() ?: 0,
@@ -365,7 +365,7 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
                 ),
             insetsSourceProviders =
                 buildInsetsSourceProviders(
-                    displayContentProto.getChildren("insets_source_providers"),
+                    displayContentProto.getChildren("insets_source_providers")
                 ),
             windowContainer =
                 buildWindowContainer(
@@ -381,8 +381,8 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
                     isActivityInTree = isActivityInTree,
                     nameOverride =
                         displayContentProto.getChild("display_info")?.getChild("name")?.getString()
-                            ?: ""
-                ) ?: error("Window container should not be null")
+                            ?: "",
+                ) ?: error("Window container should not be null"),
         )
     }
 
@@ -400,7 +400,7 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
                     windowContainerChildProtos =
                         displayAreaProto.getChild("window_container")?.getChildren("children"),
                     isActivityInTree = isActivityInTree,
-                ) ?: error("Window container should not be null")
+                ) ?: error("Window container should not be null"),
         )
     }
 
@@ -454,14 +454,14 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
                         } else {
                             taskProto.getChild("window_container")?.getChildren("children")
                         },
-                    isActivityInTree = isActivityInTree
-                ) ?: error("Window container should not be null")
+                    isActivityInTree = isActivityInTree,
+                ) ?: error("Window container should not be null"),
         )
     }
 
     private fun buildTaskFragment(
         taskFragmentProto: Args?,
-        isActivityInTree: Boolean
+        isActivityInTree: Boolean,
     ): TaskFragment? {
         if (taskFragmentProto == null) {
             return null
@@ -477,8 +477,8 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
                     windowContainerProto = taskFragmentProto.getChild("window_container"),
                     windowContainerChildProtos =
                         taskFragmentProto.getChild("window_container")?.getChildren("children"),
-                    isActivityInTree = isActivityInTree
-                ) ?: error("Window container should not be null")
+                    isActivityInTree = isActivityInTree,
+                ) ?: error("Window container should not be null"),
         )
     }
 
@@ -502,8 +502,8 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
                             ?.getChild("window_container")
                             ?.getChildren("children"),
                     isActivityInTree = true,
-                    nameOverride = activityRecordProto.getChild("name")?.getString() ?: ""
-                ) ?: error("Window container should not be null")
+                    nameOverride = activityRecordProto.getChild("name")?.getString() ?: "",
+                ) ?: error("Window container should not be null"),
         )
     }
 
@@ -517,7 +517,7 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
                 windowContainerProto = windowTokenProto.getChild("window_container"),
                 windowContainerChildProtos =
                     windowTokenProto.getChild("window_container")?.getChildren("children"),
-                isActivityInTree = isActivityInTree
+                isActivityInTree = isActivityInTree,
             ) ?: error("Window container should not be null")
         )
     }
@@ -562,7 +562,7 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
             requestedSize =
                 Size.from(
                     windowStateProto.getChild("requested_width")?.getInt() ?: 0,
-                    windowStateProto.getChild("requested_height")?.getInt() ?: 0
+                    windowStateProto.getChild("requested_height")?.getInt() ?: 0,
                 ),
             surfacePosition = buildRect(windowStateProto.getChild("surface_position")),
             frame = buildRect(windowStateProto.getChild("window_frames")?.getChild("frame")),
@@ -597,9 +597,9 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
                                     )
                                 else -> identifierName
                             }
-                        )
+                        ),
                 ) ?: error("Window container should not be null"),
-            isAppWindow = isActivityInTree
+            isAppWindow = isActivityInTree,
         )
     }
 
@@ -614,7 +614,7 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
             buildRect(displayCutoutProto.getChild("bound_top")),
             buildRect(displayCutoutProto.getChild("bound_right")),
             buildRect(displayCutoutProto.getChild("bound_bottom")),
-            buildInsets(displayCutoutProto.getChild("waterfall_insets"))
+            buildInsets(displayCutoutProto.getChild("waterfall_insets")),
         )
     }
 
@@ -637,7 +637,7 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
             ?.map {
                 InsetsSourceProvider(
                     buildRect(it.getChild("frame")),
-                    buildInsetsSource(it.getChild("source"))
+                    buildInsetsSource(it.getChild("source")),
                 )
             }
             ?.toTypedArray() ?: emptyArray<InsetsSourceProvider>()
@@ -695,7 +695,7 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
             fitInsetsTypes = windowLayoutParamsProto?.getChild("fit_insets_types")?.getInt() ?: 0,
             fitInsetsSides = windowLayoutParamsProto?.getChild("fit_insets_sides")?.getInt() ?: 0,
             fitIgnoreVisibility =
-                windowLayoutParamsProto?.getChild("fit_ignore_visibility")?.getBoolean() ?: false
+                windowLayoutParamsProto?.getChild("fit_ignore_visibility")?.getBoolean() ?: false,
         )
     }
 
@@ -708,7 +708,7 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
             rectProto?.getChild("left")?.getInt() ?: 0,
             rectProto?.getChild("top")?.getInt() ?: 0,
             rectProto?.getChild("right")?.getInt() ?: 0,
-            rectProto?.getChild("bottom")?.getInt() ?: 0
+            rectProto?.getChild("bottom")?.getInt() ?: 0,
         )
     }
 
@@ -717,7 +717,7 @@ class WindowManagerStateBuilder(val entry: Args, val realToElapsedTimeOffsetNs: 
             rectProto?.getChild("left")?.getInt() ?: 0,
             rectProto?.getChild("top")?.getInt() ?: 0,
             rectProto?.getChild("right")?.getInt() ?: 0,
-            rectProto?.getChild("bottom")?.getInt() ?: 0
+            rectProto?.getChild("bottom")?.getInt() ?: 0,
         )
 
     private fun getWindowTitle(title: String): String {

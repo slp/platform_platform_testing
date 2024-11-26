@@ -57,7 +57,7 @@ class ScenarioBuilder {
             endRotation,
             navBarMode,
             extraConfig,
-            description
+            description,
         )
     }
 
@@ -69,7 +69,7 @@ class ScenarioBuilder {
             navBarMode = DEFAULT_NAVBAR_MODE,
             config = emptyMap(),
             description =
-                defaultDescription(DEFAULT_ROTATION, DEFAULT_ROTATION, DEFAULT_NAVBAR_MODE)
+                defaultDescription(DEFAULT_ROTATION, DEFAULT_ROTATION, DEFAULT_NAVBAR_MODE),
         )
 
     companion object {
@@ -79,7 +79,7 @@ class ScenarioBuilder {
         private fun defaultDescription(
             startOrientation: Rotation,
             endOrientation: Rotation,
-            navBarMode: NavBar
+            navBarMode: NavBar,
         ): String = buildString {
             append(startOrientation.description)
             if (endOrientation != startOrientation) {

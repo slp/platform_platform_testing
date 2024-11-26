@@ -34,5 +34,5 @@ val LauncherAllAppsOpen =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )

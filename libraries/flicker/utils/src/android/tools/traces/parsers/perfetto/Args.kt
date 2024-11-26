@@ -85,7 +85,7 @@ class Args {
         keyAndIndex: Pair<String, Int>,
         keyTokens: List<String>,
         currentToken: Int,
-        value: Any
+        value: Any,
     ) {
         val (key, index) = keyAndIndex
         if (children == null) {

@@ -36,8 +36,7 @@ object Components {
                 val change =
                     associatedTransition.changes.firstOrNull {
                         it.transitMode == TransitionType.TO_BACK
-                    }
-                        ?: error("Missing to back change")
+                    } ?: error("Missing to back change")
                 FullComponentIdMatcher(change.windowId, change.layerId)
             } else {
                 error("Unhandled case - can't get PiP app for this case")

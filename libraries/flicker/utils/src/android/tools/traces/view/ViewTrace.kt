@@ -34,7 +34,7 @@ data class ViewTrace(val windowTitle: String, override val entries: Collection<V
             windowTitle,
             entries
                 .dropWhile { it.timestamp < startTimestamp }
-                .dropLastWhile { it.timestamp > endTimestamp }
+                .dropLastWhile { it.timestamp > endTimestamp },
         )
 
     override fun toString(): String {

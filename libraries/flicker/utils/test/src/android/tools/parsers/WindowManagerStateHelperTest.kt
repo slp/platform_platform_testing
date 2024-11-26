@@ -61,14 +61,14 @@ class WindowManagerStateHelperTest {
         /** Predicate to supply a new UI information */
         deviceDumpSupplier: () -> DeviceStateDump,
         numRetries: Int = 5,
-        retryIntervalMs: Long = 500L
+        retryIntervalMs: Long = 500L,
     ) :
         WindowManagerStateHelper(
             InstrumentationRegistry.getInstrumentation(),
             clearCacheAfterParsing = false,
             deviceDumpSupplier,
             numRetries,
-            retryIntervalMs
+            retryIntervalMs,
         ) {
         var wmState: WindowManagerState = _wmState
             private set
@@ -99,7 +99,7 @@ class WindowManagerStateHelperTest {
                 /* left */ index.toFloat(),
                 /* top */ index.toFloat(),
                 /* right */ index.toFloat() + 1,
-                /* bottom */ index.toFloat() + 1
+                /* bottom */ index.toFloat() + 1,
             )
         return Layer.from(
             name,
@@ -125,7 +125,7 @@ class WindowManagerStateHelperTest {
             isRelativeOf = false,
             zOrderRelativeOfId = -1,
             stackId = 0,
-            excludesCompositionState = false
+            excludesCompositionState = false,
         )
     }
 
@@ -138,7 +138,7 @@ class WindowManagerStateHelperTest {
                     name.toLayerName(),
                     index,
                     id = name.hashCode(),
-                    parentId = root.id
+                    parentId = root.id,
                 )
             )
         }
@@ -201,7 +201,7 @@ class WindowManagerStateHelperTest {
                 trace.entries.first(),
                 supplier,
                 numRetries = trace.entries.size,
-                retryIntervalMs = 1
+                retryIntervalMs = 1,
             )
         Truth.assertWithMessage("IME window is visible")
             .that(helper.wmState.isVisible(ComponentNameMatcher.IME))
@@ -222,7 +222,7 @@ class WindowManagerStateHelperTest {
                 trace.entries.first(),
                 supplier,
                 numRetries = trace.entries.size,
-                retryIntervalMs = 1
+                retryIntervalMs = 1,
             )
         Truth.assertWithMessage("IME window is visible")
             .that(helper.wmState.isVisible(ComponentNameMatcher.IME))
@@ -243,7 +243,7 @@ class WindowManagerStateHelperTest {
                 trace.entries.first(),
                 supplier,
                 numRetries = trace.entries.size,
-                retryIntervalMs = 1
+                retryIntervalMs = 1,
             )
         Truth.assertWithMessage("$simpleAppComponentName is visible")
             .that(helper.wmState.isVisible(simpleAppComponentName))
@@ -267,7 +267,7 @@ class WindowManagerStateHelperTest {
                 trace.entries.first(),
                 supplier,
                 numRetries = 3,
-                retryIntervalMs = 1
+                retryIntervalMs = 1,
             )
         Truth.assertWithMessage("$simpleAppComponentName is visible")
             .that(helper.wmState.isVisible(simpleAppComponentName))
@@ -288,7 +288,7 @@ class WindowManagerStateHelperTest {
                 trace.entries.first(),
                 supplier,
                 numRetries = trace.entries.size,
-                retryIntervalMs = 1
+                retryIntervalMs = 1,
             )
         Truth.assertWithMessage("Home activity is visible")
             .that(helper.wmState.isHomeActivityVisible)
@@ -313,7 +313,7 @@ class WindowManagerStateHelperTest {
                 trace.entries.first(),
                 supplier,
                 numRetries = trace.entries.size,
-                retryIntervalMs = 1
+                retryIntervalMs = 1,
             )
 
         Truth.assertWithMessage("$chromeComponent is visible")
@@ -341,7 +341,7 @@ class WindowManagerStateHelperTest {
                 initialEntry,
                 supplier,
                 numRetries = trace.entries.size,
-                retryIntervalMs = 1
+                retryIntervalMs = 1,
             )
 
         Truth.assertWithMessage("State is valid").that(helper.wmState.isComplete()).isFalse()
@@ -359,7 +359,7 @@ class WindowManagerStateHelperTest {
                 trace.entries.first(),
                 supplier,
                 numRetries = trace.entries.size,
-                retryIntervalMs = 1
+                retryIntervalMs = 1,
             )
         Truth.assertWithMessage("Display rotation")
             .that(helper.wmState.getRotation(displayId = 0))
@@ -395,7 +395,7 @@ class WindowManagerStateHelperTest {
                 trace.entries.first(),
                 supplier,
                 numRetries = trace.entries.size,
-                retryIntervalMs = 1
+                retryIntervalMs = 1,
             )
         Truth.assertWithMessage("Recents activity is visible")
             .that(helper.wmState.isRecentsActivityVisible)

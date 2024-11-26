@@ -40,10 +40,7 @@ class TraceMonitorRuleTest {
     private val monitorWithExceptionStart =
         createMonitor({ error(Consts.FAILURE) }, { setResultExecutionCount++ })
     private val monitorWithExceptionStop =
-        createMonitor(
-            { startExecutionCount++ },
-            { error(Consts.FAILURE) },
-        )
+        createMonitor({ startExecutionCount++ }, { error(Consts.FAILURE) })
     private val monitorWithoutException =
         createMonitor({ startExecutionCount++ }, { setResultExecutionCount++ })
 
@@ -125,13 +122,13 @@ class TraceMonitorRuleTest {
                 TEST_SCENARIO,
                 WindowManagerStateHelper(),
                 ResultWriter(),
-                instrumentation
+                instrumentation,
             )
         }
 
         private fun createMonitor(
             onStart: () -> Unit,
-            onSetResult: (ResultWriter) -> Unit
+            onSetResult: (ResultWriter) -> Unit,
         ): ITransitionMonitor =
             object : ITransitionMonitor {
                 override fun start() {

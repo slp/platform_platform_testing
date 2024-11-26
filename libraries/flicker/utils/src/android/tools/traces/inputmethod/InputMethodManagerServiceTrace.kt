@@ -45,7 +45,7 @@ data class InputMethodManagerServiceTrace(
      */
     override fun slice(
         startTimestamp: Timestamp,
-        endTimestamp: Timestamp
+        endTimestamp: Timestamp,
     ): InputMethodManagerServiceTrace {
         return InputMethodManagerServiceTrace(
             this.entries

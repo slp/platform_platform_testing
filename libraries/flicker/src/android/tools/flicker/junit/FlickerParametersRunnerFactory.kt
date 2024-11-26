@@ -43,7 +43,7 @@ class FlickerParametersRunnerFactory : ParametersRunnerFactory {
             TestWithParameters(
                 /*name */ "[${scenario.description}]",
                 /* testClass */ test.testClass,
-                /* parameters */ test.parameters
+                /* parameters */ test.parameters,
             )
         return LegacyFlickerJUnit4ClassRunner(newTest, scenario, arguments)
     }

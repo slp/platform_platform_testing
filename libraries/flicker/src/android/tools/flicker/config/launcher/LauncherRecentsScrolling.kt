@@ -34,5 +34,5 @@ val LauncherRecentsScrolling =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )

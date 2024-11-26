@@ -27,7 +27,10 @@ import kotlin.math.min
 /** Parser for [TransactionsTrace] */
 class TransactionsTraceParser :
     AbstractTraceParser<
-        TraceProcessorSession, TransactionsTraceEntry, TransactionsTraceEntry, TransactionsTrace
+        TraceProcessorSession,
+        TransactionsTraceEntry,
+        TransactionsTraceEntry,
+        TransactionsTrace,
     >() {
 
     override val traceName = "Layers trace (SF)"
@@ -98,7 +101,7 @@ class TransactionsTraceParser :
 
         private fun buildTraceEntry(
             rows: List<Row>,
-            realToMonotonicTimeOffsetNs: Long
+            realToMonotonicTimeOffsetNs: Long,
         ): TransactionsTraceEntry {
             val args = Args.build(rows)
             val transactions: Collection<Transaction> =
@@ -110,19 +113,18 @@ class TransactionsTraceParser :
                         transaction.getChild("post_time")?.getLong() ?: -1,
                         transaction.getChild("transaction_id")?.getLong() ?: -1,
                         transaction.getChildren("merged_transaction_ids")?.map { it.getLong() }
-                            ?: emptyList()
+                            ?: emptyList(),
                     )
-                }
-                    ?: emptyList()
+                } ?: emptyList()
 
             val traceEntry =
                 TransactionsTraceEntry(
                     CrossPlatform.timestamp.from(
                         elapsedNanos = args.getChild("elapsed_realtime_nanos")?.getLong() ?: 0,
-                        elapsedOffsetNanos = realToMonotonicTimeOffsetNs
+                        elapsedOffsetNanos = realToMonotonicTimeOffsetNs,
                     ),
                     args.getChild("vsync_id")?.getLong() ?: -1,
-                    transactions
+                    transactions,
                 )
 
             transactions.forEach { it.appliedInEntry = traceEntry }

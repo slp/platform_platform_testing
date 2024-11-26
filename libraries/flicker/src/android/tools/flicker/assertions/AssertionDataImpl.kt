@@ -26,7 +26,7 @@ data class AssertionDataImpl(
     /** Expected run result type */
     val expectedSubjectClass: KClass<out FlickerSubject>,
     /** Assertion command */
-    val assertion: FlickerSubject.() -> Unit
+    val assertion: FlickerSubject.() -> Unit,
 ) : AssertionData {
     override fun checkAssertion(run: SubjectsParser) {
         val subject = run.getSubjectOfType(tag, expectedSubjectClass)

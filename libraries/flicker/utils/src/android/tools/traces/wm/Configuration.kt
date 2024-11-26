@@ -33,7 +33,7 @@ private constructor(
     val screenWidthDp: Int = 0,
     val smallestScreenWidthDp: Int = 0,
     val screenLayout: Int = 0,
-    val uiMode: Int = 0
+    val uiMode: Int = 0,
 ) {
     val isEmpty: Boolean
         get() =
@@ -86,7 +86,7 @@ private constructor(
             screenWidthDp: Int,
             smallestScreenWidthDp: Int,
             screenLayout: Int,
-            uiMode: Int
+            uiMode: Int,
         ): Configuration = withCache {
             Configuration(
                 windowConfiguration,
@@ -96,7 +96,7 @@ private constructor(
                 screenWidthDp,
                 smallestScreenWidthDp,
                 screenLayout,
-                uiMode
+                uiMode,
             )
         }
     }

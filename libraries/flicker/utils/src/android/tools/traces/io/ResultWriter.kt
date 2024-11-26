@@ -74,7 +74,7 @@ open class ResultWriter {
     fun addTraceResult(traceType: TraceType, artifact: File, tag: String = Tag.ALL) = apply {
         Log.d(
             FLICKER_IO_TAG,
-            "Add trace result file=$artifact type=$traceType tag=$tag scenario=$scenario"
+            "Add trace result file=$artifact type=$traceType tag=$tag scenario=$scenario",
         )
         val fileDescriptor = ResultArtifactDescriptor(traceType, tag)
         files[fileDescriptor] = artifact
@@ -101,7 +101,7 @@ open class ResultWriter {
             ResultData(
                 artifact,
                 TransitionTimeRange(transitionStartTime, transitionEndTime),
-                executionError
+                executionError,
             )
         }
     }

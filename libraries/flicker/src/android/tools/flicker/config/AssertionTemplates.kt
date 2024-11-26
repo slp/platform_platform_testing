@@ -113,16 +113,13 @@ object AssertionTemplates {
                     AppWindowIsTopWindowAtStart(CLOSING_APPS),
                     VisibleLayersShownMoreThanOneConsecutiveEntry(
                         listOf(ComponentNameMatcher.NAV_BAR)
-                    )
+                    ),
                 )
                 .associateBy({ it }, { AssertionInvocationGroup.BLOCKING })
 
     val APP_LAUNCH_FROM_HOME_ASSERTIONS =
         APP_LAUNCH_ASSERTIONS +
-            listOf(
-                    AppLayerIsVisibleAtStart(LAUNCHER),
-                    AppLayerIsInvisibleAtEnd(LAUNCHER),
-                )
+            listOf(AppLayerIsVisibleAtStart(LAUNCHER), AppLayerIsInvisibleAtEnd(LAUNCHER))
                 .associateBy({ it }, { AssertionInvocationGroup.BLOCKING })
 
     val APP_LAUNCH_FROM_LOCK_ASSERTIONS =
@@ -168,7 +165,7 @@ object AssertionTemplates {
                     WindowRemainInsideVisibleBounds(PIP_APP),
                     WindowBecomesPinned(PIP_APP),
                     LayerBecomesVisible(LAUNCHER),
-                    HasAtMostOneWindowMatching(PIP_DISMISS_OVERLAY)
+                    HasAtMostOneWindowMatching(PIP_DISMISS_OVERLAY),
                 )
                 .associateBy({ it }, { AssertionInvocationGroup.BLOCKING })
 
@@ -180,11 +177,11 @@ object AssertionTemplates {
                     AppLayerBecomesVisible(SPLIT_SCREEN_SECONDARY_APP),
                     SplitAppLayerBoundsBecomesVisible(
                         SPLIT_SCREEN_PRIMARY_APP,
-                        isPrimaryApp = true
+                        isPrimaryApp = true,
                     ),
                     SplitAppLayerBoundsBecomesVisible(
                         SPLIT_SCREEN_SECONDARY_APP,
-                        isPrimaryApp = false
+                        isPrimaryApp = false,
                     ),
                     AppWindowBecomesVisible(SPLIT_SCREEN_PRIMARY_APP),
                     AppWindowBecomesVisible(SPLIT_SCREEN_SECONDARY_APP),

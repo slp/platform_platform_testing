@@ -60,7 +60,7 @@ abstract class BaseFlickerTest(
 
     override fun assertWmVisibleRegion(
         componentMatcher: IComponentMatcher,
-        assertion: RegionTraceSubject.() -> Unit
+        assertion: RegionTraceSubject.() -> Unit,
     ) {
         withTracing("assertWmVisibleRegion") {
             val assertionData =
@@ -100,14 +100,14 @@ abstract class BaseFlickerTest(
     override fun assertLayersVisibleRegion(
         componentMatcher: IComponentMatcher,
         useCompositionEngineRegionOnly: Boolean,
-        assertion: RegionTraceSubject.() -> Unit
+        assertion: RegionTraceSubject.() -> Unit,
     ) {
         withTracing("assertLayersVisibleRegion") {
             val assertionData =
                 assertionFactory.createLayersVisibleRegionAssertion(
                     componentMatcher,
                     useCompositionEngineRegionOnly,
-                    assertion
+                    assertion,
                 )
             doProcess(assertionData)
         }

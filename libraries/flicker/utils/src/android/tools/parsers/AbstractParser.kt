@@ -22,7 +22,9 @@ import android.tools.Timestamp
 /** Base parser class */
 abstract class AbstractParser<InputTypeTrace, OutputTypeTrace> {
     protected abstract val traceName: String
+
     protected abstract fun doDecodeByteArray(bytes: ByteArray): InputTypeTrace
+
     protected abstract fun doParse(input: InputTypeTrace): OutputTypeTrace
 
     /**
@@ -60,7 +62,7 @@ abstract class AbstractParser<InputTypeTrace, OutputTypeTrace> {
         entries: List<Timestamp>,
         from: Timestamp,
         to: Timestamp,
-        addInitialEntry: Boolean
+        addInitialEntry: Boolean,
     ): Set<Timestamp> {
         require(from <= to) { "`from` must be smaller or equal to `to` but was $from and $to" }
 

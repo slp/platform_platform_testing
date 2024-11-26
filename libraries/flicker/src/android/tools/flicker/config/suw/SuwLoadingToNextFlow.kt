@@ -34,5 +34,5 @@ val SuwLoadingToNextFlow =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )

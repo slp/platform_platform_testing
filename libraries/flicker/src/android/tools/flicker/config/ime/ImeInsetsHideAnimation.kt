@@ -35,7 +35,7 @@ val ImeInsetsHideAnimation =
             AssertionTemplates.COMMON_ASSERTIONS +
                 mapOf(
                     NonAppWindowBecomesInvisible(IME) to AssertionInvocationGroup.BLOCKING,
-                    LayerBecomesInvisible(IME) to AssertionInvocationGroup.BLOCKING
+                    LayerBecomesInvisible(IME) to AssertionInvocationGroup.BLOCKING,
                 ),
         extractor =
             TaggedScenarioExtractorBuilder()
@@ -43,5 +43,5 @@ val ImeInsetsHideAnimation =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )

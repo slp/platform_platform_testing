@@ -44,7 +44,7 @@ class WindowManagerState(
     val isDisplayFrozen: Boolean,
     private val _pendingActivities: Collection<String>,
     val root: RootWindowContainer,
-    val keyguardControllerState: KeyguardControllerState
+    val keyguardControllerState: KeyguardControllerState,
 ) : TraceEntry {
     override val timestamp =
         Timestamps.from(elapsedNanos = elapsedTimestamp, unixNanos = clockTimestamp)
@@ -53,6 +53,7 @@ class WindowManagerState(
 
     val stableId: String
         get() = this::class.simpleName ?: error("Unable to determine class")
+
     val isTablet: Boolean
         get() = displays.any { it.isTablet }
 
@@ -87,10 +88,13 @@ class WindowManagerState(
 
     val appWindows: Collection<WindowState>
         get() = windowStates.filter { it.isAppWindow }
+
     val nonAppWindows: Collection<WindowState>
         get() = windowStates.filterNot { it.isAppWindow }
+
     val aboveAppWindows: Collection<WindowState>
         get() = windowStates.takeWhile { !appWindows.contains(it) }
+
     val belowAppWindows: Collection<WindowState>
         get() = windowStates.dropWhile { !appWindows.contains(it) }.drop(appWindows.size)
 
@@ -104,12 +108,16 @@ class WindowManagerState(
                 // for invisible checks it suffices if activity or window is invisible
                 windowIsVisible && (activityIsVisible || activities.isEmpty())
             }
+
     val visibleAppWindows: Collection<WindowState>
         get() = visibleWindows.filter { it.isAppWindow }
+
     val topVisibleAppWindow: WindowState?
         get() = visibleAppWindows.firstOrNull()
+
     val pinnedWindows: Collection<WindowState>
         get() = visibleWindows.filter { it.windowingMode == PlatformConsts.WINDOWING_MODE_PINNED }
+
     val pendingActivities: Collection<Activity>
         get() = _pendingActivities.mapNotNull { getActivityByName(it) }
 
@@ -118,6 +126,7 @@ class WindowManagerState(
 
     val isKeyguardShowing: Boolean
         get() = keyguardControllerState.isKeyguardShowing
+
     val isAodShowing: Boolean
         get() = keyguardControllerState.isAodShowing
 
@@ -127,8 +136,10 @@ class WindowManagerState(
      */
     val canRotate: Boolean
         get() = policy?.isFixedOrientation != true && policy?.isOrientationNoSensor != true
+
     val focusedDisplay: DisplayContent?
         get() = getDisplay(focusedDisplayId)
+
     val focusedStackId: Int
         get() = focusedDisplay?.focusedRootTaskId ?: -1
 
@@ -144,25 +155,34 @@ class WindowManagerState(
                 else -> null
             }
         }
+
     val resumedActivities: Collection<Activity>
         get() = rootTasks.flatMap { it.resumedActivities }.mapNotNull { getActivityByName(it) }
+
     val resumedActivitiesCount: Int
         get() = resumedActivities.size
+
     val stackCount: Int
         get() = rootTasks.size
+
     val homeTask: Task?
         get() = getStackByActivityType(PlatformConsts.ACTIVITY_TYPE_HOME)?.topTask
+
     val recentsTask: Task?
         get() = getStackByActivityType(PlatformConsts.ACTIVITY_TYPE_RECENTS)?.topTask
+
     val homeActivity: Activity?
         get() = homeTask?.activities?.lastOrNull()
+
     val isHomeActivityVisible: Boolean
         get() {
             val activity = homeActivity
             return activity != null && activity.isVisible
         }
+
     val recentsActivity: Activity?
         get() = recentsTask?.activities?.lastOrNull()
+
     val isRecentsActivityVisible: Boolean
         get() {
             return if (isHomeRecentsComponent) {
@@ -172,8 +192,10 @@ class WindowManagerState(
                 activity != null && activity.isVisible
             }
         }
+
     val frontWindow: WindowState?
         get() = windowStates.firstOrNull()
+
     val inputMethodWindowState: WindowState?
         get() = getWindowStateForAppToken(inputMethodWindowAppToken)
 
@@ -222,15 +244,14 @@ class WindowManagerState(
 
     fun getActivitiesForWindowState(
         windowState: WindowState,
-        displayId: Int = PlatformConsts.DEFAULT_DISPLAY
+        displayId: Int = PlatformConsts.DEFAULT_DISPLAY,
     ): Collection<Activity> {
         return displays
             .firstOrNull { it.displayId == displayId }
             ?.rootTasks
             ?.mapNotNull { stack ->
                 stack.getActivity { activity -> activity.hasWindowState(windowState) }
-            }
-            ?: emptyList()
+            } ?: emptyList()
     }
 
     /**
@@ -242,15 +263,14 @@ class WindowManagerState(
      */
     fun getActivitiesForWindow(
         componentMatcher: IComponentMatcher,
-        displayId: Int = PlatformConsts.DEFAULT_DISPLAY
+        displayId: Int = PlatformConsts.DEFAULT_DISPLAY,
     ): Collection<Activity> {
         return displays
             .firstOrNull { it.displayId == displayId }
             ?.rootTasks
             ?.mapNotNull { stack ->
                 stack.getActivity { activity -> activity.hasWindow(componentMatcher) }
-            }
-            ?: emptyList()
+            } ?: emptyList()
     }
 
     /**
@@ -354,7 +374,7 @@ class WindowManagerState(
     fun defaultMinimalDisplaySizeForSplitScreen(displayId: Int): Int {
         return dpToPx(
             PlatformConsts.DEFAULT_MINIMAL_SPLIT_SCREEN_DISPLAY_SIZE_DP.toFloat(),
-            getDisplay(displayId)!!.dpi
+            getDisplay(displayId)!!.dpi,
         )
     }
 
@@ -469,6 +489,7 @@ class WindowManagerState(
             return (dp * densityDpi / PlatformConsts.DENSITY_DEFAULT + 0.5f).toInt()
         }
     }
+
     override fun equals(other: Any?): Boolean {
         return other is WindowManagerState && other.timestamp == this.timestamp
     }

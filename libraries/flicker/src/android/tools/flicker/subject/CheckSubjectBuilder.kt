@@ -25,7 +25,7 @@ data class CheckSubjectBuilder(
     private val timestamp: Timestamp,
     private val extraFacts: List<Fact>,
     private val reader: Reader?,
-    private val lazyMessage: () -> String
+    private val lazyMessage: () -> String,
 ) {
     fun <T> that(actual: T?): CheckSubject<T> {
         return CheckSubject(actual, timestamp, extraFacts, reader, lazyMessage)

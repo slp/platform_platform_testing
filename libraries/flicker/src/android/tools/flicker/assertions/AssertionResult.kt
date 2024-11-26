@@ -40,6 +40,6 @@ interface AssertionResult {
     enum class Status {
         PASS,
         FAIL,
-        ASSUMPTION_VIOLATION
+        ASSUMPTION_VIOLATION,
     }
 }

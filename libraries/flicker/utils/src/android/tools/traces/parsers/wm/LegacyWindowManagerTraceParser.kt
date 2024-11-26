@@ -30,7 +30,7 @@ open class LegacyWindowManagerTraceParser(private val legacyTrace: Boolean = fal
         WindowManagerTraceFileProto,
         WindowManagerTraceProto,
         WindowManagerState,
-        WindowManagerTrace
+        WindowManagerTrace,
     >() {
     private var realToElapsedTimeOffsetNanos = 0L
 
@@ -48,7 +48,7 @@ open class LegacyWindowManagerTraceParser(private val legacyTrace: Boolean = fal
         require(legacyTrace || realToElapsedTimeOffsetNanos != 0L)
         return Timestamps.from(
             elapsedNanos = entry.elapsedRealtimeNanos,
-            unixNanos = entry.elapsedRealtimeNanos + realToElapsedTimeOffsetNanos
+            unixNanos = entry.elapsedRealtimeNanos + realToElapsedTimeOffsetNanos,
         )
     }
 

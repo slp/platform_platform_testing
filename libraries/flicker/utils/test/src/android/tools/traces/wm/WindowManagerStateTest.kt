@@ -54,8 +54,8 @@ class WindowManagerStateTest {
                     KeyguardControllerState.from(
                         isAodShowing = false,
                         isKeyguardShowing = false,
-                        keyguardOccludedStates = mapOf()
-                    )
+                        keyguardOccludedStates = mapOf(),
+                    ),
             )
         Truth.assertThat(entry.timestamp.elapsedNanos).isEqualTo(100)
         Truth.assertThat(entry.timestamp.unixNanos).isEqualTo(600)
@@ -78,8 +78,8 @@ class WindowManagerStateTest {
                     KeyguardControllerState.from(
                         isAodShowing = false,
                         isKeyguardShowing = false,
-                        keyguardOccludedStates = mapOf()
-                    )
+                        keyguardOccludedStates = mapOf(),
+                    ),
             )
         Truth.assertThat(entry.timestamp.elapsedNanos).isEqualTo(100)
         Truth.assertThat(entry.timestamp.unixNanos).isEqualTo(Timestamps.empty().unixNanos)

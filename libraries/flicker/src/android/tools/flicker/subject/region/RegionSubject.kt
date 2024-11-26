@@ -50,7 +50,7 @@ constructor(
     constructor(
         region: Region?,
         timestamp: Timestamp,
-        reader: Reader? = null
+        reader: Reader? = null,
     ) : this(RegionEntry(region ?: Region(), timestamp), timestamp, reader)
 
     /** Custom constructor for existing rects */
@@ -58,7 +58,7 @@ constructor(
     constructor(
         rect: Rect?,
         timestamp: Timestamp,
-        reader: Reader? = null
+        reader: Reader? = null,
     ) : this(Region(rect ?: Rect()), timestamp, reader)
 
     /** Custom constructor for existing rects */
@@ -66,7 +66,7 @@ constructor(
     constructor(
         rect: RectF?,
         timestamp: Timestamp,
-        reader: Reader? = null
+        reader: Reader? = null,
     ) : this(rect?.toRect(), timestamp, reader)
 
     /** Custom constructor for existing regions */
@@ -74,7 +74,7 @@ constructor(
     constructor(
         regions: Collection<Region>,
         timestamp: Timestamp,
-        reader: Reader? = null
+        reader: Reader? = null,
     ) : this(mergeRegions(regions), timestamp, reader)
 
     val region = regionEntry.region
@@ -147,13 +147,13 @@ constructor(
             name = "top position. Expected to be higher or equal",
             other,
             { it.top },
-            { thisV, otherV -> thisV <= otherV }
+            { thisV, otherV -> thisV <= otherV },
         )
         assertCompare(
             name = "bottom position. Expected to be higher or equal",
             other,
             { it.bottom },
-            { thisV, otherV -> thisV <= otherV }
+            { thisV, otherV -> thisV <= otherV },
         )
     }
 
@@ -170,13 +170,13 @@ constructor(
             name = "top position. Expected to be lower or equal",
             other,
             { it.top },
-            { thisV, otherV -> thisV >= otherV }
+            { thisV, otherV -> thisV >= otherV },
         )
         assertCompare(
             name = "bottom position. Expected to be lower or equal",
             other,
             { it.bottom },
-            { thisV, otherV -> thisV >= otherV }
+            { thisV, otherV -> thisV >= otherV },
         )
     }
 
@@ -187,13 +187,13 @@ constructor(
             name = "left position. Expected to be lower or equal",
             other,
             { it.left },
-            { thisV, otherV -> thisV >= otherV }
+            { thisV, otherV -> thisV >= otherV },
         )
         assertCompare(
             name = "right position. Expected to be lower or equal",
             other,
             { it.right },
-            { thisV, otherV -> thisV >= otherV }
+            { thisV, otherV -> thisV >= otherV },
         )
     }
 
@@ -210,13 +210,13 @@ constructor(
             name = "top position. Expected to be higher",
             other,
             { it.top },
-            { thisV, otherV -> thisV < otherV }
+            { thisV, otherV -> thisV < otherV },
         )
         assertCompare(
             name = "bottom position. Expected to be higher",
             other,
             { it.bottom },
-            { thisV, otherV -> thisV < otherV }
+            { thisV, otherV -> thisV < otherV },
         )
     }
 
@@ -239,13 +239,13 @@ constructor(
             name = "top position. Expected to be lower",
             other,
             { it.top },
-            { thisV, otherV -> thisV > otherV }
+            { thisV, otherV -> thisV > otherV },
         )
         assertCompare(
             name = "bottom position. Expected to be lower",
             other,
             { it.bottom },
-            { thisV, otherV -> thisV > otherV }
+            { thisV, otherV -> thisV > otherV },
         )
     }
 
@@ -319,11 +319,11 @@ constructor(
                     .addExtraDescription("Threshold", threshold)
                     .addExtraDescription(
                         "Horizontally positioned to the right",
-                        horizontallyPositionedToTheRight
+                        horizontallyPositionedToTheRight,
                     )
                     .addExtraDescription(
                         "Vertically positioned to the bottom",
-                        verticallyPositionedToTheBottom
+                        verticallyPositionedToTheBottom,
                     )
             throw IncorrectRegionException(errorMsgBuilder)
         }
@@ -466,7 +466,7 @@ constructor(
     fun isSameAspectRatio(
         numerator: Int,
         denominator: Int,
-        threshold: Double = 0.1
+        threshold: Double = 0.1,
     ): RegionSubject {
         val region = Region()
         region.set(Rect(0, 0, numerator, denominator))
@@ -477,7 +477,7 @@ constructor(
         name: String,
         other: Region,
         valueProvider: (Rect) -> T,
-        boundsCheck: (T, T) -> Boolean
+        boundsCheck: (T, T) -> Boolean,
     ) {
         val thisValue = valueProvider(region.bounds)
         val otherValue = valueProvider(other.bounds)
@@ -497,7 +497,7 @@ constructor(
     private fun <T : Comparable<T>> assertEquals(
         name: String,
         other: Region,
-        valueProvider: (Rect) -> T
+        valueProvider: (Rect) -> T,
     ) = assertCompare(name, other, valueProvider) { thisV, otherV -> thisV == otherV }
 
     private fun assertLeftRightAndAreaEquals(other: Region) {

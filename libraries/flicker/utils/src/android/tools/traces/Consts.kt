@@ -28,7 +28,7 @@ val TRACE_CONFIG_REQUIRE_CHANGES =
         transitionsTrace =
             TraceConfig(required = false, allowNoChange = false, usingExistingTraces = false),
         transactionsTrace =
-            TraceConfig(required = false, allowNoChange = false, usingExistingTraces = false)
+            TraceConfig(required = false, allowNoChange = false, usingExistingTraces = false),
     )
 
 val SERVICE_TRACE_CONFIG =
@@ -39,5 +39,5 @@ val SERVICE_TRACE_CONFIG =
         transitionsTrace =
             TraceConfig(required = true, allowNoChange = true, usingExistingTraces = false),
         transactionsTrace =
-            TraceConfig(required = true, allowNoChange = true, usingExistingTraces = false)
+            TraceConfig(required = true, allowNoChange = true, usingExistingTraces = false),
     )

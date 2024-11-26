@@ -31,7 +31,7 @@ import android.tools.io.TransitionTimeRange
 open class ResultData(
     _artifact: Artifact,
     _transitionTimeRange: TransitionTimeRange,
-    _executionError: Throwable?
+    _executionError: Throwable?,
 ) : IResultData {
     final override val artifact: Artifact = _artifact
     final override val transitionTimeRange: TransitionTimeRange = _transitionTimeRange
@@ -50,7 +50,7 @@ open class ResultData(
         return ResultData(
             artifact,
             TransitionTimeRange(startTimestamp, endTimestamp),
-            executionError
+            executionError,
         )
     }
 

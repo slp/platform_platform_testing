@@ -24,10 +24,7 @@ import android.graphics.Rect
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
  */
-open class SoftInputWindow(
-    val bounds: Rect,
-    val windowState: Int,
-) {
+open class SoftInputWindow(val bounds: Rect, val windowState: Int) {
     override fun toString(): String {
         return "${this::class.simpleName}: {windowState: $windowState, bounds: $bounds"
     }

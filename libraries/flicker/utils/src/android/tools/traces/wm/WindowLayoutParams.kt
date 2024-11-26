@@ -55,7 +55,7 @@ private constructor(
     val behavior: Int = 0,
     val fitInsetsTypes: Int = 0,
     val fitInsetsSides: Int = 0,
-    val fitIgnoreVisibility: Boolean = false
+    val fitIgnoreVisibility: Boolean = false,
 ) {
     val isValidNavBarType: Boolean = this.type == TYPE_NAVIGATION_BAR
 
@@ -187,7 +187,7 @@ private constructor(
             behavior: Int,
             fitInsetsTypes: Int,
             fitInsetsSides: Int,
-            fitIgnoreVisibility: Boolean
+            fitIgnoreVisibility: Boolean,
         ): WindowLayoutParams = withCache {
             WindowLayoutParams(
                 type,
@@ -219,7 +219,7 @@ private constructor(
                 behavior,
                 fitInsetsTypes,
                 fitInsetsSides,
-                fitIgnoreVisibility
+                fitIgnoreVisibility,
             )
         }
     }

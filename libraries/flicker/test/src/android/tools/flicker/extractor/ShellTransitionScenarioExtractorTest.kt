@@ -76,7 +76,7 @@ class ShellTransitionScenarioExtractorTest {
                 Timestamps.from(
                     unixNanos = 1682433264342452347,
                     systemUptimeNanos = 2766599071189,
-                    elapsedNanos = 2755182606546
+                    elapsedNanos = 2755182606546,
                 )
             )
         Truth.assertThat(slices.first().endTimestamp)
@@ -84,7 +84,7 @@ class ShellTransitionScenarioExtractorTest {
                 Timestamps.from(
                     unixNanos = 1682433277025674745,
                     systemUptimeNanos = 2767865667794,
-                    elapsedNanos = 2767949503328
+                    elapsedNanos = 2767949503328,
                 )
             )
         Truth.assertThat(slices.first().associatedTransition)

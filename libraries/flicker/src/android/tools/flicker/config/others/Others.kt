@@ -28,6 +28,6 @@ internal object Others {
             OthersTakeScreenshot,
             OthersUserDialogOpen,
             OthersUserSwitch,
-            OthersVolumeControl
+            OthersVolumeControl,
         )
 }

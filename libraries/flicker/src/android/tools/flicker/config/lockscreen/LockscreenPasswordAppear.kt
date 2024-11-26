@@ -34,5 +34,5 @@ val LockscreenPasswordAppear =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )

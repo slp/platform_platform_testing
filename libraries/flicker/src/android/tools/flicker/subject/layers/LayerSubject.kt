@@ -48,12 +48,14 @@ class LayerSubject
 constructor(
     override val timestamp: Timestamp,
     val layer: Layer,
-    public override val reader: Reader? = null
+    public override val reader: Reader? = null,
 ) : FlickerSubject() {
     val isVisible: Boolean
         get() = layer.isVisible
+
     val isInvisible: Boolean
         get() = !layer.isVisible
+
     val name: String
         get() = layer.name
 

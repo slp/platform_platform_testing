@@ -43,7 +43,7 @@ class LegacyFlickerServiceDecorator(
     private val transitionRunner: ITransitionRunner,
     private val skipNonBlocking: Boolean,
     private val arguments: Bundle,
-    inner: IFlickerJUnitDecorator?
+    inner: IFlickerJUnitDecorator?,
 ) : AbstractFlickerRunnerDecorator(testClass, inner) {
     private val flickerService by lazy { FlickerService(getFlickerConfig()) }
 
@@ -67,7 +67,7 @@ class LegacyFlickerServiceDecorator(
             Description.createTestDescription(
                 testClass.javaClass,
                 "${method.name}[${scenario.description}]",
-                *method.annotations
+                *method.annotations,
             )
         } else {
             inner?.getChildDescription(method) ?: error("Descriptor not found")
@@ -144,7 +144,7 @@ class LegacyFlickerServiceDecorator(
             if (filterComponents.size != 2) {
                 Log.e(
                     LOG_TAG,
-                    "Invalid filter-tests instrumentation argument supplied, $testFilter."
+                    "Invalid filter-tests instrumentation argument supplied, $testFilter.",
                 )
                 continue
             }
@@ -162,20 +162,20 @@ class LegacyFlickerServiceDecorator(
      */
     private fun computeFlickerServiceTests(
         test: Any,
-        testScenario: Scenario
+        testScenario: Scenario,
     ): Collection<InjectedTestCase> {
         if (!android.tools.flicker.datastore.DataStore.containsResult(testScenario)) {
             val description =
                 Description.createTestDescription(
                     this::class.java.simpleName,
-                    "computeFlickerServiceTests"
+                    "computeFlickerServiceTests",
                 )
             transitionRunner.runTransition(testScenario, test, description)
         }
         val reader =
             android.tools.flicker.datastore.CachedResultReader(
                 testScenario,
-                TRACE_CONFIG_REQUIRE_CHANGES
+                TRACE_CONFIG_REQUIRE_CHANGES,
             )
 
         val expectedScenarios =

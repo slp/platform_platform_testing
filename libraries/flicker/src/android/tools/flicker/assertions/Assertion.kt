@@ -24,5 +24,6 @@ package android.tools.flicker.assertions
 interface Assertion<T> {
     val isOptional: Boolean
     val name: String
+
     operator fun invoke(target: T)
 }

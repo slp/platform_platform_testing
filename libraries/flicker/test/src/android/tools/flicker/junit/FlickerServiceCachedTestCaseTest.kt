@@ -88,7 +88,7 @@ class FlickerServiceCachedTestCaseTest {
                         "${FlickerServiceResultsCollector.FAAS_METRICS_PREFIX}::" +
                             assertionResult.name
                     ) == "0"
-                }
+                },
             )
     }
 
@@ -145,7 +145,7 @@ class FlickerServiceCachedTestCaseTest {
                         "${FlickerServiceResultsCollector.FAAS_METRICS_PREFIX}::" +
                             assertionResult.name
                     ) == "1"
-                }
+                },
             )
     }
 

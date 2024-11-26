@@ -34,5 +34,5 @@ val SuwLoadingScreenForStatus =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )
