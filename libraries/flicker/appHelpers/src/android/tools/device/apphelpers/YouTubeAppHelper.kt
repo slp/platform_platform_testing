@@ -38,7 +38,7 @@ class YouTubeAppHelper(
     pkgManager: PackageManager = instrumentation.context.packageManager,
     appName: String = getYoutubeLauncherName(pkgManager),
     appComponent: IComponentNameMatcher = getYoutubeComponent(pkgManager),
-) : StandardAppHelper(instrumentation, appName, appComponent) {
+) : BasePipAppHelper(instrumentation, appName, appComponent) {
 
     fun waitForVideoPlaying() {
         displayControls()
@@ -47,10 +47,7 @@ class YouTubeAppHelper(
 
     fun enterFullscreen() {
         displayControls()
-        val fullscreenButton = getFullscreenButton()
-        if (fullscreenButton != null) {
-            fullscreenButton.click()
-        }
+        getFullscreenButton()?.click()
     }
 
     /**

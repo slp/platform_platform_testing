@@ -24,4 +24,7 @@ interface IComponentName {
     fun toWindowName(): String
 
     fun toLayerName(): String
+
+    val packageNameMatcher: ComponentNameMatcher
+        get() = ComponentNameMatcher(packageName, "")
 }

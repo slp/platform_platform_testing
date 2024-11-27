@@ -26,7 +26,8 @@ public interface IAutoFacetBarHelper extends IAppHelper {
         NOTIFICATION("NOTIFICATION"),
         BLUETOOTH("BLUETOOTH"),
         WIFI("WIFI"),
-        BRIGHTNESS("BRIGHTNESS");
+        BRIGHTNESS("BRIGHTNESS"),
+        SOUND("SOUND");
 
         private String mFacetIcon;
 
@@ -51,7 +52,8 @@ public interface IAutoFacetBarHelper extends IAppHelper {
         NOTIFICATION("NOTIFICATION"),
         BLUETOOTH("BLUETOOTH"),
         WIFI("WIFI"),
-        BRIGHTNESS("BRIGHTNESS");
+        BRIGHTNESS("BRIGHTNESS"),
+        SOUND("SOUND");
 
         private String mAppResource;
 
