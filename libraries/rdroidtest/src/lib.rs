@@ -42,7 +42,7 @@ macro_rules! test {
             #[$crate::_linkme::distributed_slice($crate::runner::RDROIDTEST_TESTS)]
             fn [< __test_ $test_name >]() -> $crate::_libtest_mimic::Trial {
                 $crate::_libtest_mimic::Trial::test(
-                    ::std::stringify!($test_name),
+                    $crate::_prepend_module_path!(::std::stringify!($test_name)),
                     move || $crate::runner::run($test_name),
                 )
             }
@@ -53,7 +53,7 @@ macro_rules! test {
             #[$crate::_linkme::distributed_slice($crate::runner::RDROIDTEST_TESTS)]
             fn [< __test_ $test_name >]() -> $crate::_libtest_mimic::Trial {
                 $crate::_libtest_mimic::Trial::test(
-                    ::std::stringify!($test_name),
+                    $crate::_prepend_module_path!(::std::stringify!($test_name)),
                     move || $crate::runner::run($test_name),
                 ).with_ignored_flag($ignore_expr)
             }
@@ -92,7 +92,11 @@ macro_rules! ptest {
             fn [< __ptest_ $test_name >]() -> Vec<$crate::_libtest_mimic::Trial> {
                 $param_gen.into_iter().map(|(name, val)| {
                     $crate::_libtest_mimic::Trial::test(
-                        format!("{}/{}", ::std::stringify!($test_name), name),
+                        format!(
+                            "{}/{}",
+                            $crate::_prepend_module_path!(::std::stringify!($test_name)),
+                            name
+                        ),
                         move || $crate::runner::run(|| $test_name(val)),
                     )
                 }).collect()
@@ -106,11 +110,28 @@ macro_rules! ptest {
                 $param_gen.into_iter().map(|(name, val)| {
                     let ignored = $ignore_expr(&val);
                     $crate::_libtest_mimic::Trial::test(
-                        format!("{}/{}", ::std::stringify!($test_name), name),
+                        format!(
+                            "{}/{}",
+                            $crate::_prepend_module_path!(::std::stringify!($test_name)),
+                            name
+                        ),
                         move || $crate::runner::run(|| $test_name(val)),
                     ).with_ignored_flag(ignored)
                 }).collect()
             }
         );
     };
+}
+
+/// Prepends module path (without the crate name) to the test name and returns
+/// the new string.
+#[doc(hidden)]
+#[macro_export]
+macro_rules! _prepend_module_path {
+    ($test_name:expr) => {{
+        match module_path!().split_once("::") {
+            Some((_, path)) => format!("{}::{}", path, $test_name),
+            None => format!("{}", $test_name),
+        }
+    }};
 }
