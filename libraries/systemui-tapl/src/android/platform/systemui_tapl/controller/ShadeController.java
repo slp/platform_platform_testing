@@ -18,13 +18,10 @@ package android.platform.systemui_tapl.controller;
 
 import android.platform.helpers.CommonUtils;
 
-/**
- * Controller for retrieving shade state and controlling it
- */
+/** Controller for retrieving shade state and controlling it */
 public class ShadeController {
 
-    private ShadeController() {
-    }
+    private ShadeController() {}
 
     public static ShadeController get() {
         return new ShadeController();

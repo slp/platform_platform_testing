@@ -53,7 +53,7 @@ class LockScreen internal constructor() {
             startY = 0,
             endX = device.displayWidth / 2,
             endY = device.displayHeight * 2 / 3,
-            interpolator = FLING_GESTURE_INTERPOLATOR
+            interpolator = FLING_GESTURE_INTERPOLATOR,
         )
         return QuickSettings()
     }

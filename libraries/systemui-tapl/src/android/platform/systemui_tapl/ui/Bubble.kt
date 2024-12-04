@@ -101,13 +101,13 @@ class Bubble internal constructor(private val bubbleView: UiObject2) {
         val destination =
             PointF(
                 windowMetrics.bounds.width() / 2f,
-                (windowMetrics.bounds.height() - insets.bottom).toFloat()
+                (windowMetrics.bounds.height() - insets.bottom).toFloat(),
             )
         BetterSwipe.from(bubbleView.visibleCenter)
             .to(
                 destination,
                 duration = Duration.of(700, ChronoUnit.MILLIS),
-                interpolator = PRECISE_GESTURE_INTERPOLATOR
+                interpolator = PRECISE_GESTURE_INTERPOLATOR,
             )
             .release()
     }

@@ -91,7 +91,7 @@ class BubbleBar {
             .to(
                 waitForObj(DISMISS_VIEW).visibleCenter,
                 Duration.of(500, ChronoUnit.MILLIS),
-                PRECISE_GESTURE_INTERPOLATOR
+                PRECISE_GESTURE_INTERPOLATOR,
             )
             .release()
 

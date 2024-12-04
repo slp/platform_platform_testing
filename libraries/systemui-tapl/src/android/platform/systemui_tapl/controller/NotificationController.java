@@ -58,9 +58,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Controller for manipulating notifications.
- */
+/** Controller for manipulating notifications. */
 public class NotificationController {
     private static final String LOG_TAG = "NotificationController";
 
@@ -72,9 +70,7 @@ public class NotificationController {
     private static final String CUSTOM_TEXT = "Example text";
     private static final String NOTIFICATION_CONTENT_TEXT_FORMAT = "Test notification %d";
 
-    /**
-     * Id of the high importance channel created by the controller.
-     */
+    /** Id of the high importance channel created by the controller. */
     public static final String NOTIFICATION_CHANNEL_HIGH_IMPORTANCE_ID =
             "test_channel_id_high_importance";
 
@@ -136,15 +132,12 @@ public class NotificationController {
                         IMPORTANCE_MIN));
     }
 
-    /**
-     * Returns an instance of NotificationController.
-     */
+    /** Returns an instance of NotificationController. */
     public static NotificationController get() {
         return new NotificationController();
     }
 
-    private NotificationController() {
-    }
+    private NotificationController() {}
 
     private static int getNextNotificationId() {
         return nextNotificationId++;
@@ -258,12 +251,18 @@ public class NotificationController {
      * may fail if the helper has surpassed the system-defined limit for per-package notifications.
      *
      * @param count The number of notifications to post.
-     * @param pkg   The application that will be launched by notifications.
+     * @param pkg The application that will be launched by notifications.
      */
     public NotificationIdentity postNotifications(int count, String pkg) {
-        postNotifications(count, pkg, /* isMessaging = */ false);
-        return new NotificationIdentity(NotificationIdentity.Type.BY_TITLE, NOTIFICATION_TITLE_TEXT,
-                null, null, null, false, pkg);
+        postNotifications(count, pkg, /* isMessaging= */ false);
+        return new NotificationIdentity(
+                NotificationIdentity.Type.BY_TITLE,
+                NOTIFICATION_TITLE_TEXT,
+                null,
+                null,
+                null,
+                false,
+                pkg);
     }
 
     /**
@@ -274,14 +273,16 @@ public class NotificationController {
     @NonNull
     public NotificationIdentity postCallStyleNotification(@Nullable String pkg) {
         Person namedPerson = new Person.Builder().setName("Named Person").build();
-        postNotificationSync(getNextNotificationId(),
+        postNotificationSync(
+                getNextNotificationId(),
                 getBuilder(pkg)
-                        .setStyle(Notification.CallStyle.forOngoingCall(
-                                namedPerson, getLaunchIntent(pkg)))
+                        .setStyle(
+                                Notification.CallStyle.forOngoingCall(
+                                        namedPerson, getLaunchIntent(pkg)))
                         .setFullScreenIntent(getLaunchIntent(pkg), true)
                         .setContentText(INCOMING_CALL_TEXT));
-        return new NotificationIdentity(NotificationIdentity.Type.CALL,
-                null, INCOMING_CALL_TEXT, null, null, true, null);
+        return new NotificationIdentity(
+                NotificationIdentity.Type.CALL, null, INCOMING_CALL_TEXT, null, null, true, null);
     }
 
     /**
@@ -290,14 +291,21 @@ public class NotificationController {
      * @param pkg App to launch, when clicking on notification.
      */
     @NonNull
-    public NotificationIdentity postInboxStyleNotification(@Nullable String pkg,
-            @Nullable String rowText) {
-        postNotificationSync(getNextNotificationId(),
+    public NotificationIdentity postInboxStyleNotification(
+            @Nullable String pkg, @Nullable String rowText) {
+        postNotificationSync(
+                getNextNotificationId(),
                 getBuilder(pkg)
                         .setStyle(new Notification.InboxStyle().addLine(rowText))
                         .setContentText(NOTIFICATION_CONTENT_TEXT));
-        return new NotificationIdentity(NotificationIdentity.Type.INBOX,
-                null, NOTIFICATION_TITLE_TEXT, null, null, true, null);
+        return new NotificationIdentity(
+                NotificationIdentity.Type.INBOX,
+                null,
+                NOTIFICATION_TITLE_TEXT,
+                null,
+                null,
+                true,
+                null);
     }
 
     /**
@@ -306,15 +314,24 @@ public class NotificationController {
      * @param pkg App to launch, when clicking on notification.
      */
     @NonNull
-    public NotificationIdentity postMediaStyleNotification(@Nullable String pkg,
-            boolean decorated) {
-        postNotificationSync(getNextNotificationId(),
+    public NotificationIdentity postMediaStyleNotification(
+            @Nullable String pkg, boolean decorated) {
+        postNotificationSync(
+                getNextNotificationId(),
                 getBuilder(pkg)
-                        .setStyle(decorated ? new Notification.DecoratedMediaCustomViewStyle() :
-                                new Notification.MediaStyle())
+                        .setStyle(
+                                decorated
+                                        ? new Notification.DecoratedMediaCustomViewStyle()
+                                        : new Notification.MediaStyle())
                         .setContentText(NOTIFICATION_CONTENT_TEXT));
-        return new NotificationIdentity(NotificationIdentity.Type.MEDIA,
-                null, NOTIFICATION_CONTENT_TEXT, null, null, true, null);
+        return new NotificationIdentity(
+                NotificationIdentity.Type.MEDIA,
+                null,
+                NOTIFICATION_CONTENT_TEXT,
+                null,
+                null,
+                true,
+                null);
     }
 
     /**
@@ -325,18 +342,19 @@ public class NotificationController {
      */
     @NonNull
     public NotificationIdentity postCustomNotification(@Nullable String pkg, boolean decorated) {
-        postNotificationSync(getNextNotificationId(),
+        postNotificationSync(
+                getNextNotificationId(),
                 getBuilder(pkg)
                         .setCustomContentView(makeCustomContent())
                         .setStyle(decorated ? new Notification.DecoratedCustomViewStyle() : null)
                         .setContentText(CUSTOM_TEXT));
-        return new NotificationIdentity(NotificationIdentity.Type.CUSTOM,
-                null, CUSTOM_TEXT, null, null, true, null);
+        return new NotificationIdentity(
+                NotificationIdentity.Type.CUSTOM, null, CUSTOM_TEXT, null, null, true, null);
     }
 
     protected RemoteViews makeCustomContent() {
-        RemoteViews customContent = new RemoteViews(
-                PACKAGE_NAME, android.R.layout.simple_list_item_1);
+        RemoteViews customContent =
+                new RemoteViews(PACKAGE_NAME, android.R.layout.simple_list_item_1);
         int textId = android.R.id.text1;
         customContent.setTextViewText(textId, "Example Text");
         return customContent;
@@ -351,7 +369,8 @@ public class NotificationController {
     public NotificationIdentity postBigPictureNotification(@Nullable String pkg) {
         Bitmap bitmap = Bitmap.createBitmap(400, 400, Bitmap.Config.ARGB_8888);
         new Canvas(bitmap).drawColor(Color.BLUE);
-        postNotificationSync(getNextNotificationId(),
+        postNotificationSync(
+                getNextNotificationId(),
                 getBuilder(pkg)
                         .setStyle(new android.app.Notification.BigPictureStyle().bigPicture(bitmap))
                         .setContentText(NOTIFICATION_CONTENT_TEXT));
@@ -368,17 +387,19 @@ public class NotificationController {
     /**
      * Posts a notification using {@link android.app.Notification.BigPictureStyle}.
      *
-     * @param pkg     App to launch, when clicking on notification.
+     * @param pkg App to launch, when clicking on notification.
      * @param picture The picture to include as the content of the BigPicture Notification.
      */
     @NonNull
-    public NotificationIdentity postBigPictureNotification(@Nullable String pkg, String title,
-            @NonNull Icon picture, boolean lowImportance) {
-        postNotificationSync(getNextNotificationId(), getBuilder(pkg,
-                lowImportance ? Importance.LOW : Importance.DEFAULT).setContentTitle(
-                title).setStyle(
-                new android.app.Notification.BigPictureStyle().bigPicture(picture)).setContentText(
-                NOTIFICATION_CONTENT_TEXT));
+    public NotificationIdentity postBigPictureNotification(
+            @Nullable String pkg, String title, @NonNull Icon picture, boolean lowImportance) {
+        postNotificationSync(
+                getNextNotificationId(),
+                getBuilder(pkg, lowImportance ? Importance.LOW : Importance.DEFAULT)
+                        .setContentTitle(title)
+                        .setStyle(
+                                new android.app.Notification.BigPictureStyle().bigPicture(picture))
+                        .setContentText(NOTIFICATION_CONTENT_TEXT));
         return new NotificationIdentity(
                 /* type= */ NotificationIdentity.Type.BIG_PICTURE,
                 /* title= */ null,
@@ -401,7 +422,7 @@ public class NotificationController {
     @NonNull
     public GroupNotificationIdentities postGroupNotifications(
             int count, @Nullable String pkg, @NonNull String summary) {
-        return postGroupNotifications(count, pkg, summary, /* highImportance = */ false);
+        return postGroupNotifications(count, pkg, summary, /* highImportance= */ false);
     }
 
     /**
@@ -556,8 +577,7 @@ public class NotificationController {
     public NotificationIdentity postGroupNotificationWithBigTextStyle(
             String pkg, String summary, String groupName, List<String> bigTextContents) {
         Builder builder =
-                getBuilder(pkg)
-                        .setGroupAlertBehavior(android.app.Notification.GROUP_ALERT_SUMMARY);
+                getBuilder(pkg).setGroupAlertBehavior(android.app.Notification.GROUP_ALERT_SUMMARY);
 
         final Notification.BigTextStyle bigTextStyle = new Notification.BigTextStyle();
         for (String bigText : bigTextContents) {
@@ -591,12 +611,12 @@ public class NotificationController {
     /**
      * Posts a notification using {@link android.app.Notification.BigTextStyle}.
      *
-     * @param pkg            App to launch, when clicking on notification.
+     * @param pkg App to launch, when clicking on notification.
      * @param highImportance Whether to post the notification with high importance.
      */
     @NonNull
-    public NotificationIdentity postBigTextNotification(@Nullable String pkg,
-            boolean highImportance) {
+    public NotificationIdentity postBigTextNotification(
+            @Nullable String pkg, boolean highImportance) {
         return BigTextNotificationController.postBigTextNotification(
                 /* pkg= */ pkg, /* highImportance= */ highImportance);
     }
@@ -652,33 +672,35 @@ public class NotificationController {
 
     /**
      * Posts a Full Screen Intent Notification.
+     *
      * @param pkg App to launch, when clicking on notification.
      * @param fsiPendingIntent Full Screen Intent
      * @param actions actions Action to be shown in the Notification
      */
-  public NotificationIdentity postFullScreenIntentNotification(
-          @Nullable final String pkg,
-          final PendingIntent fsiPendingIntent,
-          final Notification.Action... actions) {
+    public NotificationIdentity postFullScreenIntentNotification(
+            @Nullable final String pkg,
+            final PendingIntent fsiPendingIntent,
+            final Notification.Action... actions) {
         postNotificationSync(
-            getNextNotificationId(),
+                getNextNotificationId(),
                 getBuilder(pkg, Importance.HIGH)
-                .setSmallIcon(android.R.drawable.stat_notify_chat)
-                .setContentText(NOTIFICATION_CONTENT_TEXT)
-                .setFullScreenIntent(fsiPendingIntent, true)
-                .setActions(actions));
-            return new NotificationIdentity(
-                    /* title= */NotificationIdentity.Type.BY_TITLE,
-                    /* type= */NOTIFICATION_TITLE_TEXT,
-                    /* text= */null,
-                    /* summary= */ null,
-                    /* textWhenExpanded= */null,
-                    /* contentIsVisibleInCollapsedState= */true,
-                    /* pkg= */ pkg);
+                        .setSmallIcon(android.R.drawable.stat_notify_chat)
+                        .setContentText(NOTIFICATION_CONTENT_TEXT)
+                        .setFullScreenIntent(fsiPendingIntent, true)
+                        .setActions(actions));
+        return new NotificationIdentity(
+                /* title= */ NotificationIdentity.Type.BY_TITLE,
+                /* type= */ NOTIFICATION_TITLE_TEXT,
+                /* text= */ null,
+                /* summary= */ null,
+                /* textWhenExpanded= */ null,
+                /* contentIsVisibleInCollapsedState= */ true,
+                /* pkg= */ pkg);
     }
 
     /**
      * Posts an ongoing Notification.
+     *
      * @param pkg App to launch, when clicking on notification.
      */
     public NotificationIdentity postOngoingNotification(@Nullable final String pkg) {
@@ -699,8 +721,8 @@ public class NotificationController {
 
     private static GroupNotificationIdentities postGroupNotificationsImpl(
             int count, @Nullable String pkg, @NonNull String summary, boolean highImportance) {
-        return postGroupNotificationsImpl(count, pkg, summary,
-                highImportance ? Importance.HIGH : Importance.DEFAULT);
+        return postGroupNotificationsImpl(
+                count, pkg, summary, highImportance ? Importance.HIGH : Importance.DEFAULT);
     }
 
     private static GroupNotificationIdentities postGroupNotificationsImpl(
@@ -730,9 +752,9 @@ public class NotificationController {
         postNotificationSync(getNextNotificationId(), builder, NOTIFICATION_GROUP);
         identities.summary =
                 new NotificationIdentity(
-                        /* type= */
-                        priority == Importance.MIN ? NotificationIdentity.Type.GROUP_MINIMIZED :
-                         NotificationIdentity.Type.GROUP,
+                        /* type= */ priority == Importance.MIN
+                                ? NotificationIdentity.Type.GROUP_MINIMIZED
+                                : NotificationIdentity.Type.GROUP,
                         /* title= */ NOTIFICATION_TITLE_TEXT,
                         /* text= */ NOTIFICATION_TITLE_TEXT,
                         /* summary= */ summary,
@@ -751,8 +773,7 @@ public class NotificationController {
     public NotificationIdentity postStandardSilentNotification(String pkg) {
         postNotificationSync(
                 getNextNotificationId(),
-                getBuilder(pkg, Importance.LOW)
-                        .setContentText(NOTIFICATION_CONTENT_TEXT));
+                getBuilder(pkg, Importance.LOW).setContentText(NOTIFICATION_CONTENT_TEXT));
         return new NotificationIdentity(
                 /* title= */ NotificationIdentity.Type.BY_TITLE,
                 /* type= */ NOTIFICATION_TITLE_TEXT,
@@ -772,14 +793,15 @@ public class NotificationController {
         postNotificationSync(getNextNotificationId(), getBuilder(pkg));
 
         return new NotificationIdentity(
-                /* type = */ NotificationIdentity.Type.BY_TITLE,
-                /* title = */ NOTIFICATION_TITLE_TEXT,
-                /* text = */ null,
-                /* summary = */ null,
-                /* textWhenExpanded = */ null,
-                /* contentIsVisibleInCollapsedState = */ false,
-                /* pkg = */ pkg);
+                /* type= */ NotificationIdentity.Type.BY_TITLE,
+                /* title= */ NOTIFICATION_TITLE_TEXT,
+                /* text= */ null,
+                /* summary= */ null,
+                /* textWhenExpanded= */ null,
+                /* contentIsVisibleInCollapsedState= */ false,
+                /* pkg= */ pkg);
     }
+
     /**
      * Posts a Standard Notification.
      *
@@ -794,14 +816,15 @@ public class NotificationController {
                 getBuilder(pkg).setContentTitle(title).setContentText(content));
 
         return new NotificationIdentity(
-                /* type = */ NotificationIdentity.Type.BY_TITLE,
-                /* title = */ title,
-                /* text = */ null,
-                /* summary = */ null,
-                /* textWhenExpanded = */ null,
-                /* contentIsVisibleInCollapsedState = */ false,
-                /* pkg = */ pkg);
+                /* type= */ NotificationIdentity.Type.BY_TITLE,
+                /* title= */ title,
+                /* text= */ null,
+                /* summary= */ null,
+                /* textWhenExpanded= */ null,
+                /* contentIsVisibleInCollapsedState= */ false,
+                /* pkg= */ pkg);
     }
+
     /**
      * Posts a notification using {@link android.app.Notification.MessagingStyle}.
      *
@@ -810,7 +833,8 @@ public class NotificationController {
     public NotificationIdentity postMessagingStyleNotification(String pkg) {
         String personName = "Person Name";
         android.app.Person person = new android.app.Person.Builder().setName(personName).build();
-        postNotificationSync(getNextNotificationId(),
+        postNotificationSync(
+                getNextNotificationId(),
                 getBuilder(pkg)
                         .setStyle(
                                 new android.app.Notification.MessagingStyle(person)
@@ -835,8 +859,14 @@ public class NotificationController {
                                                         "Message 1",
                                                         SystemClock.currentThreadTimeMillis(),
                                                         person))));
-        return new NotificationIdentity(NotificationIdentity.Type.MESSAGING_STYLE, null, personName,
-                null, null, false, null);
+        return new NotificationIdentity(
+                NotificationIdentity.Type.MESSAGING_STYLE,
+                null,
+                personName,
+                null,
+                null,
+                false,
+                null);
     }
 
     /**
@@ -854,16 +884,15 @@ public class NotificationController {
         for (MessagingStyle.Message message : messages) {
             messagingStyle.addMessage(message);
         }
-        postNotificationSync(
-                getNextNotificationId(), getBuilder(pkg).setStyle(messagingStyle));
+        postNotificationSync(getNextNotificationId(), getBuilder(pkg).setStyle(messagingStyle));
         return new NotificationIdentity(
-                /* type = */ NotificationIdentity.Type.MESSAGING_STYLE,
-                /* title = */ null,
-                /* text = */ personName,
-                /* summary = */ null,
-                /* textWhenExpanded = */ null,
-                /* contentIsVisibleInCollapsedState = */ false,
-                /* pkg = */ null);
+                /* type= */ NotificationIdentity.Type.MESSAGING_STYLE,
+                /* title= */ null,
+                /* text= */ personName,
+                /* summary= */ null,
+                /* textWhenExpanded= */ null,
+                /* contentIsVisibleInCollapsedState= */ false,
+                /* pkg= */ null);
     }
 
     /**
@@ -883,13 +912,13 @@ public class NotificationController {
      */
     public NotificationIdentity postBigTextNotificationWithPublicVersion(String pkg) {
         return BigTextNotificationController.postBigTextNotification(
-                /* pkg = */ pkg,
-                /* highImportance = */ false,
-                /*collapsedText = */ NOTIFICATION_CONTENT_TEXT,
-                /* expandedText = */ NOTIFICATION_BIG_TEXT,
+                /* pkg= */ pkg,
+                /* highImportance= */ false,
+                /* collapsedText= */ NOTIFICATION_CONTENT_TEXT,
+                /* expandedText= */ NOTIFICATION_BIG_TEXT,
                 /* title: String = */ NOTIFICATION_TITLE_TEXT,
-                /* contentIntent = */ null,
-                /* publicVersion = */ getBuilder(pkg).build());
+                /* contentIntent= */ null,
+                /* publicVersion= */ getBuilder(pkg).build());
     }
 
     /**
@@ -900,8 +929,8 @@ public class NotificationController {
      * @param shortcutId The shortcut ID of the associated conversation.
      * @param personName The name of the person of the associated conversation.
      */
-    public NotificationIdentity postConversationNotification(String pkg, String shortcutId,
-            String personName) {
+    public NotificationIdentity postConversationNotification(
+            String pkg, String shortcutId, String personName) {
         Context context = getInstrumentation().getTargetContext();
         Person person = new Person.Builder().setName(personName).build();
         long currentTimeMillis = SystemClock.currentThreadTimeMillis();
@@ -927,7 +956,8 @@ public class NotificationController {
                                 new MessagingStyle(person)
                                         .addMessage(
                                                 new MessagingStyle.Message(
-                                                        "Message " + personName, currentTimeMillis,
+                                                        "Message " + personName,
+                                                        currentTimeMillis,
                                                         person)))
                         .setShortcutId(shortcutId);
 
@@ -974,19 +1004,18 @@ public class NotificationController {
             messagingStyle.addMessage(message);
         }
 
-        final Builder builder =
-                getBuilder(pkg).setStyle(messagingStyle).setShortcutId(shortcutId);
+        final Builder builder = getBuilder(pkg).setStyle(messagingStyle).setShortcutId(shortcutId);
 
         postNotificationSync(getNextNotificationId(), builder);
 
         return new NotificationIdentity(
-                /* type = */ NotificationIdentity.Type.CONVERSATION,
-                /* title = */ null,
-                /* text = */ personName,
-                /* summary = */ null,
-                /* textWhenExpanded = */ null,
-                /* contentIsVisibleInCollapsedState = */ false,
-                /* pkg = */ null);
+                /* type= */ NotificationIdentity.Type.CONVERSATION,
+                /* title= */ null,
+                /* text= */ personName,
+                /* summary= */ null,
+                /* textWhenExpanded= */ null,
+                /* contentIsVisibleInCollapsedState= */ false,
+                /* pkg= */ null);
     }
 
     private Builder createBubbleNotificationPostBuilder(
@@ -1025,47 +1054,52 @@ public class NotificationController {
                 .setStyle(
                         new MessagingStyle(person)
                                 .addMessage(
-                                        new MessagingStyle.Message(text, currentTimeMillis,
-                                                person)))
+                                        new MessagingStyle.Message(
+                                                text, currentTimeMillis, person)))
                 .setShortcutId(shortcutId)
                 .setBubbleMetadata(bubbleMetadata);
     }
-
 
     /**
      * Posts multiple bubble notifications.
      *
      * @param senderName Name of notification sender.
-     * @param count      How many bubble notifications to send.
+     * @param count How many bubble notifications to send.
      */
     @NonNull
     public NotificationIdentity postBubbleNotifications(String senderName, int count) {
-        final Builder builder = createBubbleNotificationPostBuilder(senderName,
-                "Bubble message",
-                DEFAULT_TEST_SHORTCUT_ID, null);
+        final Builder builder =
+                createBubbleNotificationPostBuilder(
+                        senderName, "Bubble message", DEFAULT_TEST_SHORTCUT_ID, null);
 
         for (int i = 0; i < count; i++) {
             postNotificationSync(getNextNotificationId(), builder);
         }
 
         return new NotificationIdentity(
-                NotificationIdentity.Type.CONVERSATION, null, "Bubble message", null, null, false,
+                NotificationIdentity.Type.CONVERSATION,
+                null,
+                "Bubble message",
+                null,
+                null,
+                false,
                 null);
     }
 
     /**
      * Posts a bubble notification.
      *
-     * @param id                An identifier of the notification to be posted.
-     * @param senderName        Name of notification sender.
-     * @param text              Notification message content.
-     * @param shortcutId        id of the shortcut used in the notification.
+     * @param id An identifier of the notification to be posted.
+     * @param senderName Name of notification sender.
+     * @param text Notification message content.
+     * @param shortcutId id of the shortcut used in the notification.
      * @param messageToActivity message to send to bubble test activity.
      */
-    public void postBubbleNotification(int id, String senderName, String text,
-            String shortcutId, String messageToActivity) {
-        Builder builder = createBubbleNotificationPostBuilder(senderName, text,
-                shortcutId, messageToActivity);
+    public void postBubbleNotification(
+            int id, String senderName, String text, String shortcutId, String messageToActivity) {
+        Builder builder =
+                createBubbleNotificationPostBuilder(
+                        senderName, text, shortcutId, messageToActivity);
 
         postNotificationSync(id, builder);
     }
@@ -1073,21 +1107,21 @@ public class NotificationController {
     /**
      * Posts a bubble notification.
      *
-     * @param id         An identifier of the notification to be posted.
+     * @param id An identifier of the notification to be posted.
      * @param senderName Name of notification sender.
-     * @param text       Notification message content.
+     * @param text Notification message content.
      */
     public void postBubbleNotification(int id, String senderName, String text) {
-        postBubbleNotification(id, senderName, text,
-                DEFAULT_TEST_SHORTCUT_ID, /*messageToActivity = */ null);
+        postBubbleNotification(
+                id, senderName, text, DEFAULT_TEST_SHORTCUT_ID, /* messageToActivity= */ null);
     }
 
     /**
      * Updates an existing bubble notification.
      *
-     * @param id         An identifier of the notification to be updated.
+     * @param id An identifier of the notification to be updated.
      * @param senderName Name of notification sender.
-     * @param text       Update message content.
+     * @param text Update message content.
      */
     public void updateBubbleNotification(int id, String senderName, String text) {
         Person person = new Person.Builder().setName(senderName).build();
@@ -1133,12 +1167,10 @@ public class NotificationController {
     }
 
     /**
-     * Returns the current total number of posted notifications.
-     * If you've just posted a notification via NOTIFICATION_MANAGER.notify, this count isn't
-     * guaranteed to be correct unless you've waited for it to arrive.
-     * If the notification is posted by postNotificationSync, the count will be correct after
-     * posting.
-     * Use only postNotificationSync to post notifications.
+     * Returns the current total number of posted notifications. If you've just posted a
+     * notification via NOTIFICATION_MANAGER.notify, this count isn't guaranteed to be correct
+     * unless you've waited for it to arrive. If the notification is posted by postNotificationSync,
+     * the count will be correct after posting. Use only postNotificationSync to post notifications.
      */
     private static int getNotificationCount() {
         return NOTIFICATION_MANAGER.getActiveNotifications().length;
@@ -1180,23 +1212,28 @@ public class NotificationController {
 
     private static void waitUntilPostedNotificationsCountMatches(int count) {
         waitForCondition(
-                () -> "Notification count didn't become " + count + ". It is currently equal to "
-                        + getNotificationCount(),
+                () ->
+                        "Notification count didn't become "
+                                + count
+                                + ". It is currently equal to "
+                                + getNotificationCount(),
                 () -> getNotificationCount() == count);
     }
 
     private static Builder getBuilder(String pkg) {
         return getBuilder(pkg, Importance.DEFAULT);
     }
+
     private static Builder getBuilder(String pkg, Importance importance) {
         Context context = getInstrumentation().getTargetContext();
 
-        final String channelId = switch (importance) {
-            case HIGH -> NOTIFICATION_CHANNEL_HIGH_IMPORTANCE_ID;
-            case DEFAULT -> NOTIFICATION_CHANNEL_DEFAULT_IMPORTANCE_ID;
-            case LOW -> NOTIFICATION_CHANNEL_LOW_IMPORTANCE_ID;
-            case MIN -> NOTIFICATION_CHANNEL_MIN_IMPORTANCE_ID;
-        };
+        final String channelId =
+                switch (importance) {
+                    case HIGH -> NOTIFICATION_CHANNEL_HIGH_IMPORTANCE_ID;
+                    case DEFAULT -> NOTIFICATION_CHANNEL_DEFAULT_IMPORTANCE_ID;
+                    case LOW -> NOTIFICATION_CHANNEL_LOW_IMPORTANCE_ID;
+                    case MIN -> NOTIFICATION_CHANNEL_MIN_IMPORTANCE_ID;
+                };
         Builder builder =
                 new Builder(context, channelId)
                         .setContentTitle(NOTIFICATION_TITLE_TEXT)
@@ -1210,6 +1247,7 @@ public class NotificationController {
         }
         return builder;
     }
+
     private static PendingIntent getLaunchIntent(String pkg) {
         Context context = getInstrumentation().getTargetContext();
         return PendingIntent.getActivity(
@@ -1222,8 +1260,7 @@ public class NotificationController {
     private static void postNotifications(int count, String pkg, boolean isMessaging) {
         Builder builder = getBuilder(pkg);
         if (isMessaging) {
-            Person person = new Person.Builder().setName(
-                    "Marvelous user").build();
+            Person person = new Person.Builder().setName("Marvelous user").build();
             builder.setStyle(
                     new MessagingStyle(person)
                             .addMessage(
@@ -1239,9 +1276,7 @@ public class NotificationController {
         }
     }
 
-    /**
-     * Cancels all notifications posted by this object.
-     */
+    /** Cancels all notifications posted by this object. */
     public void cancelNotifications() {
         NOTIFICATION_MANAGER.cancelAll();
         waitUntilPostedNotificationsCountMatches(0);
@@ -1283,8 +1318,8 @@ public class NotificationController {
     }
 
     /**
-     * Set up or clear the debug filter; restricting notifications to the provided packages,
-     * or resetting if none are provided.
+     * Set up or clear the debug filter; restricting notifications to the provided packages, or
+     * resetting if none are provided.
      *
      * @param allowedPackages package names allowed to show notifications
      */
@@ -1305,8 +1340,8 @@ public class NotificationController {
     }
 
     /**
-     * Set up or clear the debug filter; restricting notifications to the test package,
-     * or resetting if false is provided.
+     * Set up or clear the debug filter; restricting notifications to the test package, or resetting
+     * if false is provided.
      *
      * @param enabled whether to enable the debug filter
      */
@@ -1329,6 +1364,9 @@ public class NotificationController {
      * @see NotificationChannel#setImportance(int)
      */
     public enum Importance {
-        HIGH, DEFAULT, LOW, MIN
+        HIGH,
+        DEFAULT,
+        LOW,
+        MIN
     }
 }

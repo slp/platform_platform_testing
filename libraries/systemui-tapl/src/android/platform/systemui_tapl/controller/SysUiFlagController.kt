@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
- package android.platform.systemui_tapl.controller
+package android.platform.systemui_tapl.controller
 
 import android.platform.uiautomator_helpers.DeviceHelpers.shell
 import android.platform.uiautomator_helpers.DeviceHelpers.uiDevice

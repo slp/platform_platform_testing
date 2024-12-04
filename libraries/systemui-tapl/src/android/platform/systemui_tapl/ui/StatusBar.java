@@ -50,9 +50,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-/**
- * System UI test automation object representing status bar.
- */
+/** System UI test automation object representing status bar. */
 public class StatusBar {
 
     private static final BySelector PERCENTAGE_SELECTOR = By.text(Pattern.compile("\\d+%"));
@@ -89,16 +87,18 @@ public class StatusBar {
         return waitForValueCatchingStaleObjectExceptions(
                 () -> "Failed to get status bar icons.",
                 () -> {
-                    UiObject2 container = getUiDevice().wait(
-                            Until.findObject(sysuiResSelector(NOTIFICATION_ICON_CONTAINER_ID)),
-                            10000);
+                    UiObject2 container =
+                            getUiDevice()
+                                    .wait(
+                                            Until.findObject(
+                                                    sysuiResSelector(
+                                                            NOTIFICATION_ICON_CONTAINER_ID)),
+                                            10000);
                     return container != null ? container.getChildren() : Collections.emptyList();
                 });
     }
 
-    /**
-     * Returns the number of notification icons visible on the status bar.
-     */
+    /** Returns the number of notification icons visible on the status bar. */
     public int getNotificationIconCount() {
         List<UiObject2> icons = getNotificationIconsObjects();
 
@@ -114,13 +114,13 @@ public class StatusBar {
         // actually stacking them up on top of each other and drawing transparent.
         //
         // Let's check for overlap instead of view visibility.
-        int iconPadding = icons.get(1).getVisibleBounds().left
-                - icons.get(0).getVisibleBounds().left;
+        int iconPadding =
+                icons.get(1).getVisibleBounds().left - icons.get(0).getVisibleBounds().left;
         int lastIcon = icons.size() - 1;
         for (int i = 1; i < icons.size(); i++) {
             lastIcon = i;
-            int padding = icons.get(i).getVisibleBounds().left
-                    - icons.get(i - 1).getVisibleBounds().left;
+            int padding =
+                    icons.get(i).getVisibleBounds().left - icons.get(i - 1).getVisibleBounds().left;
             if (padding != iconPadding) {
                 break;
             }
@@ -128,9 +128,7 @@ public class StatusBar {
         return lastIcon;
     }
 
-    /**
-     * Verifies visibility of the battery percentage indicator.
-     */
+    /** Verifies visibility of the battery percentage indicator. */
     public void verifyBatteryPercentageVisibility(boolean expectedVisible) {
         assumeFalse(newStatusBarIcons());
         UiObject2 batteryIndication = getBatteryIndication();
@@ -140,8 +138,7 @@ public class StatusBar {
             assertThat(batteryIndication.wait(Until.hasObject(PERCENTAGE_SELECTOR), 10000))
                     .isTrue();
         } else {
-            assertThat(batteryIndication.wait(Until.gone(PERCENTAGE_SELECTOR), 10000))
-                    .isTrue();
+            assertThat(batteryIndication.wait(Until.gone(PERCENTAGE_SELECTOR), 10000)).isTrue();
         }
     }
 
@@ -181,20 +178,20 @@ public class StatusBar {
         assertThat(getUiDevice().wait(searchCondition, LONG_WAIT.toMillis())).isTrue();
     }
 
-    /**
-     * Returns the visible user switcher chip, or fails if it's not visible.
-     */
+    /** Returns the visible user switcher chip, or fails if it's not visible. */
     public UserSwitcherChip getUserSwitcherChip() {
         return new UserSwitcherChip();
     }
 
     /** Gets the icons object on the right hand side StatusBar. This is for screenshot test. */
     public Rect getBoundsOfRightHandSideStatusBarIconsForScreenshot() {
-        return DeviceHelpers.INSTANCE.waitForObj(
-                /* UiDevice = */ getUiDevice(),
-                /* selector = */ sysuiResSelector(STATUS_ICON_CONTAINER_ID),
-                /* timeout = */ SHORT_WAIT,
-                /* errorProvider = */ () -> "StatusBar icons are not found on the right hand side.")
+        return DeviceHelpers.INSTANCE
+                .waitForObj(
+                        /* UiDevice= */ getUiDevice(),
+                        /* selector= */ sysuiResSelector(STATUS_ICON_CONTAINER_ID),
+                        /* timeout= */ SHORT_WAIT,
+                        /* errorProvider= */ () ->
+                                "StatusBar icons are not found on the right hand side.")
                 .getVisibleBounds();
     }
 
@@ -210,30 +207,49 @@ public class StatusBar {
 
     /** Assert that airplane mode icon is visible. */
     public void verifyAirplaneModeIconIsVisible() {
-        assertThat(getUiDevice().wait(Until.hasObject(
-                sysuiResSelector(STATUS_ICON_CONTAINER_ID).hasChild(
-                        By.desc(AIRPLANE_MODE_ICON_DESC))), SHORT_WAIT.toMillis())).isTrue();
+        assertThat(
+                        getUiDevice()
+                                .wait(
+                                        Until.hasObject(
+                                                sysuiResSelector(STATUS_ICON_CONTAINER_ID)
+                                                        .hasChild(
+                                                                By.desc(AIRPLANE_MODE_ICON_DESC))),
+                                        SHORT_WAIT.toMillis()))
+                .isTrue();
     }
 
     /** Assert that data saver icon is visible. */
     public void verifyDataSaverIconIsVisible() {
-        assertThat(getUiDevice().wait(Until.hasObject(
-                sysuiResSelector(STATUS_ICON_CONTAINER_ID).hasChild(
-                        By.desc(DATA_SAVER_ICON_DESC))), SHORT_WAIT.toMillis())).isTrue();
+        assertThat(
+                        getUiDevice()
+                                .wait(
+                                        Until.hasObject(
+                                                sysuiResSelector(STATUS_ICON_CONTAINER_ID)
+                                                        .hasChild(By.desc(DATA_SAVER_ICON_DESC))),
+                                        SHORT_WAIT.toMillis()))
+                .isTrue();
     }
 
     /** Assert that dock defend icon is visible. */
     public void verifyDockDefendIconIsVisible() {
         assertWithMessage("Dock Defend icon should be visible in status bar.")
-                .that(getUiDevice().wait(Until.hasObject(sysuiResSelector(UI_SYSTEM_ICONS_ID)
-                                .hasChild(By.descContains(DOCK_DEFEND_ICON_SUFFIX_STRING))),
-                        SHORT_WAIT.toMillis())).isTrue();
+                .that(
+                        getUiDevice()
+                                .wait(
+                                        Until.hasObject(
+                                                sysuiResSelector(UI_SYSTEM_ICONS_ID)
+                                                        .hasChild(
+                                                                By.descContains(
+                                                                        DOCK_DEFEND_ICON_SUFFIX_STRING))),
+                                        SHORT_WAIT.toMillis()))
+                .isTrue();
     }
 
     /** Asserts that user switcher chip is invisible. */
     public void assertUserSwitcherChipIsInvisible() {
         DeviceHelpers.INSTANCE.assertInvisible(
-                sysuiResSelector(UserSwitcherChip.USER_SWITCHER_CONTAINER_ID), SHORT_WAIT,
+                sysuiResSelector(UserSwitcherChip.USER_SWITCHER_CONTAINER_ID),
+                SHORT_WAIT,
                 () -> "User switcher chip should be invisible in status bar.");
     }
 
@@ -241,10 +257,10 @@ public class StatusBar {
     public String getClockTime() {
         UiObject2 clockTime =
                 DeviceHelpers.INSTANCE.waitForObj(
-                        /* UiDevice = */ getUiDevice(),
-                        /* selector = */ sysuiResSelector(CLOCK_ID),
-                        /* timeout = */ SHORT_WAIT,
-                        /* errorProvider = */ () -> "Clock not found.");
+                        /* UiDevice= */ getUiDevice(),
+                        /* selector= */ sysuiResSelector(CLOCK_ID),
+                        /* timeout= */ SHORT_WAIT,
+                        /* errorProvider= */ () -> "Clock not found.");
         return clockTime.getText();
     }
 
@@ -270,19 +286,24 @@ public class StatusBar {
     /** Assert that DND icon is visible. */
     public void verifyDndIconIsVisible() {
         assertWithMessage("DND icon should be visible in status bar.")
-                .that(getUiDevice().wait(Until.hasObject(sysuiResSelector(STATUS_ICON_CONTAINER_ID)
-                                .hasChild(By.descContains(DND_ICON_DESC))),
-                        SHORT_WAIT.toMillis())).isTrue();
+                .that(
+                        getUiDevice()
+                                .wait(
+                                        Until.hasObject(
+                                                sysuiResSelector(STATUS_ICON_CONTAINER_ID)
+                                                        .hasChild(By.descContains(DND_ICON_DESC))),
+                                        SHORT_WAIT.toMillis()))
+                .isTrue();
     }
 
     /** Returns the value of the battery level on StatusBar. Experimental. */
     public String getBatteryLevel() {
         UiObject2 batteryPercentage =
                 DeviceHelpers.INSTANCE.waitForObj(
-                        /* UiDevice = */ getUiDevice(),
-                        /* selector = */ sysuiResSelector(BATTERY_LEVEL_TEXT_ID),
-                        /* timeout = */ LONG_WAIT,
-                        /* errorProvider = */ () -> "Battery percentage not found.");
+                        /* UiDevice= */ getUiDevice(),
+                        /* selector= */ sysuiResSelector(BATTERY_LEVEL_TEXT_ID),
+                        /* timeout= */ LONG_WAIT,
+                        /* errorProvider= */ () -> "Battery percentage not found.");
         return batteryPercentage.getText();
     }
 
@@ -290,7 +311,8 @@ public class StatusBar {
     public void verifyWifiIconIsVisible() {
         DeviceHelpers.INSTANCE.assertVisible(
                 sysuiResSelector(UI_SYSTEM_ICONS_ID).hasDescendant(sysuiResSelector(WIFI_ICON_ID)),
-                LONG_WAIT, () -> "WiFi icon should be visible in status bar.");
+                LONG_WAIT,
+                () -> "WiFi icon should be visible in status bar.");
     }
 
     /** Assert that silent icon is visible. */
@@ -298,7 +320,8 @@ public class StatusBar {
         DeviceHelpers.INSTANCE.assertVisible(
                 sysuiResSelector(STATUS_ICON_CONTAINER_ID)
                         .hasChild(By.descContains(SILENT_ICON_DESC_PREFIX_STRING)),
-                LONG_WAIT, () -> "Silent icon should be visible in status bar.");
+                LONG_WAIT,
+                () -> "Silent icon should be visible in status bar.");
     }
 
     /** Assert that the screen record chip is visible. */
@@ -321,11 +344,11 @@ public class StatusBar {
     /** Verifies visibility of the vibrate icon. */
     public void assertVibrateIconVisibility(boolean visible) {
         DeviceHelpers.INSTANCE.assertVisibility(
-                /* UiDevice = */ getUiDevice(),
-                /* selector = */ sysuiResSelector(STATUS_ICON_CONTAINER_ID)
+                /* UiDevice= */ getUiDevice(),
+                /* selector= */ sysuiResSelector(STATUS_ICON_CONTAINER_ID)
                         .hasChild(By.descContains(VIBRATE_ICON_DESC_PREFIX_STRING)),
-                /* visible = */ visible,
-                /* timeout = */ LONG_WAIT);
+                /* visible= */ visible,
+                /* timeout= */ LONG_WAIT);
     }
 
     /**

@@ -23,8 +23,11 @@ public class MinusOne {
 
     public void swipeRight() {
         UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        mDevice.swipe(0, mDevice.getDisplayHeight()/2,
-                mDevice.getDisplayWidth() * 4/5, mDevice.getDisplayHeight()/2, 15);
+        mDevice.swipe(
+                0,
+                mDevice.getDisplayHeight() / 2,
+                mDevice.getDisplayWidth() * 4 / 5,
+                mDevice.getDisplayHeight() / 2,
+                15);
     }
-
 }

@@ -121,7 +121,7 @@ class ExpandedBubbleStack internal constructor() {
                             // Check floating in case bubble bar wasn't active
                             waitForNullableObj(
                                 BUBBLE_OVERFLOW_BUTTON,
-                                timeout = FIND_OBJECT_TIMEOUT
+                                timeout = FIND_OBJECT_TIMEOUT,
                             )
                     } else {
                         waitForNullableObj(BUBBLE_OVERFLOW_BUTTON, timeout = FIND_OBJECT_TIMEOUT)

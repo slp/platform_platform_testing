@@ -69,7 +69,7 @@ class VolumeController private constructor() {
         audioManager.adjustSuggestedStreamVolume(
             direction,
             AudioManager.STREAM_MUSIC,
-            AudioManager.FLAG_SHOW_UI
+            AudioManager.FLAG_SHOW_UI,
         )
     }
 
@@ -83,7 +83,7 @@ class VolumeController private constructor() {
             audioManager.setStreamVolume(
                 AudioManager.STREAM_MUSIC,
                 volumeIndex,
-                0 // Do nothing, prevent opening UI.
+                0, // Do nothing, prevent opening UI.
             )
             ensureThat("music volume == ${volumeIndex}") { volume == volumeIndex }
         }

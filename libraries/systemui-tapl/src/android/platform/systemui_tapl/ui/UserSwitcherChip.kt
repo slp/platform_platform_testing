@@ -30,7 +30,7 @@ class UserSwitcherChip internal constructor() {
     private val container =
         TaplUiDevice.waitForObject(
             sysuiResSelector(USER_SWITCHER_CONTAINER_ID),
-            "User switcher chip"
+            "User switcher chip",
         )
 
     /** Gets the current user name. */
