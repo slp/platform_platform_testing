@@ -163,6 +163,8 @@ public class BootTimeTest extends BaseHostJUnit4Test {
         setUpDeviceForSuccessiveBoots();
         CLog.v("Waiting for %d msecs before successive boots.", mBootDelayTime);
         sleep(mBootDelayTime);
+        mRebootLogcatReceiver = new LogcatReceiver(getDevice(), LOGCAT_CMD_ALL, LOGCAT_SIZE, 0);
+        mRebootLogcatReceiver.start();
     }
 
     @Test
@@ -195,7 +197,7 @@ public class BootTimeTest extends BaseHostJUnit4Test {
         if (mForceF2FsShutdown) {
             forseF2FsShutdown();
         }
-        clearAndStartLogcat();
+        mRebootLogcatReceiver.clear();
         sleep(5000);
         getDevice().nonBlockingReboot();
         getDevice().waitForDeviceOnline(mDeviceBootTime);
