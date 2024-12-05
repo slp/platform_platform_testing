@@ -55,10 +55,12 @@ java_library {
     static_libs: [
         "junit",
         "androidx.test.runner",
+        "kotlin-reflect",
     ],
     srcs: [
-        "src/android/platform/test/rule/LimitDevicesRule.kt",
         "src/android/platform/test/rule/AnnotationUtils.kt",
+        "src/android/platform/test/rule/LimitDevicesRule.kt",
+        "src/android/platform/test/rule/TestAnnotationScanner.kt",
     ],
 }
 
