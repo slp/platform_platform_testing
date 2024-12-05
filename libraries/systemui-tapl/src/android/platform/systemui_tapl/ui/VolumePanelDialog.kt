@@ -20,13 +20,13 @@ import android.media.AudioManager
 import android.platform.systemui_tapl.utils.DeviceUtils.SHORT_WAIT
 import android.platform.systemui_tapl.utils.DeviceUtils.androidResSelector
 import android.platform.systemui_tapl.utils.DeviceUtils.settingsResSelector
-import android.platform.uiautomator_helpers.DeviceHelpers.assertInvisible
-import android.platform.uiautomator_helpers.DeviceHelpers.betterSwipe
-import android.platform.uiautomator_helpers.DeviceHelpers.context
-import android.platform.uiautomator_helpers.DeviceHelpers.uiDevice
-import android.platform.uiautomator_helpers.DeviceHelpers.waitForObj
-import android.platform.uiautomator_helpers.PRECISE_GESTURE_INTERPOLATOR
-import android.platform.uiautomator_helpers.WaitUtils.ensureThat
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertInvisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.betterSwipe
+import android.platform.uiautomatorhelpers.DeviceHelpers.context
+import android.platform.uiautomatorhelpers.DeviceHelpers.uiDevice
+import android.platform.uiautomatorhelpers.DeviceHelpers.waitForObj
+import android.platform.uiautomatorhelpers.PRECISE_GESTURE_INTERPOLATOR
+import android.platform.uiautomatorhelpers.WaitUtils.ensureThat
 import android.widget.SeekBar
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiObject2
@@ -86,7 +86,7 @@ class VolumePanelDialog internal constructor() {
             startY = bound.centerY(),
             endX = x,
             endY = bound.centerY(),
-            interpolator = PRECISE_GESTURE_INTERPOLATOR
+            interpolator = PRECISE_GESTURE_INTERPOLATOR,
         )
         ensureThat("Volume is set to $volume.") {
             audioManager.getStreamVolume(AudioManager.STREAM_RING) == volume

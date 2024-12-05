@@ -17,7 +17,7 @@
 package android.platform.systemui_tapl.ui
 
 import android.platform.systemui_tapl.utils.DeviceUtils.settingsResSelector
-import android.platform.uiautomator_helpers.DeviceHelpers.assertVisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertVisible
 import androidx.test.uiautomator.BySelector
 
 /**

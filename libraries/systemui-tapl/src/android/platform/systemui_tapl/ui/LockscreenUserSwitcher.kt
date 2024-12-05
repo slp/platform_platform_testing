@@ -17,12 +17,12 @@
 package android.platform.systemui_tapl.ui
 
 import android.platform.systemui_tapl.utils.DeviceUtils.sysuiResSelector
-import android.platform.uiautomator_helpers.DeviceHelpers.doubleTapAt
-import android.platform.uiautomator_helpers.DeviceHelpers.uiDevice
-import android.platform.uiautomator_helpers.DeviceHelpers.waitForFirstObj
-import android.platform.uiautomator_helpers.DeviceHelpers.waitForObj
-import android.platform.uiautomator_helpers.assertOnTheLeftSide
-import android.platform.uiautomator_helpers.assertOnTheRightSide
+import android.platform.uiautomatorhelpers.DeviceHelpers.doubleTapAt
+import android.platform.uiautomatorhelpers.DeviceHelpers.uiDevice
+import android.platform.uiautomatorhelpers.DeviceHelpers.waitForFirstObj
+import android.platform.uiautomatorhelpers.DeviceHelpers.waitForObj
+import android.platform.uiautomatorhelpers.assertOnTheLeftSide
+import android.platform.uiautomatorhelpers.assertOnTheRightSide
 import java.time.Duration
 
 /**

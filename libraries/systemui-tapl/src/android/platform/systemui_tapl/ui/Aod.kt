@@ -16,7 +16,7 @@
 
 package android.platform.systemui_tapl.ui
 
-import android.platform.uiautomator_helpers.DeviceHelpers.assertVisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertVisible
 
 /** System UI test automation object representing the always-on-display. */
 class Aod internal constructor() {

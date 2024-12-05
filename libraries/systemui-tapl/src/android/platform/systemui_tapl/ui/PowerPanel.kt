@@ -16,8 +16,8 @@
 package android.platform.systemui_tapl.ui
 
 import android.platform.systemui_tapl.utils.DeviceUtils.sysuiResSelector
-import android.platform.uiautomator_helpers.DeviceHelpers.assertInvisible
-import android.platform.uiautomator_helpers.DeviceHelpers.assertVisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertInvisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertVisible
 import androidx.test.uiautomator.By
 import com.android.launcher3.tapl.LauncherInstrumentation
 import java.util.regex.Pattern

@@ -19,8 +19,8 @@ package android.platform.systemui_tapl.ui
 import android.platform.systemui_tapl.utils.DeviceUtils.androidResSelector
 import android.platform.systemui_tapl.utils.DeviceUtils.sysuiResSelector
 import android.platform.systemui_tapl.utils.UserUtils.runThenWaitUntilSwitchCompleted
-import android.platform.uiautomator_helpers.DeviceHelpers.assertVisible
-import android.platform.uiautomator_helpers.DeviceHelpers.waitForObj
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertVisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.waitForObj
 import java.util.regex.Pattern
 
 /**

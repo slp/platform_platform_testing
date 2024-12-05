@@ -19,10 +19,10 @@ package android.platform.systemui_tapl.ui
 import android.platform.helpers.ui.UiAutomatorUtils.getUiDevice
 import android.platform.systemui_tapl.utils.DeviceUtils.androidResSelector
 import android.platform.systemui_tapl.utils.DeviceUtils.sysuiResSelector
-import android.platform.uiautomator_helpers.DeviceHelpers.assertInvisible
-import android.platform.uiautomator_helpers.DeviceHelpers.assertVisible
-import android.platform.uiautomator_helpers.DeviceHelpers.waitForObj
-import android.platform.uiautomator_helpers.stableBounds
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertInvisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertVisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.waitForObj
+import android.platform.uiautomatorhelpers.stableBounds
 import com.google.common.truth.Truth.assertThat
 
 /**

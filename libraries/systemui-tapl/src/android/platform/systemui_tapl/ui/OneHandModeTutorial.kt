@@ -18,10 +18,10 @@ package android.platform.systemui_tapl.ui
 import android.graphics.Rect
 import android.platform.systemui_tapl.ui.NotificationShade.Companion.waitForShadeToClose
 import android.platform.systemui_tapl.utils.DeviceUtils.sysuiResSelector
-import android.platform.uiautomator_helpers.DeviceHelpers
-import android.platform.uiautomator_helpers.DeviceHelpers.assertInvisible
-import android.platform.uiautomator_helpers.DeviceHelpers.assertVisible
-import android.platform.uiautomator_helpers.DeviceHelpers.betterSwipe
+import android.platform.uiautomatorhelpers.DeviceHelpers
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertInvisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertVisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.betterSwipe
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.view.WindowMetrics
@@ -29,9 +29,9 @@ import android.view.WindowMetrics
 /**
  * System UI test automation object representing swipe down screen bottom to trigger one-handed mode
  * triggered, the whole screen translate down and tutorial shown on top area.
- * HSV:https://hsv.googleplex.com/4846680840077312
- * Lastly, swipe down gesture to close one-handed mode, and ensure the display area recovered.
- * Swipe gesture region:https://screenshot.googleplex.com/q83UXMidE2PUFDq)
+ * HSV:https://hsv.googleplex.com/4846680840077312 Lastly, swipe down gesture to close one-handed
+ * mode, and ensure the display area recovered. Swipe gesture
+ * region:https://screenshot.googleplex.com/q83UXMidE2PUFDq)
  */
 class OneHandModeTutorial internal constructor() {
 
@@ -62,7 +62,7 @@ class OneHandModeTutorial internal constructor() {
             displayBounds.width() / 2,
             displayBounds.height(),
             displayBounds.width() / 2,
-            displayBounds.height() - Math.round(bottomMandatoryGestureHeight * 2.5f)
+            displayBounds.height() - Math.round(bottomMandatoryGestureHeight * 2.5f),
         )
 
         TUTORIAL_SELECTOR.assertInvisible()

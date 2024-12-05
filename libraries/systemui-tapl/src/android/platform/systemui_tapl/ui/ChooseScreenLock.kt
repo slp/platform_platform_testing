@@ -22,11 +22,11 @@ import android.platform.helpers.LockscreenUtils.LockscreenType.PIN
 import android.platform.systemui_tapl.utils.DeviceUtils.androidResSelector
 import android.platform.systemui_tapl.utils.DeviceUtils.settingsResSelector
 import android.platform.test.scenario.tapl_common.Gestures
-import android.platform.uiautomator_helpers.DeviceHelpers.assertInvisible
-import android.platform.uiautomator_helpers.DeviceHelpers.assertVisible
-import android.platform.uiautomator_helpers.DeviceHelpers.shell
-import android.platform.uiautomator_helpers.DeviceHelpers.uiDevice
-import android.platform.uiautomator_helpers.DeviceHelpers.waitForObj
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertInvisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertVisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.shell
+import android.platform.uiautomatorhelpers.DeviceHelpers.uiDevice
+import android.platform.uiautomatorhelpers.DeviceHelpers.waitForObj
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import java.time.Duration
@@ -70,7 +70,7 @@ class ChooseScreenLock internal constructor() {
                 uiDevice.shell("input keyboard text $screenLockCode")
                 Gestures.click(
                     waitForObj(CONFIRM_BUTTON_SELECTOR, LONG_WAIT_TIME),
-                    "Confirm button"
+                    "Confirm button",
                 )
                 Gestures.click(waitForObj(DONE_BUTTON_SELECTOR, LONG_WAIT_TIME), "Done button")
                 DONE_BUTTON_SELECTOR.assertInvisible(timeout = LONG_WAIT_TIME)

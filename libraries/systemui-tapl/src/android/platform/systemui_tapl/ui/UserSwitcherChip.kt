@@ -18,7 +18,7 @@ package android.platform.systemui_tapl.ui
 
 import android.platform.systemui_tapl.utils.DeviceUtils.sysuiResSelector
 import android.platform.test.scenario.tapl_common.TaplUiDevice
-import android.platform.uiautomator_helpers.WaitUtils.waitForValueToSettle
+import android.platform.uiautomatorhelpers.WaitUtils.waitForValueToSettle
 
 /**
  * A container on the status bar that can launch user selection panel.
@@ -30,7 +30,7 @@ class UserSwitcherChip internal constructor() {
     private val container =
         TaplUiDevice.waitForObject(
             sysuiResSelector(USER_SWITCHER_CONTAINER_ID),
-            "User switcher chip"
+            "User switcher chip",
         )
 
     /** Gets the current user name. */

@@ -15,9 +15,9 @@
  */
 package android.platform.systemui_tapl.ui
 
-import android.platform.uiautomator_helpers.DeviceHelpers.assertInvisible
-import android.platform.uiautomator_helpers.DeviceHelpers.assertVisible
-import android.platform.uiautomator_helpers.DeviceHelpers.waitForObj
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertInvisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertVisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.waitForObj
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiObject2
 import com.android.launcher3.tapl.LauncherInstrumentation
@@ -49,7 +49,7 @@ class ModesDialog internal constructor() {
         val modeTile = getModeTile(modeName)
         modeTile.waitForObj(
             if (isOn) MODE_STATE_ON_SELECTOR else MODE_STATE_OFF_SELECTOR,
-            errorProvider = { "Tile not in correct state, wanted ${if (isOn) "On" else "Off"}" }
+            errorProvider = { "Tile not in correct state, wanted ${if (isOn) "On" else "Off"}" },
         )
     }
 

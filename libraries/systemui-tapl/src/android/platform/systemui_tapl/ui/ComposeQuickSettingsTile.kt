@@ -20,9 +20,9 @@ import android.platform.systemui_tapl.utils.DeviceUtils.sysuiResSelector
 import android.platform.systemui_tapl.utils.SETTINGS_PACKAGE
 import android.platform.test.scenario.tapl_common.Gestures
 import android.platform.test.scenario.tapl_common.Gestures.click
-import android.platform.uiautomator_helpers.DeviceHelpers.assertVisible
-import android.platform.uiautomator_helpers.DeviceHelpers.waitForObj
-import android.platform.uiautomator_helpers.WaitUtils.ensureThat
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertVisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.waitForObj
+import android.platform.uiautomatorhelpers.WaitUtils.ensureThat
 import android.text.TextUtils
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
@@ -31,8 +31,7 @@ import com.google.common.truth.Truth.assertWithMessage
 import kotlin.reflect.KClass
 
 /**
- * Object to encapsulate a tile. See
- * https://hsv.googleplex.com/4910828112314368
+ * Object to encapsulate a tile. See https://hsv.googleplex.com/4910828112314368
  *
  * In order to interact with the tile, [getBehavior] needs to be called, with the type of behavior
  * needed. There are also convenience methods for calling [click], [toggleAndAssertToggled], and

@@ -17,12 +17,12 @@ package android.platform.systemui_tapl.ui
 
 import android.graphics.Point
 import android.platform.systemui_tapl.utils.DeviceUtils.sysuiResSelector
-import android.platform.uiautomator_helpers.BetterSwipe
-import android.platform.uiautomator_helpers.DeviceHelpers
-import android.platform.uiautomator_helpers.DeviceHelpers.assertInvisible
-import android.platform.uiautomator_helpers.DeviceHelpers.assertVisible
-import android.platform.uiautomator_helpers.DeviceHelpers.waitForObj
-import android.platform.uiautomator_helpers.PRECISE_GESTURE_INTERPOLATOR
+import android.platform.uiautomatorhelpers.BetterSwipe
+import android.platform.uiautomatorhelpers.DeviceHelpers
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertInvisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertVisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.waitForObj
+import android.platform.uiautomatorhelpers.PRECISE_GESTURE_INTERPOLATOR
 import android.view.WindowManager
 
 /**

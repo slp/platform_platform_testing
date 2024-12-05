@@ -20,8 +20,8 @@ import static android.platform.systemui_tapl.utils.DeviceUtils.LONG_WAIT;
 import static android.platform.systemui_tapl.utils.DeviceUtils.SHORT_WAIT;
 import static android.platform.systemui_tapl.utils.DeviceUtils.sysuiResSelector;
 import static android.platform.test.util.HealthTestingUtils.waitForValueCatchingStaleObjectExceptions;
-import static android.platform.uiautomator_helpers.DeviceHelpers.getUiDevice;
-import static android.platform.uiautomator_helpers.WaitUtils.ensureThat;
+import static android.platform.uiautomatorhelpers.DeviceHelpers.getUiDevice;
+import static android.platform.uiautomatorhelpers.WaitUtils.ensureThat;
 
 import static androidx.test.uiautomator.Until.findObject;
 
@@ -36,7 +36,7 @@ import android.app.Flags;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.platform.helpers.foldable.UnfoldAnimationTestingUtils;
-import android.platform.uiautomator_helpers.DeviceHelpers;
+import android.platform.uiautomatorhelpers.DeviceHelpers;
 
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.BySelector;

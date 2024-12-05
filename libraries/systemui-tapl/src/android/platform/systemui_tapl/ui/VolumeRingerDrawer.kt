@@ -17,7 +17,7 @@ package android.platform.systemui_tapl.ui
 
 import android.platform.systemui_tapl.controller.VolumeController.RingerMode
 import android.platform.systemui_tapl.utils.DeviceUtils.sysuiResSelector
-import android.platform.uiautomator_helpers.DeviceHelpers.waitForObj
+import android.platform.uiautomatorhelpers.DeviceHelpers.waitForObj
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiObject2
 

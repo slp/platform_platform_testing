@@ -18,7 +18,7 @@ package android.platform.systemui_tapl.ui
 
 import android.platform.systemui_tapl.utils.DeviceUtils.launcherDescSelector
 import android.platform.systemui_tapl.utils.DeviceUtils.launcherResSelector
-import android.platform.uiautomator_helpers.DeviceHelpers.waitForObj
+import android.platform.uiautomatorhelpers.DeviceHelpers.waitForObj
 import com.google.common.truth.Truth.assertThat
 
 /**
