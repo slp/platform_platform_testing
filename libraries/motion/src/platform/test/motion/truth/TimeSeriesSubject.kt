@@ -34,6 +34,7 @@ private constructor(failureMetadata: FailureMetadata, private val actual: TimeSe
         if (actual is TimeSeries && expected is TimeSeries) {
             val facts = compareTimeSeries(expected, actual)
             if (facts.isNotEmpty()) {
+                facts.add(simpleFact(MANAGE_GOLDEN_DOCUMENTATION))
                 failWithoutActual(facts[0], *(facts.drop(1)).toTypedArray())
             }
         } else {
@@ -42,7 +43,7 @@ private constructor(failureMetadata: FailureMetadata, private val actual: TimeSe
     }
 
     private fun compareTimeSeries(expected: TimeSeries, actual: TimeSeries) =
-        buildList<Fact> {
+        mutableListOf<Fact>().apply {
             val actualToExpectedDataPointIndices: List<Pair<Int, Int>>
             if (actual.frameIds != expected.frameIds) {
                 add(simpleFact("TimeSeries.frames does not match"))
@@ -121,5 +122,8 @@ private constructor(failureMetadata: FailureMetadata, private val actual: TimeSe
         /** Shortcut for `Truth.assertAbout(timeSeries()).that(timeSeries)`. */
         fun assertThat(timeSeries: TimeSeries): TimeSeriesSubject =
             Truth.assertAbout(timeSeries()).that(timeSeries)
+
+        const val MANAGE_GOLDEN_DOCUMENTATION =
+            "Documentation on how to verify the change visually and how to update the golden files can be found at http://go/motion-testing#managing-goldens"
     }
 }
