@@ -29,6 +29,10 @@ java_test_host {
         "mockito-host",
     ],
 
+    device_common_data: [
+        ":StsCommonUtilDeviceTests",
+    ],
+
     // tag this module as a test artifact
     test_suites: ["general-tests"],
 
