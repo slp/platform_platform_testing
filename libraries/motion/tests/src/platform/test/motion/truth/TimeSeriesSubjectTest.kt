@@ -154,11 +154,30 @@ class TimeSeriesSubjectTest {
                     "|  @1ms",
                     "|    expected",
                     "|    but was",
+                    TimeSeriesSubject.MANAGE_GOLDEN_DOCUMENTATION,
                 )
                 .inOrder()
 
             factValue("|    expected").isEqualTo("2 (int)")
             factValue("|    but was").isEqualTo("3 (int)")
+        }
+    }
+
+    @Test
+    fun isEqualTo_manageGoldenMessageAddedOnError() {
+        val expected =
+            TimeSeries(
+                createFrames(2),
+                listOf(Feature("foo", listOf(1.asDataPoint(), 2.asDataPoint()))),
+            )
+        val actual =
+            TimeSeries(
+                createFrames(2),
+                listOf(Feature("foo", listOf(1.asDataPoint(), 3.asDataPoint()))),
+            )
+
+        with(assertThrows { assertThat(actual).isEqualTo(expected) }) {
+            factKeys().contains(TimeSeriesSubject.MANAGE_GOLDEN_DOCUMENTATION)
         }
     }
 

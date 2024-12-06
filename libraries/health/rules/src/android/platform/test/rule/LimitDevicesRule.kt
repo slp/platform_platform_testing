@@ -20,6 +20,7 @@ import android.platform.test.rule.DeviceProduct.CF_PHONE
 import android.platform.test.rule.DeviceProduct.CF_TABLET
 import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
+import java.lang.annotation.Inherited
 import kotlin.annotation.AnnotationRetention.RUNTIME
 import kotlin.annotation.AnnotationTarget.CLASS
 import kotlin.annotation.AnnotationTarget.FUNCTION
@@ -28,19 +29,22 @@ import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
 
-/** Limits the test to run on devices specified by [allowed], */
+/** Limits the test to run on devices specified by [allowed] */
 @Retention(RUNTIME)
 @Target(FUNCTION, CLASS)
+@Inherited
 annotation class AllowedDevices(vararg val allowed: DeviceProduct)
 
 /** Does not run the test on device specified by [denied], */
 @Retention(RUNTIME)
 @Target(FUNCTION, CLASS)
+@Inherited
 annotation class DeniedDevices(vararg val denied: DeviceProduct)
 
 /** Limits the test on default screenshot devices, or [allowed] devices if specified. */
 @Retention(RUNTIME)
 @Target(FUNCTION, CLASS)
+@Inherited
 annotation class ScreenshotTestDevices(vararg val allowed: DeviceProduct = [CF_PHONE, CF_TABLET])
 
 /**
@@ -50,13 +54,17 @@ annotation class ScreenshotTestDevices(vararg val allowed: DeviceProduct = [CF_P
  */
 @Retention(RUNTIME)
 @Target(FUNCTION, CLASS)
+@Inherited
 annotation class FlakyDevices(vararg val flaky: DeviceProduct)
 
 /**
  * Ignore LimitDevicesRule constraints when [ignoreLimit] is true. Main use case is to allow local
  * builds to bypass [LimitDevicesRule] and be able to run on any devices.
  */
-@Retention(RUNTIME) @Target(FUNCTION, CLASS) annotation class IgnoreLimit(val ignoreLimit: Boolean)
+@Retention(RUNTIME)
+@Target(FUNCTION, CLASS)
+@Inherited
+annotation class IgnoreLimit(val ignoreLimit: Boolean)
 
 /**
  * Limits a test to run specified devices.
@@ -77,40 +85,43 @@ class LimitDevicesRule(
     private val thisDevice: String = Build.PRODUCT,
     private val runningFlakyTests: Boolean = false,
 ) : TestRule {
+    val scanner = TestAnnotationScanner()
+
     override fun apply(base: Statement, description: Description): Statement {
-        if (description.ignoreLimit()) {
+        val skipReason = skipReasonIfAny(description)
+        if (skipReason == null) {
             return base
+        } else {
+            return makeAssumptionViolatedStatement(skipReason)
+        }
+    }
+
+    fun skipReasonIfAny(description: Description): String? {
+        if (description.ignoreLimit()) {
+            return null
         }
 
         val limitDevicesAnnotations = description.limitDevicesAnnotation()
         if (limitDevicesAnnotations.count() > 1) {
-            return makeAssumptionViolatedStatement(
-                "Only one LimitDeviceRule annotation is supported. Found $limitDevicesAnnotations"
-            )
+            return "Only one LimitDeviceRule annotation is supported. Found $limitDevicesAnnotations"
         }
         val deniedDevices = description.deniedDevices()
         if (thisDevice in deniedDevices) {
-            return makeAssumptionViolatedStatement(
-                "Skipping test as $thisDevice is in $deniedDevices"
-            )
+            return "Skipping test as $thisDevice is in $deniedDevices"
         }
 
         val flakyDevices = description.flakyDevices()
         if (thisDevice in flakyDevices) {
             if (!runningFlakyTests) {
-                return makeAssumptionViolatedStatement(
-                    "Skipping test as $thisDevice is flaky and this config excludes fakes"
-                )
+                return "Skipping test as $thisDevice is flaky and this config excludes flakes"
             }
         }
 
         val allowedDevices = description.allowedDevices()
         if (allowedDevices.isEmpty() || thisDevice in allowedDevices) {
-            return base
+            return null
         }
-        return makeAssumptionViolatedStatement(
-            "Skipping test as $thisDevice in not in $allowedDevices"
-        )
+        return "Skipping test as $thisDevice in not in $allowedDevices"
     }
 
     private fun Description.allowedDevices(): List<String> =
@@ -136,18 +147,10 @@ class LimitDevicesRule(
             .toSet()
 
     private fun Description.ignoreLimit(): Boolean =
-        getAnnotation(IgnoreLimit::class.java)?.ignoreLimit == true ||
-            testClass?.getClassAnnotation<IgnoreLimit>()?.ignoreLimit == true
+        getMostSpecificAnnotation<IgnoreLimit>()?.ignoreLimit == true
 
-    private inline fun <reified T : Annotation> Description.getMostSpecificAnnotation(): T? {
-        getAnnotation(T::class.java)?.let {
-            return it
-        }
-        return testClass?.getClassAnnotation<T>()
-    }
-
-    private inline fun <reified T : Annotation> Class<*>.getClassAnnotation() =
-        getLowestAncestorClassAnnotation(this, T::class.java)
+    private inline fun <reified T : Annotation> Description.getMostSpecificAnnotation() =
+        scanner.find<T>(this)
 
     private fun List<Array<out DeviceProduct>?>.collectProducts() =
         filterNotNull().flatMap { it.toList() }.map { it.product }
@@ -176,6 +179,7 @@ enum class DeviceProduct(val product: String) {
     CF_PHONE("cf_x86_64_phone"),
     CF_TABLET("cf_x86_64_tablet"),
     CF_FOLDABLE("cf_x86_64_foldable"),
+    CF_COMET("cf_x86_64_comet"),
     CF_AUTO("cf_x86_64_auto"),
     CF_ARM_PHONE("cf_arm64_only_phone"),
     TANGORPRO("tangorpro"),
