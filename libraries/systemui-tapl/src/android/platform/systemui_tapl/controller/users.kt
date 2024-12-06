@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
- package android.platform.systemui_tapl.controller
+package android.platform.systemui_tapl.controller
 
 import android.system.helpers.UserHelper
 import kotlinx.coroutines.Dispatchers

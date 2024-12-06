@@ -85,7 +85,7 @@ object BigTextNotificationController {
                     /* context= */ context,
                     /* requestCode= */ 0,
                     /* intent= */ context.packageManager.getLaunchIntentForPackage(pkg),
-                    /* flags= */ Intent.FLAG_ACTIVITY_NEW_TASK or PendingIntent.FLAG_IMMUTABLE
+                    /* flags= */ Intent.FLAG_ACTIVITY_NEW_TASK or PendingIntent.FLAG_IMMUTABLE,
                 )
             else contentIntent
         pendingIntent?.let { builder.setContentIntent(it) }

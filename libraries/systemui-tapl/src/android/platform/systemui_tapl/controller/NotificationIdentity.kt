@@ -45,6 +45,6 @@ constructor(
         CALL,
         INBOX,
         MEDIA,
-        CUSTOM
+        CUSTOM,
     }
 }

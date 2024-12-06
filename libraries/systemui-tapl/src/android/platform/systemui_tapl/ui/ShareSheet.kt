@@ -30,7 +30,7 @@ class ShareSheet internal constructor() {
     init {
         TaplUiDevice.waitForObject(
             androidResSelector(RESOLVER_LIST_ID),
-            objectName = "share sheet page"
+            objectName = "share sheet page",
         )
     }
 

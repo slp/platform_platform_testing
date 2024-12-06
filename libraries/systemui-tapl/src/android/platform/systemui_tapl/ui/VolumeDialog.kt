@@ -56,7 +56,7 @@ class VolumeDialog internal constructor() {
     /** Open the volume setting panel by clicking the setting icon on the volume dialog. */
     @Deprecated(
         "This new volume panel is rolled out. Use openNewVolumePanel instead",
-        replaceWith = ReplaceWith("openNewVolumePanel")
+        replaceWith = ReplaceWith("openNewVolumePanel"),
     )
     fun openVolumePanel(): VolumePanelDialog {
         sysuiResSelector("settings").click()

@@ -30,9 +30,7 @@ import android.util.Log;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 
-/**
- * Controller for manipulating bubble settings.
- */
+/** Controller for manipulating bubble settings. */
 public class BubbleSettingsController {
     private static final int UID = Os.getuid();
     private static final String PACKAGE_NAME = getContext().getPackageName();
@@ -42,12 +40,9 @@ public class BubbleSettingsController {
             INotificationManager.Stub.asInterface(
                     ServiceManager.getService(Context.NOTIFICATION_SERVICE));
 
-    private BubbleSettingsController() {
-    }
+    private BubbleSettingsController() {}
 
-    /**
-     * Returns an instance of BubbleSettingsController.
-     */
+    /** Returns an instance of BubbleSettingsController. */
     public static BubbleSettingsController get() {
         return new BubbleSettingsController();
     }

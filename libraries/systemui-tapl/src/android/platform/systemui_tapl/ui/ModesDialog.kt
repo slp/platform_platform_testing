@@ -49,7 +49,7 @@ class ModesDialog internal constructor() {
         val modeTile = getModeTile(modeName)
         modeTile.waitForObj(
             if (isOn) MODE_STATE_ON_SELECTOR else MODE_STATE_OFF_SELECTOR,
-            errorProvider = { "Tile not in correct state, wanted ${if (isOn) "On" else "Off"}" }
+            errorProvider = { "Tile not in correct state, wanted ${if (isOn) "On" else "Off"}" },
         )
     }
 

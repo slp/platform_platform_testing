@@ -24,5 +24,5 @@ import android.platform.systemui_tapl.ui.NotificationShadeType.SPLIT
  */
 enum class NotificationShadeType {
     NORMAL,
-    SPLIT
+    SPLIT,
 }

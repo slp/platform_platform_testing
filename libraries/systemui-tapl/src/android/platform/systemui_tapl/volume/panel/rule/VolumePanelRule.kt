@@ -39,7 +39,7 @@ class VolumePanelRule(private val mAudioManager: AudioManager) : TestWatcher() {
         mAudioManager.adjustSuggestedStreamVolume(
             AudioManager.ADJUST_SAME,
             AudioManager.STREAM_MUSIC,
-            AudioManager.FLAG_SHOW_UI
+            AudioManager.FLAG_SHOW_UI,
         )
         mutableVolumePanel = get().volumeDialog.openNewVolumePanel()
     }
