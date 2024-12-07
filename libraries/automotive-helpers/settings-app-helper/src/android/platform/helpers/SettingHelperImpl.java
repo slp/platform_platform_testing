@@ -331,10 +331,24 @@ public class SettingHelperImpl extends AbstractStandardAppHelper implements IAut
         while (count > 0
                 && isAppInForeground()
                 && getSpectatioUiUtil().findUiObjects(titleText) == null) {
-            getSpectatioUiUtil().pressBack();
+            pressSettingsBackNavIcon();
             getSpectatioUiUtil().wait5Seconds(); // to avoid stale object error
             count--;
         }
+    }
+
+    private void pressSettingsBackNavIcon() {
+        UiObject2 navIcon =
+                getSpectatioUiUtil()
+                        .findUiObject(
+                                getUiElementFromConfig(
+                                        AutomotiveConfigConstants.SETTINGS_BACK_NAV_ICON));
+        if (navIcon == null) {
+            // if there is no nav button, use device back for confirmation dialog case
+            getSpectatioUiUtil().pressBack();
+            return;
+        }
+        getSpectatioUiUtil().clickAndWait(navIcon);
     }
 
     /** {@inheritDoc} */

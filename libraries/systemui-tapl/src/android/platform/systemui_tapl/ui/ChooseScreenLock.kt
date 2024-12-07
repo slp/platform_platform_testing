@@ -70,7 +70,7 @@ class ChooseScreenLock internal constructor() {
                 uiDevice.shell("input keyboard text $screenLockCode")
                 Gestures.click(
                     waitForObj(CONFIRM_BUTTON_SELECTOR, LONG_WAIT_TIME),
-                    "Confirm button"
+                    "Confirm button",
                 )
                 Gestures.click(waitForObj(DONE_BUTTON_SELECTOR, LONG_WAIT_TIME), "Done button")
                 DONE_BUTTON_SELECTOR.assertInvisible(timeout = LONG_WAIT_TIME)

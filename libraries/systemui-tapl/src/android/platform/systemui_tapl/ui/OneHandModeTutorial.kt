@@ -29,9 +29,9 @@ import android.view.WindowMetrics
 /**
  * System UI test automation object representing swipe down screen bottom to trigger one-handed mode
  * triggered, the whole screen translate down and tutorial shown on top area.
- * HSV:https://hsv.googleplex.com/4846680840077312
- * Lastly, swipe down gesture to close one-handed mode, and ensure the display area recovered.
- * Swipe gesture region:https://screenshot.googleplex.com/q83UXMidE2PUFDq)
+ * HSV:https://hsv.googleplex.com/4846680840077312 Lastly, swipe down gesture to close one-handed
+ * mode, and ensure the display area recovered. Swipe gesture
+ * region:https://screenshot.googleplex.com/q83UXMidE2PUFDq)
  */
 class OneHandModeTutorial internal constructor() {
 
@@ -62,7 +62,7 @@ class OneHandModeTutorial internal constructor() {
             displayBounds.width() / 2,
             displayBounds.height(),
             displayBounds.width() / 2,
-            displayBounds.height() - Math.round(bottomMandatoryGestureHeight * 2.5f)
+            displayBounds.height() - Math.round(bottomMandatoryGestureHeight * 2.5f),
         )
 
         TUTORIAL_SELECTOR.assertInvisible()

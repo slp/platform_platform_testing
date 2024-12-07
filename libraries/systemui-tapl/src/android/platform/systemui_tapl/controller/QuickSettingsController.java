@@ -24,23 +24,17 @@ import android.system.helpers.QuickSettingsHelper;
 
 import java.util.List;
 
-/**
- * Controller for manipulating quick settings contents.
- */
+/** Controller for manipulating quick settings contents. */
 public class QuickSettingsController {
     private final QuickSettingsHelper mHelper;
 
-    /**
-     * Returns an instance of QuickSettingsController.
-     */
+    /** Returns an instance of QuickSettingsController. */
     public static QuickSettingsController get() {
         return new QuickSettingsController();
     }
 
     private QuickSettingsController() {
-        mHelper = new QuickSettingsHelper(
-                getUiDevice(),
-                getInstrumentation());
+        mHelper = new QuickSettingsHelper(getUiDevice(), getInstrumentation());
     }
 
     /** Places a tile in quick settings as the first tile. Add the tile if necessary */

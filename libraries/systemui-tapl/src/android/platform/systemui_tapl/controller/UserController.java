@@ -50,24 +50,19 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
-/**
- * Controller for manipulating users.
- */
+/** Controller for manipulating users. */
 public class UserController {
 
     // TODO(b/264023316): Reduce once fixed.
     private static final int VERIFICATION_TIME_IN_SECONDS = 90;
     private static final String USER_SWITCHER_VISIBLE_FLAG_CMD = "cmd statusbar flag 204";
 
-    /**
-     * Returns an instance of UserController.
-     */
+    /** Returns an instance of UserController. */
     public static UserController get() {
         return new UserController();
     }
 
-    private UserController() {
-    }
+    private UserController() {}
 
     /** Switch to given user directly, not via any switcher UI. */
     public void switchToUser(int userId) {
@@ -75,10 +70,12 @@ public class UserController {
         //                    instead. Avoids shell, but then you lose the advantages of "-w".
         if (getCurrentUserId() == userId) return;
         // Go to user, waiting until action is completed.
-        UserUtils.runThenWaitUntilSwitchCompleted(() ->
-                executeShellCommand(String.format(Locale.US, "am switch-user -w %d", userId))
-        );
-        waitForCondition(() -> "Current user didn't become " + userId,
+        UserUtils.runThenWaitUntilSwitchCompleted(
+                () ->
+                        executeShellCommand(
+                                String.format(Locale.US, "am switch-user -w %d", userId)));
+        waitForCondition(
+                () -> "Current user didn't become " + userId,
                 () -> CommonUtils.getCurrentUserId() == userId);
     }
 
@@ -88,8 +85,8 @@ public class UserController {
     }
 
     /**
-     * Returns the main user ID. NOTE: For headless system it is NOT 0. Returns 0 by default,
-     * if there is no main user.
+     * Returns the main user ID. NOTE: For headless system it is NOT 0. Returns 0 by default, if
+     * there is no main user.
      */
     public int getMainUserId() {
         return CommonUtils.getMainUserId();
@@ -112,11 +109,11 @@ public class UserController {
      * @see #createSecondaryUser(String)
      */
     public int createSecondaryUser(String userName, int iconColor) {
-        Optional<Integer> userId = tryCreatingSecondaryUserImpl(userName,
-            defaultUserIcon(iconColor));
+        Optional<Integer> userId =
+                tryCreatingSecondaryUserImpl(userName, defaultUserIcon(iconColor));
         assertWithMessage("Failed to create user with icon color.")
-            .that(userId.isPresent())
-            .isTrue();
+                .that(userId.isPresent())
+                .isTrue();
         return userId.get();
     }
 
@@ -125,15 +122,16 @@ public class UserController {
      * expects the user creation will fail.
      */
     public Optional<Integer> tryCreatingSecondaryUser(String userName) {
-        return tryCreatingSecondaryUserImpl(userName, /** userIcon= **/null);
+        return tryCreatingSecondaryUserImpl(
+                userName,
+                /* userIcon= */
+                null);
     }
 
-    private Optional<Integer> tryCreatingSecondaryUserImpl(String userName,
-        @Nullable Bitmap userIcon) {
-        NewUserRequest request = new NewUserRequest.Builder()
-            .setName(userName)
-            .setUserIcon(userIcon)
-            .build();
+    private Optional<Integer> tryCreatingSecondaryUserImpl(
+            String userName, @Nullable Bitmap userIcon) {
+        NewUserRequest request =
+                new NewUserRequest.Builder().setName(userName).setUserIcon(userIcon).build();
         final NewUserResponse resp = getUserManager().createUser(request);
         if (!resp.isSuccessful()) {
             return Optional.empty();
@@ -144,8 +142,8 @@ public class UserController {
     private Bitmap defaultUserIcon(int color) {
         Resources resources = getContext().getResources();
         int iconSize = resources.getDimensionPixelSize(com.android.internal.R.dimen.user_icon_size);
-        Drawable iconDrawable = getContext().getDrawable(
-            com.android.internal.R.drawable.ic_account_circle);
+        Drawable iconDrawable =
+                getContext().getDrawable(com.android.internal.R.drawable.ic_account_circle);
         iconDrawable.setColorFilter(color, Mode.MULTIPLY);
         Bitmap iconBitmap = Bitmap.createBitmap(iconSize, iconSize, Config.ARGB_8888);
         Canvas canvas = new Canvas(iconBitmap);
@@ -176,10 +174,12 @@ public class UserController {
         try {
             assertThat(hasGuest()).isFalse();
             CountDownLatch countDownLatch = new CountDownLatch(1);
-            new Thread(() -> {
-                getUserManager().createGuest(getContext());
-                countDownLatch.countDown();
-            }).start();
+            new Thread(
+                            () -> {
+                                getUserManager().createGuest(getContext());
+                                countDownLatch.countDown();
+                            })
+                    .start();
             countDownLatch.await();
         } catch (InterruptedException exception) {
             throw new RuntimeException("Create guest failed.", exception);
@@ -194,8 +194,9 @@ public class UserController {
     public void stopUser(int userId) {
         executeShellCommand(String.format(Locale.US, "am stop-user -w %d", userId));
 
-        assertWithMessage("Failed to stop userId=" + userId).
-            that(getActivityManager().isUserRunning(userId)).isFalse();
+        assertWithMessage("Failed to stop userId=" + userId)
+                .that(getActivityManager().isUserRunning(userId))
+                .isFalse();
     }
 
     /** Returns whether the given user is actively running. */
@@ -208,9 +209,7 @@ public class UserController {
         return shell(getUiDevice(), USER_SWITCHER_VISIBLE_FLAG_CMD).trim().endsWith("true");
     }
 
-    /**
-     * Return the maximum number of users that are allowed in the current device.
-     */
+    /** Return the maximum number of users that are allowed in the current device. */
     public int getMaxUsers() {
         return getUserManager().getMaxSupportedUsers();
     }

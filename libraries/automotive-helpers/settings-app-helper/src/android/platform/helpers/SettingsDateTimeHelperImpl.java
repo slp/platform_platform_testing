@@ -133,7 +133,19 @@ public class SettingsDateTimeHelperImpl extends AbstractStandardAppHelper
         setCalendar(1, day_string);
         setCalendar(0, month_string);
         setCalendar(2, year_string);
-        getSpectatioUiUtil().pressBack();
+        pressSettingsBackNavIcon();
+    }
+
+    private void pressSettingsBackNavIcon() {
+        UiObject2 navIcon =
+                getSpectatioUiUtil()
+                        .findUiObject(
+                                getUiElementFromConfig(
+                                        AutomotiveConfigConstants.SETTINGS_BACK_NAV_ICON));
+        getSpectatioUiUtil()
+                .validateUiObject(
+                        navIcon, "Could not press back; unable to find settings back nav icon");
+        getSpectatioUiUtil().clickAndWait(navIcon);
     }
 
     private void setCalendar(int index, String s) {
@@ -216,7 +228,7 @@ public class SettingsDateTimeHelperImpl extends AbstractStandardAppHelper
         setTime(2, minute_string, currentTime);
         setTime(0, String.valueOf(hour), currentTime);
         setTime(1, am_pm, currentTime);
-        getSpectatioUiUtil().pressBack();
+        pressSettingsBackNavIcon();
     }
 
     /** {@inheritDoc} */
@@ -254,7 +266,7 @@ public class SettingsDateTimeHelperImpl extends AbstractStandardAppHelper
         }
         setTime(2, minute_string, currentTime);
         setTime(0, hour_string, currentTime);
-        getSpectatioUiUtil().pressBack();
+        pressSettingsBackNavIcon();
     }
 
     private void setTime(int index, String s, String currentTime) {

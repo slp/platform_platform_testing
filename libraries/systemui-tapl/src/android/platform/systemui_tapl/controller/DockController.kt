@@ -127,13 +127,13 @@ class DockController : ExternalResource() {
                 Intent.EXTRA_DOCK_STATE_DESK to "EXTRA_DOCK_STATE_DESK",
                 Intent.EXTRA_DOCK_STATE_HE_DESK to "EXTRA_DOCK_STATE_HE_DESK",
                 Intent.EXTRA_DOCK_STATE_LE_DESK to "EXTRA_DOCK_STATE_LE_DESK",
-                Intent.EXTRA_DOCK_STATE_UNDOCKED to "EXTRA_DOCK_STATE_UNDOCKED"
+                Intent.EXTRA_DOCK_STATE_UNDOCKED to "EXTRA_DOCK_STATE_UNDOCKED",
             )
         private val DOCKED_STATES =
             arrayOf(
                 Intent.EXTRA_DOCK_STATE_HE_DESK,
                 Intent.EXTRA_DOCK_STATE_LE_DESK,
-                Intent.EXTRA_DOCK_STATE_DESK
+                Intent.EXTRA_DOCK_STATE_DESK,
             )
         private val DEFAULT_DEADLINE = Duration.ofSeconds(20)
     }

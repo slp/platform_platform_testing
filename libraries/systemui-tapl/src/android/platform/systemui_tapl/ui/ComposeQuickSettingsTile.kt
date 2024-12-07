@@ -31,8 +31,7 @@ import com.google.common.truth.Truth.assertWithMessage
 import kotlin.reflect.KClass
 
 /**
- * Object to encapsulate a tile. See
- * https://hsv.googleplex.com/4910828112314368
+ * Object to encapsulate a tile. See https://hsv.googleplex.com/4910828112314368
  *
  * In order to interact with the tile, [getBehavior] needs to be called, with the type of behavior
  * needed. There are also convenience methods for calling [click], [toggleAndAssertToggled], and

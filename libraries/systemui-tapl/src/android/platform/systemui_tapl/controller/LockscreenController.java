@@ -43,69 +43,61 @@ import org.junit.Assume;
 
 import java.io.IOException;
 
-/**
- * Controller for manipulating lockscreen states.
- */
+/** Controller for manipulating lockscreen states. */
 public class LockscreenController {
     private static final int SLEEP_INTERVAL_MS = 500;
 
-    private static final String FACE_WAKE_FAKE_COMMAND = "am broadcast -a "
-            + "com.android.systemui.latency.ACTION_FACE_WAKE"
-            + " --user 0";  // Making sure broadcast receiver will receive the action
-                            // if current user is different than System.
-    private static final String FINGERPRINT_WAKE_FAKE_COMMAND = "am broadcast -a "
-            + "com.android.systemui.latency.ACTION_FINGERPRINT_WAKE"
-            + " --user 0";  // Making sure broadcast receiver will receive the action
-                            // if current user is different than System.
+    private static final String FACE_WAKE_FAKE_COMMAND =
+            "am broadcast -a "
+                    + "com.android.systemui.latency.ACTION_FACE_WAKE"
+                    + " --user 0"; // Making sure broadcast receiver will receive the action
+    // if current user is different than System.
+    private static final String FINGERPRINT_WAKE_FAKE_COMMAND =
+            "am broadcast -a "
+                    + "com.android.systemui.latency.ACTION_FINGERPRINT_WAKE"
+                    + " --user 0"; // Making sure broadcast receiver will receive the action
 
-    /**
-     * Returns an instance of LockscreenController.
-     */
+    // if current user is different than System.
+
+    /** Returns an instance of LockscreenController. */
     public static LockscreenController get() {
         return new LockscreenController();
     }
 
-    private LockscreenController() {
-    }
+    private LockscreenController() {}
 
     /** Enables unlocking via swipe */
     public void setUnlockSwipe() {
         LockscreenUtils.setLockscreen(
-                /* lockscreenType = */ SWIPE,
-                /* lockscreenCode = */ "",
-                /* expectedResult = */ false);
+                /* lockscreenType= */ SWIPE, /* lockscreenCode= */ "", /* expectedResult= */ false);
     }
 
     /** Enables no-lockscreen mode */
     public void setNoLockScreenMode() {
         LockscreenUtils.setLockscreen(
-                /* lockscreenType = */ NONE,
-                /* lockscreenCode = */ "",
-                /* expectedResult = */ false);
+                /* lockscreenType= */ NONE, /* lockscreenCode= */ "", /* expectedResult= */ false);
     }
 
     /** Enables pin unlock */
     public void setLockscreenPin(String pin) {
         LockscreenUtils.setLockscreen(
-                /* lockscreenType = */ PIN,
-                /* lockscreenCode = */ pin,
-                /* expectedResult = */ true);
+                /* lockscreenType= */ PIN, /* lockscreenCode= */ pin, /* expectedResult= */ true);
     }
 
     /** Enables password unlock */
     public void setLockscreenPassword(String password) {
         LockscreenUtils.setLockscreen(
-                /* lockscreenType = */ PASSWORD,
-                /* lockscreenCode = */ password,
-                /* expectedResult = */ true);
+                /* lockscreenType= */ PASSWORD,
+                /* lockscreenCode= */ password,
+                /* expectedResult= */ true);
     }
 
     /** Enables pattern unlock */
     public void setLockscreenPattern(String pattern) {
         LockscreenUtils.setLockscreen(
-                /* lockscreenType = */ PATTERN,
-                /* lockscreenCode = */ pattern,
-                /* expectedResult = */ true);
+                /* lockscreenType= */ PATTERN,
+                /* lockscreenCode= */ pattern,
+                /* expectedResult= */ true);
     }
 
     /**
@@ -120,8 +112,12 @@ public class LockscreenController {
                 Settings.Secure.getInt(contentResolver, Settings.Secure.DOZE_ALWAYS_ON, 0) == 1;
 
         if (enableAod != aodWasEnabled) {
-            assertThat(Settings.Secure.putInt(contentResolver, Settings.Secure.DOZE_ALWAYS_ON,
-                    enableAod ? 1 : 0)).isTrue();
+            assertThat(
+                            Settings.Secure.putInt(
+                                    contentResolver,
+                                    Settings.Secure.DOZE_ALWAYS_ON,
+                                    enableAod ? 1 : 0))
+                    .isTrue();
         }
 
         return aodWasEnabled;

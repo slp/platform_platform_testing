@@ -86,7 +86,7 @@ class VolumePanelDialog internal constructor() {
             startY = bound.centerY(),
             endX = x,
             endY = bound.centerY(),
-            interpolator = PRECISE_GESTURE_INTERPOLATOR
+            interpolator = PRECISE_GESTURE_INTERPOLATOR,
         )
         ensureThat("Volume is set to $volume.") {
             audioManager.getStreamVolume(AudioManager.STREAM_RING) == volume

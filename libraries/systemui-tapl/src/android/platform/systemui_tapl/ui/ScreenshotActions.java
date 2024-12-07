@@ -30,12 +30,9 @@ import androidx.test.uiautomator.BySelector;
 public class ScreenshotActions {
     private static final BySelector SHARE_BUTTON = sysuiDescSelector("Share screenshot");
 
-    ScreenshotActions() {
-    }
+    ScreenshotActions() {}
 
-    /**
-     * Opens the share sheet by clicking the "Share" button.
-     */
+    /** Opens the share sheet by clicking the "Share" button. */
     @NonNull
     public ShareSheet openSharesheet() {
         TaplUiDevice.waitForObject(SHARE_BUTTON, "Share button").click();

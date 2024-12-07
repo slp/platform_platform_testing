@@ -69,7 +69,7 @@ object UserUtils {
                         sUserSwitchedSemaphore.tryAcquire(
                             /* permits */ 1,
                             EVENT_USER_SWITCH_COMPLETE_TIMEOUT.toSeconds(),
-                            TimeUnit.SECONDS
+                            TimeUnit.SECONDS,
                         )
                     )
                     .isTrue()

@@ -19,34 +19,28 @@ package android.platform.systemui_tapl.controller;
 import static android.platform.uiautomator_helpers.DeviceHelpers.getUiDevice;
 import static android.platform.uiautomator_helpers.DeviceHelpers.shell;
 
-import android.platform.uiautomator_helpers.DeviceHelpers;
-
-/**
- * Controller for manipulating status bar state.
- */
+/** Controller for manipulating status bar state. */
 public class StatusBarController {
     private static final String SHOW_BATTERY_PERCENT_SETTING = "status_bar_show_battery_percent";
 
-    private StatusBarController() {
-    }
+    private StatusBarController() {}
 
-    /**
-     * Returns an instance of StatusBarController.
-     */
+    /** Returns an instance of StatusBarController. */
     public static StatusBarController get() {
         return new StatusBarController();
     }
 
-    /**
-     * If the user wants to see the batter percentage on the status bar.
-     */
+    /** If the user wants to see the batter percentage on the status bar. */
     private static boolean shouldShowBatteryPercentage() {
-        return "1".equals(shell(getUiDevice(),
-                "settings get system " + SHOW_BATTERY_PERCENT_SETTING).trim());
+        return "1"
+                .equals(
+                        shell(getUiDevice(), "settings get system " + SHOW_BATTERY_PERCENT_SETTING)
+                                .trim());
     }
 
     private static void setBatteryPercentageVisibleInternal(boolean visible) {
-        shell(getUiDevice(),
+        shell(
+                getUiDevice(),
                 "settings put system " + SHOW_BATTERY_PERCENT_SETTING + " " + (visible ? 1 : 0));
     }
 

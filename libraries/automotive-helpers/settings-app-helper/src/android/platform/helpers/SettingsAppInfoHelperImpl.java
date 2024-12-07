@@ -311,8 +311,8 @@ public class SettingsAppInfoHelperImpl extends AbstractStandardAppHelper
                                                     .APP_INFO_SETTINGS_DONT_ALLOW_ANYWAY_BUTTON));
             getSpectatioUiUtil().clickAndWait(dont_allow_anyway_btn);
         }
-        getSpectatioUiUtil().pressBack();
-        getSpectatioUiUtil().pressBack();
+        pressSettingsBackNavIcon();
+        pressSettingsBackNavIcon();
     }
 
     /** {@inheritDoc} */
@@ -444,9 +444,22 @@ public class SettingsAppInfoHelperImpl extends AbstractStandardAppHelper
 
         assertTrue(
                 "Could not return from individual permission screen.",
-                getSpectatioUiUtil().pressBack()); // Return to the general permissions screen
+                pressSettingsBackNavIcon()); // Return to the general permissions screen
 
         return appNums;
+    }
+
+    private boolean pressSettingsBackNavIcon() {
+        UiObject2 navIcon =
+                getSpectatioUiUtil()
+                        .findUiObject(
+                                getUiElementFromConfig(
+                                        AutomotiveConfigConstants.SETTINGS_BACK_NAV_ICON));
+        if (navIcon != null) {
+            getSpectatioUiUtil().clickAndWait(navIcon);
+            return true;
+        }
+        return false;
     }
 
     /**
