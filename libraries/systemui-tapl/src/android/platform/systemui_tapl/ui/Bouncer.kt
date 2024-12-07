@@ -176,7 +176,7 @@ class Bouncer internal constructor(private val notification: Notification?) {
     /** https://hsv.googleplex.com/5840630509993984?node=26 */
     val pinContainerRect: Rect?
         get() {
-            return waitForObj(sysuiResSelector("pin_container")).visibleBounds
+            return waitForFirstObj(*PIN_CONTAINER_SELECTOR).first.visibleBounds
         }
 
     /** https://hsv.googleplex.com/5550967647895552?node=25 */
@@ -239,6 +239,13 @@ class Bouncer internal constructor(private val notification: Notification?) {
                 By.res(Pattern.compile(SYSUI_PACKAGE + ":id/(pinEntry|passwordEntry)"))
                     .focused(true)
             }
+
+        /** The compose bouncer_text_entry isn't the same as pin_container, but close enough */
+        private val PIN_CONTAINER_SELECTOR =
+            arrayOf(
+                sysuiResSelector("bouncer_text_entry"),
+                sysuiResSelector("pin_container"),
+            )
         /** https://hsv.googleplex.com/5225465733185536?node=54 */
         private val PIN_BOUNCER_DELETE_BUTTON = sysuiResSelector("delete_button")
         /** https://hsv.googleplex.com/5554629610831872?node=52 */
