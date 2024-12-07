@@ -88,6 +88,7 @@ public class PerfettoHelper {
     private boolean mTrackPerfettoPidFlag;
     private String mTrackPerfettoRootDir = "sdcard/";
     private File mPerfettoPidFile;
+    private boolean mShouldUseContentProvider;
 
     /** Set content of the perfetto configuration to be used when tracing */
     public PerfettoHelper setTextProtoConfig(String value) {
@@ -496,10 +497,16 @@ public class PerfettoHelper {
         // destinationFile.
         try {
             int userId = getCurrentUserId();
-
             // For user 0, move the file directly since the content provider is not installed (see
             // aosp/3284729).
-            if (userId == 0) {
+            boolean useContentProvider = userId != 0 && mShouldUseContentProvider;
+            Log.v(
+                    LOG_TAG,
+                    String.format(
+                            "Going to use content provider to move temp perfetto file: %b. User id:"
+                                + " %d and mShouldUseContentProvider: %b",
+                            useContentProvider, userId, mShouldUseContentProvider));
+            if (!useContentProvider) {
                 String moveResult =
                         mUIDevice.executeShellCommand(
                                 String.format(MOVE_CMD, PERFETTO_TMP_OUTPUT_FILE, destinationFile));
@@ -608,5 +615,9 @@ public class PerfettoHelper {
 
     public String getPerfettoFilePrefix() {
         return PERFETTO_PID_FILE_PREFIX;
+    }
+
+    public void setShouldUseContentProvider(boolean shouldUseContentProvider) {
+        mShouldUseContentProvider = shouldUseContentProvider;
     }
 }
