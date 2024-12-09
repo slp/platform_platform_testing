@@ -17,12 +17,12 @@
 package android.platform.systemui_tapl.ui
 
 import android.platform.systemui_tapl.utils.DeviceUtils.sysuiResSelector
-import android.platform.uiautomator_helpers.DeviceHelpers.assertInvisible
-import android.platform.uiautomator_helpers.DeviceHelpers.uiDevice
-import android.platform.uiautomator_helpers.DeviceHelpers.waitForObj
-import android.platform.uiautomator_helpers.WaitResult
-import android.platform.uiautomator_helpers.WaitUtils.waitToBecomeTrue
-import android.platform.uiautomator_helpers.scrollUntilFound
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertInvisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.uiDevice
+import android.platform.uiautomatorhelpers.DeviceHelpers.waitForObj
+import android.platform.uiautomatorhelpers.WaitResult
+import android.platform.uiautomatorhelpers.WaitUtils.waitToBecomeTrue
+import android.platform.uiautomatorhelpers.scrollUntilFound
 import android.util.Log
 
 /** Wrapper representing the BluetoothDialog that opens when the QS Tile is clicked */

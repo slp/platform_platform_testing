@@ -19,9 +19,9 @@ package android.platform.systemui_tapl.ui
 import android.platform.systemui_tapl.ui.NotificationShadeType.NORMAL
 import android.platform.systemui_tapl.ui.NotificationShadeType.SPLIT
 import android.platform.systemui_tapl.utils.DeviceUtils.sysuiResSelector
-import android.platform.uiautomator_helpers.DeviceHelpers.assertVisible
-import android.platform.uiautomator_helpers.DeviceHelpers.uiDevice
-import android.platform.uiautomator_helpers.DeviceHelpers.waitForObj
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertVisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.uiDevice
+import android.platform.uiautomatorhelpers.DeviceHelpers.waitForObj
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiObject2
 import com.google.common.collect.Range
