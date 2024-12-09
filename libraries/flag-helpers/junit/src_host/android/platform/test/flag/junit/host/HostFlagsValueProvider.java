@@ -21,6 +21,7 @@ import android.platform.test.flag.junit.IFlagsValueProvider;
 import android.platform.test.flag.util.FlagReadException;
 
 import com.android.tradefed.device.ITestDevice;
+import com.android.tradefed.log.LogUtil;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -95,7 +96,8 @@ public class HostFlagsValueProvider implements IFlagsValueProvider {
         String value = mDeviceFlags.getFlagValue(flag);
 
         if (value == null) {
-            throw new FlagReadException(flag, "Flag does not exist.");
+            LogUtil.CLog.i("Flag %s is not found, treating as false.", flag);
+            return false;
         }
 
         if (!IFlagsValueProvider.isBooleanValue(value)) {
