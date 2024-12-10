@@ -19,12 +19,12 @@ import android.graphics.Point
 import android.graphics.PointF
 import android.platform.systemui_tapl.utils.DeviceUtils.sysuiResSelector
 import android.platform.systemui_tapl.volume.panel.ui.VolumePanel
-import android.platform.uiautomator_helpers.BetterSwipe
-import android.platform.uiautomator_helpers.DeviceHelpers.assertVisible
-import android.platform.uiautomator_helpers.DeviceHelpers.click
-import android.platform.uiautomator_helpers.DeviceHelpers.uiDevice
-import android.platform.uiautomator_helpers.DeviceHelpers.waitForObj
-import android.platform.uiautomator_helpers.PRECISE_GESTURE_INTERPOLATOR
+import android.platform.uiautomatorhelpers.BetterSwipe
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertVisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.click
+import android.platform.uiautomatorhelpers.DeviceHelpers.uiDevice
+import android.platform.uiautomatorhelpers.DeviceHelpers.waitForObj
+import android.platform.uiautomatorhelpers.PRECISE_GESTURE_INTERPOLATOR
 import com.google.common.truth.Truth
 
 /** System UI test automation object representing the dialog for adjusting the device volume. */

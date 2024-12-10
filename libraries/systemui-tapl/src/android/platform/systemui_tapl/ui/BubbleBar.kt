@@ -18,13 +18,13 @@ package android.platform.systemui_tapl.ui
 
 import android.graphics.Point
 import android.platform.systemui_tapl.utils.DeviceUtils.launcherResSelector
-import android.platform.uiautomator_helpers.BetterSwipe
-import android.platform.uiautomator_helpers.DeviceHelpers.assertInvisible
-import android.platform.uiautomator_helpers.DeviceHelpers.assertVisible
-import android.platform.uiautomator_helpers.DeviceHelpers.click
-import android.platform.uiautomator_helpers.DeviceHelpers.uiDevice
-import android.platform.uiautomator_helpers.DeviceHelpers.waitForObj
-import android.platform.uiautomator_helpers.PRECISE_GESTURE_INTERPOLATOR
+import android.platform.uiautomatorhelpers.BetterSwipe
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertInvisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertVisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.click
+import android.platform.uiautomatorhelpers.DeviceHelpers.uiDevice
+import android.platform.uiautomatorhelpers.DeviceHelpers.waitForObj
+import android.platform.uiautomatorhelpers.PRECISE_GESTURE_INTERPOLATOR
 import com.google.common.truth.Truth.assertThat
 import java.time.Duration
 import java.time.temporal.ChronoUnit

@@ -19,10 +19,10 @@ package android.platform.systemui_tapl.ui
 import android.platform.systemui_tapl.utils.DeviceUtils.LONG_WAIT
 import android.platform.systemui_tapl.utils.DeviceUtils.SHORT_WAIT
 import android.platform.systemui_tapl.utils.DeviceUtils.sysuiResSelector
-import android.platform.uiautomator_helpers.DeviceHelpers.assertVisible
-import android.platform.uiautomator_helpers.DeviceHelpers.uiDevice
-import android.platform.uiautomator_helpers.DeviceHelpers.waitForFirstObj
-import android.platform.uiautomator_helpers.DeviceHelpers.waitForObj
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertVisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.uiDevice
+import android.platform.uiautomatorhelpers.DeviceHelpers.waitForFirstObj
+import android.platform.uiautomatorhelpers.DeviceHelpers.waitForObj
 import androidx.test.uiautomator.By
 import java.text.SimpleDateFormat
 import java.util.Date

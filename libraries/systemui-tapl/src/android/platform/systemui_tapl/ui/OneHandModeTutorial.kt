@@ -18,10 +18,10 @@ package android.platform.systemui_tapl.ui
 import android.graphics.Rect
 import android.platform.systemui_tapl.ui.NotificationShade.Companion.waitForShadeToClose
 import android.platform.systemui_tapl.utils.DeviceUtils.sysuiResSelector
-import android.platform.uiautomator_helpers.DeviceHelpers
-import android.platform.uiautomator_helpers.DeviceHelpers.assertInvisible
-import android.platform.uiautomator_helpers.DeviceHelpers.assertVisible
-import android.platform.uiautomator_helpers.DeviceHelpers.betterSwipe
+import android.platform.uiautomatorhelpers.DeviceHelpers
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertInvisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertVisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.betterSwipe
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.view.WindowMetrics

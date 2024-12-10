@@ -18,10 +18,10 @@ package android.platform.systemui_tapl.ui
 import android.graphics.PointF
 import android.platform.systemui_tapl.utils.DeviceUtils.LONG_WAIT
 import android.platform.systemui_tapl.utils.DeviceUtils.sysuiResSelector
-import android.platform.uiautomator_helpers.BetterSwipe.from
-import android.platform.uiautomator_helpers.DeviceHelpers.assertVisibility
-import android.platform.uiautomator_helpers.DeviceHelpers.waitForObj
-import android.platform.uiautomator_helpers.PRECISE_GESTURE_INTERPOLATOR
+import android.platform.uiautomatorhelpers.BetterSwipe.from
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertVisibility
+import android.platform.uiautomatorhelpers.DeviceHelpers.waitForObj
+import android.platform.uiautomatorhelpers.PRECISE_GESTURE_INTERPOLATOR
 import androidx.test.uiautomator.UiObject2
 import com.android.systemui.Flags
 import com.google.common.truth.Truth.assertThat

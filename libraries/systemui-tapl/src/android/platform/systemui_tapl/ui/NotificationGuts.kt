@@ -18,8 +18,8 @@ package android.platform.systemui_tapl.ui
 
 import android.platform.systemui_tapl.utils.DeviceUtils.sysuiResSelector
 import android.platform.test.scenario.tapl_common.Gestures
-import android.platform.uiautomator_helpers.DeviceHelpers.assertVisibility
-import android.platform.uiautomator_helpers.DeviceHelpers.waitForObj
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertVisibility
+import android.platform.uiautomatorhelpers.DeviceHelpers.waitForObj
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until

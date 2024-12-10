@@ -20,9 +20,9 @@ import android.platform.systemui_tapl.utils.DeviceUtils.sysuiResSelector
 import android.platform.systemui_tapl.utils.SETTINGS_PACKAGE
 import android.platform.test.scenario.tapl_common.Gestures
 import android.platform.test.scenario.tapl_common.Gestures.click
-import android.platform.uiautomator_helpers.DeviceHelpers.assertVisible
-import android.platform.uiautomator_helpers.DeviceHelpers.waitForObj
-import android.platform.uiautomator_helpers.WaitUtils.ensureThat
+import android.platform.uiautomatorhelpers.DeviceHelpers.assertVisible
+import android.platform.uiautomatorhelpers.DeviceHelpers.waitForObj
+import android.platform.uiautomatorhelpers.WaitUtils.ensureThat
 import android.text.TextUtils
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
