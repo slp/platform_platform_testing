@@ -57,6 +57,7 @@ internal class FoldableDeviceController {
     fun fold() {
         trace("FoldableDeviceController#fold") {
             printInstrumentationStatus(TAG, "Folding")
+            setHingeAngle(0f)
             setDeviceState(foldedState)
         }
     }
@@ -65,6 +66,7 @@ internal class FoldableDeviceController {
     fun unfold() {
         trace("FoldableDeviceController#unfold") {
             printInstrumentationStatus(TAG, "Unfolding")
+            setHingeAngle(180f)
             setDeviceState(unfoldedState)
         }
     }
@@ -73,6 +75,7 @@ internal class FoldableDeviceController {
     fun halfFold() {
         trace("FoldableDeviceController#halfFold") {
             printInstrumentationStatus(TAG, "Half-folding")
+            setHingeAngle(100f)
             setDeviceState(halfFoldedState)
         }
     }

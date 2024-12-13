@@ -24,12 +24,17 @@
         8) Enable the Park Mode in IVI device
 """
 
+import logging
 from bluetooth_test import bluetooth_base_test
 from utilities import constants
 from utilities.main_utils import common_main
 
 
 class UxRestrictionBluetoothCallFromDialerTest(bluetooth_base_test.BluetoothBaseTest):
+
+    def setup_class(self):
+        super().setup_class()
+        self.common_utils = CommonUtils(self.target, self.discoverer)
 
     def setup_test(self):
         # Pair the devices
@@ -48,11 +53,17 @@ class UxRestrictionBluetoothCallFromDialerTest(bluetooth_base_test.BluetoothBase
         self.call_utils.verify_dialing_number(dialer_test_phone_number)
         self.call_utils.end_call()
         self.call_utils.wait_with_log(5)
+        logging.info("Call ended, open history now ")
         self.call_utils.open_call_history()
+        self.call_utils.wait_with_log(15)
         self.call_utils.verify_last_dialed_number(dialer_test_phone_number)
+        logging.info("Number verified")
 
     def teardown_test(self):
-        #Disable driving mode
+        self.call_utils.end_call_using_adb_command(self.target)
+        self.call_utils.wait_with_log(5)
+        self.call_utils.press_home()
+        # Disable driving mode
         self.call_utils.disable_driving_mode()
         super().teardown_test()
 

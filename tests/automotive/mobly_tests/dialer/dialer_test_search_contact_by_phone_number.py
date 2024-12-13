@@ -37,6 +37,7 @@ class SearchContactByPhoneNumberTest(bluetooth_base_test.BluetoothBaseTest):
      self.call_utils.upload_vcf_contacts_to_device(self.target, file_path)
      # Pair the devices
      self.bt_utils.pair_primary_to_secondary()
+     super().enable_recording()
 
 
     def test_search_contact_by_phone_number(self):

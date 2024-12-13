@@ -32,13 +32,13 @@ import android.tools.flicker.assertions.SubjectsParser
 import android.tools.flicker.subject.exceptions.FlickerAssertionError
 import android.tools.flicker.subject.exceptions.SimpleFlickerAssertionError
 import android.tools.io.Reader
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.KotlinMockito
+import android.tools.testutils.MockLayersTraceBuilder
+import android.tools.testutils.MockWindowManagerTraceBuilder
+import android.tools.testutils.ParsedTracesReader
+import android.tools.testutils.TestArtifact
 import android.tools.traces.wm.TransitionsTrace
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.KotlinMockito
-import android.tools.utils.MockLayersTraceBuilder
-import android.tools.utils.MockWindowManagerTraceBuilder
-import android.tools.utils.ParsedTracesReader
-import android.tools.utils.TestArtifact
 import com.google.common.truth.Truth
 import org.junit.AssumptionViolatedException
 import org.junit.ClassRule
@@ -447,6 +447,7 @@ class FlickerServiceResultsCollectorTest {
 
         private class SpyDataRecord : DataRecord() {
             val stringMetrics = mutableMapOf<String, String>()
+
             override fun addStringMetric(key: String, value: String) {
                 super.addStringMetric(key, value)
                 stringMetrics[key] = value

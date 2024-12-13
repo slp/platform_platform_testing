@@ -22,6 +22,7 @@ import com.android.tradefed.util.CommandStatus;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /** Util to manage secondary user */
 public class UserUtils {
@@ -37,8 +38,10 @@ public class UserUtils {
         private boolean mIsPreCreateOnly; // User type : --pre-created-only
         private boolean mIsRestricted; // User type : --restricted
         private boolean mSwitch; // Switch to newly created user
+        private boolean mSkipSetupWizard; // Skip setup-wizard for a newly created user
         private int mProfileOf; // Userid associated with managed user
-        private int mTestUserId;
+        private Optional<Integer>
+                mTestUserId; // Userid associated with newly created secondary user
         private Map<String, String> mUserRestrictions; // Map of user-restrictions for new user
 
         /**
@@ -71,6 +74,8 @@ public class UserUtils {
             mIsPreCreateOnly = false;
             mIsRestricted = false;
             mSwitch = false;
+            mSkipSetupWizard = false;
+            mTestUserId = Optional.empty();
         }
 
         /**
@@ -173,14 +178,31 @@ public class UserUtils {
         }
 
         /**
-         * Set user-restrictions on newly created secondary user.
-         * Note: Setting user-restrictions requires enabling root.
+         * Set if skipping the 'setup-wizard' is required while switching to newly created user
+         *
+         * @return this object for method chaining.
+         */
+        public SecondaryUser doSkipSetupWizard() {
+            mSkipSetupWizard = true;
+            return this;
+        }
+
+        /**
+         * Set user-restrictions on newly created secondary user. Note: Setting user-restrictions
+         * requires enabling root.
          *
          * @return this object for method chaining.
          */
         public SecondaryUser withUserRestrictions(Map<String, String> restrictions) {
             mUserRestrictions.putAll(restrictions);
             return this;
+        }
+
+        /**
+         * Get userId of a newly created secondary user without switching to the newly created user
+         */
+        public int getTestUserId() {
+            return mTestUserId.get();
         }
 
         /**
@@ -215,8 +237,9 @@ public class UserUtils {
             }
             final String outputStdout = output.getStdout();
             mTestUserId =
-                    Integer.parseInt(outputStdout.substring(outputStdout.lastIndexOf(" ")).trim());
-
+                    Optional.of(
+                            Integer.parseInt(
+                                    outputStdout.substring(outputStdout.lastIndexOf(" ")).trim()));
             AutoCloseable asSecondaryUser =
                     () -> {
                         // Switch back to the caller user if required and the user type is
@@ -227,17 +250,20 @@ public class UserUtils {
 
                         // Stop and remove the user if user type is not ephemeral
                         if (!mIsEphemeral) {
-                            mDevice.stopUser(mTestUserId);
-                            mDevice.removeUser(mTestUserId);
+                            mDevice.stopUser(mTestUserId.get());
+                            mDevice.removeUser(mTestUserId.get());
+                            mTestUserId = Optional.empty();
                         }
                     };
 
             // Start the user
-            if (!mDevice.startUser(mTestUserId, true /* waitFlag */)) {
+            if (!mDevice.startUser(mTestUserId.get(), true /* waitFlag */)) {
                 // Remove the user
+                final Exception failedToStartUserException =
+                        new IllegalStateException(
+                                String.format("Failed to start the user: %s", mTestUserId.get()));
                 asSecondaryUser.close();
-                throw new IllegalStateException(
-                        String.format("Failed to start the user: %s", mTestUserId));
+                throw failedToStartUserException;
             }
 
             // Add user-restrictions to newly created secondary user
@@ -251,7 +277,7 @@ public class UserUtils {
                             mDevice.executeShellV2Command(
                                     String.format(
                                             "pm set-user-restriction --user %d %s %s",
-                                            mTestUserId, entry.getKey(), entry.getValue()));
+                                            mTestUserId.get(), entry.getKey(), entry.getValue()));
                     if (cmdOutput.getStatus() != CommandStatus.SUCCESS) {
                         asSecondaryUser.close();
                         throw new IllegalStateException(
@@ -263,13 +289,47 @@ public class UserUtils {
                 }
             }
 
+            // Skip the 'setup wizard' if required
+            if (mSkipSetupWizard) {
+                // Check if 'user-setup' is complete
+                final String cmdOutputUserSetup =
+                        mDevice.getSetting(mTestUserId.get(), "secure", "user_setup_complete");
+                if (cmdOutputUserSetup.contains("0")) {
+                    // Skip the 'setup wizard' for the secondary user if the 'user-setup' is not
+                    // complete
+                    SystemUtil.withSetting(
+                            mDevice,
+                            SystemUtil.Namespace.SYSTEM,
+                            "setup_wizard_has_run",
+                            "1",
+                            mTestUserId.get());
+                    SystemUtil.withSetting(
+                            mDevice,
+                            SystemUtil.Namespace.SECURE,
+                            "user_setup_complete",
+                            "1",
+                            mTestUserId.get());
+                    SystemUtil.withSetting(
+                            mDevice,
+                            SystemUtil.Namespace.GLOBAL,
+                            "device_provisioned",
+                            "1",
+                            mTestUserId.get());
+                }
+            }
+
             // Switch to the user if required and the user type is neither managed nor
             // pre-created-only
-            if (mSwitch && !mIsManaged && !mIsPreCreateOnly && !mDevice.switchUser(mTestUserId)) {
+            if (mSwitch
+                    && !mIsManaged
+                    && !mIsPreCreateOnly
+                    && !mDevice.switchUser(mTestUserId.get())) {
                 // Stop and remove the user
+                final Exception failedToSwitchUserException =
+                        new IllegalStateException(
+                                String.format("Failed to switch the user: %s", mTestUserId.get()));
                 asSecondaryUser.close();
-                throw new IllegalStateException(
-                        String.format("Failed to switch the user: %s", mTestUserId));
+                throw failedToSwitchUserException;
             }
             return asSecondaryUser;
         }

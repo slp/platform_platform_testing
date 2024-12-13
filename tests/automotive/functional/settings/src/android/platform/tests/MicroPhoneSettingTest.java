@@ -24,11 +24,14 @@ import android.platform.helpers.IAutoFacetBarHelper;
 import android.platform.helpers.IAutoPrivacySettingsHelper;
 import android.platform.helpers.IAutoSettingHelper;
 import android.platform.helpers.SettingsConstants;
+import android.platform.test.annotations.RequiresFlagsEnabled;
+import android.platform.test.flag.junit.SetFlagsRule;
 
 import androidx.test.runner.AndroidJUnit4;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -40,13 +43,13 @@ public class MicroPhoneSettingTest {
     private HelperAccessor<IAutoFacetBarHelper> mFacetBarHelper;
     private HelperAccessor<IAutoSettingHelper> mSettingHelper;
     private HelperAccessor<IAutoPrivacySettingsHelper> mPrivacySettingsHelper;
+    @Rule public final SetFlagsRule mSetFlagsRule = new SetFlagsRule();
 
     public MicroPhoneSettingTest() throws Exception {
         mFacetBarHelper = new HelperAccessor<>(IAutoFacetBarHelper.class);
         mSettingHelper = new HelperAccessor<>(IAutoSettingHelper.class);
         mPrivacySettingsHelper = new HelperAccessor<>(IAutoPrivacySettingsHelper.class);
     }
-
 
     @Before
     public void openPrivacySetting() {
@@ -57,10 +60,27 @@ public class MicroPhoneSettingTest {
         mSettingHelper.get().openMenuWith("MicroPhone");
         assertTrue(
                 "MicroPhone settings did not open",
-                mSettingHelper.get().checkMenuExists("Use microphone"));
+                mSettingHelper.get().checkMenuExists("Microphone access"));
+        mSettingHelper.get().openMenuWith("Microphone access");
+        assertTrue(
+                "MicroPhone access did not open",
+                mSettingHelper.get().checkMenuExists("Infotainment apps"));
+    }
+
+    @After
+    public void goBackToSettingsScreen() {
+        mSettingHelper.get().goBackToSettingsScreen();
+        mSettingHelper.get().openSetting(SettingsConstants.PRIVACY_SETTINGS);
+        mSettingHelper.get().openMenuWith("MicroPhone");
+        mSettingHelper.get().openMenuWith("Microphone access");
+        // MicroPhone is on by default
+        if (!mPrivacySettingsHelper.get().isMicroPhoneOn()) {
+            mPrivacySettingsHelper.get().turnOnOffMicroPhone(true);
+        }
     }
 
     @Test
+    @RequiresFlagsEnabled(com.android.car.settings.Flags.FLAG_MICROPHONE_PRIVACY_UPDATES)
     public void manageMicrophonePermissions() {
         mSettingHelper.get().openSetting(SettingsConstants.PRIVACY_SETTINGS);
         assertTrue(
@@ -73,22 +93,15 @@ public class MicroPhoneSettingTest {
                 mPrivacySettingsHelper.get().verifyMicrophoneManagePermissionsPage());
     }
 
-    @After
-    public void goBackToSettingsScreen() {
-        mSettingHelper.get().goBackToSettingsScreen();
-        mSettingHelper.get().openSetting(SettingsConstants.PRIVACY_SETTINGS);
-        mSettingHelper.get().openMenuWith("MicroPhone");
-        // MicroPhone is on by default
-        if (!mPrivacySettingsHelper.get().isMicroPhoneOn()) {
-            mPrivacySettingsHelper.get().turnOnOffMicroPhone(true);
-        }
-    }
-
     @Test
+    @RequiresFlagsEnabled(com.android.car.settings.Flags.FLAG_MICROPHONE_PRIVACY_UPDATES)
     public void testMicroPhoneToggleOff() {
         // turn off microphone
         mPrivacySettingsHelper.get().turnOnOffMicroPhone(false);
         assertFalse("MicroPhone is still on", mPrivacySettingsHelper.get().isMicroPhoneOn());
+        mSettingHelper.get().goBackToSettingsScreen();
+        mSettingHelper.get().openSetting(SettingsConstants.PRIVACY_SETTINGS);
+        mSettingHelper.get().openMenuWith("MicroPhone");
         assertFalse(
                 "Recent apps is displayed",
                 mSettingHelper.get().checkMenuExists("Recently accessed"));
@@ -98,12 +111,16 @@ public class MicroPhoneSettingTest {
     }
 
     @Test
+    @RequiresFlagsEnabled(com.android.car.settings.Flags.FLAG_MICROPHONE_PRIVACY_UPDATES)
     public void testMicroPhoneToggleOn() {
         // turn off microphone
         mPrivacySettingsHelper.get().turnOnOffMicroPhone(false);
         // turn on microphone
         mPrivacySettingsHelper.get().turnOnOffMicroPhone(true);
         assertTrue("MicroPhone is still off", mPrivacySettingsHelper.get().isMicroPhoneOn());
+        mSettingHelper.get().goBackToSettingsScreen();
+        mSettingHelper.get().openSetting(SettingsConstants.PRIVACY_SETTINGS);
+        mSettingHelper.get().openMenuWith("MicroPhone");
         assertTrue(
                 "Recently accessed is not present",
                 mSettingHelper.get().checkMenuExists("Recently accessed"));
@@ -116,6 +133,7 @@ public class MicroPhoneSettingTest {
     }
 
     @Test
+    @RequiresFlagsEnabled(com.android.car.settings.Flags.FLAG_MICROPHONE_PRIVACY_UPDATES)
     public void testMicroPhonePanelStatusBar() {
         // turn off microphone
         mPrivacySettingsHelper.get().turnOnOffMicroPhone(false);
@@ -133,6 +151,7 @@ public class MicroPhoneSettingTest {
     }
 
     @Test
+    @RequiresFlagsEnabled(com.android.car.settings.Flags.FLAG_MICROPHONE_PRIVACY_UPDATES)
     public void testMicroPhonePanelStatusBarFromHome() {
         // turn off microphone
         mPrivacySettingsHelper.get().turnOnOffMicroPhone(false);
@@ -148,6 +167,7 @@ public class MicroPhoneSettingTest {
     }
 
     @Test
+    @RequiresFlagsEnabled(com.android.car.settings.Flags.FLAG_MICROPHONE_PRIVACY_UPDATES)
     public void testMicroPhonePanelSettingsLink() {
         // turn off microphone
         mPrivacySettingsHelper.get().turnOnOffMicroPhone(false);
@@ -161,6 +181,7 @@ public class MicroPhoneSettingTest {
     }
 
     @Test
+    @RequiresFlagsEnabled(com.android.car.settings.Flags.FLAG_MICROPHONE_PRIVACY_UPDATES)
     public void testMicroPhonePanelToggle() {
         // turn off microphone
         mPrivacySettingsHelper.get().turnOnOffMicroPhone(false);
@@ -182,7 +203,8 @@ public class MicroPhoneSettingTest {
     }
 
     @Test
-    public void testMicroPhoneButtonDimiss() {
+    @RequiresFlagsEnabled(com.android.car.settings.Flags.FLAG_MICROPHONE_PRIVACY_UPDATES)
+    public void testMicroPhoneButtonDismiss() {
         mPrivacySettingsHelper.get().turnOnOffMicroPhone(false);
         mPrivacySettingsHelper.get().clickMicroPhoneStatusBar();
         // turn microphone on

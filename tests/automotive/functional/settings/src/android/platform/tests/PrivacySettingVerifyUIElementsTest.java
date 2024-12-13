@@ -47,7 +47,7 @@ public class PrivacySettingVerifyUIElementsTest {
         mSettingHelper.get().openSetting(SettingsConstants.PRIVACY_SETTINGS);
         assertTrue(
                 "Privacy settings did not open",
-                mSettingHelper.get().checkMenuExists("Microphone"));
+                mSettingsUIHelper.get().hasUIElement(AutomotiveConfigConstants.MICROPHONE));
     }
 
     @After
@@ -64,7 +64,7 @@ public class PrivacySettingVerifyUIElementsTest {
         mSettingsUIHelper.get().openUIOptions(AutomotiveConfigConstants.MICROPHONE);
         assertTrue(
                 "Microphone settings did not open",
-                mSettingHelper.get().checkMenuExists("Use microphone"));
+                mSettingHelper.get().checkMenuExists("Microphone"));
         String currentTitle = mSettingHelper.get().getPageTitleText();
         mSettingsUIHelper.get().pressBackButton();
         String newTitle = mSettingHelper.get().getPageTitleText();

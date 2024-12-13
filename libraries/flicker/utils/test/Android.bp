@@ -22,8 +22,8 @@ package {
 filegroup {
     name: "FlickerLibTest-Utils-src",
     srcs: [
-        "src/**/utils/*.kt",
-        "src/**/rules/*.kt",
+        "src/**/testutils/*.kt",
+        "src/**/testrules/*.kt",
     ],
 }
 

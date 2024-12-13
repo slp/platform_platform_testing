@@ -29,7 +29,7 @@ class AppWindowRemainInsideDisplayBounds(private val component: ComponentTemplat
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
         flicker.assertWm {
             containsAtLeastOneDisplay().invoke("appWindowRemainInsideDisplayBounds") { entry ->
-                val display = entry.wmState.displays.minByOrNull { it.id }!!
+                val display = entry.wmState.getDefaultDisplay()!!
                 entry
                     .visibleRegion(component.build(scenarioInstance))
                     .coversAtMost(display.displayRect)

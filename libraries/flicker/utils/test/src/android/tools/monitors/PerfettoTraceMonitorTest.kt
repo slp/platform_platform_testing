@@ -18,6 +18,7 @@ package android.tools.monitors
 
 import android.tools.device.apphelpers.BrowserAppHelper
 import android.tools.io.TraceType
+import android.tools.testutils.CleanFlickerEnvironmentRule
 import android.tools.traces.monitors.PerfettoTraceMonitor
 import android.tools.traces.monitors.withSFTracing
 import android.tools.traces.monitors.withTransactionsTracing
@@ -25,7 +26,6 @@ import android.tools.traces.parsers.WindowManagerStateHelper
 import android.tools.traces.parsers.perfetto.LayersTraceParser
 import android.tools.traces.parsers.perfetto.TraceProcessorSession
 import android.tools.traces.parsers.perfetto.TransitionsTraceParser
-import android.tools.utils.CleanFlickerEnvironmentRule
 import com.android.server.wm.flicker.helpers.ImeAppHelper
 import com.google.common.truth.Truth
 import org.junit.Assume.assumeTrue
@@ -115,18 +115,19 @@ class PerfettoTraceMonitorTest : TraceMonitorTest<PerfettoTraceMonitor>() {
         assumeTrue("PerfettoIme flag should be enabled", android.tracing.Flags.perfettoIme())
 
         val traceMonitor = PerfettoTraceMonitor.newBuilder().enableImeTrace().build()
-        val traceData = traceMonitor.withTracing {
-            val wmHelper = WindowManagerStateHelper()
-            val imeApp = ImeAppHelper(instrumentation)
-            imeApp.launchViaIntent(wmHelper)
-            imeApp.openIME(wmHelper)
-        }
+        val traceData =
+            traceMonitor.withTracing {
+                val wmHelper = WindowManagerStateHelper()
+                val imeApp = ImeAppHelper(instrumentation)
+                imeApp.launchViaIntent(wmHelper)
+                imeApp.openIME(wmHelper)
+            }
         assertTrace(traceData)
 
         val queryRowsCount = { session: TraceProcessorSession, tableName: String ->
             val sql =
                 "INCLUDE PERFETTO MODULE android.winscope.inputmethod;" +
-                        "SELECT COUNT(*) FROM $tableName;"
+                    "SELECT COUNT(*) FROM $tableName;"
             session.query(
                 sql,
                 { rows ->
@@ -146,11 +147,14 @@ class PerfettoTraceMonitorTest : TraceMonitorTest<PerfettoTraceMonitor>() {
             }
 
         Truth.assertWithMessage("TP doesn't contain IME client rows")
-            .that(countRowsClients).isGreaterThan(0L)
+            .that(countRowsClients)
+            .isGreaterThan(0L)
         Truth.assertWithMessage("TP doesn't contain IME manager service rows")
-            .that(countRowsManagerService).isGreaterThan(0L)
+            .that(countRowsManagerService)
+            .isGreaterThan(0L)
         Truth.assertWithMessage("TP doesn't contain IME service rows")
-            .that(countRowsService).isGreaterThan(0L)
+            .that(countRowsService)
+            .isGreaterThan(0L)
     }
 
     @Test
@@ -186,6 +190,71 @@ class PerfettoTraceMonitorTest : TraceMonitorTest<PerfettoTraceMonitor>() {
         Truth.assertWithMessage("TP doesn't contain ViewCapture rows")
             .that(countRows)
             .isGreaterThan(0L)
+    }
+
+    @Test
+    fun windowManagerTracingTest() {
+        assumeTrue(
+            "PerfettoWmTracing flag should be enabled",
+            android.tracing.Flags.perfettoWmTracing()
+        )
+
+        val traceMonitor = PerfettoTraceMonitor.newBuilder().enableWindowManagerTrace().build()
+        val traceData =
+            traceMonitor.withTracing {
+                BrowserAppHelper().launchViaIntent()
+                device.pressHome()
+                device.pressRecentApps()
+            }
+        assertTrace(traceData)
+
+        val countRows =
+            TraceProcessorSession.loadPerfettoTrace(traceData) { session ->
+                val sql =
+                    "INCLUDE PERFETTO MODULE android.winscope.windowmanager;" +
+                        "SELECT COUNT(*) FROM android_windowmanager;"
+                session.query(
+                    sql,
+                    { rows ->
+                        require(rows.size == 1)
+                        rows.get(0).get("COUNT(*)") as Long
+                    }
+                )
+            }
+
+        Truth.assertWithMessage("TP doesn't contain WindowManager rows")
+            .that(countRows)
+            .isGreaterThan(0L)
+    }
+
+    @Test
+    fun windowManagerDumpTest() {
+        assumeTrue(
+            "PerfettoWmTracing flag should be enabled",
+            android.tracing.Flags.perfettoWmTracing()
+        )
+
+        val traceData =
+            PerfettoTraceMonitor.newBuilder().enableWindowManagerDump().build().withTracing {}
+        assertTrace(traceData)
+
+        val countRows =
+            TraceProcessorSession.loadPerfettoTrace(traceData) { session ->
+                val sql =
+                    "INCLUDE PERFETTO MODULE android.winscope.windowmanager;" +
+                        "SELECT COUNT(*) FROM android_windowmanager;"
+                session.query(
+                    sql,
+                    { rows ->
+                        require(rows.size == 1)
+                        rows.get(0).get("COUNT(*)") as Long
+                    }
+                )
+            }
+
+        Truth.assertWithMessage("TP doesn't contain WindowManager dump rows")
+            .that(countRows)
+            .isEqualTo(1L)
     }
 
     companion object {

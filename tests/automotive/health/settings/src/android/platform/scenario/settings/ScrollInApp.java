@@ -32,8 +32,8 @@ public class ScrollInApp {
             new HelperAccessor<>(IAutoSettingHelper.class);
 
     @Test
-    public void testScrollDownAndUp() {
-        sHelper.get().scrollDownOnePage();
-        sHelper.get().scrollUpOnePage();
+    public void testScrollForwardAndBackward() {
+        sHelper.get().scrollForward();
+        sHelper.get().scrollBackward();
     }
 }

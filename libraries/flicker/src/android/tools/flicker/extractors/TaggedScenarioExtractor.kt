@@ -126,7 +126,11 @@ class TaggedScenarioExtractor(
     ): Timestamp {
         val interpolatedEndTimestamp =
             if (associatedTransition != null) {
-                Utils.interpolateFinishTimestampFromTransition(associatedTransition, reader)
+                Utils.interpolateFinishTimestampFromTransition(
+                    associatedTransition,
+                    reader,
+                    cujEntry.toString()
+                )
             } else {
                 val layersTrace = reader.readLayersTrace() ?: error("Missing layers trace")
                 val nextSfEntry = layersTrace.getFirstEntryWithOnDisplayAfter(cujEntry.endTimestamp)

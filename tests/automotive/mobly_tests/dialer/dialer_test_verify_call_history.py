@@ -34,11 +34,14 @@ class VerifyCallHistory(bluetooth_base_test.BluetoothBaseTest):
         """Setup steps before any test is executed."""
         # Pair the devices
         self.bt_utils.pair_primary_to_secondary()
+        super().enable_recording()
+
     def test_verify_call_history(self):
         """
             Assumes a new phone image with no call history.
         """
         # Set up mobile device
+        contact_name = "Adam Allen"
         primary_test_number = constants.DIALER_THREE_DIGIT_NUMBER
         secondary_test_number = constants.INFORMATION_THREE_DIGIT_NUMBER
 
@@ -63,9 +66,9 @@ class VerifyCallHistory(bluetooth_base_test.BluetoothBaseTest):
         # TODO: This test may be upgraded to get the number of history entries from the
         # target device for comparison, and to compare call history type (i.e., 'correct arrows')
         asserts.assert_true(
-            self.discoverer.mbs.hasUIElementWithText(primary_test_number),
-            "Expected number %s in call history, but did not see it on screen"
-            % primary_test_number
+            self.discoverer.mbs.hasUIElementWithText(contact_name),
+            "Expected name %s in call history, but did not see it on screen"
+            % contact_name
         )
 
         asserts.assert_true(

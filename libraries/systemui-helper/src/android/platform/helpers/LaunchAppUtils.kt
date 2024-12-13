@@ -19,10 +19,14 @@ package android.platform.helpers
 import android.content.Context
 import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import android.platform.uiautomator_helpers.DeviceHelpers
+import android.platform.helpers.LaunchAppUtils.launchApp
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
+import org.junit.rules.TestWatcher
+import org.junit.runner.Description
 import java.time.Duration
 
 /** Utilities to launch an [App]. */
@@ -57,6 +61,22 @@ object LaunchAppUtils {
 
     private val device: UiDevice
         get() = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+}
+
+/**
+ * Rule that launches specified app and closes it after the test execution
+ */
+class LaunchAppRule(private val app: App) : TestWatcher() {
+
+    override fun starting(description: Description?) {
+        InstrumentationRegistry.getInstrumentation()
+            .targetContext
+            .launchApp(app)
+    }
+
+    override fun finished(description: Description?) {
+        DeviceHelpers.uiDevice.executeShellCommand("am force-stop ${app.packageName}")
+    }
 }
 
 /** Describes an app that can be launched with [LaunchAppUtils]. */

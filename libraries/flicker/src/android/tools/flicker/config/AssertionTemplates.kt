@@ -17,6 +17,7 @@
 package android.tools.flicker.config
 
 import android.tools.flicker.AssertionInvocationGroup
+import android.tools.flicker.assertors.AssertionTemplate
 import android.tools.flicker.assertors.assertions.AppLayerBecomesInvisible
 import android.tools.flicker.assertors.assertions.AppLayerBecomesVisible
 import android.tools.flicker.assertors.assertions.AppLayerCoversFullScreenAtEnd
@@ -37,6 +38,7 @@ import android.tools.flicker.assertors.assertions.AppWindowIsVisibleAtEnd
 import android.tools.flicker.assertors.assertions.AppWindowIsVisibleAtStart
 import android.tools.flicker.assertors.assertions.AppWindowOnTopAtEnd
 import android.tools.flicker.assertors.assertions.AppWindowOnTopAtStart
+import android.tools.flicker.assertors.assertions.AppWindowRemainInsideDisplayBounds
 import android.tools.flicker.assertors.assertions.EntireScreenCoveredAlways
 import android.tools.flicker.assertors.assertions.FocusChanges
 import android.tools.flicker.assertors.assertions.HasAtMostOneWindowMatching
@@ -52,6 +54,7 @@ import android.tools.flicker.assertors.assertions.WindowRemainInsideVisibleBound
 import android.tools.flicker.config.appclose.Components.CLOSING_APPS
 import android.tools.flicker.config.applaunch.Components.OPENING_APPS
 import android.tools.flicker.config.common.Components.LAUNCHER
+import android.tools.flicker.config.desktopmode.Components.DESKTOP_MODE_APP
 import android.tools.flicker.config.pip.Components.PIP_APP
 import android.tools.flicker.config.pip.Components.PIP_DISMISS_OVERLAY
 import android.tools.flicker.config.splitscreen.Components.SPLIT_SCREEN_DIVIDER
@@ -208,4 +211,12 @@ object AssertionTemplates {
                     AppWindowIsVisibleAlways(SPLIT_SCREEN_SECONDARY_APP),
                 )
                 .associateBy({ it }, { AssertionInvocationGroup.BLOCKING })
+
+    val DESKTOP_MODE_APP_VISIBILITY_ASSERTIONS: Map<AssertionTemplate, AssertionInvocationGroup> =
+        listOf(
+                AppWindowIsVisibleAlways(DESKTOP_MODE_APP),
+                AppWindowOnTopAtEnd(DESKTOP_MODE_APP),
+                AppWindowRemainInsideDisplayBounds(DESKTOP_MODE_APP),
+            )
+            .associateBy({ it }, { AssertionInvocationGroup.BLOCKING })
 }

@@ -31,10 +31,10 @@ import android.util.Log;
 import androidx.annotation.VisibleForTesting;
 import androidx.test.InstrumentationRegistry;
 
+import org.junit.Rule;
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.internal.runners.model.EachTestNotifier;
 import org.junit.internal.runners.model.ReflectiveCallable;
-import org.junit.internal.runners.statements.RunAfters;
 import org.junit.rules.RunRules;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -42,6 +42,8 @@ import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
+import org.junit.runners.model.MemberValueConsumer;
+import org.junit.runners.model.MultipleFailureException;
 import org.junit.runners.model.Statement;
 
 import java.lang.annotation.Annotation;
@@ -67,6 +69,41 @@ import java.util.Map;
  * modified behaviors related to running repeated methods. These are documented separately below
  * with the corresponding annotations, {@link @NoMetricBefore}, {@link @NoMetricAfter}, and
  * {@link @TightMethodRule}.
+ *
+ * The order of the execution for 2 iterations of a test with single test method:
+ *  - @ClassRule before
+ *      *iteration 1*
+ *      - @NoMetricRule before
+ *      - @NoMetricBefore method
+ *          - *starts tracing*
+ *              - @Rule before
+ *              - @Before method
+ *              - @TightMethodRule before
+ *                  - Test method body
+ *              - @TightMethodRule after
+ *              - @After method
+ *              - @Rule after
+ *          - *ends tracing*
+ *      - @NoMetricAfter method
+ *      - @NoMetricRule after
+ *      *iteration 2*
+ *      - @NoMetricRule before
+ *      - @NoMetricBefore method
+ *          - *starts tracing*
+ *              - @Rule before
+ *              - @Before method
+ *              - @TightMethodRule before
+ *                  - Test method body
+ *              - @TightMethodRule after
+ *              - @After method
+ *              - @Rule after
+ *          - *ends tracing*
+ *      - @NoMetricAfter method
+ *      - @NoMetricRule after
+ *   - @ClassRule after
+ *
+ * Note: the order of the execution is different from Functional runner.
+ * See documentation for {@link Functional} for details.
  *
  * <p>Finally, this runner supports some power-specific testing features used to denoise (also
  * documented below), and can be configured to terminate early if the battery drops too low or if
@@ -279,6 +316,11 @@ public class Microbenchmark extends BlockJUnit4ClassRunner {
     @Target({ElementType.FIELD, ElementType.METHOD})
     public @interface NoMetricAfter {}
 
+    /** A temporary annotation, same as the above, but for replacing JUnit {@code @Rule}. */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.FIELD, ElementType.METHOD})
+    public @interface NoMetricRule {}
+
     /**
      * Rename the child class name to add iterations if the renaming iteration option is enabled.
      *
@@ -320,6 +362,23 @@ public class Microbenchmark extends BlockJUnit4ClassRunner {
         }
         // Apply modern, method-level TestRules in outer statements.
         result = new RunRules(result, testRules, describeChild(method));
+        return result;
+    }
+
+    /**
+     * @param target the test case instance
+     * @return a list of NoMetricTestRules that should be applied when executing this
+     *         test
+     */
+    private List<TestRule> getNoMetricTestRules(Object target) {
+        final List<TestRule> result = new ArrayList<>();
+        final MemberValueConsumer<TestRule> collector = (member, value) -> result.add(value);
+
+        getTestClass().collectAnnotatedMethodValues(target, NoMetricRule.class, TestRule.class,
+                collector);
+        getTestClass().collectAnnotatedFieldValues(target, NoMetricRule.class, TestRule.class,
+                collector);
+
         return result;
     }
 
@@ -373,17 +432,11 @@ public class Microbenchmark extends BlockJUnit4ClassRunner {
                                 return createTest();
                             }
                         }.run();
-
-                // Run {@code NoMetricBefore} methods first. Fail fast if they fail.
-                for (FrameworkMethod noMetricBefore :
-                        getTestClass().getAnnotatedMethods(NoMetricBefore.class)) {
-                    noMetricBefore.invokeExplosively(test);
-                }
             } catch (Throwable e) {
                 eachNotifier.fireTestStarted();
                 eachNotifier.addFailure(e);
                 eachNotifier.fireTestFinished();
-                if(mTerminateOnTestFailure) {
+                if (mTerminateOnTestFailure) {
                     throw new TerminateEarlyException("test failed.");
                 }
                 return;
@@ -396,40 +449,102 @@ public class Microbenchmark extends BlockJUnit4ClassRunner {
             statement = withAfters(method, test, statement);
             statement = withRules(method, test, statement);
 
-            boolean testFailed = false;
             // Fire test events from inside to exclude "no metric" methods.
-            eachNotifier.fireTestStarted();
+            statement = withTestEventsNotifier(eachNotifier, statement);
+
+            statement = withNoMetricsAfters(eachNotifier, test, statement);
+            statement = withNoMetricsBefores(eachNotifier, test, statement);
+            statement = withNoMetricsRules(method, test, statement);
+
+            boolean testFailed = false;
+
             try {
                 statement.evaluate();
-            } catch (AssumptionViolatedException e) {
-                eachNotifier.addFailedAssumption(e);
-                testFailed = true;
             } catch (Throwable e) {
-                eachNotifier.addFailure(e);
-                testFailed = true;
-            } finally {
-                eachNotifier.fireTestFinished();
-            }
-
-            try {
-                // Run {@code NoMetricAfter} methods last, reporting all errors.
-                List<FrameworkMethod> afters =
-                        getTestClass().getAnnotatedMethods(NoMetricAfter.class);
-                if (!afters.isEmpty()) {
-                    new RunAfters(EMPTY_STATEMENT, afters, test).evaluate();
-                }
-            } catch (AssumptionViolatedException e) {
-                eachNotifier.addFailedAssumption(e);
-                testFailed = true;
-            } catch (Throwable e) {
-                eachNotifier.addFailure(e);
                 testFailed = true;
             }
 
-            if(mTerminateOnTestFailure && testFailed) {
+            if (mTerminateOnTestFailure && testFailed) {
                 throw new TerminateEarlyException("test failed.");
             }
         }
+    }
+
+    private Statement withNoMetricsBefores(EachTestNotifier eachNotifier, Object test,
+            Statement next) {
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                try {
+                    for (FrameworkMethod noMetricBefore :
+                            getTestClass().getAnnotatedMethods(NoMetricBefore.class)) {
+                        noMetricBefore.invokeExplosively(test);
+                    }
+                } catch (Throwable e) {
+                    eachNotifier.fireTestStarted();
+                    eachNotifier.addFailure(e);
+                    eachNotifier.fireTestFinished();
+                    throw e;
+                }
+
+                next.evaluate();
+            }
+        };
+    }
+
+    private Statement withNoMetricsAfters(EachTestNotifier eachNotifier, Object test,
+            Statement next) {
+        final List<FrameworkMethod> afters = getTestClass()
+                .getAnnotatedMethods(NoMetricAfter.class);
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                final List<Throwable> errors = new ArrayList<Throwable>();
+                try {
+                    next.evaluate();
+                } catch (Throwable e) {
+                    errors.add(e);
+                } finally {
+                    for (FrameworkMethod each : afters) {
+                        try {
+                            each.invokeExplosively(test);
+                        } catch (AssumptionViolatedException e) {
+                            eachNotifier.addFailedAssumption(e);
+                            errors.add(e);
+                        } catch (Throwable e) {
+                            eachNotifier.addFailure(e);
+                            errors.add(e);
+                        }
+                    }
+                }
+                MultipleFailureException.assertEmpty(errors);
+            }
+        };
+    }
+
+    private Statement withTestEventsNotifier(EachTestNotifier eachNotifier, Statement next) {
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                eachNotifier.fireTestStarted();
+                try {
+                    next.evaluate();
+                } catch (AssumptionViolatedException e) {
+                    eachNotifier.addFailedAssumption(e);
+                    throw e;
+                } catch (Throwable e) {
+                    eachNotifier.addFailure(e);
+                    throw e;
+                } finally {
+                    eachNotifier.fireTestFinished();
+                }
+            }
+        };
+    }
+
+    private Statement withNoMetricsRules(FrameworkMethod method, Object target,
+            Statement next) {
+        return new RunRules(next, getNoMetricTestRules(target), describeChild(method));
     }
 
     /* Checks if the battery level is below the specified level where the test should terminate. */

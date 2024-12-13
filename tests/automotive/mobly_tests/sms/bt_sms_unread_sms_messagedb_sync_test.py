@@ -49,13 +49,14 @@ class SMSUnreadMessageDBSyncTest(bluetooth_sms_base_test.BluetoothSMSBaseTest):
         self.call_utils.clear_sms_app(self.target)
         # Reboot Phone
         self.target.unload_snippet('mbs')
-        self.call_utils.reboot_device(self.target)
+        self.target.reboot()
         self.call_utils.wait_with_log(30)
         self.target.load_snippet('mbs', android_device.MBS_PACKAGE)
         # send a new sms
         target_phone_number = self.target.mbs.getPhoneNumber()
         self.phone_notpaired.mbs.sendSms(target_phone_number,constants.SMS_TEXT)
         self.call_utils.wait_with_log(10)
+        super().enable_recording()
 
     def test_unread_sms_message_db_sync(self):
         # to test that the unread sms appears on phone after pairing

@@ -28,6 +28,9 @@ import kotlin.math.min
  *
  * This is a generic object that is reused by both Flicker and Winscope and cannot access internal
  * Java/Android functionality
+ *
+ * @property displayRect The logical display rect.
+ * @property stableBounds The logical display bounds excluding the navigation and status bar areas.
  */
 class DisplayContent(
     val displayId: Int,
@@ -48,6 +51,7 @@ class DisplayContent(
     val rotation: Rotation,
     val lastOrientation: Int,
     val cutout: DisplayCutout?,
+    val insetsSourceProviders: Array<InsetsSourceProvider>,
     private val windowContainer: WindowContainer
 ) : WindowContainer by windowContainer {
     override val name: String = displayId.toString()

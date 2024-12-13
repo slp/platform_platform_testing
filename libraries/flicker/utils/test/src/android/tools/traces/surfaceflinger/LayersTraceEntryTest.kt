@@ -18,8 +18,8 @@ package android.tools.traces.surfaceflinger
 
 import android.tools.Cache
 import android.tools.Timestamps
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.getLayerTraceReaderFromAsset
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.getLayerTraceReaderFromAsset
 import com.google.common.truth.Truth
 import org.junit.Before
 import org.junit.ClassRule

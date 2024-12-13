@@ -19,7 +19,7 @@ package android.platform.helpers;
 import androidx.test.uiautomator.UiObject2;
 
 /** Helper class for functional tests of Settings facet */
-public interface IAutoSettingHelper extends IAppHelper, Scrollable {
+public interface IAutoSettingHelper extends IAppHelper {
 
     /**
      * enum for Day/Night mode.
@@ -42,10 +42,8 @@ public interface IAutoSettingHelper extends IAppHelper, Scrollable {
         }
     }
 
-    /**
-     * enum for changing(increasing, decreasing) value.
-     */
-    enum ChangeType{
+    /** enum for changing(increasing, decreasing) value. */
+    enum ChangeType {
         INCREASE,
         DECREASE
     }
@@ -56,6 +54,20 @@ public interface IAutoSettingHelper extends IAppHelper, Scrollable {
      * @param setting option to find.
      */
     UiObject2 findSettingMenu(String setting);
+
+    /**
+     * Setup expectations: The app is open and the settings facet is open
+     *
+     * <p>Scroll backward(down) in the settings menu page.
+     */
+    boolean scrollBackward();
+
+    /**
+     * Setup expectations: The app is open and the settings facet is open.
+     *
+     * <p>Scroll forward(up) in the settings menu page.
+     */
+    boolean scrollForward();
 
     /**
      * Setup expectations: The app is open and the settings facet is open
@@ -133,19 +145,18 @@ public interface IAutoSettingHelper extends IAppHelper, Scrollable {
     /**
      * Setup expectations: settings app is open.
      *
-     * This method is used to open Settings Menu with menuOptions.
-     * Example - Settings->App info->Calandar->Permissions
-     *           openMenuWith("App info", "Calandar", "Permissions");
+     * <p>This method is used to open Settings Menu with menuOptions. Example - Settings->App
+     * info->Calandar->Permissions openMenuWith("App info", "Calandar", "Permissions");
      *
      * @param - menuOptions used to pass multiple level of menu options in one go.
-     *
      */
     void openMenuWith(String... menuOptions);
 
     /**
      * Setup expectations: settings app is open.
      *
-     * gets the value of the setting.
+     * <p>gets the value of the setting.
+     *
      * @param setting should be passed. example for setting is screen_brightness.
      */
     int getValue(String setting);
@@ -153,7 +164,8 @@ public interface IAutoSettingHelper extends IAppHelper, Scrollable {
     /**
      * Setup expectations: settings app is open
      *
-     * sets the value of the setting.
+     * <p>sets the value of the setting.
+     *
      * @param setting should be passed. example for setting is screen_brightness.
      */
     void setValue(String setting, int value);

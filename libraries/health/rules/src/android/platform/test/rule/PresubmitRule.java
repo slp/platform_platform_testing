@@ -16,6 +16,7 @@
 
 package android.platform.test.rule;
 
+
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
@@ -37,12 +38,27 @@ import java.util.Arrays;
  * skipped, for presubmit runs, on devices not in the list.
  */
 public class PresubmitRule implements TestRule {
+
+    /**
+     * For test running in config that implements the instrumentation argument is-presubmit (such as
+     * cl/663453103), return true if the test is actually running in presubmit.
+     *
+     * <p>Otherwise, return true if there is a parameter to exclude postsubmit.
+     */
     public static boolean runningInPresubmit() {
+        final String isPresubmit =
+                InstrumentationRegistry.getArguments().getString("is-presubmit", "unknown");
+        if (isPresubmit.equals("true")) {
+            return true;
+        } else if (isPresubmit.equals("false")) {
+            return false;
+        }
+
         // We run in presubmit when there is a parameter to exclude postsubmits.
         final String nonAnnotationArgument =
                 InstrumentationRegistry.getArguments().getString("notAnnotation", "");
-        return Arrays.stream(nonAnnotationArgument.split(","))
-                .anyMatch("android.platform.test.annotations.Postsubmit"::equals);
+        return Arrays.asList(nonAnnotationArgument.split(","))
+                .contains("android.platform.test.annotations.Postsubmit");
     }
 
     @Override

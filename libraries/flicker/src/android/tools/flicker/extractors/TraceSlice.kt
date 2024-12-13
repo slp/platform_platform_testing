@@ -17,12 +17,21 @@
 package android.tools.flicker.extractors
 
 import android.tools.Timestamp
-import android.tools.traces.events.CujType
+import android.tools.traces.events.ICujType
 import android.tools.traces.wm.Transition
 
 data class TraceSlice(
     val startTimestamp: Timestamp,
     val endTimestamp: Timestamp,
     val associatedTransition: Transition? = null,
-    val associatedCuj: CujType? = null
-)
+    val associatedCuj: ICujType? = null
+) {
+    init {
+        require(startTimestamp.hasAllTimestamps) {
+            "startTimestamp ($startTimestamp) has missing timestamps"
+        }
+        require(endTimestamp.hasAllTimestamps) {
+            "endTimestamp ($endTimestamp) has missing timestamps"
+        }
+    }
+}

@@ -26,6 +26,8 @@ class DeleteDialedNumberTest(bluetooth_base_test.BluetoothBaseTest):
     """Setup steps before any test is executed."""
     # Pair the devices
     self.bt_utils.pair_primary_to_secondary()
+    super().enable_recording()
+
   def test_delete_dialed_number(self):
     """Test the calling three digits number functionality."""
 

@@ -311,6 +311,28 @@ class LayerTraceEntrySubject(
             }
         }
 
+    /** {@inheritDoc} */
+    override fun hasNoRoundedCorners(componentMatcher: IComponentMatcher): LayerTraceEntrySubject =
+        apply {
+            contains(componentMatcher)
+
+            val hasNoRoundedCornersLayer =
+                componentMatcher.check(subjects.map { it.layer }) {
+                    it.all { layer -> layer.cornerRadius == 0f }
+                }
+
+            if (!hasNoRoundedCornersLayer) {
+                val errorMsgBuilder =
+                    ExceptionMessageBuilder()
+                        .forSubject(this)
+                        .forInvalidProperty("RoundedCorners")
+                        .setExpected("0")
+                        .setActual("Not 0")
+                        .addExtraDescription("Filter", componentMatcher.toLayerIdentifier())
+                throw InvalidPropertyException(errorMsgBuilder)
+            }
+        }
+
     /** See [layer] */
     fun layer(componentMatcher: IComponentMatcher): LayerSubject? {
         return layer { componentMatcher.layerMatchesAnyOf(it) }

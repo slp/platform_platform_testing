@@ -17,9 +17,9 @@
 package android.tools.flicker.surfaceflinger
 
 import android.tools.flicker.subject.layers.LayersTraceSubject
-import android.tools.utils.assertThatErrorContainsDebugInfo
-import android.tools.utils.assertThrows
-import android.tools.utils.getLayerTraceReaderFromAsset
+import android.tools.testutils.assertThatErrorContainsDebugInfo
+import android.tools.testutils.assertThrows
+import android.tools.testutils.getLayerTraceReaderFromAsset
 import org.junit.Test
 
 class LayerTraceSubjectTest {

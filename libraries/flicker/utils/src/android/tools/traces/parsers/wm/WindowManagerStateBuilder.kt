@@ -31,6 +31,8 @@ import android.tools.traces.wm.ConfigurationContainerImpl
 import android.tools.traces.wm.DisplayArea
 import android.tools.traces.wm.DisplayContent
 import android.tools.traces.wm.DisplayCutout
+import android.tools.traces.wm.InsetsSource
+import android.tools.traces.wm.InsetsSourceProvider
 import android.tools.traces.wm.KeyguardControllerState
 import android.tools.traces.wm.RootWindowContainer
 import android.tools.traces.wm.Task
@@ -46,6 +48,7 @@ import android.tools.traces.wm.WindowState
 import android.tools.traces.wm.WindowToken
 import android.view.Surface
 import android.view.nano.DisplayCutoutProto
+import android.view.nano.InsetsSourceProto
 import android.view.nano.ViewProtoEnums
 import android.view.nano.WindowLayoutParamsProto
 import com.android.server.wm.nano.ActivityRecordProto
@@ -53,6 +56,7 @@ import com.android.server.wm.nano.AppTransitionProto
 import com.android.server.wm.nano.ConfigurationContainerProto
 import com.android.server.wm.nano.DisplayAreaProto
 import com.android.server.wm.nano.DisplayContentProto
+import com.android.server.wm.nano.InsetsSourceProviderProto
 import com.android.server.wm.nano.KeyguardControllerProto
 import com.android.server.wm.nano.RootWindowContainerProto
 import com.android.server.wm.nano.TaskFragmentProto
@@ -135,8 +139,7 @@ class WindowManagerStateBuilder {
                 proto.windowContainer.children.mapNotNull { p ->
                     createWindowContainerChild(p, isActivityInTree = false)
                 }
-            )
-                ?: error("Window container should not be null")
+            ) ?: error("Window container should not be null")
         )
     }
 
@@ -158,12 +161,12 @@ class WindowManagerStateBuilder {
     ): WindowContainer? {
         return createDisplayContent(proto.displayContent, isActivityInTree)
             ?: createDisplayArea(proto.displayArea, isActivityInTree)
-                ?: createTask(proto.task, isActivityInTree)
-                ?: createTaskFragment(proto.taskFragment, isActivityInTree)
-                ?: createActivity(proto.activity)
-                ?: createWindowToken(proto.windowToken, isActivityInTree)
-                ?: createWindowState(proto.window, isActivityInTree)
-                ?: createWindowContainer(proto.windowContainer, children = emptyList())
+            ?: createTask(proto.task, isActivityInTree)
+            ?: createTaskFragment(proto.taskFragment, isActivityInTree)
+            ?: createActivity(proto.activity)
+            ?: createWindowToken(proto.windowToken, isActivityInTree)
+            ?: createWindowState(proto.window, isActivityInTree)
+            ?: createWindowContainer(proto.windowContainer, children = emptyList())
     }
 
     private fun createDisplayContent(
@@ -178,10 +181,10 @@ class WindowManagerStateBuilder {
                 focusedRootTaskId = proto.focusedRootTaskId,
                 resumedActivity = proto.resumedActivity?.title ?: "",
                 singleTaskInstance = proto.singleTaskInstance,
-                defaultPinnedStackBounds = proto.pinnedTaskController?.defaultBounds?.toRect()
-                        ?: Rect(),
-                pinnedStackMovementBounds = proto.pinnedTaskController?.movementBounds?.toRect()
-                        ?: Rect(),
+                defaultPinnedStackBounds =
+                    proto.pinnedTaskController?.defaultBounds?.toRect() ?: Rect(),
+                pinnedStackMovementBounds =
+                    proto.pinnedTaskController?.movementBounds?.toRect() ?: Rect(),
                 displayRect =
                     Rect(
                         0,
@@ -203,6 +206,7 @@ class WindowManagerStateBuilder {
                     Rotation.getByValue(proto.displayRotation?.rotation ?: Surface.ROTATION_0),
                 lastOrientation = proto.displayRotation?.lastOrientation ?: 0,
                 cutout = createDisplayCutout(proto.displayInfo?.cutout),
+                insetsSourceProviders = buildInsetsSourceProviders(proto.insetsSourceProviders),
                 windowContainer =
                     createWindowContainer(
                         proto.rootDisplayArea.windowContainer,
@@ -210,8 +214,7 @@ class WindowManagerStateBuilder {
                             createWindowContainerChild(p, isActivityInTree)
                         },
                         nameOverride = proto.displayInfo?.name ?: ""
-                    )
-                        ?: error("Window container should not be null")
+                    ) ?: error("Window container should not be null")
             )
         }
     }
@@ -231,8 +234,7 @@ class WindowManagerStateBuilder {
                         proto.windowContainer.children.mapNotNull { p ->
                             createWindowContainerChild(p, isActivityInTree)
                         }
-                    )
-                        ?: error("Window container should not be null")
+                    ) ?: error("Window container should not be null")
             )
         }
     }
@@ -271,8 +273,7 @@ class WindowManagerStateBuilder {
                                 createWindowContainerChild(p, isActivityInTree)
                             }
                         }
-                    )
-                        ?: error("Window container should not be null")
+                    ) ?: error("Window container should not be null")
             )
         }
     }
@@ -295,8 +296,7 @@ class WindowManagerStateBuilder {
                         proto.windowContainer.children.mapNotNull { p ->
                             createWindowContainerChild(p, isActivityInTree)
                         }
-                    )
-                        ?: error("Window container should not be null")
+                    ) ?: error("Window container should not be null")
             )
         }
     }
@@ -317,8 +317,7 @@ class WindowManagerStateBuilder {
                             createWindowContainerChild(p, isActivityInTree = true)
                         },
                         nameOverride = proto.name
-                    )
-                        ?: error("Window container should not be null")
+                    ) ?: error("Window container should not be null")
             )
         }
     }
@@ -336,8 +335,7 @@ class WindowManagerStateBuilder {
                     proto.windowContainer.children.mapNotNull { p ->
                         createWindowContainerChild(p, isActivityInTree)
                     }
-                )
-                    ?: error("Window container should not be null")
+                ) ?: error("Window container should not be null")
             )
         }
     }
@@ -400,8 +398,7 @@ class WindowManagerStateBuilder {
                                     else -> identifierName
                                 }
                             )
-                    )
-                        ?: error("Window container should not be null"),
+                    ) ?: error("Window container should not be null"),
                 isAppWindow = isActivityInTree
             )
         }
@@ -563,6 +560,24 @@ class WindowManagerStateBuilder {
     private fun RectProto.toRect() = Rect(this.left, this.top, this.right, this.bottom)
 
     private fun RectProto.toInsets() = Insets.of(this.left, this.top, this.right, this.bottom)
+
+    private fun createInsetsSource(proto: InsetsSourceProto?): InsetsSource? {
+        return if (proto == null) {
+            null
+        } else {
+            InsetsSource.from(proto.typeNumber, proto.frame?.toRect() ?: Rect(), proto.visible)
+        }
+    }
+
+    private fun buildInsetsSourceProviders(
+        insetsSourceProviders: Array<InsetsSourceProviderProto>
+    ): Array<InsetsSourceProvider> {
+        return insetsSourceProviders
+            .map {
+                InsetsSourceProvider(it.frame?.toRect() ?: Rect(), createInsetsSource(it.source))
+            }
+            .toTypedArray()
+    }
 
     companion object {
         private const val TRANSIT_ACTIVITY_OPEN = "TRANSIT_ACTIVITY_OPEN"

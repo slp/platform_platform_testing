@@ -20,7 +20,6 @@ from utilities import constants
 from utilities.common_utils import CommonUtils
 from utilities.main_utils import common_main
 from utilities.media_utils import MediaUtils
-from utilities.video_utils_service import VideoRecording
 
 
 class IsTreeDisplayedTest(bluetooth_base_test.BluetoothBaseTest):
@@ -32,18 +31,20 @@ class IsTreeDisplayedTest(bluetooth_base_test.BluetoothBaseTest):
 
     def setup_test(self):
         self.common_utils.grant_local_mac_address_permission()
-        logging.info("\tInitializing video services on Target")
-        self.video_utils_service_target = VideoRecording(self.target,self.__class__.__name__)
-        logging.info("Enabling video recording for Target device")
-        self.video_utils_service_target.enable_screen_recording()
         self.common_utils.enable_wifi_on_phone_device()
         self.bt_utils.pair_primary_to_secondary()
+        self.media_utils.enable_bt_media_debugging_logs()
+        super().enable_recording()
+
 
     def test_media_is_tree_displayed(self):
         """Tests validating is AVRCP Tree - Displayed"""
+        self.media_utils.open_media_app_on_hu()
+        self.call_utils.handle_bluetooth_audio_pop_up()
         self.media_utils.open_youtube_music_app()
         current_phone_song_title = self.media_utils.get_song_title_from_phone()
         self.media_utils.open_media_app_on_hu()
+        self.call_utils.handle_bluetooth_audio_pop_up()
         current_hu_song_title = self.media_utils.get_song_title_from_hu()
         asserts.assert_true(current_phone_song_title == current_hu_song_title,
                             'Invalid song titles. '
@@ -64,12 +65,6 @@ class IsTreeDisplayedTest(bluetooth_base_test.BluetoothBaseTest):
         # Close YouTube Music app
         self.media_utils.close_youtube_music_app()
         self.call_utils.press_home()
-        logging.info("Stopping the screen recording on Target")
-        self.video_utils_service_target.stop_screen_recording()
-        logging.info("Pull the screen recording from Target")
-        self.video_utils_service_target.pull_recording_file(self.log_path)
-        logging.info("delete the screen recording from the Target")
-        self.video_utils_service_target.delete_screen_recording_from_device()
         super().teardown_test()
 
 

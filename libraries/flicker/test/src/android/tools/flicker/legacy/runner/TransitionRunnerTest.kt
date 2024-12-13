@@ -22,13 +22,13 @@ import android.os.SystemClock
 import android.tools.createMockedFlicker
 import android.tools.flicker.legacy.FlickerTestData
 import android.tools.io.RunStatus
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.TEST_SCENARIO
+import android.tools.testutils.assertExceptionMessage
 import android.tools.traces.TRACE_CONFIG_REQUIRE_CHANGES
 import android.tools.traces.io.ResultReader
 import android.tools.traces.io.ResultWriter
 import android.tools.traces.monitors.ITransitionMonitor
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.TEST_SCENARIO
-import android.tools.utils.assertExceptionMessage
 import android.view.WindowManagerGlobal
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth

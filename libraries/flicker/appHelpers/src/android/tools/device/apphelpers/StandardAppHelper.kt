@@ -176,9 +176,30 @@ open class StandardAppHelper(
     ) {
         withTracing("${this::class.simpleName}#doWaitShown") {
             val expectedWindow = launchedAppComponentMatcherOverride ?: componentMatcher
-            val builder = waitConditionsBuilder.withWindowSurfaceAppeared(expectedWindow)
-            builder.waitForAndVerify()
+            doWaitShownLight(expectedWindow)
+            doWaitShownHeavy(expectedWindow, waitConditionsBuilder)
         }
+    }
+
+    private fun doWaitShownLight(expectedWindow: IComponentMatcher) {
+        try {
+            val expectedPackageName =
+                ComponentNameMatcher.unflattenFromString(expectedWindow.toWindowIdentifier())
+                    .packageName
+            val appSelector = getAppSelector(expectedPackageName)
+            uiDevice.wait(Until.hasObject(appSelector), APP_LAUNCH_WAIT_TIME_MS)
+        } catch (e: Exception) {
+            // IComponentMatcher#toWindowIdentifier() might not be implemented.
+            // Let's just skip the light-weight busy waiting.
+        }
+    }
+
+    private fun doWaitShownHeavy(
+        expectedWindow: IComponentMatcher,
+        waitConditionsBuilder: WindowManagerStateHelper.StateSyncBuilder
+    ) {
+        val builder = waitConditionsBuilder.withWindowSurfaceAppeared(expectedWindow)
+        builder.waitForAndVerify()
     }
 
     override fun isAvailable(): Boolean {

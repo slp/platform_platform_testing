@@ -16,12 +16,11 @@
 
 package android.tools.integration
 
-import android.tools.flicker.datastore.CachedResultReader
 import android.tools.flicker.legacy.LegacyFlickerTest
 import android.tools.io.RunStatus
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.TEST_SCENARIO
 import android.tools.traces.TRACE_CONFIG_REQUIRE_CHANGES
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.TEST_SCENARIO
 import com.google.common.truth.Truth
 import java.io.File
 import org.junit.Before
@@ -67,7 +66,7 @@ class TransitionErrorTest {
             Truth.assertWithMessage("Expected exception")
                 .that(result.exceptionOrNull())
                 .hasMessageThat()
-                .contains(Utils.FAILURE)
+                .contains(TestUtils.FAILURE)
         }
         val reader =
             android.tools.flicker.datastore.CachedResultReader(
@@ -91,7 +90,9 @@ class TransitionErrorTest {
     companion object {
         private const val WRONG_EXCEPTION = "Wrong exception"
 
-        @BeforeClass @JvmStatic fun runTransition() = Utils.runTransition { error(Utils.FAILURE) }
+        @BeforeClass
+        @JvmStatic
+        fun runTransition() = TestUtils.runTransition { error(TestUtils.FAILURE) }
 
         @ClassRule @JvmField val ENV_CLEANUP = CleanFlickerEnvironmentRule()
     }

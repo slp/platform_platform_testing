@@ -19,8 +19,8 @@ package android.tools.flicker.subject.region
 import android.graphics.Rect
 import android.graphics.Region
 import android.tools.Timestamps
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.assertFail
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.assertFail
 import org.junit.ClassRule
 import org.junit.FixMethodOrder
 import org.junit.Test

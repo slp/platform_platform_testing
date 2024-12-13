@@ -30,6 +30,9 @@ enum class Rotation(val description: String, val value: Int) {
 
     companion object {
         private val VALUES = values()
+
         fun getByValue(value: Int) = if (value == -1) ROTATION_0 else VALUES[value]
+
+        fun getByName(name: String?): Rotation? = Rotation.values().find { it.name == name }
     }
 }

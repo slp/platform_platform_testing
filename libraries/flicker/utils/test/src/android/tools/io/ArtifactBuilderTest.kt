@@ -16,10 +16,10 @@
 
 package android.tools.io
 
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.TEST_SCENARIO
+import android.tools.testutils.createDefaultArtifactBuilder
 import android.tools.traces.io.ArtifactBuilder
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.TEST_SCENARIO
-import android.tools.utils.createDefaultArtifactBuilder
 import com.google.common.truth.Truth
 import java.io.File
 import kotlin.io.path.createTempDirectory

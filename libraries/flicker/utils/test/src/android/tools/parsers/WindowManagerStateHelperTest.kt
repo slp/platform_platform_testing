@@ -25,6 +25,9 @@ import android.tools.Timestamps
 import android.tools.datatypes.ActiveBuffer
 import android.tools.datatypes.Matrix33
 import android.tools.datatypes.defaultColor
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.getWmDumpReaderFromAsset
+import android.tools.testutils.getWmTraceReaderFromAsset
 import android.tools.traces.ConditionsFactory
 import android.tools.traces.DeviceStateDump
 import android.tools.traces.component.ComponentNameMatcher
@@ -36,9 +39,6 @@ import android.tools.traces.surfaceflinger.LayerTraceEntryBuilder
 import android.tools.traces.surfaceflinger.Transform
 import android.tools.traces.wm.WindowManagerState
 import android.tools.traces.wm.WindowManagerTrace
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.getWmDumpReaderFromAsset
-import android.tools.utils.getWmTraceReaderFromAsset
 import androidx.core.graphics.toRect
 import androidx.test.filters.FlakyTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -193,7 +193,7 @@ class WindowManagerStateHelperTest {
 
     @Test
     fun canWaitForIme() {
-        val reader = getWmTraceReaderFromAsset("wm_trace_ime.pb", legacyTrace = true)
+        val reader = getWmTraceReaderFromAsset("wm_trace_ime", legacyTrace = true)
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val supplier = trace.asSupplier()
         val helper =
@@ -214,7 +214,7 @@ class WindowManagerStateHelperTest {
 
     @Test
     fun canFailImeNotShown() {
-        val reader = getWmTraceReaderFromAsset("wm_trace_ime.pb", legacyTrace = true)
+        val reader = getWmTraceReaderFromAsset("wm_trace_ime", legacyTrace = true)
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val supplier = trace.asSupplier()
         val helper =
@@ -235,7 +235,7 @@ class WindowManagerStateHelperTest {
 
     @Test
     fun canWaitForWindow() {
-        val reader = getWmTraceReaderFromAsset("wm_trace_open_app_cold.pb", legacyTrace = true)
+        val reader = getWmTraceReaderFromAsset("wm_trace_open_app_cold", legacyTrace = true)
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val supplier = trace.asSupplier()
         val helper =
@@ -259,7 +259,7 @@ class WindowManagerStateHelperTest {
 
     @Test
     fun canFailWindowNotShown() {
-        val reader = getWmTraceReaderFromAsset("wm_trace_open_app_cold.pb", legacyTrace = true)
+        val reader = getWmTraceReaderFromAsset("wm_trace_open_app_cold", legacyTrace = true)
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val supplier = trace.asSupplier()
         val helper =
@@ -280,8 +280,7 @@ class WindowManagerStateHelperTest {
 
     @Test
     fun canDetectHomeActivityVisibility() {
-        val reader =
-            getWmTraceReaderFromAsset("wm_trace_open_and_close_chrome.pb", legacyTrace = true)
+        val reader = getWmTraceReaderFromAsset("wm_trace_open_and_close_chrome", legacyTrace = true)
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val supplier = trace.asSupplier()
         val helper =
@@ -306,8 +305,7 @@ class WindowManagerStateHelperTest {
 
     @Test
     fun canWaitActivityRemoved() {
-        val reader =
-            getWmTraceReaderFromAsset("wm_trace_open_and_close_chrome.pb", legacyTrace = true)
+        val reader = getWmTraceReaderFromAsset("wm_trace_open_and_close_chrome", legacyTrace = true)
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val supplier = trace.asSupplier()
         val helper =
@@ -333,8 +331,7 @@ class WindowManagerStateHelperTest {
 
     @Test
     fun canWaitAppStateIdle() {
-        val reader =
-            getWmTraceReaderFromAsset("wm_trace_open_and_close_chrome.pb", legacyTrace = true)
+        val reader = getWmTraceReaderFromAsset("wm_trace_open_and_close_chrome", legacyTrace = true)
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val initialTimestamp = 69443918698679
         val supplier = trace.asSupplier(startingTimestamp = initialTimestamp)
@@ -354,7 +351,7 @@ class WindowManagerStateHelperTest {
 
     @Test
     fun canWaitForRotation() {
-        val reader = getWmTraceReaderFromAsset("wm_trace_rotation.pb", legacyTrace = true)
+        val reader = getWmTraceReaderFromAsset("wm_trace_rotation", legacyTrace = true)
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val supplier = trace.asSupplier()
         val helper =
@@ -379,7 +376,7 @@ class WindowManagerStateHelperTest {
 
     @Test
     fun canDetectResumedActivitiesInStacks() {
-        val reader = getWmDumpReaderFromAsset("wm_trace_resumed_activities_in_stack.pb")
+        val reader = getWmDumpReaderFromAsset("wm_trace_resumed_activities_in_stack")
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val entry = trace.entries.first()
         Truth.assertWithMessage("Trace should have a resumed activity in stacks")
@@ -390,7 +387,7 @@ class WindowManagerStateHelperTest {
     @FlakyTest
     @Test
     fun canWaitForRecents() {
-        val reader = getWmTraceReaderFromAsset("wm_trace_open_recents.pb", legacyTrace = true)
+        val reader = getWmTraceReaderFromAsset("wm_trace_open_recents", legacyTrace = true)
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val supplier = trace.asSupplier()
         val helper =

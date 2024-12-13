@@ -39,6 +39,7 @@ class BTDialerDeclineCall(bluetooth_sms_base_test.BluetoothSMSBaseTest):
     def setup_test(self):
         # Pair the devices
         self.bt_utils.pair_primary_to_secondary()
+        super().enable_recording()
 
 
     def test_reject_incoming_call(self):

@@ -23,6 +23,7 @@ import android.platform.test.rule.SamplerRule;
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.internal.runners.statements.RunAfters;
 import org.junit.internal.runners.statements.RunBefores;
+import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runner.manipulation.Filter;
 import org.junit.runner.manipulation.NoTestsRemainException;
@@ -31,9 +32,11 @@ import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
+import org.junit.runners.model.MemberValueConsumer;
 import org.junit.runners.model.Statement;
 import org.junit.runners.model.TestClass;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,12 +46,25 @@ import java.util.stream.Stream;
 /**
  * Runner for functional tests that's compatible with annotations used in microbenchmark
  * tests. @Before/@After are nested inside @NoMetricBefore/@NoMetricAfter.
+ * @NoMetricBefore/@NoMetricAfter are nested inside @NoMetricRule
  *
  * <p>Microbenchmarks are functional tests executed with the {@link Microbenchmark} test runner.
  * This runner, in addition to the standard @Before/@After, executes methods annotated with {@link
  * Microbenchmark.NoMetricBefore} and {@link Microbenchmark.NoMetricAfter} (custom annotation).
  * Without using this runner, those methods would not be executed (see b/205019000).
  *
+ * The order of the execution:
+ *   - @ClassRule before
+ *      - @NoMetricRule before
+ *      - @Rule before
+ *          - @NoMetricBefore method
+ *          - @Before method
+ *              - Test method body
+ *          - @After method
+ *          - @NoMetricAfter method
+ *      - @Rule after
+ *      - @NoMetricRule after
+ *   - @ClassRule after
  * <p>In addition, this runner saves artifacts early, as soon as the failure happens. If the failure
  * happens in @Before, then the standard error callback would be triggered only after @After was
  * being executed. As a consequence, we might have the device in a state different than the failure
@@ -141,6 +157,30 @@ public class Functional extends BlockJUnit4ClassRunner {
         // Error artifact saver for exceptions thrown in "method-afters", i.e. outside the method
         // and method-befores, but before the finalizing the rules.
         return withTrace("Afters", artifactSaver(statement, Stream.of(method)));
+    }
+
+    @Override
+    protected List<TestRule> getTestRules(Object target) {
+        List<TestRule> rules = super.getTestRules(target);
+        rules.addAll(getNoMetricTestRules(target));
+        return rules;
+    }
+
+    /**
+     * @param target the test case instance
+     * @return a list of NoMetricTestRules that should be applied when executing this
+     *         test
+     */
+    private List<TestRule> getNoMetricTestRules(Object target) {
+        final List<TestRule> result = new ArrayList<>();
+        final MemberValueConsumer<TestRule> collector = (member, value) -> result.add(value);
+
+        getTestClass().collectAnnotatedMethodValues(target, Microbenchmark.NoMetricRule.class, TestRule.class,
+                collector);
+        getTestClass().collectAnnotatedFieldValues(target, Microbenchmark.NoMetricRule.class, TestRule.class,
+                collector);
+
+        return result;
     }
 
     @Override

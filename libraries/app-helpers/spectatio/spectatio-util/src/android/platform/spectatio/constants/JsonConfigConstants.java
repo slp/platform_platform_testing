@@ -27,6 +27,8 @@ public class JsonConfigConstants {
     // UI Element Constants
     public static final String TYPE = "TYPE";
     public static final String VALUE = "VALUE";
+    public static final String COMMAND_LINE_KEY = "COMMAND_LINE_KEY";
+    public static final String DEFAULT_VALUE = "DEFAULT_VALUE";
     public static final String FLAG = "FLAG";
     public static final String PACKAGE = "PACKAGE";
     public static final String ANCESTOR = "ANCESTOR";
@@ -41,6 +43,7 @@ public class JsonConfigConstants {
     public static final String TEXT_CONTAINS = "TEXT_CONTAINS";
     public static final String DESCRIPTION = "DESCRIPTION";
     public static final String CLASS = "CLASS";
+    public static final String DISPLAY_ID = "DISPLAY_ID";
     public static final String HAS_ANCESTOR = "HAS_ANCESTOR";
     public static final String HAS_DESCENDANT = "HAS_DESCENDANT";
     public static final String MULTIPLE = "MULTIPLE";

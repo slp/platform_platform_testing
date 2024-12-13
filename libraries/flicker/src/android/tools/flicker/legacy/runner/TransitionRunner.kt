@@ -74,41 +74,39 @@ class TransitionRunner(
      */
     private fun buildTestRuleChain(flicker: FlickerTestData): RuleChain {
         val errorRule = ArtifactSaverRule()
-        return RuleChain.outerRule(errorRule)
-            .around(StopAllTracesRule())
-            .around(errorRule)
-            .around(UnlockScreenRule())
-            .around(errorRule)
-            .around(NavigationModeRule(scenario.navBarMode.value, false))
-            .around(errorRule)
-            .around(
-                LaunchAppRule(MessagingAppHelper(instrumentation), clearCacheAfterParsing = false)
-            )
-            .around(errorRule)
-            .around(RemoveAllTasksButHomeRule())
-            .around(errorRule)
-            .around(
-                ChangeDisplayOrientationRule(
-                    scenario.startRotation,
-                    resetOrientationAfterTest = false,
-                    clearCacheAfterParsing = false
-                )
-            )
-            .around(errorRule)
-            .around(PressHomeRule())
-            .around(errorRule)
-            .around(
-                TraceMonitorRule(
-                    flicker.traceMonitors,
-                    scenario,
-                    flicker.wmHelper,
-                    resultWriter,
-                    instrumentation
-                )
-            )
-            .around(errorRule)
-            .around(SetupTeardownRule(flicker, resultWriter, scenario, instrumentation))
-            .around(errorRule)
-            .around(TransitionExecutionRule(flicker, resultWriter, scenario, instrumentation))
+
+        val rules = listOf(
+            StopAllTracesRule(),
+            UnlockScreenRule(),
+            NavigationModeRule(scenario.navBarMode.value, false),
+            LaunchAppRule(MessagingAppHelper(instrumentation), clearCacheAfterParsing = false),
+            RemoveAllTasksButHomeRule(),
+            ChangeDisplayOrientationRule(
+                scenario.startRotation,
+                resetOrientationAfterTest = false,
+                clearCacheAfterParsing = false
+            ),
+            PressHomeRule(),
+            TraceMonitorRule(
+                flicker.traceMonitors,
+                scenario,
+                flicker.wmHelper,
+                resultWriter,
+                instrumentation
+            ),
+            *flicker.rules.toTypedArray(),
+            SetupTeardownRule(flicker, resultWriter, scenario, instrumentation),
+            TransitionExecutionRule(flicker, resultWriter, scenario, instrumentation)
+        )
+
+        return rules.foldIndexed(RuleChain.outerRule(errorRule)) { index, chain, rule ->
+            chain.around(rule).let {
+                if (index != rules.lastIndex) {
+                    it.around(errorRule)
+                } else {
+                    it
+                }
+            }
+        }
     }
 }

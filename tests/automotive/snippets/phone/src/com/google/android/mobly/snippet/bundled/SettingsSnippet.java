@@ -20,6 +20,7 @@ import android.platform.helpers.HelperAccessor;
 import android.platform.helpers.IAutoBluetoothSettingsHelper;
 import android.platform.helpers.IAutoDateTimeSettingsHelper;
 import android.platform.helpers.IAutoSettingHelper;
+import android.platform.helpers.IAutoStatusBarHelper;
 import android.platform.helpers.SettingsConstants;
 
 import com.google.android.mobly.snippet.Snippet;
@@ -30,6 +31,7 @@ public class SettingsSnippet implements Snippet {
 
     private HelperAccessor<IAutoSettingHelper> mSettingsHelper;
     private HelperAccessor<IAutoBluetoothSettingsHelper> mBluetoothSettingsHelper;
+    private HelperAccessor<IAutoStatusBarHelper> mStatusBarHelper;
 
     private static String sBluetoothSettings = "OPEN_BLUETOOTH_SETTINGS_WORKFLOW";
     private HelperAccessor<IAutoDateTimeSettingsHelper> mDateTimeSettingsHelper;
@@ -37,6 +39,7 @@ public class SettingsSnippet implements Snippet {
     public SettingsSnippet() {
         mSettingsHelper = new HelperAccessor<>(IAutoSettingHelper.class);
         mBluetoothSettingsHelper = new HelperAccessor<>(IAutoBluetoothSettingsHelper.class);
+        mStatusBarHelper = new HelperAccessor<>(IAutoStatusBarHelper.class);
         mDateTimeSettingsHelper = new HelperAccessor<>(IAutoDateTimeSettingsHelper.class);
     }
 
@@ -81,6 +84,17 @@ public class SettingsSnippet implements Snippet {
     @Rpc(description = "Open the bluetooth settings (from home screen)")
     public void openBluetoothSettings() {
         mSettingsHelper.get().openSetting(sBluetoothSettings);
+    }
+    @Rpc(description = "Open the bluetooth settings (from status bar)")
+    public void openBluetoothSettingsFromStatusBar() {
+        mStatusBarHelper.get().openBluetoothPalette();
+        mStatusBarHelper.get().openBluetoothSettings();
+    }
+
+    /** Go Back to bluetooth settings (from L2 Pages) */
+    @Rpc(description = "Go Back to bluetooth settings (from L2 Pages)")
+    public void goBackToBluetoothSettings() {
+        mBluetoothSettingsHelper.get().goBackToBluetoothSettings();
     }
 
     /** Press the phone preference toggle button */

@@ -52,6 +52,7 @@ class ImportAddressDetailsTest(bluetooth_base_test.BluetoothBaseTest):
 
         # Pair the devices
         self.bt_utils.pair_primary_to_secondary()
+        super().enable_recording()
 
     def test_import_address_details(self):
         # Open the dialer app, and then the contacts page

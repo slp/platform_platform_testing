@@ -20,6 +20,7 @@ import android.app.Instrumentation
 import android.tools.traces.monitors.ITransitionMonitor
 import android.tools.traces.parsers.WindowManagerStateHelper
 import androidx.test.uiautomator.UiDevice
+import org.junit.rules.TestRule
 import java.io.File
 
 interface FlickerTestData {
@@ -37,6 +38,8 @@ interface FlickerTestData {
     val transitions: List<FlickerTestData.() -> Any>
     /** Commands to be executed after the transition */
     val transitionTeardown: List<FlickerTestData.() -> Any>
+    /** JUnit rules to be executed around transition */
+    val rules: List<TestRule>
     /** Helper object for WM Synchronization */
     val wmHelper: WindowManagerStateHelper
 

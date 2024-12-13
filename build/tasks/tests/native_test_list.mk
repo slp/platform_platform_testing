@@ -95,6 +95,7 @@ native_tests := \
     libnfc-nci-jni-tests\
     libnfc-nci-tests\
     libprocinfo_test \
+    librenderengine_test \
     libtextclassifier_tests-tplus \
     libtextclassifier_tests-sminus \
     libsurfaceflinger_unittest \

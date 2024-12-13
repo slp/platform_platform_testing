@@ -24,7 +24,7 @@ python_test_host {
     libs: [
         "mobly",
         "utilities",
-        "bluetooth_test"
+        "bluetooth_test",
     ],
     test_suites: [
         "catbox",
@@ -105,7 +105,7 @@ python_test_host {
     libs: [
         "mobly",
         "utilities",
-        "bluetooth_test"
+        "bluetooth_test",
     ],
     test_suites: [
         "catbox",
@@ -132,7 +132,7 @@ python_test_host {
     libs: [
         "mobly",
         "utilities",
-        "bluetooth_test"
+        "bluetooth_test",
     ],
     test_suites: [
         "catbox",
@@ -159,7 +159,34 @@ python_test_host {
     libs: [
         "mobly",
         "utilities",
-        "bluetooth_test"
+        "bluetooth_test",
+    ],
+    test_suites: [
+        "catbox",
+    ],
+    test_options: {
+        unit_test: false,
+    },
+    device_common_data: [
+        // Package the snippet with the mobly test
+        ":AutomotiveSnippet",
+        ":PhoneSnippet",
+    ],
+    version: {
+        py3: {
+            embedded_launcher: true,
+        },
+    },
+}
+
+python_test_host {
+    name: "BTProfilesTest",
+    main: "connectivity_test_bluetooth_profile.py",
+    srcs: ["connectivity_test_bluetooth_profile.py"],
+    libs: [
+        "mobly",
+        "utilities",
+        "bluetooth_test",
     ],
     test_suites: [
         "catbox",

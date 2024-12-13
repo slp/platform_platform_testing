@@ -17,9 +17,9 @@
 package android.tools.flicker.subject.wm
 
 import android.tools.Cache
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.TestComponents
-import android.tools.utils.getWmTraceReaderFromAsset
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.TestComponents
+import android.tools.testutils.getWmTraceReaderFromAsset
 import com.google.common.truth.Truth
 import org.junit.Before
 import org.junit.ClassRule
@@ -33,7 +33,7 @@ class WindowStateSubjectTest {
 
     @Test
     fun exceptionContainsDebugInfoImaginary() {
-        val reader = getWmTraceReaderFromAsset("wm_trace_openchrome.pb", legacyTrace = true)
+        val reader = getWmTraceReaderFromAsset("wm_trace_openchrome", legacyTrace = true)
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val foundWindow =
             WindowManagerTraceSubject(trace, reader)

@@ -14,17 +14,19 @@ from utilities.main_utils import common_main
 from bluetooth_test import bluetooth_base_test
 
 
-class MakeCallFromHistotyTest(bluetooth_base_test.BluetoothBaseTest):
+class MakeCallFromHistoryTest(bluetooth_base_test.BluetoothBaseTest):
   """Implement calling to ten digits number test."""
   def setup_test(self):
 
     # Pair the devices
     self.bt_utils.pair_primary_to_secondary()
+    super().enable_recording()
+
   def test_dial_large_digits_number(self):
-    """Tests the calling tten digits number functionality."""
+    """Tests the calling ten digits number functionality."""
     #Variable
-    dialer_test_phone_number = constants.DIALER_THREE_DIGIT_NUMBER
-    #Tests the calling three digits number functionality
+    dialer_test_phone_number = constants.DIALER_LARGE_DIGIT_NUMBER
+    #Tests the calling ten digits number functionality
 
     self.call_utils.dial_a_number(dialer_test_phone_number)
     self.call_utils.make_call()

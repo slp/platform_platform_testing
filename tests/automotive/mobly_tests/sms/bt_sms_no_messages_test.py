@@ -51,9 +51,10 @@ class SMSNewUnreadSMSAutoSyncTest(bluetooth_sms_base_test.BluetoothSMSBaseTest):
       self.call_utils.clear_sms_app(self.target)
       # Reboot Phone
       self.target.unload_snippet('mbs')
-      self.call_utils.reboot_device(self.target)
+      self.target.reboot()
       self.call_utils.wait_with_log(30)
       self.target.load_snippet('mbs', android_device.MBS_PACKAGE)
+      super().enable_recording()
 
     def test_no_messages_sms(self):
       # To test 'No messages' appears on HU, when there is no sms

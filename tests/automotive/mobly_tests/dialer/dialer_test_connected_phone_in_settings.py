@@ -41,6 +41,7 @@ class ConnectedPhoneTest(bluetooth_base_test.BluetoothBaseTest):
     def setup_test(self):
         # Pair the devices
         self.bt_utils.pair_primary_to_secondary()
+        super().enable_recording()
 
     def test_connected_phone_displayed(self):
         # Navigate to the Dialer App page

@@ -23,11 +23,11 @@ import android.tools.flicker.subject.FlickerSubject
 import android.tools.flicker.subject.events.EventLogSubject
 import android.tools.flicker.subject.exceptions.SimpleFlickerAssertionError
 import android.tools.io.RunStatus
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.TEST_SCENARIO
+import android.tools.testutils.assertExceptionMessage
+import android.tools.testutils.newTestResultWriter
 import android.tools.traces.monitors.events.EventLogMonitor
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.TEST_SCENARIO
-import android.tools.utils.assertExceptionMessage
-import android.tools.utils.newTestResultWriter
 import com.google.common.truth.Truth
 import org.junit.Before
 import org.junit.ClassRule

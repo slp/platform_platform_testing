@@ -35,6 +35,7 @@ class BTDialerPhoneCard(bluetooth_sms_base_test.BluetoothSMSBaseTest):
     def setup_test(self):
         # Pair the devices
         self.bt_utils.pair_primary_to_secondary()
+        super().enable_recording()
 
 
     def test_launch_dialer_from_phone_card(self):
@@ -42,20 +43,20 @@ class BTDialerPhoneCard(bluetooth_sms_base_test.BluetoothSMSBaseTest):
         # call from the unpaired phone to the paired phone
         callee_number = self.phone_notpaired.mbs.getPhoneNumber()
         self.phone_utils.call_number_from_home_screen(callee_number)
-        self.call_utils.wait_with_log(constants.DEFAULT_WAIT_TIME_FIFTEEN_SECS)
+        self.call_utils.wait_with_log(10)
 
         # accept the call (on the unpaired phone)
         self.phone_notpaired.mbs.clickUIElementWithText(constants.ACCEPT_CALL_TEXT)
-        self.call_utils.wait_with_log(constants.WAIT_FOR_LOAD)
+        self.call_utils.wait_with_log(10)
+        self.call_utils.press_home()
 
         # Confirm that a call is ongoing
         asserts.assert_true(
             self.discoverer.mbs.isOngoingCallDisplayedOnHome(),
-            "Expected no ongoing call to be displayed on home after Declining call, but found one."
+            "Expected ongoing call to be displayed on home, but found none."
         )
 
         # Launch the dialer from the phone card
-        self.call_utils.press_home()
         self.call_utils.press_dialer_button_on_phone_card()
         # Verify that the in-progress call is displayed in full-screen view.
         asserts.assert_true(
@@ -68,7 +69,7 @@ class BTDialerPhoneCard(bluetooth_sms_base_test.BluetoothSMSBaseTest):
 
     def teardown_test(self):
         # End call if test failed
-        self.call_utils.end_call_using_adb_command(self.phone_notpaired)
+        self.call_utils.end_call_using_adb_command(self.target)
         super().teardown_test()
 
 if __name__ == '__main__':

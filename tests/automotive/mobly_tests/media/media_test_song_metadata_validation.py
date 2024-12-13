@@ -20,9 +20,8 @@ from mobly import asserts
 from utilities.media_utils import MediaUtils
 from utilities.common_utils import CommonUtils
 from utilities.main_utils import common_main
-from utilities.video_utils_service import VideoRecording
 
-TIMESTAMP_MATCHER = "^([0-5]?[0-9]):([0-5][0-9])$"
+TIMESTAMP_MATCHER = "^([0-5]?[0-9]):([0-5][0-9]):([0-5]?[0-9])$"
 
 
 class IsMediaMetadataOnHuValid(bluetooth_base_test.BluetoothBaseTest):
@@ -34,16 +33,15 @@ class IsMediaMetadataOnHuValid(bluetooth_base_test.BluetoothBaseTest):
 
     def setup_test(self):
         self.common_utils.grant_local_mac_address_permission()
-        logging.info("\tInitializing video services on Target")
-        self.video_utils_service_target = VideoRecording(self.target,self.__class__.__name__)
-        logging.info("Enabling video recording for Target device")
-        self.video_utils_service_target.enable_screen_recording()
         self.common_utils.enable_wifi_on_phone_device()
         self.bt_utils.pair_primary_to_secondary()
+        super().enable_recording()
+        self.media_utils.enable_bt_media_debugging_logs()
 
     def test_is_media_metadata_valid_on_hu(self):
         """Tests is media metadata on HU valid"""
         self.media_utils.open_media_app_on_hu()
+        self.call_utils.handle_bluetooth_audio_pop_up()
         self.media_utils.open_youtube_music_app()
         current_phone_song_title = self.media_utils.get_song_title_from_phone()
         self.media_utils.pause_media_on_hu()
@@ -89,15 +87,11 @@ class IsMediaMetadataOnHuValid(bluetooth_base_test.BluetoothBaseTest):
                                       '<' + actual_current_song_max_playing_time + '>')
 
     def teardown_test(self):
+        # Minimize now_playing
+        self.media_utils.minimize_now_playing()
         #  Close YouTube Music app
         self.media_utils.close_youtube_music_app()
         self.call_utils.press_home()
-        logging.info("Stopping the screen recording on Target")
-        self.video_utils_service_target.stop_screen_recording()
-        logging.info("Pull the screen recording from Target")
-        self.video_utils_service_target.pull_recording_file(self.log_path)
-        logging.info("delete the screen recording from the Target")
-        self.video_utils_service_target.delete_screen_recording_from_device()
         super().teardown_test()
 
 

@@ -20,6 +20,7 @@ import android.tools.traces.DeviceStateDump
 import android.tools.traces.NullableDeviceStateDump
 import android.tools.traces.parsers.perfetto.LayersTraceParser
 import android.tools.traces.parsers.perfetto.TraceProcessorSession
+import android.tools.traces.parsers.perfetto.WindowManagerTraceParser
 import android.tools.traces.parsers.wm.WindowManagerDumpParser
 import android.tools.traces.surfaceflinger.LayerTraceEntry
 import android.tools.traces.surfaceflinger.LayersTrace
@@ -56,18 +57,30 @@ class DeviceDumpParser {
             clearCacheAfterParsing: Boolean
         ): NullableDeviceStateDump {
             return withTracing("fromNullableDump") {
-                    NullableDeviceStateDump(
-                        wmState =
-                            if (wmTraceData.isNotEmpty()) {
-                                WindowManagerDumpParser()
-                                    .parse(wmTraceData, clearCache = clearCacheAfterParsing)
-                                    .entries
-                                    .first()
-                            } else {
-                                null
-                            },
-                        layerState =
-                            if (layersTraceData.isNotEmpty()) {
+                    val wmState =
+                        wmTraceData
+                            .takeIf { it.isNotEmpty() }
+                            ?.let {
+                                if (android.tracing.Flags.perfettoWmDump()) {
+                                    TraceProcessorSession.loadPerfettoTrace(wmTraceData) { session
+                                        ->
+                                        WindowManagerTraceParser()
+                                            .parse(session, clearCache = clearCacheAfterParsing)
+                                            .entries
+                                            .first()
+                                    }
+                                } else {
+                                    WindowManagerDumpParser()
+                                        .parse(wmTraceData, clearCache = clearCacheAfterParsing)
+                                        .entries
+                                        .first()
+                                }
+                            }
+
+                    val layerState =
+                        layersTraceData
+                            .takeIf { it.isNotEmpty() }
+                            ?.let {
                                 TraceProcessorSession.loadPerfettoTrace(layersTraceData) { session
                                     ->
                                     LayersTraceParser()
@@ -75,10 +88,9 @@ class DeviceDumpParser {
                                         .entries
                                         .first()
                                 }
-                            } else {
-                                null
                             }
-                    )
+
+                    NullableDeviceStateDump(wmState = wmState, layerState = layerState)
                 }
                 .also {
                     lastWmTraceData = wmTraceData

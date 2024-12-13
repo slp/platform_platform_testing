@@ -29,8 +29,9 @@ import platform.test.motion.golden.TimestampFrameId
 /** Produces an MP4 based on the [screenshots]. */
 class VideoRenderer(private val screenshots: List<MotionScreenshot>) {
 
-    private var screenshotWidth = screenshots.maxOf { it.bitmap.width }
-    private var screenshotHeight = screenshots.maxOf { it.bitmap.height }
+    private var screenshotWidth = screenshots.maxOf { it.bitmap.width }.roundUpToNextMultipleOf16()
+    private var screenshotHeight =
+        screenshots.maxOf { it.bitmap.height }.roundUpToNextMultipleOf16()
 
     /**
      * Creates an MP4 file at [path], which will contain all screenshots.
@@ -155,5 +156,7 @@ class VideoRenderer(private val screenshots: List<MotionScreenshot>) {
         const val FRAME_DURATION = 16L
         const val FRAME_RATE = 1000f / FRAME_DURATION
         const val DEQUEUE_TIMEOUT_US = 10_000L
+
+        private fun Int.roundUpToNextMultipleOf16(): Int = (this + 15) and 0xF.inv()
     }
 }

@@ -18,13 +18,15 @@ package android.tools.monitors.wm
 
 import android.tools.io.TraceType
 import android.tools.monitors.TraceMonitorTest
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.newTestResultWriter
 import android.tools.traces.TRACE_CONFIG_REQUIRE_CHANGES
 import android.tools.traces.io.ResultReader
 import android.tools.traces.monitors.wm.WindowManagerTraceMonitor
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.newTestResultWriter
 import com.android.server.wm.nano.WindowManagerTraceFileProto
 import com.google.common.truth.Truth
+import org.junit.Assume
+import org.junit.Before
 import org.junit.ClassRule
 import org.junit.FixMethodOrder
 import org.junit.Test
@@ -34,6 +36,7 @@ import org.junit.runners.MethodSorters
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class WindowManagerTraceMonitorTest : TraceMonitorTest<WindowManagerTraceMonitor>() {
     override val traceType = TraceType.WM
+
     override fun getMonitor() = WindowManagerTraceMonitor()
 
     override fun assertTrace(traceData: ByteArray) {
@@ -46,8 +49,15 @@ class WindowManagerTraceMonitorTest : TraceMonitorTest<WindowManagerTraceMonitor
             )
     }
 
+    @Before
+    override fun before() {
+        Assume.assumeFalse(android.tracing.Flags.perfettoWmTracing())
+    }
+
     @Test
     fun includesProtologTrace() {
+        Assume.assumeFalse(android.tracing.Flags.perfettoProtologTracing())
+
         val monitor = getMonitor()
         monitor.start()
         val writer = newTestResultWriter()

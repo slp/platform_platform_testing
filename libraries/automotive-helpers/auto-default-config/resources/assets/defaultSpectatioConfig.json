@@ -27,6 +27,8 @@
     "SECURITY_SETTINGS_SCROLL_DIRECTION": "VERTICAL",
     "NOTIFICATION_LIST_SCROLL_ACTION": "USE_GESTURE",
     "NOTIFICATION_LIST_SCROLL_DIRECTION": "VERTICAL",
+    "SETTINGS_SCROLL_ACTION": "USE_GESTURE",
+    "SETTINGS_SCROLL_DIRECTION": "VERTICAL",
     "SYSTEM_SETTINGS_SCROLL_ACTION": "USE_GESTURE",
     "SYSTEM_SETTINGS_SCROLL_DIRECTION": "VERTICAL",
     "SYSTEM_SETTINGS_SCROLL_MARGIN": "6",
@@ -62,7 +64,7 @@
   "COMMANDS": {
     "OPEN_DIAL_PAD_COMMAND": "am start -a android.intent.action.DIAL",
     "OPEN_PHONE_ACTIVITY_COMMAND": "am start -n com.android.car.dialer/.ui.TelecomActivity",
-    "OPEN_SMS_ACTIVITY_COMMAND": "am start -n com.android.car.messenger/.core.ui.launcher.MessageLauncherActivity",
+    "OPEN_SMS_ACTIVITY_COMMAND": "am start -n com.android.car.messenger/com.android.car.messenger.ui.launcher.MessageLauncherActivity",
     "OPEN_APP_GRID_COMMAND": "am start -n com.android.car.carlauncher/.GASAppGridActivity",
     "OPEN_NOTIFICATIONS_COMMAND": "service call statusbar 1",
     "STOP_SETTING_APP_COMMAND": "am force-stop com.android.car.settings",
@@ -100,6 +102,10 @@
     "MOBILE_DIALPAD_ICON": {
       "TYPE": "RESOURCE_ID",
       "VALUE": "dialpad_fab"
+    },
+    "MOBILE_DIALPAD": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "dialpad"
     },
     "MOBILE_DIALPAD_INPUT": {
       "TYPE": "CLASS",
@@ -265,7 +271,6 @@
             }
           }
         }
-
       ]
     },
     "CONTACT_DETAIL": {
@@ -277,7 +282,6 @@
       "TYPE": "DESCRIPTION",
       "VALUE": "com.android.car.ui.utils.ROTARY_CONTAINER"
     },
-
     "CALL_HISTORY_INFO": {
       "TYPE": "RESOURCE_ID",
       "VALUE": "call_action_id",
@@ -1004,6 +1008,27 @@
       "VALUE": "summary",
       "PACKAGE": "android"
     },
+    "USE_BLUETOOTH_SETTINGS_TOGGLE": {
+      "TYPE": "MULTIPLE",
+      "SPECIFIERS": [
+        {
+          "TYPE": "CLASS",
+          "VALUE": "android.widget.Switch"
+        },
+        {
+          "TYPE": "HAS_ANCESTOR",
+          "MAX_DEPTH": 3,
+          "ANCESTOR": {
+            "TYPE": "HAS_DESCENDANT",
+            "MAX_DEPTH": 2,
+            "DESCENDANT": {
+              "TYPE": "TEXT",
+              "VALUE": "Use Bluetooth"
+            }
+          }
+        }
+      ]
+    },
     "DISPLAY_SETTINGS_SCROLL_ELEMENT": {
       "TYPE": "RESOURCE_ID",
       "VALUE": "car_ui_internal_recycler_view",
@@ -1130,7 +1155,7 @@
     },
     "DATE_TIME_SETTINGS_SET_TIME": {
       "TYPE": "TEXT",
-      "VALUE": "Set time"
+      "VALUE": "Set clock"
     },
     "DATE_TIME_SETTINGS_USE_24_HOUR_FORMAT": {
       "TYPE": "TEXT",
@@ -1289,7 +1314,6 @@
         }
       ]
     },
-
     "USER_SETTINGS_MAKE_TIME_PATTERN": {
       "TYPE": "TEXT",
       "VALUE": "(1[012]|[1-9]):[0-5][0-9](\\s)?.*"
@@ -1410,7 +1434,7 @@
     },
     "ARTIST_TITLE": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "artist",
+      "VALUE": "subtitle",
       "PACKAGE": "com.android.car.media"
     },
     "ALBUM_TITLE": {
@@ -1571,8 +1595,7 @@
     },
     "DEVICE_CONNECTION_BACK_BUTTON": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "car_ui_toolbar_nav_icon_container",
-      "PACKAGE": "com.android.car.settings"
+      "VALUE": "car_ui_toolbar_nav_icon"
     },
     "DEVICE_FORGET_BUTTON": {
       "TYPE": "MULTIPLE",
@@ -1604,7 +1627,8 @@
         {
           "TYPE": "DESCRIPTION",
           "VALUE": "com.android.car.ui.utils.ROTARY_CONTAINER"
-        },{
+        },
+        {
           "TYPE": "CLASS",
           "VALUE": "androidx.recyclerview.widget.RecyclerView"
         }
@@ -1621,6 +1645,21 @@
     "SETTINGS_TITLE_TEXT": {
       "TYPE": "TEXT",
       "VALUE": "Settings"
+    },
+    "SETTINGS_SCROLL_FORWARD_BUTTON": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "car_ui_scrollbar_page_down",
+      "PACKAGE": "com.android.car.ui.sharedlibrary"
+    },
+    "SETTINGS_SCROLL_BACKWARD_BUTTON": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "car_ui_scrollbar_page_up",
+      "PACKAGE": "com.android.car.ui.sharedlibrary"
+    },
+    "SETTINGS_SCROLL_ELEMENT": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "top_level_recycler_view",
+      "PACKAGE": "com.android.car.settings"
     },
     "SETTINGS_SUB_SETTING_SCROLL_BACKWARD_BUTTON": {
       "TYPE": "DESCRIPTION",
@@ -1722,7 +1761,7 @@
     },
     "TOGGLE_MICROPHONE": {
       "TYPE": "TEXT",
-      "VALUE": "Use microphone"
+      "VALUE": "Infotainment apps"
     },
     "MICRO_PHONE_MUTED_CHIP_STATUS_BAR": {
       "TYPE": "RESOURCE_ID",
@@ -1850,7 +1889,7 @@
     },
     "TOGGLE_LOCATION": {
       "TYPE": "TEXT",
-      "VALUE": "Use location"
+      "VALUE": "Infotainment apps"
     },
     "LOCATION_SWITCH": {
       "TYPE": "CLASS",
@@ -1981,7 +2020,7 @@
       "VALUE": "radio_button",
       "PACKAGE": "com.android.permissioncontroller"
     },
-    "PRIVACY_PERMISSION_MANAGER":{
+    "PRIVACY_PERMISSION_MANAGER": {
       "TYPE": "TEXT",
       "VALUE": "Permission manager"
     },
@@ -1989,13 +2028,16 @@
       "TYPE": "MULTIPLE",
       "SPECIFIERS": [
         {
+          "TYPE": "HAS_ANCESTOR",
+          "ANCESTOR": {
+            "TYPE": "CLASS",
+            "VALUE": "android.view.ViewGroup"
+          }
+          },
+        {
           "TYPE": "RESOURCE_ID",
           "VALUE": "qc_summary",
           "PACKAGE": "com.android.systemui"
-        },
-        {
-          "TYPE": "CLASS",
-          "VALUE": "android.widget.TextView"
         }
       ]
     },
@@ -2136,6 +2178,70 @@
       "TYPE": "RESOURCE_ID",
       "VALUE": "clock",
       "PACKAGE": "com.android.systemui"
+    },
+    "STATUS_BAR_SOUND_BUTTON": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "volume_panel"
+    },
+    "SOUND_PALETTE_INCALL": {
+      "TYPE": "TEXT",
+      "VALUE": "In-call volume"
+    },
+    "SOUND_PALETTE_MEDIA": {
+      "TYPE": "TEXT",
+      "VALUE": "Media volume"
+    },
+    "SOUND_PALETTE_NAVIGATION": {
+      "TYPE": "TEXT",
+      "VALUE": "Navigation volume"
+    },
+    "SOUND_PALETTE_SOUND_SETTINGS": {
+      "TYPE": "TEXT",
+      "VALUE": "Sound settings"
+    },
+    "SOUND_PALETTE_SOUND_SETTINGS_PAGE_TITLE": {
+      "TYPE": "TEXT",
+      "VALUE": "Sound"
+},
+    "LANGUAGES_INPUT_IN_SYSTEM": {
+      "TYPE": "TEXT",
+      "VALUE": "Languages & input"
+    },
+    "SYSTEM_SETTINGS_UNITS": {
+      "TYPE": "TEXT",
+      "VALUE": "Units"
+    },
+    "LANGUAGE_SYSTEM_SETTINGS_AUTOFILL_SERVICE": {
+      "TYPE": "TEXT",
+      "VALUE": "Autofill service"
+    },
+    "LANGUAGE_SYSTEM_SETTINGS_KEYBOARD": {
+      "TYPE": "TEXT",
+      "VALUE": "Keyboard"
+    },
+    "LANGUAGE_SYSTEM_SETTINGS_TEXT_TO_SPEECH_OUTPUT": {
+      "TYPE": "TEXT",
+      "VALUE": "Text-to-speech output"
+    },
+    "UNIT_SYSTEM_SETTINGS_SPEED": {
+      "TYPE": "TEXT",
+      "VALUE": "Speed"
+    },
+    "UNIT_SYSTEM_SETTINGS_DISTANCE": {
+      "TYPE": "TEXT",
+      "VALUE": "Distance"
+    },
+    "UNIT_SYSTEM_SETTINGS_TEMPERATURE": {
+      "TYPE": "TEXT",
+      "VALUE": "Temperature"
+    },
+    "UNIT_SYSTEM_SETTINGS_PRESSURE": {
+      "TYPE": "TEXT",
+      "VALUE": "Pressure"
+    },
+    "USER_SETTINGS_USER_AVATAR": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "user_avatar"
     }
   },
   "WORKFLOWS": {
@@ -2667,5 +2773,3 @@
     ]
   }
 }
-
-

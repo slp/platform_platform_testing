@@ -22,6 +22,9 @@ import android.tools.flicker.config.ScenarioId
 import android.tools.helpers.SYSTEMUI_PACKAGE
 import android.tools.traces.component.ComponentNameMatcher
 import android.tools.traces.component.FullComponentIdMatcher
+import android.tools.traces.component.IComponentMatcher
+import android.tools.traces.wm.Transition
+import android.tools.traces.wm.TransitionType
 
 object Components {
     val DESKTOP_MODE_CAPTION =
@@ -33,21 +36,60 @@ object Components {
                 scenarioInstance.associatedTransition
                     ?: error("Can only extract DESKTOP_MODE_APP from scenario with transition")
 
-            if (isSupported(scenarioInstance.type)) {
-                val change = associatedTransition.changes.last()
-                FullComponentIdMatcher(change.windowId, change.layerId)
-            } else {
-                error("Unsupported transition type")
-            }
+            getDesktopAppForScenario(scenarioInstance.type, associatedTransition)
         }
 
-    private fun isSupported(type: ScenarioId): Boolean {
+    val NON_RESIZABLE_APP =
+        ComponentTemplate("NON_RESIZABLE_APP") {
+            ComponentNameMatcher(
+                "com.android.server.wm.flicker.testapp",
+                "com.android.server.wm.flicker.testapp.NonResizeableActivity"
+            )
+        }
+
+    val DESKTOP_WALLPAPER =
+        ComponentTemplate("DesktopWallpaper") {
+            ComponentNameMatcher(
+                SYSTEMUI_PACKAGE,
+                "com.android.wm.shell.desktopmode.DesktopWallpaperActivity"
+            )
+        }
+
+    private fun getDesktopAppForScenario(
+        type: ScenarioId,
+        associatedTransition: Transition
+    ): IComponentMatcher {
         return when (type) {
-            ScenarioId("END_DRAG_TO_DESKTOP") -> true
-            ScenarioId("CLOSE_APP") -> true
-            ScenarioId("CLOSE_LAST_APP") -> true
-            ScenarioId("CORNER_RESIZE") -> true
-            else -> false
+            ScenarioId("END_DRAG_TO_DESKTOP") -> {
+                val change =
+                    associatedTransition.changes.first { it.transitMode == TransitionType.CHANGE }
+                FullComponentIdMatcher(change.windowId, change.layerId)
+            }
+            ScenarioId("CLOSE_APP"),
+            ScenarioId("CLOSE_LAST_APP") -> {
+                val change =
+                    associatedTransition.changes.first { it.transitMode == TransitionType.CLOSE }
+                FullComponentIdMatcher(change.windowId, change.layerId)
+            }
+            ScenarioId("CASCADE_APP") -> {
+                val change =
+                    associatedTransition.changes.first { it.transitMode == TransitionType.OPEN }
+                FullComponentIdMatcher(change.windowId, change.layerId)
+            }
+            ScenarioId("CORNER_RESIZE"),
+            ScenarioId("CORNER_RESIZE_TO_MINIMUM_SIZE"),
+            ScenarioId("CORNER_RESIZE_TO_MAXIMUM_SIZE"),
+            ScenarioId("EDGE_RESIZE"),
+            ScenarioId("SNAP_RESIZE_LEFT_WITH_DRAG"),
+            ScenarioId("SNAP_RESIZE_RIGHT_WITH_DRAG"),
+            ScenarioId("SNAP_RESIZE_LEFT_WITH_BUTTON"),
+            ScenarioId("SNAP_RESIZE_RIGHT_WITH_BUTTON"),
+            ScenarioId("MAXIMIZE_APP"),
+            ScenarioId("MAXIMIZE_APP_NON_RESIZABLE") -> {
+                val change = associatedTransition.changes.first()
+                FullComponentIdMatcher(change.windowId, change.layerId)
+            }
+            else -> error("Unsupported transition type")
         }
     }
 }

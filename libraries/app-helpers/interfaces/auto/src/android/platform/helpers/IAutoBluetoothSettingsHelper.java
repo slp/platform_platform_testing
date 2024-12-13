@@ -47,6 +47,13 @@ public interface IAutoBluetoothSettingsHelper extends IAppHelper, Scrollable {
     boolean isPhonePreferenceChecked();
 
     /**
+     * Setup Expectations: The bluetooth settings view is open
+     *
+     * @return - Whether the use bluetooth toggle is currently checked
+     */
+    boolean isUseBluetoothToggleChecked();
+
+    /**
      * Setup Expectations: The bluetooth settings view is open, and at least one device is listed
      * under "Paired devices"
      *

@@ -246,4 +246,41 @@ public interface IAutoStatusBarHelper extends IAppHelper {
      * <p>This method performs click operation on media button
      */
     void clickOnBluetoothPaletteMediaButton();
+
+    /**
+     * Setup expectations: Open Sound Palette On Status bar
+     *
+     * <p>This method performs click operation and opens Sound Palette On statusBar
+     */
+    void openSoundPaletteOnStatusBar();
+
+    /**
+     * Setup expectations: Has Sound Button
+     *
+     * <p>This method checks whether Sound button is on Status Bar
+     */
+    boolean hasSoundButton();
+
+    /**
+     * Setup expectations: Open Sound Palette
+     *
+     * <p>This method verifies UI buttons present in Sound Palette
+     *
+     * @param targetSelector UI button name selector EX: IN-Call Voulme
+     */
+    boolean isUIButtonPresentOnSoundPalette(String targetSelector);
+
+    /**
+     * Setup expectations: Open Sound Palette
+     *
+     * <p>This method clicks and open Sound Settings Page
+     */
+    void openSoundSettings();
+
+    /**
+     * Setup expectations: Open Sound Palette
+     *
+     * <p>Checks if sound settings page title is present
+     */
+    boolean hasSoundSettingsPageTitle();
 }

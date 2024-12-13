@@ -18,11 +18,10 @@ package android.tools.flicker.junit
 
 import android.annotation.SuppressLint
 import android.tools.ScenarioBuilder
-import android.tools.flicker.datastore.DataStore
 import android.tools.flicker.legacy.FlickerBuilder
 import android.tools.flicker.legacy.LegacyFlickerTest
-import android.tools.utils.CleanFlickerEnvironmentRule
-import android.tools.utils.KotlinMockito
+import android.tools.testutils.CleanFlickerEnvironmentRule
+import android.tools.testutils.KotlinMockito
 import com.google.common.truth.Truth
 import kotlin.reflect.KClass
 import org.junit.Before
