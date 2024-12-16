@@ -50,6 +50,6 @@ fileTree(rootDir) {
     }
     .forEach {
         val path = rootDir.toPath().relativize(it.toPath().getParent())
-        val gradlePath = path.toString().replace('/', ':')
+        val gradlePath = ":${path.joinToString(":")}"
         include(gradlePath)
     }
