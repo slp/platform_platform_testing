@@ -13,6 +13,7 @@
 # limitations under the License.
 
 instrumentation_metric_tests := \
+    AconfigPerfTests \
     ActivityManagerPerfTests \
     ActivityManagerPerfTestsTestApp \
     ActivityManagerPerfTestsStubApp1 \
