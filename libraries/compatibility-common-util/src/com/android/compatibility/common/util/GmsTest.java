@@ -25,5 +25,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface GmsTest {
-    String requirement();
+    /**
+     * @deprecated Use {@link #requirements()} instead.
+     */
+    @Deprecated
+    String requirement() default "";
+
+    String[] requirements() default {""};
 }
