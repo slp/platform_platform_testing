@@ -16,19 +16,15 @@ platform_tests += \
     BandwidthTests \
     BootHelperApp \
     BusinessCard \
-    CalculatorFunctionalTests \
     CalendarTests \
     camera_client_test \
     camera_metadata_tests \
     CellBroadcastReceiverTests \
-    ConnectivityManagerTest \
-    ContactsTests \
     CtsCameraTestCases \
     Development \
     DeviceHealthChecks \
     DynamicCodeLoggerIntegrationTests \
     DialerJankTests \
-    DownloadManagerTestApp \
     StubIME \
     flatland \
     FrameworkPerf \
@@ -37,7 +33,6 @@ platform_tests += \
     FrameworksMockingCoreTests \
     FrameworksPrivacyLibraryTests \
     FrameworksUtilTests \
-    InternalLocTestApp \
     JankMicroBenchmarkTests \
     LauncherIconsApp \
     long_trace_binder_config.textproto \
@@ -54,9 +49,6 @@ platform_tests += \
     PowerPerfTest \
     SdkSandboxPerfScenarioTests \
     SettingsUITests \
-    SimpleServiceTestApp1 \
-    SimpleServiceTestApp2 \
-    SimpleServiceTestApp3 \
     SimpleTestApp \
     sl4a \
     SmokeTest \
