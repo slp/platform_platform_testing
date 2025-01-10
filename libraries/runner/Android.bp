@@ -30,7 +30,7 @@ android_library {
         "src/main/java/**/*.java",
     ],
     libs: [
-      "Robolectric_all-target_upstream",
+      "Robolectric_all-target",
     ],
     static_libs: [ ],
 }
