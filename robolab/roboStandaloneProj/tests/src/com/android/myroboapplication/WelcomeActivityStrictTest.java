@@ -34,6 +34,9 @@ public class WelcomeActivityStrictTest {
 
     @Test
     public void checkMath() throws Exception {
+        System.out.println("\n\nSystem Properties:");
+        System.getProperties().forEach((key, value) -> System.out.println(key + ": " + value));
+        assertEquals(System.getProperty("robolectric.strict.mode"), "true");
         assertEquals(1 + 1, 2);
     }
 }
