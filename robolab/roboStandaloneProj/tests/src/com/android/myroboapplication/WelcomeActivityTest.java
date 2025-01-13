@@ -17,6 +17,7 @@
 package com.android.myroboapplication;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import android.content.Intent;
 
@@ -36,11 +37,14 @@ public class WelcomeActivityTest {
 
     @Test
     public void clickingLogin_shouldStartLoginActivity() throws Exception {
-        ActivityController<WelcomeActivity> controller =
+        System.out.println("\n\nSystem Properties:");
+        System.getProperties().forEach((key, value) -> System.out.println(key + ": " + value));
+        assertNotEquals(System.getProperty("robolectric.strict.mode"), "true");
+
+       ActivityController<WelcomeActivity> controller =
                 Robolectric.buildActivity(WelcomeActivity.class);
         controller.setup(); // Moves Activity to RESUMED state
         WelcomeActivity activity = controller.get();
-
         activity.findViewById(R.id.login).performClick();
         Intent expectedIntent = new Intent(activity, LoginActivity.class);
         Intent actual = ShadowApplication.getInstance().getNextStartedActivity();
