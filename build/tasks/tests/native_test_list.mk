@@ -221,7 +221,7 @@ native_tests := \
     tokio-test_test_tests_macros \
     unicode-xid_test_src_lib \
     update_engine_unittests \
-    url_test_tests_data \
+    url_test_src_lib \
     url_test_tests_unit \
     vintf_object_test \
     wificond_unit_test \
