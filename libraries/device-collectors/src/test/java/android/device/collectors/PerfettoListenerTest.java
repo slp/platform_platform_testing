@@ -155,7 +155,7 @@ public class PerfettoListenerTest {
                 .stopCollecting(
                         anyLong(),
                         eq(
-                                "/sdcard/test_results/run_test1/"
+                                "/data/local/tmp/perfetto-traces/run_test1/"
                                         + "PerfettoTracingPerTestStrategy/"
                                         + "perfetto_run_test1-1.perfetto-trace"));
     }
@@ -567,7 +567,7 @@ public class PerfettoListenerTest {
                 .stopCollecting(
                         anyLong(),
                         eq(
-                                "/sdcard/test_results/run#123_test1#456/"
+                                "/data/local/tmp/perfetto-traces/run#123_test1#456/"
                                         + "PerfettoTracingPerTestStrategy/"
                                         + "perfetto_run#123_test1#456-1.perfetto-trace"));
     }
