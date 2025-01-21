@@ -18,13 +18,11 @@ package com.android.helpers;
 
 import android.app.UiAutomation;
 import android.os.ParcelFileDescriptor;
-import android.os.ParcelFileDescriptor.AutoCloseInputStream;
-import android.os.ParcelFileDescriptor.AutoCloseOutputStream;
 import android.os.SystemClock;
 import android.util.Log;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
 import java.io.File;
@@ -34,7 +32,6 @@ import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -466,11 +463,6 @@ public class PerfettoHelper {
         return false;
     }
 
-    private int getCurrentUserId() throws IOException {
-        String userId = mUIDevice.executeShellCommand("am get-current-user");
-        return Integer.parseInt(userId.trim());
-    }
-
     /**
      * Copy the temporary perfetto trace output file from /data/misc/perfetto-traces/ to given
      * destinationFile.
@@ -493,80 +485,22 @@ public class PerfettoHelper {
         }
 
         // Copy the collected trace from /data/misc/perfetto-traces/trace_output.perfetto-trace to
-        // destinationFile.
+        // destinationFile
         try {
-            int userId = getCurrentUserId();
-
-            // For user 0, move the file directly since the content provider is not installed (see
-            // aosp/3284729).
-            if (userId == 0) {
-                String moveResult =
-                        mUIDevice.executeShellCommand(
-                                String.format(MOVE_CMD, PERFETTO_TMP_OUTPUT_FILE, destinationFile));
-                if (!moveResult.isEmpty()) {
-                    Log.e(
-                            LOG_TAG,
-                            String.format(
-                                    "Unable to move perfetto output file from %s to %s due to %s",
-                                    PERFETTO_TMP_OUTPUT_FILE, destinationFile, moveResult));
-                    return false;
-                }
-                return true;
+            String moveResult = mUIDevice.executeShellCommand(String.format(
+                    MOVE_CMD, PERFETTO_TMP_OUTPUT_FILE, destinationFile));
+            if (!moveResult.isEmpty()) {
+                Log.e(LOG_TAG, String.format(
+                        "Unable to move perfetto output file from %s to %s due to %s",
+                        PERFETTO_TMP_OUTPUT_FILE, destinationFile, moveResult));
+                return false;
             }
-
-            // For users other than 0, use the tradefed content provider.
-            UiAutomation uiAutomation =
-                    InstrumentationRegistry.getInstrumentation().getUiAutomation();
-
-            // cat the trace file. This is necessary because the test app doesn't have access to
-            // /data/misc/perfetto-traces.
-            String cmd = String.format("cat %s", PERFETTO_TMP_OUTPUT_FILE);
-            ParcelFileDescriptor fdCatStdout = uiAutomation.executeShellCommand(cmd);
-
-            // Use 'content write' to write the trace to the destination file.
-            String uri =
-                    String.format("content://android.tradefed.contentprovider/%s", destinationFile);
-            cmd = String.format(Locale.US, "content write --user %d --uri %s", userId, uri);
-            Log.i(LOG_TAG, String.format("Executing: %s", cmd));
-            ParcelFileDescriptor[] fds = uiAutomation.executeShellCommandRwe(cmd);
-            ParcelFileDescriptor fdStdout = fds[0];
-            ParcelFileDescriptor fdStdin = fds[1];
-            ParcelFileDescriptor fdStderr = fds[2];
-
-            // Transfer stdout of 'cat' to stdin of 'content write'.
-            try (AutoCloseOutputStream contentOutputStream = new AutoCloseOutputStream(fdStdin);
-                    AutoCloseInputStream catInputStream = new AutoCloseInputStream(fdCatStdout)) {
-                catInputStream.transferTo(contentOutputStream);
-            }
-
-            // Check stdout and stderr of 'content write'.
-            try (AutoCloseInputStream stdoutInputStream = new AutoCloseInputStream(fdStdout);
-                    AutoCloseInputStream stderrInputStream = new AutoCloseInputStream(fdStderr)) {
-                String stdout = new String(stdoutInputStream.readAllBytes());
-                String stderr = new String(stderrInputStream.readAllBytes());
-                if (!stdout.isEmpty() || !stderr.isEmpty()) {
-                    Log.e(
-                            LOG_TAG,
-                            String.format(
-                                    "'content write' failed:\nstdout: %s\nstderr: %s",
-                                    stdout, stderr));
-                    return false;
-                }
-            }
-
-            // Delete the trace file from the temporary location.
-            mUIDevice.executeShellCommand(String.format(REMOVE_CMD, PERFETTO_TMP_OUTPUT_FILE));
-
         } catch (IOException ioe) {
-            Log.e(
-                    LOG_TAG,
-                    String.format(
-                            "Unable to move the perfetto trace file from %s to %s",
-                            PERFETTO_TMP_OUTPUT_FILE, destinationFile),
-                    ioe);
+            Log.e(LOG_TAG,
+                    "Unable to move the perfetto trace file to destination file."
+                            + ioe.getMessage());
             return false;
         }
-
         return true;
     }
 
