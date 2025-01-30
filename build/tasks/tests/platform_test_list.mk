@@ -5,6 +5,7 @@ platform_tests += \
     ActivityManagerPerfTestsStubApp3 \
     ActivityManagerPerfTestsTestApp \
     AdServicesScenarioTests \
+    AndroidAutomotiveDialScenarioTests \
     AndroidTVJankTests \
     AndroidXComposeStartupApp \
     ApiDemos \
@@ -14,30 +15,41 @@ platform_tests += \
     BackgroundDexOptServiceIntegrationTests \
     BandwidthEnforcementTest \
     BandwidthTests \
+    benchmarks \
     BootHelperApp \
     BusinessCard \
     CalendarTests \
     camera_client_test \
     camera_metadata_tests \
     CellBroadcastReceiverTests \
+    ConnectivityUIDTest \
     CtsCameraTestCases \
     Development \
     DeviceHealthChecks \
-    DynamicCodeLoggerIntegrationTests \
     DialerJankTests \
-    StubIME \
+    DynamicCodeLoggerIntegrationTests \
+    FacebookAppsScenarioTests \
     flatland \
+    FlickerTestApp \
     FrameworkPerf \
     FrameworkPermissionTests \
+    FrameworksCoreSystemPropertiesTests \
     FrameworksCoreTests \
     FrameworksMockingCoreTests \
     FrameworksPrivacyLibraryTests \
+    FrameworksSaxTests \
+    FrameworksServicesTests \
     FrameworksUtilTests \
+    FrameworkTestRunnerTests \
+    hwuimacro \
+    ImageProcessing \
     JankMicroBenchmarkTests \
     LauncherIconsApp \
     long_trace_binder_config.textproto \
     long_trace_config.textproto \
+    mediaframeworktest \
     MemoryUsage \
+    mmapPerf \
     OverviewFunctionalTests \
     perfetto_trace_processor_shell \
     PerformanceAppTest \
@@ -46,13 +58,20 @@ platform_tests += \
     PermissionTestAppMV1 \
     PermissionUtils \
     PlatformCommonScenarioTests \
+    PlatformComposeSceneTransitionLayoutDemo \
+    PMC \
     PowerPerfTest \
+    SdkSandboxClient \
+    SdkSandboxCodeProvider \
+    SdkSandboxMediateeProvider \
     SdkSandboxPerfScenarioTests \
+    SdkSandboxWebViewProvider \
     SettingsUITests \
     SimpleTestApp \
     sl4a \
     SmokeTest \
     SmokeTestApp \
+    StubIME \
     trace_config.textproto \
     trace_config_boot_time.textproto \
     trace_config_boot_time_stop.textproto \
@@ -69,9 +88,10 @@ platform_tests += \
     UiBenchJankTestsWear \
     UiBenchMicrobenchmark \
     uwb_snippet \
-    WifiStrengthScannerUtil \
     wifi_direct_mobly_snippet \
     wifi_aware_snippet_new \
+    WifiStrengthScannerUtil \
+    xaVideoDecoderCapabilities \
 
 ifneq ($(strip $(BOARD_PERFSETUP_SCRIPT)),)
 platform_tests += perf-setup
