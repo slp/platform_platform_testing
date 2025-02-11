@@ -17,7 +17,7 @@
 @file:JvmName("MonitorUtils")
 @file:OptIn(
     androidx.benchmark.perfetto.ExperimentalPerfettoCaptureApi::class,
-    androidx.benchmark.perfetto.ExperimentalPerfettoTraceProcessorApi::class
+    androidx.benchmark.traceprocessor.ExperimentalTraceProcessorApi::class
 )
 
 package android.tools.traces.monitors
