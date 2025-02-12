@@ -16,21 +16,22 @@
 
 @file:OptIn(
     androidx.benchmark.perfetto.ExperimentalPerfettoCaptureApi::class,
-    androidx.benchmark.perfetto.ExperimentalPerfettoTraceProcessorApi::class
+    androidx.benchmark.traceprocessor.ExperimentalTraceProcessorApi::class,
 )
 
 package android.tools.traces.parsers.perfetto
 
 import android.tools.io.TraceType
 import android.tools.withTracing
-import androidx.benchmark.perfetto.PerfettoTrace
-import androidx.benchmark.perfetto.PerfettoTraceProcessor
+import androidx.benchmark.traceprocessor.PerfettoTrace
+import androidx.benchmark.traceprocessor.TraceProcessor
+import androidx.benchmark.macro.runServer
 import java.io.File
 import java.io.FileOutputStream
 
 typealias Row = Map<String, Any?>
 
-class TraceProcessorSession(val session: PerfettoTraceProcessor.Session) {
+class TraceProcessorSession(val session: TraceProcessor.Session) {
 
     fun <T> query(sql: String, predicate: (List<Row>) -> T): T {
         return withTracing("TraceProcessorSession#query") {
@@ -45,7 +46,7 @@ class TraceProcessorSession(val session: PerfettoTraceProcessor.Session) {
                 val traceFile = File.createTempFile(TraceType.SF.fileName, "")
                 FileOutputStream(traceFile).use { it.write(trace) }
                 val result =
-                    PerfettoTraceProcessor.runServer {
+                    TraceProcessor.runServer {
                         loadTrace(PerfettoTrace(traceFile.absolutePath)) {
                             predicate(TraceProcessorSession(this))
                         }
