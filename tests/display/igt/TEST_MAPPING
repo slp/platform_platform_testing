@@ -1,0 +1,34 @@
+{
+  "desktop-postsubmit": [
+    {
+      "name": "IgtCoreAuthTestCases"
+    },
+    {
+      "name": "IgtKmsAddfbBasicTestCases"
+    },
+    {
+      "name": "IgtKmsAtomicInterruptibleTestCases"
+    },
+    {
+      "name": "IgtKmsAtomicTestCases"
+    },
+    {
+      "name": "IgtKmsPlaneLowresTestCases"
+    },
+    {
+      "name": "IgtKmsPlaneScalingTestCases"
+    },
+    {
+      "name": "IgtKmsPropBlobTestCases"
+    },
+    {
+      "name": "IgtKmsPropertiesTestCases"
+    },
+    {
+      "name": "IgtKmsVBlankTestCases"
+    },
+    {
+      "name": "IgtKmsSetmodeTestCases"
+    }
+  ]
+}

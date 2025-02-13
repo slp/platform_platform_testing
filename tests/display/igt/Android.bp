@@ -1,0 +1,152 @@
+package {
+    // See: http://go/android-license-faq
+    default_applicable_licenses: [
+        "Android-Apache-2.0",
+    ],
+}
+
+cc_defaults {
+    name: "platform_igt_gpu_tools_default",
+    cppflags: [
+        "-DFLAG_GTEST_ENABLED",
+    ],
+    compile_multilib: "64",
+    local_include_dirs: ["include"],
+    require_root: true,
+    test_suites: [
+        "device-tests",
+    ],
+    shared_libs: [
+        "libbase",
+    ],
+}
+
+cc_test {
+    name: "IgtCoreAuthTestCases",
+    defaults: ["platform_igt_gpu_tools_default"],
+    srcs: [
+        "src/igt_test_helper.cpp",
+        "src/core_auth.cpp",
+    ],
+    data_bins: [
+        "//external/igt-gpu-tools:core_auth",
+    ],
+    test_config_template: "igt_config_template.xml",
+}
+
+cc_test {
+    name: "IgtKmsAddfbBasicTestCases",
+    defaults: ["platform_igt_gpu_tools_default"],
+    srcs: [
+        "src/igt_test_helper.cpp",
+        "src/kms_addfb_basic.cpp",
+    ],
+    data_bins: [
+        "//external/igt-gpu-tools:kms_addfb_basic",
+    ],
+    test_config_template: "igt_config_template.xml",
+}
+
+cc_test {
+    name: "IgtKmsAtomicInterruptibleTestCases",
+    defaults: ["platform_igt_gpu_tools_default"],
+    srcs: [
+        "src/igt_test_helper.cpp",
+        "src/kms_atomic_interruptible.cpp",
+    ],
+    data_bins: [
+        "//external/igt-gpu-tools:kms_atomic_interruptible",
+    ],
+    test_config_template: "igt_config_template.xml",
+}
+
+cc_test {
+    name: "IgtKmsAtomicTestCases",
+    defaults: ["platform_igt_gpu_tools_default"],
+    srcs: [
+        "src/igt_test_helper.cpp",
+        "src/kms_atomic.cpp",
+    ],
+    data_bins: [
+        "//external/igt-gpu-tools:kms_atomic",
+    ],
+    test_config_template: "igt_config_template.xml",
+}
+
+cc_test {
+    name: "IgtKmsPlaneLowresTestCases",
+    defaults: ["platform_igt_gpu_tools_default"],
+    srcs: [
+        "src/igt_test_helper.cpp",
+        "src/kms_plane_lowres.cpp",
+    ],
+    data_bins: [
+        "//external/igt-gpu-tools:kms_plane_lowres",
+    ],
+    test_config_template: "igt_config_template.xml",
+}
+
+cc_test {
+    name: "IgtKmsPlaneScalingTestCases",
+    defaults: ["platform_igt_gpu_tools_default"],
+    srcs: [
+        "src/igt_test_helper.cpp",
+        "src/kms_plane_scaling.cpp",
+    ],
+    data_bins: [
+        "//external/igt-gpu-tools:kms_plane_scaling",
+    ],
+    test_config_template: "igt_config_template.xml",
+}
+
+cc_test {
+    name: "IgtKmsPropBlobTestCases",
+    defaults: ["platform_igt_gpu_tools_default"],
+    srcs: [
+        "src/igt_test_helper.cpp",
+        "src/kms_prop_blob.cpp",
+    ],
+    data_bins: [
+        "//external/igt-gpu-tools:kms_prop_blob",
+    ],
+    test_config_template: "igt_config_template.xml",
+}
+
+cc_test {
+    name: "IgtKmsPropertiesTestCases",
+    defaults: ["platform_igt_gpu_tools_default"],
+    srcs: [
+        "src/igt_test_helper.cpp",
+        "src/kms_properties.cpp",
+    ],
+    data_bins: [
+        "//external/igt-gpu-tools:kms_properties",
+    ],
+    test_config_template: "igt_config_template.xml",
+}
+
+cc_test {
+    name: "IgtKmsVBlankTestCases",
+    defaults: ["platform_igt_gpu_tools_default"],
+    srcs: [
+        "src/igt_test_helper.cpp",
+        "src/kms_vblank.cpp",
+    ],
+    data_bins: [
+        "//external/igt-gpu-tools:kms_vblank",
+    ],
+    test_config_template: "igt_config_template.xml",
+}
+
+cc_test {
+    name: "IgtKmsSetmodeTestCases",
+    defaults: ["platform_igt_gpu_tools_default"],
+    srcs: [
+        "src/igt_test_helper.cpp",
+        "src/kms_setmode.cpp",
+    ],
+    data_bins: [
+        "//external/igt-gpu-tools:kms_setmode",
+    ],
+    test_config_template: "igt_config_template.xml",
+}
