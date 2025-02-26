@@ -16,15 +16,21 @@
 package android.platform.helpers.foldable
 
 import android.hardware.Sensor
+import android.hardware.devicestate.DeviceState.PROPERTY_FEATURE_REAR_DISPLAY
+import android.hardware.devicestate.DeviceState.PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_INNER_PRIMARY
+import android.hardware.devicestate.DeviceState.PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_OUTER_PRIMARY
+import android.hardware.devicestate.DeviceState.PROPERTY_FOLDABLE_HARDWARE_CONFIGURATION_FOLD_IN_HALF_OPEN
 import android.hardware.devicestate.DeviceStateManager
 import android.hardware.devicestate.DeviceStateManager.DeviceStateCallback
+import android.hardware.devicestate.DeviceStateManager.INVALID_DEVICE_STATE_IDENTIFIER
 import android.hardware.devicestate.DeviceStateRequest
+import android.hardware.devicestate.feature.flags.Flags as DeviceStateManagerFlags
 import android.platform.test.rule.isLargeScreen
-import android.platform.uiautomator_helpers.DeviceHelpers.isScreenOnSettled
-import android.platform.uiautomator_helpers.DeviceHelpers.printInstrumentationStatus
-import android.platform.uiautomator_helpers.DeviceHelpers.uiDevice
-import android.platform.uiautomator_helpers.TracingUtils.trace
-import android.platform.uiautomator_helpers.WaitUtils.ensureThat
+import android.platform.uiautomatorhelpers.DeviceHelpers.isScreenOnSettled
+import android.platform.uiautomatorhelpers.DeviceHelpers.printInstrumentationStatus
+import android.platform.uiautomatorhelpers.DeviceHelpers.uiDevice
+import android.platform.uiautomatorhelpers.TracingUtils.trace
+import android.platform.uiautomatorhelpers.WaitUtils.ensureThat
 import android.util.Log
 import androidx.annotation.FloatRange
 import androidx.test.platform.app.InstrumentationRegistry
@@ -128,12 +134,66 @@ internal class FoldableDeviceController {
     }
 
     private fun findStates() {
+        if (DeviceStateManagerFlags.deviceStatePropertyMigration()) {
+            findStates_deviceStateManager()
+        } else {
+            findStates_configValues()
+        }
+    }
+
+    private fun findStates_configValues() {
         val foldedStates = resources.getIntArray(R.array.config_foldedDeviceStates)
         assumeTrue("Skipping on non-foldable devices", foldedStates.isNotEmpty())
         foldedState = foldedStates.first()
         unfoldedState = resources.getIntArray(R.array.config_openDeviceStates).first()
         halfFoldedState = resources.getIntArray(R.array.config_halfFoldedDeviceStates).first()
         rearDisplayState = resources.getIntArray(R.array.config_rearDisplayDeviceStates).first()
+    }
+
+    private fun findStates_deviceStateManager() {
+        val deviceStates = deviceStateManager.supportedDeviceStates
+        foldedState =
+            deviceStates
+                .firstOrNull { deviceState ->
+                    deviceState.hasProperty(
+                        PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_OUTER_PRIMARY
+                    ) && !deviceState.hasProperty(PROPERTY_FEATURE_REAR_DISPLAY)
+                }
+                ?.identifier ?: INVALID_DEVICE_STATE_IDENTIFIER
+
+        assumeTrue(
+            "Skipping on non-foldable devices",
+            foldedState != INVALID_DEVICE_STATE_IDENTIFIER,
+        )
+
+        halfFoldedState =
+            deviceStates
+                .firstOrNull { deviceState ->
+                    deviceState.hasProperties(
+                        PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_INNER_PRIMARY,
+                        PROPERTY_FOLDABLE_HARDWARE_CONFIGURATION_FOLD_IN_HALF_OPEN,
+                    )
+                }
+                ?.identifier ?: INVALID_DEVICE_STATE_IDENTIFIER
+
+        unfoldedState =
+            deviceStates
+                .firstOrNull { deviceState ->
+                    deviceState.hasProperty(
+                        PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_INNER_PRIMARY
+                    ) &&
+                        !deviceState.hasProperty(
+                            PROPERTY_FOLDABLE_HARDWARE_CONFIGURATION_FOLD_IN_HALF_OPEN
+                        )
+                }
+                ?.identifier ?: INVALID_DEVICE_STATE_IDENTIFIER
+
+        rearDisplayState =
+            deviceStates
+                .firstOrNull { deviceState ->
+                    deviceState.hasProperty(PROPERTY_FEATURE_REAR_DISPLAY)
+                }
+                ?.identifier ?: INVALID_DEVICE_STATE_IDENTIFIER
     }
 
     private fun setDeviceState(state: Int) {
@@ -148,7 +208,7 @@ internal class FoldableDeviceController {
             deviceStateManager.requestBaseStateOverride(
                 request,
                 context.mainExecutor,
-                deviceStateRequestCallback
+                deviceStateRequestCallback,
             )
             deviceStateLatch.await { "Device state didn't change within the timeout" }
             ensureStateSet(state)

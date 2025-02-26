@@ -17,9 +17,11 @@
 package android.tools.flicker.subject.inputmethod
 
 import android.tools.flicker.subject.FlickerTraceSubject
+import android.tools.function.AssertionPredicate
 import android.tools.io.Reader
 import android.tools.traces.inputmethod.ImeClientEntry
 import android.tools.traces.inputmethod.ImeClientTrace
+import java.util.function.Predicate
 
 /**
  * Truth subject for [ImeClientTrace] objects, used to make assertions over behaviors that occur
@@ -35,7 +37,8 @@ import android.tools.traces.inputmethod.ImeClientTrace
  *  ```
  */
 class ImeClientTraceSubject
-private constructor(val trace: ImeClientTrace, override val reader: Reader? = null) :
+@JvmOverloads
+constructor(val trace: ImeClientTrace, override val reader: Reader? = null) :
     FlickerTraceSubject<ImeClientEntrySubject>(), IImeClientSubject<ImeClientTraceSubject> {
 
     override val subjects by lazy { trace.entries.map { ImeClientEntrySubject(it, trace, reader) } }
@@ -54,16 +57,17 @@ private constructor(val trace: ImeClientTrace, override val reader: Reader? = nu
     }
 
     /** Executes a custom [assertion] on the current subject */
+    @JvmOverloads
     operator fun invoke(
         name: String,
         isOptional: Boolean = false,
-        assertion: (ImeClientEntrySubject) -> Unit
+        assertion: AssertionPredicate<ImeClientEntrySubject>,
     ): ImeClientTraceSubject = apply { addAssertion(name, isOptional, assertion) }
 
     /**
      * @return List of [ImeClientEntrySubject]s matching [predicate] in the order they appear in the
      *   trace
      */
-    fun imeClientEntriesThat(predicate: (ImeClientEntry) -> Boolean): List<ImeClientEntrySubject> =
-        subjects.filter { predicate(it.entry) }
+    fun imeClientEntriesThat(predicate: Predicate<ImeClientEntry>): List<ImeClientEntrySubject> =
+        subjects.filter { predicate.test(it.entry) }
 }

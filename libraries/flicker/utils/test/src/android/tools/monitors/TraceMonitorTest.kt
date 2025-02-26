@@ -23,6 +23,7 @@ import android.tools.io.TraceType
 import android.tools.testutils.CleanFlickerEnvironmentRule
 import android.tools.testutils.newTestResultWriter
 import android.tools.testutils.outputFileName
+import android.tools.traces.SERVICE_TRACE_CONFIG
 import android.tools.traces.TRACE_CONFIG_REQUIRE_CHANGES
 import android.tools.traces.deleteIfExists
 import android.tools.traces.io.ResultReader
@@ -105,12 +106,14 @@ abstract class TraceMonitorTest<T : TraceMonitor> {
 
     @Test
     open fun withTracing() {
-        val trace =
-            traceMonitor.withTracing(tag) {
+        val reader =
+            traceMonitor.withTracing(
+                resultReaderProvider = { ResultReader(it, SERVICE_TRACE_CONFIG) }
+            ) {
                 device.pressHome()
                 device.pressRecentApps()
             }
-
+        val trace = reader.readBytes(traceType, tag) ?: ByteArray(0)
         assertTrace(trace)
     }
 

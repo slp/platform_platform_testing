@@ -145,7 +145,7 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
                                 transitionTimeRange.start,
                                 transitionTimeRange.end,
                                 addInitialEntry = true,
-                                clearCache = true
+                                clearCache = true,
                             )
                     }
                 val minimumEntries = minimumTraceEntriesForConfig(traceConfig.layersTrace)
@@ -246,7 +246,7 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
                         .parse(
                             session,
                             from = transitionTimeRange.start,
-                            to = transitionTimeRange.end
+                            to = transitionTimeRange.end,
                         )
                 }
             }
@@ -274,7 +274,7 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
                     from = transitionTimeRange.start,
                     to = transitionTimeRange.end,
                     addInitialEntry = true,
-                    clearCache = true
+                    clearCache = true,
                 )
         }
     }
@@ -304,7 +304,7 @@ open class ResultReader(_result: IResultData, internal val traceConfig: TraceCon
                     wmSideTraceData,
                     shellSideTraceData,
                     from = transitionTimeRange.start,
-                    to = transitionTimeRange.end
+                    to = transitionTimeRange.end,
                 )
         }
     }

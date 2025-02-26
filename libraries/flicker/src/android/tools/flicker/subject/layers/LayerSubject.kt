@@ -20,6 +20,7 @@ import android.tools.datatypes.Size
 import android.tools.flicker.assertions.Fact
 import android.tools.flicker.subject.FlickerSubject
 import android.tools.flicker.subject.region.RegionSubject
+import android.tools.function.AssertionPredicate
 import android.tools.io.Reader
 import android.tools.traces.surfaceflinger.Layer
 
@@ -42,15 +43,19 @@ import android.tools.traces.surfaceflinger.Layer
  *        .invoke { myCustomAssertion(this) }
  * ```
  */
-class LayerSubject(
-    public override val reader: Reader? = null,
+class LayerSubject
+@JvmOverloads
+constructor(
     override val timestamp: Timestamp,
-    val layer: Layer
+    val layer: Layer,
+    public override val reader: Reader? = null,
 ) : FlickerSubject() {
     val isVisible: Boolean
         get() = layer.isVisible
+
     val isInvisible: Boolean
         get() = !layer.isVisible
+
     val name: String
         get() = layer.name
 
@@ -71,7 +76,9 @@ class LayerSubject(
     override val selfFacts = listOf(Fact("Frame", layer.currFrame), Fact("Layer", layer.name))
 
     /** If the [layer] exists, executes a custom [assertion] on the current subject */
-    operator fun invoke(assertion: (Layer) -> Unit): LayerSubject = apply { assertion(this.layer) }
+    operator fun invoke(assertion: AssertionPredicate<Layer>): LayerSubject = apply {
+        assertion.verify(this.layer)
+    }
 
     /**
      * Asserts that current subject has an [Layer.activeBuffer]

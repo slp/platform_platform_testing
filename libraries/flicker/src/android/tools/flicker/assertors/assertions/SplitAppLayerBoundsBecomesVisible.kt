@@ -27,11 +27,11 @@ import android.tools.traces.component.IComponentMatcher
 
 class SplitAppLayerBoundsBecomesVisible(
     private val component: ComponentTemplate,
-    val isPrimaryApp: Boolean
+    val isPrimaryApp: Boolean,
 ) : AssertionTemplateWithComponent(component) {
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
-        val splitScreenDivider = SPLIT_SCREEN_DIVIDER.build(scenarioInstance)
-        val app = component.build(scenarioInstance)
+        val splitScreenDivider = SPLIT_SCREEN_DIVIDER.get(scenarioInstance)
+        val app = component.get(scenarioInstance)
 
         val landscapePosLeft: Boolean
         val portraitPosTop: Boolean
@@ -53,7 +53,7 @@ class SplitAppLayerBoundsBecomesVisible(
                     app,
                     splitScreenDivider,
                     landscapePosLeft,
-                    portraitPosTop
+                    portraitPosTop,
                 )
         }
     }
@@ -63,14 +63,14 @@ class SplitAppLayerBoundsBecomesVisible(
             component: IComponentMatcher,
             splitScreenDivider: IComponentMatcher,
             landscapePosLeft: Boolean,
-            portraitPosTop: Boolean
+            portraitPosTop: Boolean,
         ): LayersTraceSubject {
             return invoke("splitAppLayerBoundsSnapToDivider") {
                 it.splitAppLayerBoundsSnapToDivider(
                     component,
                     splitScreenDivider,
                     landscapePosLeft,
-                    portraitPosTop
+                    portraitPosTop,
                 )
             }
         }
@@ -79,7 +79,7 @@ class SplitAppLayerBoundsBecomesVisible(
             component: IComponentMatcher,
             splitScreenDivider: IComponentMatcher,
             landscapePosLeft: Boolean,
-            portraitPosTop: Boolean
+            portraitPosTop: Boolean,
         ): LayerTraceEntrySubject {
             val activeDisplay =
                 this.entry.displays.firstOrNull { it.isOn && !it.isVirtual }
@@ -100,14 +100,14 @@ class SplitAppLayerBoundsBecomesVisible(
                                     0,
                                     0,
                                     (dividerRegion.bounds.left + dividerRegion.bounds.right) / 2,
-                                    activeDisplay.layerStackSpace.bottom
+                                    activeDisplay.layerStackSpace.bottom,
                                 )
                             } else {
                                 Region(
                                     (dividerRegion.bounds.left + dividerRegion.bounds.right) / 2,
                                     0,
                                     activeDisplay.layerStackSpace.right,
-                                    activeDisplay.layerStackSpace.bottom
+                                    activeDisplay.layerStackSpace.bottom,
                                 )
                             }
                         } else {
@@ -116,14 +116,14 @@ class SplitAppLayerBoundsBecomesVisible(
                                     0,
                                     0,
                                     activeDisplay.layerStackSpace.right,
-                                    (dividerRegion.bounds.top + dividerRegion.bounds.bottom) / 2
+                                    (dividerRegion.bounds.top + dividerRegion.bounds.bottom) / 2,
                                 )
                             } else {
                                 Region(
                                     0,
                                     (dividerRegion.bounds.top + dividerRegion.bounds.bottom) / 2,
                                     activeDisplay.layerStackSpace.right,
-                                    activeDisplay.layerStackSpace.bottom
+                                    activeDisplay.layerStackSpace.bottom,
                                 )
                             }
                         }

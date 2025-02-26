@@ -33,6 +33,7 @@ import java.time.temporal.ChronoUnit
  *
  * See [BetterSwipe] for more details on the problem of [UiObject2.fling].
  */
+@Deprecated("Use uiautomatorhelpers, b/376676853")
 object BetterFling {
     private const val DEFAULT_FLING_MARGIN_DP = 30
     private const val DEFAULT_PERCENTAGE = 1.0f

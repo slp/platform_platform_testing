@@ -19,6 +19,7 @@ package android.tools.traces.component
 import android.tools.traces.surfaceflinger.Layer
 import android.tools.traces.wm.Activity
 import android.tools.traces.wm.WindowContainer
+import java.util.function.Predicate
 
 class ComponentSplashScreenMatcher(val componentNameMatcher: IComponentNameMatcher) :
     IComponentMatcher {
@@ -68,12 +69,12 @@ class ComponentSplashScreenMatcher(val componentNameMatcher: IComponentNameMatch
 
     override fun check(
         layers: Collection<Layer>,
-        condition: (Collection<Layer>) -> Boolean
+        condition: Predicate<Collection<Layer>>,
     ): Boolean {
         val splashScreenLayer = layers.filter { layerMatchesAnyOf(it) }
         require(splashScreenLayer.size <= 1) {
             "More than on SplashScreen layer found. Only up to 1 match was expected."
         }
-        return condition(splashScreenLayer)
+        return condition.test(splashScreenLayer)
     }
 }

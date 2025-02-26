@@ -104,7 +104,7 @@ class WindowManagerTraceEntryBuilder {
             isDisplayFrozen,
             pendingActivities,
             root,
-            keyguardControllerState
+            keyguardControllerState,
         )
     }
 }

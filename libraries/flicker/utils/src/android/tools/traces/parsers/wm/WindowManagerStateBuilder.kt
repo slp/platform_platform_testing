@@ -128,7 +128,7 @@ class WindowManagerStateBuilder {
             rotation = Rotation.getByValue(proto.rotation),
             rotationMode = proto.rotationMode,
             screenOnFully = proto.screenOnFully,
-            windowManagerDrawComplete = proto.windowManagerDrawComplete
+            windowManagerDrawComplete = proto.windowManagerDrawComplete,
         )
     }
 
@@ -138,7 +138,7 @@ class WindowManagerStateBuilder {
                 proto.windowContainer,
                 proto.windowContainer.children.mapNotNull { p ->
                     createWindowContainerChild(p, isActivityInTree = false)
-                }
+                },
             ) ?: error("Window container should not be null")
         )
     }
@@ -151,13 +151,13 @@ class WindowManagerStateBuilder {
             isKeyguardShowing = proto?.keyguardShowing ?: false,
             keyguardOccludedStates =
                 proto?.keyguardOccludedStates?.associate { it.displayId to it.keyguardOccluded }
-                    ?: emptyMap()
+                    ?: emptyMap(),
         )
     }
 
     private fun createWindowContainerChild(
         proto: WindowContainerChildProto,
-        isActivityInTree: Boolean
+        isActivityInTree: Boolean,
     ): WindowContainer? {
         return createDisplayContent(proto.displayContent, isActivityInTree)
             ?: createDisplayArea(proto.displayArea, isActivityInTree)
@@ -171,7 +171,7 @@ class WindowManagerStateBuilder {
 
     private fun createDisplayContent(
         proto: DisplayContentProto?,
-        isActivityInTree: Boolean
+        isActivityInTree: Boolean,
     ): DisplayContent? {
         return if (proto == null) {
             null
@@ -190,7 +190,7 @@ class WindowManagerStateBuilder {
                         0,
                         0,
                         proto.displayInfo?.logicalWidth ?: 0,
-                        proto.displayInfo?.logicalHeight ?: 0
+                        proto.displayInfo?.logicalHeight ?: 0,
                     ),
                 appRect =
                     Rect(0, 0, proto.displayInfo?.appWidth ?: 0, proto.displayInfo?.appHeight ?: 0),
@@ -213,15 +213,15 @@ class WindowManagerStateBuilder {
                         proto.rootDisplayArea.windowContainer.children.mapNotNull { p ->
                             createWindowContainerChild(p, isActivityInTree)
                         },
-                        nameOverride = proto.displayInfo?.name ?: ""
-                    ) ?: error("Window container should not be null")
+                        nameOverride = proto.displayInfo?.name ?: "",
+                    ) ?: error("Window container should not be null"),
             )
         }
     }
 
     private fun createDisplayArea(
         proto: DisplayAreaProto?,
-        isActivityInTree: Boolean
+        isActivityInTree: Boolean,
     ): DisplayArea? {
         return if (proto == null) {
             null
@@ -233,8 +233,8 @@ class WindowManagerStateBuilder {
                         proto.windowContainer,
                         proto.windowContainer.children.mapNotNull { p ->
                             createWindowContainerChild(p, isActivityInTree)
-                        }
-                    ) ?: error("Window container should not be null")
+                        },
+                    ) ?: error("Window container should not be null"),
             )
         }
     }
@@ -272,15 +272,15 @@ class WindowManagerStateBuilder {
                             proto.windowContainer.children.mapNotNull { p ->
                                 createWindowContainerChild(p, isActivityInTree)
                             }
-                        }
-                    ) ?: error("Window container should not be null")
+                        },
+                    ) ?: error("Window container should not be null"),
             )
         }
     }
 
     private fun createTaskFragment(
         proto: TaskFragmentProto?,
-        isActivityInTree: Boolean
+        isActivityInTree: Boolean,
     ): TaskFragment? {
         return if (proto == null) {
             null
@@ -295,8 +295,8 @@ class WindowManagerStateBuilder {
                         proto.windowContainer,
                         proto.windowContainer.children.mapNotNull { p ->
                             createWindowContainerChild(p, isActivityInTree)
-                        }
-                    ) ?: error("Window container should not be null")
+                        },
+                    ) ?: error("Window container should not be null"),
             )
         }
     }
@@ -316,15 +316,15 @@ class WindowManagerStateBuilder {
                         proto.windowToken.windowContainer.children.mapNotNull { p ->
                             createWindowContainerChild(p, isActivityInTree = true)
                         },
-                        nameOverride = proto.name
-                    ) ?: error("Window container should not be null")
+                        nameOverride = proto.name,
+                    ) ?: error("Window container should not be null"),
             )
         }
     }
 
     private fun createWindowToken(
         proto: WindowTokenProto?,
-        isActivityInTree: Boolean
+        isActivityInTree: Boolean,
     ): WindowToken? {
         return if (proto == null) {
             null
@@ -334,7 +334,7 @@ class WindowManagerStateBuilder {
                     proto.windowContainer,
                     proto.windowContainer.children.mapNotNull { p ->
                         createWindowContainerChild(p, isActivityInTree)
-                    }
+                    },
                 ) ?: error("Window container should not be null")
             )
         }
@@ -342,7 +342,7 @@ class WindowManagerStateBuilder {
 
     private fun createWindowState(
         proto: WindowStateProto?,
-        isActivityInTree: Boolean
+        isActivityInTree: Boolean,
     ): WindowState? {
         return if (proto == null) {
             null
@@ -397,9 +397,9 @@ class WindowManagerStateBuilder {
                                         )
                                     else -> identifierName
                                 }
-                            )
+                            ),
                     ) ?: error("Window container should not be null"),
-                isAppWindow = isActivityInTree
+                isAppWindow = isActivityInTree,
             )
         }
     }
@@ -435,7 +435,7 @@ class WindowManagerStateBuilder {
             behavior = proto?.behavior ?: 0,
             fitInsetsTypes = proto?.fitInsetsTypes ?: 0,
             fitInsetsSides = proto?.fitInsetsSides ?: 0,
-            fitIgnoreVisibility = proto?.fitIgnoreVisibility ?: false
+            fitIgnoreVisibility = proto?.fitIgnoreVisibility ?: false,
         )
     }
 
@@ -445,7 +445,7 @@ class WindowManagerStateBuilder {
         return ConfigurationContainerImpl.from(
             overrideConfiguration = createConfiguration(proto?.overrideConfiguration),
             fullConfiguration = createConfiguration(proto?.fullConfiguration),
-            mergedOverrideConfiguration = createConfiguration(proto?.mergedOverrideConfiguration)
+            mergedOverrideConfiguration = createConfiguration(proto?.mergedOverrideConfiguration),
         )
     }
 
@@ -466,7 +466,7 @@ class WindowManagerStateBuilder {
                 screenWidthDp = proto.screenWidthDp,
                 smallestScreenWidthDp = proto.smallestScreenWidthDp,
                 screenLayout = proto.screenLayout,
-                uiMode = proto.uiMode
+                uiMode = proto.uiMode,
             )
         }
     }
@@ -477,7 +477,7 @@ class WindowManagerStateBuilder {
             bounds = proto.bounds?.toRect(),
             maxBounds = proto.maxBounds?.toRect(),
             windowingMode = proto.windowingMode,
-            activityType = proto.activityType
+            activityType = proto.activityType,
         )
     }
 
@@ -485,7 +485,7 @@ class WindowManagerStateBuilder {
         proto: WindowContainerProto?,
         children: List<WindowContainer>,
         nameOverride: String? = null,
-        visibleOverride: Boolean? = null
+        visibleOverride: Boolean? = null,
     ): WindowContainer? {
         return if (proto == null) {
             null
@@ -498,7 +498,7 @@ class WindowManagerStateBuilder {
                 configurationContainer = createConfigurationContainer(proto.configurationContainer),
                 layerId = proto.surfaceControl?.layerId ?: 0,
                 _children = children,
-                computedZ = computedZCounter++
+                computedZ = computedZCounter++,
             )
         }
     }
@@ -513,7 +513,7 @@ class WindowManagerStateBuilder {
                 proto.boundTop?.toRect() ?: Rect(),
                 proto.boundRight?.toRect() ?: Rect(),
                 proto.boundBottom?.toRect() ?: Rect(),
-                proto.waterfallInsets?.toInsets() ?: Insets.NONE
+                proto.waterfallInsets?.toInsets() ?: Insets.NONE,
             )
         }
     }

@@ -34,5 +34,5 @@ val NotificationExpandCollapse =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )

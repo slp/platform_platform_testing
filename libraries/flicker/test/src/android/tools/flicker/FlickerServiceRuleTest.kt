@@ -107,7 +107,7 @@ class FlickerServiceRuleTest {
         val testRule =
             FlickerServiceRule(
                 metricsCollector = mockFlickerServiceResultsCollector,
-                failTestOnFlicker = false
+                failTestOnFlicker = false,
             )
         val mockDescription = Description.createTestDescription(this::class.java, "mockTest")
 
@@ -127,7 +127,7 @@ class FlickerServiceRuleTest {
         val testRule =
             FlickerServiceRule(
                 metricsCollector = mockFlickerServiceResultsCollector,
-                failTestOnFlicker = true
+                failTestOnFlicker = true,
             )
         val mockDescription = Description.createTestDescription(this::class.java, "mockTest")
 
@@ -155,7 +155,7 @@ class FlickerServiceRuleTest {
         val testRule =
             FlickerServiceRule(
                 metricsCollector = mockFlickerServiceResultsCollector,
-                failTestOnFlicker = true
+                failTestOnFlicker = true,
             )
         val mockDescription = Description.createTestDescription(this::class.java, "mockTest")
 
@@ -201,7 +201,7 @@ class FlickerServiceRuleTest {
             FlickerServiceRule(
                 enabled = false,
                 metricsCollector = mockFlickerServiceResultsCollector,
-                failTestOnFlicker = true
+                failTestOnFlicker = true,
             )
 
         val mockDescription = Description.createTestDescription(this::class.java, "mockTest")
@@ -226,7 +226,7 @@ class FlickerServiceRuleTest {
         val testRule =
             FlickerServiceRule(
                 metricsCollector = mockFlickerServiceResultsCollector,
-                failTestOnFlicker = true
+                failTestOnFlicker = true,
             )
         val mockDescription = Description.createTestDescription(this::class.java, "mockTest")
 
@@ -248,7 +248,7 @@ class FlickerServiceRuleTest {
         val testRule =
             FlickerServiceRule(
                 metricsCollector = mockFlickerServiceResultsCollector,
-                failTestOnFlicker = true
+                failTestOnFlicker = true,
             )
         val mockDescription = Description.createTestDescription(this::class.java, "mockTest")
 

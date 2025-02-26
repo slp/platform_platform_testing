@@ -139,12 +139,12 @@ class TimeSeriesSubjectTest {
         val expected =
             TimeSeries(
                 createFrames(2),
-                listOf(Feature("foo", listOf(1.asDataPoint(), 2.asDataPoint())))
+                listOf(Feature("foo", listOf(1.asDataPoint(), 2.asDataPoint()))),
             )
         val actual =
             TimeSeries(
                 createFrames(2),
-                listOf(Feature("foo", listOf(1.asDataPoint(), 3.asDataPoint())))
+                listOf(Feature("foo", listOf(1.asDataPoint(), 3.asDataPoint()))),
             )
 
         with(assertThrows { assertThat(actual).isEqualTo(expected) }) {
@@ -153,7 +153,8 @@ class TimeSeriesSubjectTest {
                     "TimeSeries.features[foo].dataPoints do not match",
                     "|  @1ms",
                     "|    expected",
-                    "|    but was"
+                    "|    but was",
+                    TimeSeriesSubject.MANAGE_GOLDEN_DOCUMENTATION,
                 )
                 .inOrder()
 
@@ -162,15 +163,35 @@ class TimeSeriesSubjectTest {
         }
     }
 
+    @Test
+    fun isEqualTo_manageGoldenMessageAddedOnError() {
+        val expected =
+            TimeSeries(
+                createFrames(2),
+                listOf(Feature("foo", listOf(1.asDataPoint(), 2.asDataPoint()))),
+            )
+        val actual =
+            TimeSeries(
+                createFrames(2),
+                listOf(Feature("foo", listOf(1.asDataPoint(), 3.asDataPoint()))),
+            )
+
+        with(assertThrows { assertThat(actual).isEqualTo(expected) }) {
+            factKeys().contains(TimeSeriesSubject.MANAGE_GOLDEN_DOCUMENTATION)
+        }
+    }
+
     private fun createTimeSeries(frameCount: Int) =
         TimeSeries(
             createFrames(frameCount),
-            listOf(createIntFeature("foo", frameCount), createStringFeature("bar", frameCount))
+            listOf(createIntFeature("foo", frameCount), createStringFeature("bar", frameCount)),
         )
 
     private fun createFrames(frameCount: Int) = List(frameCount) { TimestampFrameId(it.toLong()) }
+
     private fun createIntFeature(name: String, dataPoints: Int) =
         Feature(name, List(dataPoints) { it.asDataPoint() })
+
     private fun createStringFeature(name: String, dataPoints: Int) =
         Feature(name, List(dataPoints) { it.toString().asDataPoint() })
 
@@ -185,11 +206,12 @@ class TimeSeriesSubjectTest {
         }
         throw AssertionError("Body completed successfully. Expected AssertionError")
     }
+
     companion object {
         val startsWith: Correspondence<String, String> =
             Correspondence.from(
                 { actual, expected -> checkNotNull(actual).startsWith(checkNotNull(expected)) },
-                "starts with"
+                "starts with",
             )
     }
 }

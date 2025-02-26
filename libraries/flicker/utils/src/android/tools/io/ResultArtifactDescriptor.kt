@@ -23,7 +23,7 @@ class ResultArtifactDescriptor(
     /** Trace or dump type */
     val traceType: TraceType,
     /** If the trace/dump is associated with a tag */
-    val tag: String = Tag.ALL
+    val tag: String = Tag.ALL,
 ) {
     private val isTagTrace: Boolean
         get() = tag != Tag.ALL

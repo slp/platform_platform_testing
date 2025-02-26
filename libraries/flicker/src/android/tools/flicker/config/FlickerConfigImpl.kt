@@ -36,7 +36,7 @@ internal class FlickerConfigImpl : FlickerConfig {
     override fun registerScenario(
         scenario: ScenarioId,
         extractor: ScenarioExtractor,
-        assertions: Map<AssertionTemplate, AssertionInvocationGroup>?
+        assertions: Map<AssertionTemplate, AssertionInvocationGroup>?,
     ) = apply {
         require(!registry.containsKey(scenario)) {
             "${this::class.simpleName} already has a registered scenario with name '$scenario'."
@@ -53,7 +53,7 @@ internal class FlickerConfigImpl : FlickerConfig {
     override fun registerAssertions(
         scenario: ScenarioId,
         vararg assertions: AssertionTemplate,
-        stabilityGroup: AssertionInvocationGroup
+        stabilityGroup: AssertionInvocationGroup,
     ) = apply {
         val entry = registry[scenario]
         require(entry != null) { "No scenario named '$scenario' registered." }
@@ -69,7 +69,7 @@ internal class FlickerConfigImpl : FlickerConfig {
                     entry.scenarioId,
                     entry.extractor,
                     entry.assertions.toMutableMap().apply { this[assertion] = stabilityGroup },
-                    entry.enabled
+                    entry.enabled,
                 )
         }
     }
@@ -81,7 +81,7 @@ internal class FlickerConfigImpl : FlickerConfig {
     override fun overrideAssertionStabilityGroup(
         scenario: ScenarioId,
         assertionId: AssertionId,
-        stabilityGroup: AssertionInvocationGroup
+        stabilityGroup: AssertionInvocationGroup,
     ) = apply {
         val entry = registry[scenario]
         require(entry != null) { "No scenario named '$scenario' registered." }
@@ -97,7 +97,7 @@ internal class FlickerConfigImpl : FlickerConfig {
                 entry.scenarioId,
                 entry.extractor,
                 entry.assertions.toMutableMap().apply { this[targetAssertion] = stabilityGroup },
-                entry.enabled
+                entry.enabled,
             )
     }
 
@@ -116,7 +116,7 @@ internal class FlickerConfigImpl : FlickerConfig {
                 entry.scenarioId,
                 entry.extractor,
                 entry.assertions.toMutableMap().apply { this.remove(targetAssertion) },
-                entry.enabled
+                entry.enabled,
             )
     }
 }

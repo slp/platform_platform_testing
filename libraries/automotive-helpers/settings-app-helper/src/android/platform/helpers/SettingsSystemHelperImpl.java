@@ -29,6 +29,7 @@ import androidx.test.uiautomator.UiObject2;
 import java.text.SimpleDateFormat;
 import java.time.Month;
 import java.util.Date;
+import java.util.List;
 
 /** Helper class for functional tests of System settings */
 public class SettingsSystemHelperImpl extends AbstractStandardAppHelper
@@ -360,18 +361,23 @@ public class SettingsSystemHelperImpl extends AbstractStandardAppHelper
     @Override
     public boolean verifyUsageinGB(String option) {
         boolean isUsageinGB = false;
-        UiObject2 targetObject =
+        List<UiObject2> scrollElements =
                 getSpectatioUiUtil()
-                        .findUiObject(
+                        .findUiObjects(
                                 getUiElementFromConfig(
                                         AutomotiveConfigConstants
                                                 .SETTINGS_UI_SUB_SETTING_SCROLL_ELEMENT));
-        UiObject2 target =
-                getSpectatioUiUtil()
-                        .findUiObjectInGivenElement(targetObject, getUiElementFromConfig(option));
-        String targetText = getSummeryText(target);
-        if (targetText.contains("GB")) {
-            isUsageinGB = true;
+        for (UiObject2 element : scrollElements) {
+            UiObject2 foundObject =
+                    getSpectatioUiUtil()
+                            .findUiObjectInGivenElement(element, getUiElementFromConfig(option));
+            if (foundObject != null) {
+                // there may be multiple matches the 'option' config on screen, such as 'System'
+                String targetText = getSummeryText(foundObject);
+                if (targetText != null && targetText.contains("GB")) {
+                    isUsageinGB = true;
+                }
+            }
         }
         return isUsageinGB;
     }
@@ -432,7 +438,19 @@ public class SettingsSystemHelperImpl extends AbstractStandardAppHelper
             getSpectatioUiUtil().clickAndWait(buildNumber);
             getSpectatioUiUtil().wait1Second();
         }
-        getSpectatioUiUtil().pressBack();
+        pressSettingsBackNavIcon();
         getSpectatioUiUtil().waitForIdle();
+    }
+
+    private void pressSettingsBackNavIcon() {
+        UiObject2 navIcon =
+                getSpectatioUiUtil()
+                        .findUiObject(
+                                getUiElementFromConfig(
+                                        AutomotiveConfigConstants.SETTINGS_BACK_NAV_ICON));
+        getSpectatioUiUtil()
+                .validateUiObject(
+                        navIcon, "Could not press back; unable to find settings back nav icon");
+        getSpectatioUiUtil().clickAndWait(navIcon);
     }
 }

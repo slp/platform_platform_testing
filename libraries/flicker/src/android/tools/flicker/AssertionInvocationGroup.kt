@@ -18,5 +18,5 @@ package android.tools.flicker
 
 enum class AssertionInvocationGroup {
     BLOCKING,
-    NON_BLOCKING
+    NON_BLOCKING,
 }

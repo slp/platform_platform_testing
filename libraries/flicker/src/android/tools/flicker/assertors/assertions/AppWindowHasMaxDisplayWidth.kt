@@ -28,7 +28,7 @@ class AppWindowHasMaxDisplayWidth(private val component: ComponentTemplate) :
             val displayBounds =
                 entry.physicalDisplayBounds ?: error("Missing physical display bounds")
 
-            visibleRegion(component.build(scenarioInstance))
+            visibleRegion(component.get(scenarioInstance))
                 .hasSameLeftPosition(displayBounds)
                 .hasSameRightPosition(displayBounds)
         }

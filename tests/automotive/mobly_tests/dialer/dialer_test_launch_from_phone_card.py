@@ -46,7 +46,7 @@ class BTDialerPhoneCard(bluetooth_sms_base_test.BluetoothSMSBaseTest):
         self.call_utils.wait_with_log(10)
 
         # accept the call (on the unpaired phone)
-        self.phone_notpaired.mbs.clickUIElementWithText(constants.ACCEPT_CALL_TEXT)
+        self.phone_notpaired.mbs.clickUIElementWithText(constants.ANSWER_CALL_TEXT)
         self.call_utils.wait_with_log(10)
         self.call_utils.press_home()
 

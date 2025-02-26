@@ -37,8 +37,8 @@ data class LegacyFlickerTest(
     private val subjectsParserProvider: (Reader) -> SubjectsParser = { SubjectsParser(it) },
     private val runnerProvider: (Scenario) -> AssertionRunner = {
         val reader = resultReaderProvider(it)
-        android.tools.flicker.datastore.CachedAssertionRunner(it, reader)
-    }
+        CachedAssertionRunner(it, reader)
+    },
 ) : BaseFlickerTest() {
     var scenario: ScenarioImpl = ScenarioBuilder().createEmptyScenario() as ScenarioImpl
         private set

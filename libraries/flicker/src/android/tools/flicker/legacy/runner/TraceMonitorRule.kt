@@ -43,7 +43,7 @@ class TraceMonitorRule(
     private val scenario: Scenario,
     private val wmHelper: WindowManagerStateHelper,
     private val resultWriter: ResultWriter,
-    private val instrumentation: Instrumentation
+    private val instrumentation: Instrumentation,
 ) : TestRule {
     override fun apply(base: Statement?, description: Description?): Statement {
         return object : Statement() {
@@ -54,7 +54,7 @@ class TraceMonitorRule(
                     Log.e(
                         FLICKER_TAG,
                         "Failed to start trace monitors" +
-                            " - stopping all trace monitors to recover a clean state"
+                            " - stopping all trace monitors to recover a clean state",
                     )
                     runCatching { doStopMonitors(description) }
                     throw e

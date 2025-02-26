@@ -22,6 +22,7 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.provider.MediaStore
 import android.tools.traces.component.ComponentNameMatcher
+import android.tools.traces.component.IComponentNameMatcher
 import androidx.test.platform.app.InstrumentationRegistry
 
 /** Helper to launch the Camera app. */
@@ -29,13 +30,10 @@ class CameraAppHelper
 @JvmOverloads
 constructor(
     instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation(),
-    pkgManager: PackageManager = instrumentation.context.packageManager
-) :
-    StandardAppHelper(
-        instrumentation,
-        getCameraLauncherName(pkgManager),
-        getCameraComponent(pkgManager)
-    ) {
+    pkgManager: PackageManager = instrumentation.context.packageManager,
+    appName: String = getCameraLauncherName(pkgManager),
+    appComponent: IComponentNameMatcher = getCameraComponent(pkgManager),
+) : StandardAppHelper(instrumentation, appName, appComponent) {
 
     override val openAppIntent =
         pkgManager.getLaunchIntentForPackage(packageName)
@@ -51,7 +49,7 @@ constructor(
         private fun getCameraComponent(pkgManager: PackageManager): ComponentNameMatcher =
             ComponentNameMatcher(
                 getResolveInfo(pkgManager).activityInfo.packageName,
-                className = ""
+                className = "",
             )
 
         private fun getCameraLauncherName(pkgManager: PackageManager): String =

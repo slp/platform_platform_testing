@@ -63,11 +63,7 @@ class VideoRenderer(private val screenshots: List<MotionScreenshot>) {
         muxer.release()
     }
 
-    private fun encodeScreenshotsInVideo(
-        encoder: MediaCodec,
-        muxer: MediaMuxer,
-        surface: Surface,
-    ) {
+    private fun encodeScreenshotsInVideo(encoder: MediaCodec, muxer: MediaMuxer, surface: Surface) {
         val bufferInfo = MediaCodec.BufferInfo()
         val screenshotIterator = screenshots.iterator()
         var isEndOfStream = false

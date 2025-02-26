@@ -39,7 +39,7 @@ class LegacyTransitionTraceParserTest {
             LegacyTransitionTraceParser()
                 .parse(
                     wmSideTraceData = readAsset("wm_transition_trace.winscope"),
-                    shellSideTraceData = readAsset("shell_transition_trace.winscope")
+                    shellSideTraceData = readAsset("shell_transition_trace.winscope"),
                 )
         val firstEntry = trace.entries.first()
         Truth.assertThat(firstEntry.timestamp.elapsedNanos).isEqualTo(760760231809L)

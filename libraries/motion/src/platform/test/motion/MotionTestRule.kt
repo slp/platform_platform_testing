@@ -57,7 +57,7 @@ class MotionTestRule<Toolkit>(
     val toolkit: Toolkit,
     private val goldenPathManager: GoldenPathManager,
     internal val bitmapDiffer: BitmapDiffer? = null,
-    extraRules: RuleChain = RuleChain.emptyRuleChain()
+    extraRules: RuleChain = RuleChain.emptyRuleChain(),
 ) : TestRule {
 
     @Volatile internal var testClassName: String? = null
@@ -106,7 +106,7 @@ class MotionTestRule<Toolkit>(
      */
     internal fun readGoldenTimeSeries(
         goldenIdentifier: String,
-        typeRegistry: Map<String, DataPointType<*>>
+        typeRegistry: Map<String, DataPointType<*>>,
     ): TimeSeries {
         val path = goldenPathManager.goldenIdentifierResolver(goldenIdentifier, JSON_EXTENSION)
         try {
@@ -142,7 +142,7 @@ class MotionTestRule<Toolkit>(
         metadata.put(
             "goldenRepoPath",
             "${goldenPathManager.assetsPathRelativeToBuildRoot}/${relativeGoldenPath.replace(
-                JSON_ACTUAL_EXTENSION, JSON_EXTENSION)}"
+                JSON_ACTUAL_EXTENSION, JSON_EXTENSION,)}",
         )
         metadata.put("goldenIdentifier", goldenIdentifier)
         metadata.put("testClassName", recordedMotion.testClassName)
@@ -198,7 +198,7 @@ class MotionTestRule<Toolkit>(
 internal enum class TimeSeriesVerificationResult {
     PASSED,
     FAILED,
-    MISSING_REFERENCE
+    MISSING_REFERENCE,
 }
 
 class GoldenNotFoundException(val missingGoldenFile: String) : Exception()

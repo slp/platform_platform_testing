@@ -62,7 +62,7 @@ class LegacyFlickerTestTest {
             TraceType.SF,
             predicate,
             TestTraces.LayerTrace.FILE,
-            expectedExecutionCount = 2
+            expectedExecutionCount = 2,
         )
     }
 
@@ -73,7 +73,7 @@ class LegacyFlickerTestTest {
             TraceType.SF,
             predicate,
             TestTraces.LayerTrace.FILE,
-            expectedExecutionCount = 2
+            expectedExecutionCount = 2,
         )
     }
 
@@ -84,7 +84,7 @@ class LegacyFlickerTestTest {
             TraceType.SF,
             predicate,
             TestTraces.LayerTrace.FILE,
-            expectedExecutionCount = 2
+            expectedExecutionCount = 2,
         )
     }
 
@@ -120,7 +120,7 @@ class LegacyFlickerTestTest {
             predicate,
             if (android.tracing.Flags.perfettoWmTracing()) TestTraces.WMTrace.FILE
             else TestTraces.LegacyWMTrace.FILE,
-            expectedExecutionCount = 2
+            expectedExecutionCount = 2,
         )
     }
 
@@ -132,7 +132,7 @@ class LegacyFlickerTestTest {
             predicate,
             if (android.tracing.Flags.perfettoWmTracing()) TestTraces.WMTrace.FILE
             else TestTraces.LegacyWMTrace.FILE,
-            expectedExecutionCount = 2
+            expectedExecutionCount = 2,
         )
     }
 
@@ -144,7 +144,7 @@ class LegacyFlickerTestTest {
             predicate,
             if (android.tracing.Flags.perfettoWmTracing()) TestTraces.WMTrace.FILE
             else TestTraces.LegacyWMTrace.FILE,
-            expectedExecutionCount = 2
+            expectedExecutionCount = 2,
         )
     }
 
@@ -153,7 +153,7 @@ class LegacyFlickerTestTest {
         val predicate: (FlickerTest) -> Unit = { it.assertWm { executionCount++ } }
         doExecuteAssertionWithoutTraceAndVerifyNotExecuted(
             if (android.tracing.Flags.perfettoWmTracing()) TraceType.PERFETTO else TraceType.WM,
-            predicate
+            predicate,
         )
     }
 
@@ -162,7 +162,7 @@ class LegacyFlickerTestTest {
         val predicate: (FlickerTest) -> Unit = { it.assertWmStart { executionCount++ } }
         doExecuteAssertionWithoutTraceAndVerifyNotExecuted(
             if (android.tracing.Flags.perfettoWmTracing()) TraceType.PERFETTO else TraceType.WM,
-            predicate
+            predicate,
         )
     }
 
@@ -171,7 +171,7 @@ class LegacyFlickerTestTest {
         val predicate: (FlickerTest) -> Unit = { it.assertWmEnd { executionCount++ } }
         doExecuteAssertionWithoutTraceAndVerifyNotExecuted(
             if (android.tracing.Flags.perfettoWmTracing()) TraceType.PERFETTO else TraceType.WM,
-            predicate
+            predicate,
         )
     }
 
@@ -183,7 +183,7 @@ class LegacyFlickerTestTest {
             predicate,
             if (android.tracing.Flags.perfettoWmTracing()) TestTraces.WMTrace.FILE
             else TestTraces.LegacyWMTrace.FILE,
-            expectedExecutionCount = 0
+            expectedExecutionCount = 0,
         )
     }
 
@@ -194,7 +194,7 @@ class LegacyFlickerTestTest {
             TraceType.EVENT_LOG,
             predicate,
             TestTraces.EventLog.FILE,
-            expectedExecutionCount = 2
+            expectedExecutionCount = 2,
         )
     }
 
@@ -216,20 +216,20 @@ class LegacyFlickerTestTest {
 
     private fun doExecuteAssertionWithoutTraceAndVerifyNotExecuted(
         traceType: TraceType,
-        predicate: (FlickerTest) -> Unit
+        predicate: (FlickerTest) -> Unit,
     ) =
         doWriteTraceExecuteAssertionAndVerify(
             traceType,
             predicate,
             file = null,
-            expectedExecutionCount = 0
+            expectedExecutionCount = 0,
         )
 
     private fun doWriteTraceExecuteAssertionAndVerify(
         traceType: TraceType,
         predicate: (FlickerTest) -> Unit,
         file: File?,
-        expectedExecutionCount: Int
+        expectedExecutionCount: Int,
     ) {
         val writer = newTestCachedResultWriter()
         if (file != null) {
@@ -245,8 +245,8 @@ class LegacyFlickerTestTest {
                         reader =
                             ResultReader(
                                 android.tools.flicker.datastore.DataStore.getResult(it),
-                                TRACE_CONFIG_REQUIRE_CHANGES
-                            )
+                                TRACE_CONFIG_REQUIRE_CHANGES,
+                            ),
                     )
                 }
             )

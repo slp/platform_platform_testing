@@ -26,6 +26,7 @@ class WindowToken(private val windowContainer: WindowContainer) :
     WindowContainer by windowContainer {
     override val isVisible: Boolean
         get() = false
+
     override fun toString(): String {
         return "${this::class.simpleName}: {$token $title}"
     }

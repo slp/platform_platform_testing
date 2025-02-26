@@ -56,11 +56,11 @@ val AppCloseToPip =
                                     cujEntry.cuj,
                                     closeToHomeCuj.startTimestamp,
                                     cujEntry.endTimestamp,
-                                    cujEntry.canceled
+                                    cujEntry.canceled,
                                 )
                             }
                         }
                     }
                 )
-                .build()
+                .build(),
     )

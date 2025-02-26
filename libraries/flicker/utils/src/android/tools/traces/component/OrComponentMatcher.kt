@@ -19,6 +19,7 @@ package android.tools.traces.component
 import android.tools.traces.surfaceflinger.Layer
 import android.tools.traces.wm.Activity
 import android.tools.traces.wm.WindowContainer
+import java.util.function.Predicate
 
 class OrComponentMatcher(private val componentMatchers: Collection<IComponentMatcher>) :
     IComponentMatcher {
@@ -56,10 +57,10 @@ class OrComponentMatcher(private val componentMatchers: Collection<IComponentMat
     /** {@inheritDoc} */
     override fun check(
         layers: Collection<Layer>,
-        condition: (Collection<Layer>) -> Boolean
+        condition: Predicate<Collection<Layer>>,
     ): Boolean {
         return componentMatchers.any { oredComponent ->
-            oredComponent.check(layers) { condition(it) }
+            oredComponent.check(layers) { condition.test(it) }
         }
     }
 

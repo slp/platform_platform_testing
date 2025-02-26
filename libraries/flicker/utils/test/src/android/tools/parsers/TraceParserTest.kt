@@ -32,7 +32,7 @@ class TraceParserTest {
         testSliceUsingElapsedTimestamp(
             Timestamps.min().elapsedNanos,
             mockTraceForSliceTests.entries.first().timestamp.elapsedNanos - 1,
-            listOf<Long>()
+            listOf<Long>(),
         )
     }
 
@@ -46,7 +46,7 @@ class TraceParserTest {
                     mockTraceForSliceTests,
                     Timestamps.from(elapsedNanos = from),
                     Timestamps.from(elapsedNanos = to),
-                    addInitialEntry = false
+                    addInitialEntry = false,
                 )
         Truth.assertThat(splitLayersTraceWithoutInitialEntry.entries).isEmpty()
 
@@ -56,7 +56,7 @@ class TraceParserTest {
                     mockTraceForSliceTests,
                     Timestamps.from(elapsedNanos = from),
                     Timestamps.from(elapsedNanos = to),
-                    addInitialEntry = true
+                    addInitialEntry = true,
                 )
         Truth.assertThat(splitLayersTraceWithInitialEntry.entries).hasSize(1)
         Truth.assertThat(splitLayersTraceWithInitialEntry.entries.first().timestamp)
@@ -73,7 +73,7 @@ class TraceParserTest {
         testSliceUsingElapsedTimestamp(
             mockTraceForSliceTests.entries.first().timestamp.elapsedNanos - 1,
             27L,
-            listOf(5L, 8L, 15L, 18L, 25L, 27L)
+            listOf(5L, 8L, 15L, 18L, 25L, 27L),
         )
     }
 
@@ -82,7 +82,7 @@ class TraceParserTest {
         testSliceUsingElapsedTimestamp(
             18L,
             mockTraceForSliceTests.entries.last().timestamp.elapsedNanos + 5,
-            listOf(18L, 25L, 27L, 30L)
+            listOf(18L, 25L, 27L, 30L),
         )
     }
 
@@ -91,7 +91,7 @@ class TraceParserTest {
         testSliceUsingElapsedTimestamp(
             mockTraceForSliceTests.entries.first().timestamp.elapsedNanos - 1,
             mockTraceForSliceTests.entries.last().timestamp.elapsedNanos + 1,
-            mockTraceForSliceTests.entries.map { it.timestamp }
+            mockTraceForSliceTests.entries.map { it.timestamp },
         )
     }
 
@@ -100,7 +100,7 @@ class TraceParserTest {
         testSliceUsingElapsedTimestamp(
             mockTraceForSliceTests.entries.first().timestamp,
             mockTraceForSliceTests.entries.last().timestamp.elapsedNanos + 1,
-            mockTraceForSliceTests.entries.map { it.timestamp }
+            mockTraceForSliceTests.entries.map { it.timestamp },
         )
     }
 
@@ -109,7 +109,7 @@ class TraceParserTest {
         testSliceUsingElapsedTimestamp(
             mockTraceForSliceTests.entries.first().timestamp,
             mockTraceForSliceTests.entries.last().timestamp,
-            mockTraceForSliceTests.entries.map { it.timestamp }
+            mockTraceForSliceTests.entries.map { it.timestamp },
         )
     }
 
@@ -118,7 +118,7 @@ class TraceParserTest {
         testSliceUsingElapsedTimestamp(
             mockTraceForSliceTests.entries.first().timestamp,
             18L,
-            listOf(5L, 8L, 15L, 18L)
+            listOf(5L, 8L, 15L, 18L),
         )
     }
 
@@ -127,7 +127,7 @@ class TraceParserTest {
         testSliceUsingElapsedTimestamp(
             18L,
             mockTraceForSliceTests.entries.last().timestamp,
-            listOf(18L, 25L, 27L, 30L)
+            listOf(18L, 25L, 27L, 30L),
         )
     }
 
@@ -136,7 +136,7 @@ class TraceParserTest {
         testSliceUsingElapsedTimestamp(
             mockTraceForSliceTests.entries.first().timestamp.elapsedNanos - 1,
             mockTraceForSliceTests.entries.last().timestamp,
-            mockTraceForSliceTests.entries.map { it.timestamp }
+            mockTraceForSliceTests.entries.map { it.timestamp },
         )
     }
 
@@ -154,7 +154,7 @@ class TraceParserTest {
     private fun testSliceUsingElapsedTimestamp(
         from: Timestamp?,
         to: Long,
-        expected: List<Timestamp>
+        expected: List<Timestamp>,
     ) {
         return testSliceUsingElapsedTimestamp(from, to, expected.map { it.elapsedNanos })
     }
@@ -162,7 +162,7 @@ class TraceParserTest {
     private fun testSliceUsingElapsedTimestamp(
         from: Long,
         to: Timestamp?,
-        expected: List<Timestamp>
+        expected: List<Timestamp>,
     ) {
         return testSliceUsingElapsedTimestamp(from, to, expected.map { it.elapsedNanos })
     }
@@ -172,7 +172,7 @@ class TraceParserTest {
         return testSliceUsingElapsedTimestamp(
             from,
             to?.elapsedNanos ?: error("missing elapsed timestamp"),
-            expected
+            expected,
         )
     }
 
@@ -180,12 +180,12 @@ class TraceParserTest {
     private fun testSliceUsingElapsedTimestamp(
         from: Timestamp?,
         to: Timestamp?,
-        expected: List<Timestamp>
+        expected: List<Timestamp>,
     ) {
         return testSliceUsingElapsedTimestamp(
             from?.elapsedNanos ?: error("missing elapsed timestamp"),
             to?.elapsedNanos ?: error("missing elapsed timestamp"),
-            expected.map { it.elapsedNanos }
+            expected.map { it.elapsedNanos },
         )
     }
 
@@ -193,7 +193,7 @@ class TraceParserTest {
         return testSliceUsingElapsedTimestamp(
             from?.elapsedNanos ?: error("missing elapsed timestamp"),
             to,
-            expected
+            expected,
         )
     }
 
@@ -248,7 +248,7 @@ class TraceParserTest {
                     mockTraceForSliceTests,
                     Timestamps.from(elapsedNanos = from),
                     Timestamps.from(elapsedNanos = to),
-                    addInitialEntry = false
+                    addInitialEntry = false,
                 )
         Truth.assertThat(splitLayersTrace.entries.map { it.timestamp.elapsedNanos })
             .isEqualTo(expected)
@@ -261,7 +261,7 @@ class TraceParserTest {
                     mockTraceForSliceTests,
                     Timestamps.from(elapsedNanos = from),
                     Timestamps.from(elapsedNanos = to),
-                    addInitialEntry = true
+                    addInitialEntry = true,
                 )
         Truth.assertThat(splitLayersTraceWithStartEntry.entries.map { it.timestamp.elapsedNanos })
             .isEqualTo(expected)

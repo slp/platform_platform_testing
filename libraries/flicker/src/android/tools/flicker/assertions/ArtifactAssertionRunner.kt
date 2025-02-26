@@ -31,7 +31,7 @@ import android.tools.withTracing
  */
 class ArtifactAssertionRunner(
     private val result: IResultData,
-    resultReader: Reader = ResultReaderWithLru(result, TRACE_CONFIG_REQUIRE_CHANGES)
+    resultReader: Reader = ResultReaderWithLru(result, TRACE_CONFIG_REQUIRE_CHANGES),
 ) : BaseAssertionRunner(resultReader) {
     override fun doUpdateStatus(newStatus: RunStatus) {
         withTracing("ArtifactAssertionRunner#doUpdateStatus") { result.updateStatus(newStatus) }

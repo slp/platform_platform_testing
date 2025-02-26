@@ -18,8 +18,8 @@ package com.android.helpers;
 import android.os.SystemClock;
 import android.util.Log;
 
-import androidx.test.uiautomator.UiDevice;
 import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.uiautomator.UiDevice;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -32,8 +32,11 @@ public class MemhogHelper {
     // Location of memhog on the device, defined in heavyweight-memhog.gcl.
     private static final String MEMHOG_FILE_PATH = "/data/local/tmp/memhog";
     private static final String MEMHOG_PROC_ID_CMD = "pidof memhog";
-    private static final String MEMHOG_START_CMD =
+    private static final String MEMHOG_START_HOG_CMD =
             "%s -m %d -s -1 -M -r 1 </dev/null &>/dev/null &";
+    private static final String MEMHOG_START_HEADROOM_CMD =
+            "%s -m %d -r -1 --read --file /data/local/tmp/memhog.file --chunk 20M --chunk-delay"
+                    + " 2000000 </dev/null &>/dev/null &";
     private static final String MEMHOG_STOP_CMD = "pkill memhog";
 
     private static final int MEMHOG_START_RETRY_COUNT = 3;
@@ -44,10 +47,35 @@ public class MemhogHelper {
 
     private UiDevice mUiDevice;
 
-    // Starts memhog with the specified amount of memory in bytes.
+    /** Starts memhog in the "hog" mode with the specified amount of memory in bytes. */
     public boolean startMemhog(long memorySizeBytes) {
+        return startMemhog("hog", memorySizeBytes);
+    }
+
+    /**
+     * Starts memhog with the specified mode and amount of memory in bytes. The mode is can be "hog"
+     * to cause memhog to mlock <code>memorySizeBytes</code> in memory, or "headroom" to cause
+     * memhog to continuously allocate up to a max of <code>memorySizeBytes</code> of easily
+     * reclaimable memory.
+     */
+    public boolean startMemhog(String mode, long memorySizeBytes) {
         mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         Log.i(TAG, "Starting memhog.");
+        final String startCmd;
+        switch (mode) {
+            case "hog":
+                startCmd = MEMHOG_START_HOG_CMD;
+                break;
+
+            case "headroom":
+                startCmd = MEMHOG_START_HEADROOM_CMD;
+                break;
+
+            default:
+                Log.e(TAG, "Unsupported memhog mode '" + mode + "'");
+                return false;
+        }
+
         new Thread() {
             @Override
             public void run() {
@@ -57,11 +85,7 @@ public class MemhogHelper {
                     // Makes memhog executable, then runs it.
                     uiDevice.executeShellCommand(String.format(CHMOD_CMD, MEMHOG_FILE_PATH));
                     uiDevice.executeShellCommand(
-                            String.format(
-                                    Locale.US,
-                                    MEMHOG_START_CMD,
-                                    MEMHOG_FILE_PATH,
-                                    memorySizeBytes));
+                            String.format(Locale.US, startCmd, MEMHOG_FILE_PATH, memorySizeBytes));
                 } catch (IOException e) {
                     Log.e(TAG, "Failed to start memhog: " + e.getMessage());
                 }

@@ -126,7 +126,7 @@ class DataPointTypesTest {
         assertThat(DataPointTypes.listOf(something))
             .convertsJsonArray(
                 listOf(Something("foo"), Something("bar")),
-                """[{"string":"foo"}, {"string":"bar"}]"""
+                """[{"string":"foo"}, {"string":"bar"}]""",
             )
     }
 
@@ -157,6 +157,6 @@ class DataPointTypesTest {
                     Something(getString("string"))
                 }
             },
-            valueToJson = { JSONObject().apply { put("string", it.string) } }
+            valueToJson = { JSONObject().apply { put("string", it.string) } },
         )
 }

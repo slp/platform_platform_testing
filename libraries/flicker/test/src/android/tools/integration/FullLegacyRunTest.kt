@@ -40,6 +40,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 
+/**
+ * Contains an integration test running the legacy flicker test using
+ * [FlickerParametersRunnerFactory] with flicker service compatibility enabled.
+ *
+ * To run this test: `atest FlickerLibTestE2e:FullLegacyRunTest`
+ */
 @FlickerServiceCompatible(expectedCujs = ["ENTIRE_TRACE"])
 @RunWith(Parameterized::class)
 @Parameterized.UseParametersRunnerFactory(FlickerParametersRunnerFactory::class)
@@ -155,10 +161,7 @@ class FullLegacyRunTest(private val flicker: LegacyFlickerTest) {
         Truth.assertWithMessage("Expected state").that(expected).isNotNull()
     }
 
-    private fun validateVisibleRegion(
-        actual: RegionSubject?,
-        expected: RegionSubject?,
-    ) {
+    private fun validateVisibleRegion(actual: RegionSubject?, expected: RegionSubject?) {
         Truth.assertWithMessage("Actual visible region").that(actual).isNotNull()
         Truth.assertWithMessage("Expected visible region").that(expected).isNotNull()
         actual?.coversExactly(expected?.region ?: Region())

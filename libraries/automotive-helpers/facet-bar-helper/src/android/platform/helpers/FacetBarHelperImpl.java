@@ -36,6 +36,10 @@ public class FacetBarHelperImpl extends AbstractStandardAppHelper implements IAu
         FACET_BAR.APP_GRID.setFacetIcon(AutomotiveConfigConstants.APP_GRID_FACET_BUTTON);
         FACET_BAR.HVAC.setFacetIcon(AutomotiveConfigConstants.HVAC_FACET_BUTTON);
         FACET_BAR.NOTIFICATION.setFacetIcon(AutomotiveConfigConstants.NOTIFICATION_FACET_BUTTON);
+        FACET_BAR.BLUETOOTH.setFacetIcon(AutomotiveConfigConstants.STATUS_BAR_BLUETOOTH_BUTTON);
+        FACET_BAR.WIFI.setFacetIcon(AutomotiveConfigConstants.WIFI_FACET_BUTTON);
+        FACET_BAR.BRIGHTNESS.setFacetIcon(AutomotiveConfigConstants.STATUS_BAR_BRIGHTNESS_BUTTON);
+        FACET_BAR.SOUND.setFacetIcon(AutomotiveConfigConstants.SOUND_FACET_BUTTON);
 
         // Set App Verification
         VERIFY_OPEN_APP.HOME.setAppResourceForVerification(
@@ -46,6 +50,14 @@ public class FacetBarHelperImpl extends AbstractStandardAppHelper implements IAu
         VERIFY_OPEN_APP.HVAC.setAppResourceForVerification(AutomotiveConfigConstants.HVAC_PANEL);
         VERIFY_OPEN_APP.NOTIFICATION.setAppResourceForVerification(
                 AutomotiveConfigConstants.NOTIFICATION_VIEW);
+        VERIFY_OPEN_APP.BLUETOOTH.setAppResourceForVerification(
+                AutomotiveConfigConstants.STATUS_BAR_BLUETOOTH_SETTINGS);
+        VERIFY_OPEN_APP.WIFI.setAppResourceForVerification(
+                AutomotiveConfigConstants.STATUS_BAR_WIFI_SETTINGS);
+        VERIFY_OPEN_APP.BRIGHTNESS.setAppResourceForVerification(
+                AutomotiveConfigConstants.STATUS_BAR_DISPLAY_SETTINGS);
+        VERIFY_OPEN_APP.SOUND.setAppResourceForVerification(
+                AutomotiveConfigConstants.STATUS_BAR_SOUND_SETTINGS);
     }
 
     /** {@inheritDoc} */

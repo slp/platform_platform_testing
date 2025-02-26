@@ -161,11 +161,11 @@ class ResultWriterTest {
             newTestResultWriter()
                 .addTraceResult(
                     TraceType.LEGACY_WM_TRANSITION,
-                    TestTraces.LegacyTransitionTrace.WM_FILE
+                    TestTraces.LegacyTransitionTrace.WM_FILE,
                 )
                 .addTraceResult(
                     TraceType.LEGACY_SHELL_TRANSITION,
-                    TestTraces.LegacyTransitionTrace.SHELL_FILE
+                    TestTraces.LegacyTransitionTrace.SHELL_FILE,
                 )
         val result = writer.write()
         val reader = ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)
@@ -187,11 +187,11 @@ class ResultWriterTest {
                 .addTraceResult(TraceType.TRANSACTION, TestTraces.TransactionTrace.FILE)
                 .addTraceResult(
                     TraceType.LEGACY_WM_TRANSITION,
-                    TestTraces.LegacyTransitionTrace.WM_FILE
+                    TestTraces.LegacyTransitionTrace.WM_FILE,
                 )
                 .addTraceResult(
                     TraceType.LEGACY_SHELL_TRANSITION,
-                    TestTraces.LegacyTransitionTrace.SHELL_FILE
+                    TestTraces.LegacyTransitionTrace.SHELL_FILE,
                 )
         val result = writer.write()
         val reader = ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)

@@ -54,41 +54,53 @@ class DeviceDumpParser {
         fun fromNullableDump(
             wmTraceData: ByteArray,
             layersTraceData: ByteArray,
-            clearCacheAfterParsing: Boolean
+            clearCacheAfterParsing: Boolean,
         ): NullableDeviceStateDump {
             return withTracing("fromNullableDump") {
-                    val wmState =
-                        wmTraceData
-                            .takeIf { it.isNotEmpty() }
-                            ?.let {
-                                if (android.tracing.Flags.perfettoWmDump()) {
-                                    TraceProcessorSession.loadPerfettoTrace(wmTraceData) { session
-                                        ->
-                                        WindowManagerTraceParser()
-                                            .parse(session, clearCache = clearCacheAfterParsing)
-                                            .entries
-                                            .first()
-                                    }
-                                } else {
-                                    WindowManagerDumpParser()
-                                        .parse(wmTraceData, clearCache = clearCacheAfterParsing)
-                                        .entries
-                                        .first()
-                                }
-                            }
+                    val hasSfDump = layersTraceData.isNotEmpty()
+                    val hasWmDump = wmTraceData.isNotEmpty()
 
-                    val layerState =
-                        layersTraceData
-                            .takeIf { it.isNotEmpty() }
-                            ?.let {
-                                TraceProcessorSession.loadPerfettoTrace(layersTraceData) { session
-                                    ->
+                    // If android.tracing.Flags.perfettoWmDump() is enabled, layersTraceData and
+                    // wmTraceData correspond to the same perfetto trace file
+                    val perfettoTrace =
+                        if (hasSfDump) {
+                            layersTraceData
+                        } else if (android.tracing.Flags.perfettoWmDump() && hasWmDump) {
+                            wmTraceData
+                        } else {
+                            null
+                        }
+
+                    var wmState: WindowManagerState? = null
+                    var layerState: LayerTraceEntry? = null
+
+                    perfettoTrace?.let {
+                        TraceProcessorSession.loadPerfettoTrace(it) { session ->
+                            if (hasSfDump) {
+                                layerState =
                                     LayersTraceParser()
                                         .parse(session, clearCache = clearCacheAfterParsing)
                                         .entries
                                         .first()
-                                }
                             }
+
+                            if (android.tracing.Flags.perfettoWmDump() && hasWmDump) {
+                                wmState =
+                                    WindowManagerTraceParser()
+                                        .parse(session, clearCache = clearCacheAfterParsing)
+                                        .entries
+                                        .first()
+                            }
+                        }
+                    }
+
+                    if (!android.tracing.Flags.perfettoWmDump() && hasWmDump) {
+                        wmState =
+                            WindowManagerDumpParser()
+                                .parse(wmTraceData, clearCache = clearCacheAfterParsing)
+                                .entries
+                                .first()
+                    }
 
                     NullableDeviceStateDump(wmState = wmState, layerState = layerState)
                 }
@@ -103,14 +115,14 @@ class DeviceDumpParser {
         fun fromDump(
             wmTraceData: ByteArray,
             layersTraceData: ByteArray,
-            clearCacheAfterParsing: Boolean
+            clearCacheAfterParsing: Boolean,
         ): DeviceStateDump {
             return withTracing("fromDump") {
                     val nullableDump =
                         fromNullableDump(wmTraceData, layersTraceData, clearCacheAfterParsing)
                     DeviceStateDump(
                         nullableDump.wmState ?: error("WMState dump missing"),
-                        nullableDump.layerState ?: error("Layer State dump missing")
+                        nullableDump.layerState ?: error("Layer State dump missing"),
                     )
                 }
                 .also {

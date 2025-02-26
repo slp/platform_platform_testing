@@ -34,5 +34,5 @@ val NotificationQsScrollSwipe =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )

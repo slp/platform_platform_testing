@@ -83,6 +83,13 @@ public class NetworkPaletteTest {
         // Turn off Wifi
         mStatusBarHelper.get().networkPaletteToggleOnOff(WIFI);
         assertFalse("Wi-Fi is enabled", mSettingHelper.get().isWifiOn());
+        // Verifying Wifi is turned ON again
+        mStatusBarHelper.get().networkPaletteToggleOnOff(WIFI);
+        assertTrue("Wi-Fi is not enabled", mSettingHelper.get().isWifiOn());
+        assertTrue("Wi-Fi Name is not displayed", mStatusBarHelper.get().isWifiNameDisplayed());
+        // Turn off Wifi
+        mStatusBarHelper.get().networkPaletteToggleOnOff(WIFI);
+        assertFalse("Wi-Fi is enabled", mSettingHelper.get().isWifiOn());
     }
 
     @Test
@@ -94,6 +101,17 @@ public class NetworkPaletteTest {
         if (!mStatusBarHelper.get().isNetworkSwitchEnabled(HOTSPOT)) {
             mStatusBarHelper.get().networkPaletteToggleOnOff(HOTSPOT);
         }
+        assertTrue("Wi-Fi is not enabled", mSettingHelper.get().isWifiOn());
+        assertTrue(
+                "Hotspot is not enabled", mStatusBarHelper.get().isNetworkSwitchEnabled(HOTSPOT));
+        // Turn off Wifi and Hotspot
+        mStatusBarHelper.get().networkPaletteToggleOnOff(WIFI);
+        mStatusBarHelper.get().networkPaletteToggleOnOff(HOTSPOT);
+        assertFalse("Wi-Fi is enabled", mSettingHelper.get().isWifiOn());
+        assertFalse("Hotspot is enabled", mStatusBarHelper.get().isNetworkSwitchEnabled(HOTSPOT));
+        // Turn on Wifi and Hotspot
+        mStatusBarHelper.get().networkPaletteToggleOnOff(WIFI);
+        mStatusBarHelper.get().networkPaletteToggleOnOff(HOTSPOT);
         assertTrue("Wi-Fi is not enabled", mSettingHelper.get().isWifiOn());
         assertTrue(
                 "Hotspot is not enabled", mStatusBarHelper.get().isNetworkSwitchEnabled(HOTSPOT));

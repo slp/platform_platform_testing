@@ -45,7 +45,7 @@ class CachedResultReaderTest {
         val reader =
             android.tools.flicker.datastore.CachedResultReader(
                 TEST_SCENARIO,
-                TRACE_CONFIG_REQUIRE_CHANGES
+                TRACE_CONFIG_REQUIRE_CHANGES,
             )
         val actual = reader.readEventLogTrace()
         Truth.assertWithMessage("Event log size").that(actual).isNotNull()

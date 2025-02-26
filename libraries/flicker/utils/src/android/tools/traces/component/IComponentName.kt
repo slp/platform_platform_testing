@@ -18,7 +18,13 @@ package android.tools.traces.component
 interface IComponentName {
     val packageName: String
     val className: String
+
     fun toActivityName(): String
+
     fun toWindowName(): String
+
     fun toLayerName(): String
+
+    val packageNameMatcher: ComponentNameMatcher
+        get() = ComponentNameMatcher(packageName, "")
 }

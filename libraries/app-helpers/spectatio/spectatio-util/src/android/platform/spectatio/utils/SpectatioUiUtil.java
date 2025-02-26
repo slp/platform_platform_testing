@@ -21,9 +21,11 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.os.UserHandle;
 import android.platform.spectatio.exceptions.MissingUiElementException;
 import android.util.Log;
 import android.view.KeyEvent;
+import com.google.escapevelocity.Template;
 
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.BySelector;
@@ -35,10 +37,16 @@ import androidx.test.uiautomator.Until;
 import com.google.common.base.Strings;
 
 import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class SpectatioUiUtil {
     private static final String LOG_TAG = SpectatioUiUtil.class.getSimpleName();
@@ -283,17 +291,50 @@ public class SpectatioUiUtil {
      */
     public String executeShellCommand(String command) {
         validateText(command, /* type= */ "Command");
+        String populatedCommand = populateShellCommand(command);
+        Log.d(
+                LOG_TAG,
+                String.format(
+                        "Initial command: %s. Populated command: %s",
+                        command, populatedCommand));
         try {
-            return mDevice.executeShellCommand(command);
+            return mDevice.executeShellCommand(populatedCommand);
         } catch (IOException e) {
             // ignore
             Log.e(
                     LOG_TAG,
                     String.format(
                             "The shell command failed to run: %s, Error: %s",
-                            command, e.getMessage()));
+                            populatedCommand, e.getMessage()));
             return "";
         }
+    }
+
+    private String populateShellCommand(String command) {
+        String populatedCommand = command;
+
+        // Map of supported substitutions
+        Map<String, String> vars = new HashMap<>();
+        vars.put("user_id", String.valueOf(UserHandle.CURRENT.myUserId()));
+
+        try (InputStreamReader reader =
+                new InputStreamReader(
+                        new ByteArrayInputStream(command.getBytes(StandardCharsets.UTF_8)))) {
+            Template template = Template.parseFrom(reader);
+            populatedCommand = template.evaluate(vars);
+            Log.d(
+                    LOG_TAG,
+                    String.format(
+                            "Initial command: %s. Populated command: %s",
+                            command, populatedCommand));
+        } catch (IOException e) {
+            Log.e(
+                    LOG_TAG,
+                    String.format(
+                            "Error populating the shell command template %s, Error: %s",
+                            command, e.getMessage()));
+        }
+        return populatedCommand;
     }
 
     /** Find and return the UI Object that matches the given selector */
@@ -481,6 +522,11 @@ public class SpectatioUiUtil {
         return mDevice.hasObject(By.pkg(packageName).depth(0));
     }
 
+    /** Click at the specified location on the device */
+    public void click(int x, int y) throws IOException {
+        mDevice.click(x, y);
+    }
+
     public void swipeUp() {
         // Swipe Up From bottom of screen to the top in one step
         swipe(SwipeDirection.BOTTOM_TO_TOP, /*numOfSteps*/ MAX_SWIPE_STEPS);
@@ -579,7 +625,7 @@ public class SpectatioUiUtil {
                 padYStart = bounds.bottom / 4 * 3;
                 break;
             case DEFAULT:
-                break; // handled above the switch
+                break; // handled above the switch.
         }
 
         switch (swipeDirection) {
@@ -623,9 +669,13 @@ public class SpectatioUiUtil {
         return swipePoints;
     }
 
-    private Rect getScreenBounds() {
-        Point dimensions = mDevice.getDisplaySizeDp();
-        return new Rect(0, 0, dimensions.x, dimensions.y);
+    /** Returns a Rect representing the bounds of the screen */
+    public Rect getScreenBounds() {
+        return new Rect(
+            /* left= */ 0,
+            /* top= */ 0,
+            /* right= */ mDevice.getDisplayWidth(),
+            /* bottom= */ mDevice.getDisplayHeight());
     }
 
     public void swipeRight(UiObject2 uiObject) {
@@ -794,14 +844,15 @@ public class SpectatioUiUtil {
         return null;
     }
 
-    private String getViewHierarchy() {
+    /** Returns the view hierarchy as XML, as output by `adb shell uiautomator dump`. */
+    public String getViewHierarchy() {
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             mDevice.dumpWindowHierarchy(outputStream);
             outputStream.close();
             return outputStream.toString();
         } catch (IOException ex) {
-            throw new IllegalStateException("Unable to get view hierarchy.");
+            throw new IllegalStateException("Unable to get view hierarchy.", ex);
         }
     }
 
@@ -950,20 +1001,23 @@ public class SpectatioUiUtil {
 
     private UiObject2 validateAndGetScrollableObject(BySelector scrollableSelector)
             throws MissingUiElementException {
-        UiObject2 scrollableObject = findUiObject(scrollableSelector);
-        validateUiObjectAndThrowMissingUiElementException(
-                scrollableObject, scrollableSelector, /* action= */ "Scroll");
-        if (!scrollableObject.isScrollable()) {
-            scrollableObject = scrollableObject.findObject(By.scrollable(true));
+        List<UiObject2> scrollableObjects = findUiObjects(scrollableSelector);
+        for (UiObject2 scrollableObject : scrollableObjects) {
+            validateUiObjectAndThrowMissingUiElementException(
+                    scrollableObject, scrollableSelector, /* action= */ "Scroll");
+            if (!scrollableObject.isScrollable()) {
+                scrollableObject = scrollableObject.findObject(By.scrollable(true));
+            }
+            if (scrollableObject != null && scrollableObject.isScrollable()) {
+                // if there are multiple, return the first UiObject that is scrollable
+                return scrollableObject;
+            }
         }
-        if ((scrollableObject == null) || !scrollableObject.isScrollable()) {
-            throw new IllegalStateException(
-                    String.format(
-                            "Cannot scroll; UI Object for selector %s is not scrollable and has no"
-                                    + " scrollable children.",
-                            scrollableSelector));
-        }
-        return scrollableObject;
+        throw new IllegalStateException(
+                String.format(
+                        "Cannot scroll; Could not find UI Object for selector %s that is scrollable"
+                                + " or have scrollable children.",
+                        scrollableSelector));
     }
 
     /**

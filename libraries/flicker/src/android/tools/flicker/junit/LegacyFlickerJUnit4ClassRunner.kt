@@ -74,12 +74,13 @@ import org.junit.runners.parameterized.TestWithParameters
 class LegacyFlickerJUnit4ClassRunner(
     test: TestWithParameters?,
     private val scenario: Scenario?,
-    private val arguments: Bundle = InstrumentationRegistry.getArguments()
+    private val arguments: Bundle = InstrumentationRegistry.getArguments(),
 ) : BlockJUnit4ClassRunnerWithParameters(test), IFlickerJUnitDecorator {
     private val onlyBlocking
         get() =
             scenario?.getConfigValue<Boolean>(Scenario.FAAS_BLOCKING)
-                ?: arguments.getString(Scenario.FAAS_BLOCKING)?.toBoolean() ?: true
+                ?: arguments.getString(Scenario.FAAS_BLOCKING)?.toBoolean()
+                ?: true
 
     @VisibleForTesting
     val transitionRunner =
@@ -121,7 +122,7 @@ class LegacyFlickerJUnit4ClassRunner(
             transitionRunner,
             arguments = arguments,
             skipNonBlocking = onlyBlocking,
-            inner = LegacyFlickerDecorator(this.testClass, scenario, transitionRunner, inner = this)
+            inner = LegacyFlickerDecorator(this.testClass, scenario, transitionRunner, inner = this),
         )
 
     init {

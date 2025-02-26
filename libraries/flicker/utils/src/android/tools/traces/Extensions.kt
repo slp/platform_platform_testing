@@ -39,7 +39,7 @@ fun now(): Timestamp {
     return Timestamps.from(
         elapsedNanos = SystemClock.elapsedRealtimeNanos(),
         systemUptimeNanos = SystemClock.uptimeNanos(),
-        unixNanos = now.epochSecond * SECOND_AS_NANOSECONDS + now.nano
+        unixNanos = now.epochSecond * SECOND_AS_NANOSECONDS + now.nano,
     )
 }
 

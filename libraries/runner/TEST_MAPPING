@@ -1,0 +1,7 @@
+{
+  "postsubmit": [
+    {
+      "name": "platform-parametric-runner-lib-test"
+    }
+  ]
+}

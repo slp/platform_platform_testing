@@ -9,6 +9,7 @@ import androidx.test.uiautomator.Direction.RIGHT
 import androidx.test.uiautomator.Direction.UP
 
 /** Common utils to perform swipes. */
+@Deprecated("Use uiautomatorhelpers, b/376676853")
 internal object SwipeUtils {
 
     /**

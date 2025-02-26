@@ -17,9 +17,11 @@
 package android.tools.flicker.subject.inputmethod
 
 import android.tools.flicker.subject.FlickerTraceSubject
+import android.tools.function.AssertionPredicate
 import android.tools.io.Reader
 import android.tools.traces.inputmethod.InputMethodServiceEntry
 import android.tools.traces.inputmethod.InputMethodServiceTrace
+import java.util.function.Predicate
 
 /**
  * Truth subject for [InputMethodServiceTrace] objects, used to make assertions over behaviors that
@@ -32,7 +34,8 @@ import android.tools.traces.inputmethod.InputMethodServiceTrace
  * myCustomAssertion(this) } }
  */
 class InputMethodServiceTraceSubject
-private constructor(val trace: InputMethodServiceTrace, override val reader: Reader? = null) :
+@JvmOverloads
+constructor(val trace: InputMethodServiceTrace, override val reader: Reader? = null) :
     FlickerTraceSubject<InputMethodServiceEntrySubject>(),
     IInputMethodServiceSubject<InputMethodServiceTraceSubject> {
 
@@ -54,10 +57,11 @@ private constructor(val trace: InputMethodServiceTrace, override val reader: Rea
     }
 
     /** Executes a custom [assertion] on the current subject */
+    @JvmOverloads
     operator fun invoke(
         name: String,
         isOptional: Boolean = false,
-        assertion: (InputMethodServiceEntrySubject) -> Unit
+        assertion: AssertionPredicate<InputMethodServiceEntrySubject>,
     ): InputMethodServiceTraceSubject = apply { addAssertion(name, isOptional, assertion) }
 
     /**
@@ -65,6 +69,6 @@ private constructor(val trace: InputMethodServiceTrace, override val reader: Rea
      *   appear in the trace
      */
     fun imeClientEntriesThat(
-        predicate: (InputMethodServiceEntry) -> Boolean
-    ): List<InputMethodServiceEntrySubject> = subjects.filter { predicate(it.entry) }
+        predicate: Predicate<InputMethodServiceEntry>
+    ): List<InputMethodServiceEntrySubject> = subjects.filter { predicate.test(it.entry) }
 }

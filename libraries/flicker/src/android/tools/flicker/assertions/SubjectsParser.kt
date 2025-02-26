@@ -39,7 +39,7 @@ import kotlin.reflect.KClass
 open class SubjectsParser(private val resultReader: Reader) {
     fun getSubjectOfType(
         tag: String,
-        expectedSubjectClass: KClass<out FlickerSubject>
+        expectedSubjectClass: KClass<out FlickerSubject>,
     ): FlickerSubject? {
         return when {
             tag == Tag.ALL && expectedSubjectClass == WindowManagerTraceSubject::class ->

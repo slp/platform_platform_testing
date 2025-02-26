@@ -46,7 +46,7 @@ constructor(
     private val instrumentation: Instrumentation = appHelper.instrumentation,
     private val clearCacheAfterParsing: Boolean = true,
     private val wmHelper: WindowManagerStateHelper =
-        WindowManagerStateHelper(clearCacheAfterParsing = clearCacheAfterParsing)
+        WindowManagerStateHelper(clearCacheAfterParsing = clearCacheAfterParsing),
 ) : TestWatcher() {
     @JvmOverloads
     constructor(
@@ -55,12 +55,12 @@ constructor(
         instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation(),
         clearCache: Boolean = true,
         wmHelper: WindowManagerStateHelper =
-            WindowManagerStateHelper(clearCacheAfterParsing = clearCache)
+            WindowManagerStateHelper(clearCacheAfterParsing = clearCache),
     ) : this(
         StandardAppHelper(instrumentation, appName, componentMatcher),
         instrumentation,
         clearCache,
-        wmHelper
+        wmHelper,
     )
 
     override fun starting(description: Description?) {

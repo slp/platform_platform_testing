@@ -18,6 +18,7 @@ package android.tools.device.apphelpers
 
 import android.app.Instrumentation
 import android.tools.traces.component.ComponentNameMatcher
+import android.tools.traces.component.IComponentNameMatcher
 import androidx.test.platform.app.InstrumentationRegistry
 
 /**
@@ -27,12 +28,12 @@ import androidx.test.platform.app.InstrumentationRegistry
  */
 class CalculatorAppHelper
 @JvmOverloads
-constructor(instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()) :
-    StandardAppHelper(
-        instrumentation,
-        "Calculator",
+constructor(
+    instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation(),
+    appName: String = "Calculator",
+    appComponent: IComponentNameMatcher =
         ComponentNameMatcher(
             packageName = "com.google.android.calculator",
-            className = "com.android.calculator2.Calculator"
-        )
-    )
+            className = "com.android.calculator2.Calculator",
+        ),
+) : StandardAppHelper(instrumentation, appName, appComponent)

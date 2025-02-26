@@ -163,6 +163,8 @@ public class BootTimeTest extends BaseHostJUnit4Test {
         setUpDeviceForSuccessiveBoots();
         CLog.v("Waiting for %d msecs before successive boots.", mBootDelayTime);
         sleep(mBootDelayTime);
+        mRebootLogcatReceiver = new LogcatReceiver(getDevice(), LOGCAT_CMD_ALL, LOGCAT_SIZE, 0);
+        mRebootLogcatReceiver.start();
     }
 
     @Test
@@ -195,7 +197,7 @@ public class BootTimeTest extends BaseHostJUnit4Test {
         if (mForceF2FsShutdown) {
             forseF2FsShutdown();
         }
-        clearAndStartLogcat();
+        clearLogcat();
         sleep(5000);
         getDevice().nonBlockingReboot();
         getDevice().waitForDeviceOnline(mDeviceBootTime);
@@ -271,15 +273,9 @@ public class BootTimeTest extends BaseHostJUnit4Test {
                 filename, LogDataType.HOST_LOG, new FileInputStreamSource(dmesgFile, false));
     }
 
-    private void clearAndStartLogcat() throws DeviceNotAvailableException {
+    private void clearLogcat() throws DeviceNotAvailableException {
         getDevice().executeShellCommand(LOGCAT_CMD_CLEAR);
-        if (mRebootLogcatReceiver != null) {
-            mRebootLogcatReceiver.clear();
-            mRebootLogcatReceiver.stop();
-            mRebootLogcatReceiver = null;
-        }
-        mRebootLogcatReceiver = new LogcatReceiver(getDevice(), LOGCAT_CMD_ALL, LOGCAT_SIZE, 0);
-        mRebootLogcatReceiver.start();
+        mRebootLogcatReceiver.clear();
     }
 
     private void sleep(long duration) {

@@ -24,6 +24,7 @@ import android.tools.datatypes.containsWithThreshold
 import android.tools.datatypes.crop
 import android.tools.traces.component.ComponentName
 import androidx.core.graphics.toRect
+import com.android.internal.annotations.VisibleForTesting
 
 /**
  * Represents a single layer with links to its parent and child layers.
@@ -32,7 +33,8 @@ import androidx.core.graphics.toRect
  * Java/Android functionality
  */
 class Layer
-private constructor(
+@VisibleForTesting
+public constructor(
     val name: String,
     val id: Int,
     val parentId: Int,
@@ -60,12 +62,16 @@ private constructor(
     private val _coveredBy = mutableListOf<Layer>()
     val children: Collection<Layer>
         get() = _children
+
     val occludedBy: Collection<Layer>
         get() = _occludedBy
+
     val partiallyOccludedBy: Collection<Layer>
         get() = _partiallyOccludedBy
+
     val coveredBy: Collection<Layer>
         get() = _coveredBy
+
     var isMissing: Boolean = false
         internal set
 
@@ -313,6 +319,7 @@ private constructor(
     }
 
     companion object {
+        @JvmStatic
         fun from(
             name: String,
             id: Int,
@@ -337,7 +344,7 @@ private constructor(
             isRelativeOf: Boolean,
             zOrderRelativeOfId: Int,
             stackId: Int,
-            excludesCompositionState: Boolean
+            excludesCompositionState: Boolean,
         ): Layer {
             val properties =
                 LayerProperties.from(
@@ -359,7 +366,7 @@ private constructor(
                     isRelativeOf,
                     zOrderRelativeOfId,
                     stackId,
-                    excludesCompositionState
+                    excludesCompositionState,
                 )
             return Layer(name, id, parentId, z, currFrame, properties)
         }

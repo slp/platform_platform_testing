@@ -19,6 +19,7 @@ package android.tools.traces.component
 import android.tools.traces.surfaceflinger.Layer
 import android.tools.traces.wm.Activity
 import android.tools.traces.wm.WindowContainer
+import java.util.function.Predicate
 
 /**
  * A component matcher that matches the targeted window and layer with ids windowId and layerId
@@ -66,8 +67,8 @@ class FullComponentIdMatcher(val windowId: Int, val layerId: Int) : IComponentMa
     /** {@inheritDoc} */
     override fun check(
         layers: Collection<Layer>,
-        condition: (Collection<Layer>) -> Boolean
-    ): Boolean = condition(layers.filter { layerMatchesAnyOf(it) })
+        condition: Predicate<Collection<Layer>>,
+    ): Boolean = condition.test(layers.filter { layerMatchesAnyOf(it) })
 
     /** {@inheritDoc} */
     override fun toActivityIdentifier() = toWindowIdentifier()

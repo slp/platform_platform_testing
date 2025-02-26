@@ -30,7 +30,7 @@ internal constructor(
     val elapsedNanos: Long = 0L,
     val systemUptimeNanos: Long = 0L,
     val unixNanos: Long = 0L,
-    private val realTimestampFormatter: (Long) -> String
+    private val realTimestampFormatter: (Long) -> String,
 ) : Comparable<Timestamp> {
     val hasElapsedTimestamp = elapsedNanos != 0L
     val hasSystemUptimeTimestamp = systemUptimeNanos != 0L
@@ -127,7 +127,7 @@ internal constructor(
         ELAPSED,
         SYSTEM_UPTIME,
         UNIX,
-        ANY
+        ANY,
     }
 
     // The preferred and most accurate time type to use when running Timestamp operations or
@@ -188,6 +188,7 @@ internal constructor(
     }
 
     companion object {
+        @JvmStatic
         fun formatElapsedTimestamp(timestampNs: Long): String {
             var remainingNs = timestampNs
             val prettyTimestamp = StringBuilder()

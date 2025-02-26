@@ -41,14 +41,18 @@ sealed interface DataPoint<out T> {
         }
 
         fun <T> notFound(): DataPoint<T> {
-            @Suppress("UNCHECKED_CAST") return NotFoundDataPoint.instance as NotFoundDataPoint<T>
+            @Suppress("UNCHECKED_CAST")
+            return NotFoundDataPoint.instance as NotFoundDataPoint<T>
         }
+
         fun <T> nullValue(): DataPoint<T> {
-            @Suppress("UNCHECKED_CAST") return NullDataPoint.instance as NullDataPoint<T>
+            @Suppress("UNCHECKED_CAST")
+            return NullDataPoint.instance as NullDataPoint<T>
         }
 
         fun <T> unknownType(): DataPoint<T> {
-            @Suppress("UNCHECKED_CAST") return UnknownType.instance as UnknownType<T>
+            @Suppress("UNCHECKED_CAST")
+            return UnknownType.instance as UnknownType<T>
         }
     }
 }

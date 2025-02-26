@@ -93,7 +93,7 @@ class LayersTraceParser(
     private fun buildTraceEntry(
         snapshotRows: List<Row>,
         layersRows: List<Row>,
-        realToMonotonicTimeOffsetNs: Long
+        realToMonotonicTimeOffsetNs: Long,
     ): LayerTraceEntry {
         val snapshotArgs = Args.build(snapshotRows)
         val displays = snapshotArgs.getChildren("displays")?.map { newDisplay(it) } ?: emptyList()
@@ -186,7 +186,7 @@ class LayersTraceParser(
                 layer.getChild("is_relative_of")?.getBoolean() ?: false,
                 layer.getChild("z_order_relative_of")?.getInt() ?: 0,
                 layer.getChild("layer_stack")?.getInt() ?: 0,
-                excludesCompositionState
+                excludesCompositionState,
             )
         }
 
@@ -212,7 +212,7 @@ class LayersTraceParser(
                 /* left */ rectf.getChild("left")?.getFloat() ?: 0f,
                 /* top */ rectf.getChild("top")?.getFloat() ?: 0f,
                 /* right */ rectf.getChild("right")?.getFloat() ?: 0f,
-                /* bottom */ rectf.getChild("bottom")?.getFloat() ?: 0f
+                /* bottom */ rectf.getChild("bottom")?.getFloat() ?: 0f,
             )
         }
 
@@ -222,7 +222,7 @@ class LayersTraceParser(
             }
             return Size.from(
                 sizeArgs.getChild("w")?.getInt() ?: 0,
-                sizeArgs.getChild("h")?.getInt() ?: 0
+                sizeArgs.getChild("h")?.getInt() ?: 0,
             )
         }
 
@@ -235,7 +235,7 @@ class LayersTraceParser(
                     color.getChild("r")?.getFloat() ?: 0f,
                     color.getChild("g")?.getFloat() ?: 0f,
                     color.getChild("b")?.getFloat() ?: 0f,
-                    color.getChild("a")?.getFloat() ?: 0f
+                    color.getChild("a")?.getFloat() ?: 0f,
                 )
             }
         }
@@ -248,7 +248,7 @@ class LayersTraceParser(
                 buffer.getChild("width")?.getInt() ?: 0,
                 buffer.getChild("height")?.getInt() ?: 0,
                 buffer.getChild("stride")?.getInt() ?: 0,
-                buffer.getChild("format")?.getInt() ?: 0
+                buffer.getChild("format")?.getInt() ?: 0,
             )
         }
 
@@ -292,7 +292,7 @@ class LayersTraceParser(
                 rect?.getChild("left")?.getInt() ?: 0,
                 rect?.getChild("top")?.getInt() ?: 0,
                 rect?.getChild("right")?.getInt() ?: 0,
-                rect?.getChild("bottom")?.getInt() ?: 0
+                rect?.getChild("bottom")?.getInt() ?: 0,
             )
 
         private fun newTransform(transform: Args?, position: Args?) =
@@ -315,7 +315,7 @@ class LayersTraceParser(
                 x,
                 transform.getChild("dsdy")?.getFloat() ?: 0f,
                 transform.getChild("dtdy")?.getFloat() ?: 0f,
-                y
+                y,
             )
         }
 

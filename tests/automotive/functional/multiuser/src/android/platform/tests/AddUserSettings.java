@@ -77,6 +77,7 @@ public class AddUserSettings {
         // verify new user is seen in list of users
         assertTrue(mMultiUserHelper.getUserByName(newUser.name) != null);
         // Verify new user is non-Admin
+        mSettingHelper.get().openSetting(SettingsConstants.PROFILE_ACCOUNT_SETTINGS);
         assertFalse("New user has Admin Access", mUsersHelper.get().isNewUserAnAdmin(newUser.name));
         // remove new user
         mMultiUserHelper.removeUser(newUser);

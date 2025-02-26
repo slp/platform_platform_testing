@@ -20,8 +20,8 @@ import android.app.Instrumentation
 import android.tools.traces.monitors.ITransitionMonitor
 import android.tools.traces.parsers.WindowManagerStateHelper
 import androidx.test.uiautomator.UiDevice
-import org.junit.rules.TestRule
 import java.io.File
+import org.junit.rules.TestRule
 
 interface FlickerTestData {
     /** Instrumentation to run the tests */

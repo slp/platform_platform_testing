@@ -36,18 +36,21 @@ open class ImeClientEntry(
     // val imeFocusController: ImeFocusController,
     // val inputConnection: InputConnection,
     // val inputConnectionCall: InputConnectionCall,
-    val elapsedTimestamp: Long
+    val elapsedTimestamp: Long,
 ) : TraceEntry {
     override val timestamp = Timestamps.from(systemUptimeNanos = elapsedTimestamp)
     val stableId: String
         get() = this::class.simpleName ?: error("Unable to determine class")
+
     val name: String
         get() = timestamp.toString()
+
     override fun toString(): String = name
 
     override fun equals(other: Any?): Boolean {
         return other is ImeClientEntry && other.timestamp == this.timestamp
     }
+
     override fun hashCode(): Int {
         var result = timestamp.hashCode()
         result = 31 * result + where.hashCode()

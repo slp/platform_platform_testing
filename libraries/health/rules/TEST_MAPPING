@@ -2,6 +2,32 @@
   "imports": [
     {
       "path": "vendor/google_testing/integration/tests/scenarios/src/android/platform/test/scenario/sysui"
+    },
+    {
+      "path": "frameworks/base"
+    }
+  ],
+
+  // To make sure health/rules do not break sysui tests.
+  // Copied from the internal "sysui-e2e-postsumit" test mapping group.
+  // Once stable, this will be promoted to presubmit.
+  "postsubmit": [
+    {
+      "name": "PlatformScenarioTests",
+      "options": [
+        {
+            "include-filter": "android.platform.test.scenario.sysui"
+        },
+        {
+            "include-annotation": "android.platform.test.scenario.annotation.Scenario"
+        },
+        {
+            "exclude-annotation": "org.junit.Ignore"
+        },
+        {
+            "exclude-annotation": "androidx.test.filters.FlakyTest"
+        }
+      ]
     }
   ]
 }

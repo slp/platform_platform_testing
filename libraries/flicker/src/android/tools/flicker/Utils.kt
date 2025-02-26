@@ -34,14 +34,16 @@ import android.tools.traces.wm.TransitionChange
 import android.tools.traces.wm.WindowManagerTrace
 import androidx.test.platform.app.InstrumentationRegistry
 import java.io.File
+import java.util.function.Consumer
 import kotlin.io.path.createTempDirectory
 
 object Utils {
     // Order matters since this is used to start traces in the order the monitors are defined here
     // and stop them in reverse order.
+    @JvmField
     val ALL_MONITORS: List<TraceMonitor> =
         mutableListOf<TraceMonitor>(
-                ScreenRecorder(InstrumentationRegistry.getInstrumentation().targetContext),
+                ScreenRecorder(InstrumentationRegistry.getInstrumentation().targetContext)
             )
             .apply {
                 val perfettoMonitorBuilder = PerfettoTraceMonitor.newBuilder()
@@ -82,14 +84,16 @@ object Utils {
                 this.add(EventLogMonitor())
             }
 
+    @JvmStatic
+    @JvmOverloads
     fun captureTrace(
         scenario: Scenario,
         outputDir: File = createTempDirectory().toFile(),
         monitors: List<TraceMonitor> = ALL_MONITORS,
-        actions: (writer: ResultWriter) -> Unit
+        actions: Consumer<ResultWriter>,
     ): Reader {
         val writer = ResultWriter().forScenario(scenario).withOutputDir(outputDir).setRunComplete()
-        monitors.fold({ actions.invoke(writer) }) { action, monitor ->
+        monitors.fold({ actions.accept(writer) }) { action, monitor ->
             { monitor.withTracing(writer) { action() } }
         }()
         val result = writer.write()
@@ -111,7 +115,7 @@ fun String.camelToSnakeCase(): String {
 fun isAppTransitionChange(
     transitionChange: TransitionChange,
     layersTrace: LayersTrace?,
-    wmTrace: WindowManagerTrace?
+    wmTrace: WindowManagerTrace?,
 ): Boolean {
     require(layersTrace != null || wmTrace != null) {
         "Requires at least one of wm of layers trace to not be null"

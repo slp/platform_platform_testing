@@ -34,6 +34,7 @@ import platform.test.motion.testing.JsonSubject.Companion.json
 class JsonGoldenSerializerTest {
 
     @get:Rule val expect: Expect = Expect.create()
+
     private fun assertConversions(timeSeries: TimeSeries, json: String) {
         expect
             .withMessage("serialize to JSON")
@@ -56,7 +57,7 @@ class JsonGoldenSerializerTest {
     fun timestampFrameId_asNumber() {
         assertConversions(
             TimeSeries(listOf(TimestampFrameId(33)), listOf()),
-            """{"frame_ids":[33],"features":[]}"""
+            """{"frame_ids":[33],"features":[]}""",
         )
     }
 
@@ -64,7 +65,7 @@ class JsonGoldenSerializerTest {
     fun supplementalFrameId_asString() {
         assertConversions(
             TimeSeries(listOf(SupplementalFrameId("foo")), listOf()),
-            """{"frame_ids":["foo"],"features":[]}"""
+            """{"frame_ids":["foo"],"features":[]}""",
         )
     }
 
@@ -72,7 +73,7 @@ class JsonGoldenSerializerTest {
     fun feature_withoutDataPoint_noType() {
         assertConversions(
             TimeSeries(listOf(), listOf(Feature<Int>("foo", emptyList()))),
-            """{"frame_ids":[],"features":[{"name":"foo","data_points":[]}]}"""
+            """{"frame_ids":[],"features":[{"name":"foo","data_points":[]}]}""",
         )
     }
 
@@ -81,9 +82,9 @@ class JsonGoldenSerializerTest {
         assertConversions(
             TimeSeries(
                 listOf(TimestampFrameId(1)),
-                listOf(Feature("foo", listOf(42.asDataPoint())))
+                listOf(Feature("foo", listOf(42.asDataPoint()))),
             ),
-            """{"frame_ids":[1],"features":[{"name":"foo","type":"int","data_points":[42]}]}"""
+            """{"frame_ids":[1],"features":[{"name":"foo","type":"int","data_points":[42]}]}""",
         )
     }
 
@@ -92,10 +93,10 @@ class JsonGoldenSerializerTest {
         assertConversions(
             TimeSeries(
                 listOf(TimestampFrameId(1), TimestampFrameId(2)),
-                listOf(Feature("foo", listOf(42.asDataPoint(), 43.asDataPoint())))
+                listOf(Feature("foo", listOf(42.asDataPoint(), 43.asDataPoint()))),
             ),
             """{"frame_ids":[1,2],
-                "features":[{"name":"foo","type":"int","data_points":[42,43]}]}}"""
+                "features":[{"name":"foo","type":"int","data_points":[42,43]}]}}""",
         )
     }
 
@@ -104,10 +105,10 @@ class JsonGoldenSerializerTest {
         assertConversions(
             TimeSeries(
                 listOf(TimestampFrameId(1), TimestampFrameId(2)),
-                listOf(Feature("foo", listOf(nullValue(), 43.asDataPoint())))
+                listOf(Feature("foo", listOf(nullValue(), 43.asDataPoint()))),
             ),
             """{"frame_ids":[1,2],
-                "features":[{"name":"foo","type":"int","data_points":[null,43]}]}}"""
+                "features":[{"name":"foo","type":"int","data_points":[null,43]}]}}""",
         )
     }
 
@@ -116,10 +117,10 @@ class JsonGoldenSerializerTest {
         assertConversions(
             TimeSeries(
                 listOf(TimestampFrameId(1), TimestampFrameId(2)),
-                listOf(Feature("foo", listOf(notFound(), 43.asDataPoint())))
+                listOf(Feature("foo", listOf(notFound(), 43.asDataPoint()))),
             ),
             """{"frame_ids":[1,2],
-                "features":[{"name":"foo","type":"int","data_points":[{"type":"not_found"},43]}]}}"""
+                "features":[{"name":"foo","type":"int","data_points":[{"type":"not_found"},43]}]}}""",
         )
     }
 
@@ -128,9 +129,9 @@ class JsonGoldenSerializerTest {
         assertConversions(
             TimeSeries(
                 listOf(TimestampFrameId(1)),
-                listOf(Feature<Int>("foo", listOf(nullValue())))
+                listOf(Feature<Int>("foo", listOf(nullValue()))),
             ),
-            """{"frame_ids":[1],"features":[{"name":"foo","data_points":[null]}]}"""
+            """{"frame_ids":[1],"features":[{"name":"foo","data_points":[null]}]}""",
         )
     }
 
@@ -140,7 +141,7 @@ class JsonGoldenSerializerTest {
             JsonGoldenSerializer.toJson(
                 TimeSeries(
                     listOf(TimestampFrameId(1), TimestampFrameId(2)),
-                    listOf(Feature("foo", listOf(42.asDataPoint(), 42f.asDataPoint())))
+                    listOf(Feature("foo", listOf(42.asDataPoint(), 42f.asDataPoint()))),
                 )
             )
         }
@@ -152,7 +153,7 @@ class JsonGoldenSerializerTest {
             JsonGoldenSerializer.toJson(
                 TimeSeries(
                     listOf(TimestampFrameId(1), TimestampFrameId(2)),
-                    listOf(Feature("foo", listOf(42.asDataPoint(), unknownType())))
+                    listOf(Feature("foo", listOf(42.asDataPoint(), unknownType()))),
                 )
             )
         }
@@ -168,14 +169,14 @@ class JsonGoldenSerializerTest {
                     "features":[{"name":"foo","type":"bar","data_points":[null,43]}]
                 }"""
                 ),
-                emptyMap()
+                emptyMap(),
             )
 
         assertThat(timeSeries)
             .isEqualTo(
                 TimeSeries(
                     listOf(TimestampFrameId(1), TimestampFrameId(2)),
-                    listOf(Feature<Any>("foo", listOf(nullValue(), unknownType())))
+                    listOf(Feature<Any>("foo", listOf(nullValue(), unknownType()))),
                 )
             )
     }

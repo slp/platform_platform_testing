@@ -28,13 +28,13 @@ public class SimpleWebViewActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "onCreate");
+        Trace.beginSection("onCreate");
         super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         mWebView = new WebView(this);
         mWebView.loadUrl("file:///android_asset/SimpleWebView.html");
         this.setContentView(mWebView);
-        Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+        Trace.endSection();
     }
 
 }

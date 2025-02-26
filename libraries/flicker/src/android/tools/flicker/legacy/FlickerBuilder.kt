@@ -25,8 +25,8 @@ import android.tools.traces.monitors.NoTraceMonitor
 import android.tools.traces.monitors.ScreenRecorder
 import android.tools.traces.parsers.WindowManagerStateHelper
 import androidx.test.uiautomator.UiDevice
-import org.junit.rules.TestRule
 import java.io.File
+import org.junit.rules.TestRule
 
 /** Build Flicker tests using Flicker DSL */
 @FlickerDslMarker
@@ -40,7 +40,7 @@ class FlickerBuilder(
     private val teardownCommands: MutableList<FlickerTestData.() -> Any> = mutableListOf(),
     val device: UiDevice = UiDevice.getInstance(instrumentation),
     private val rules: MutableList<TestRule> = mutableListOf(),
-    private val traceMonitors: MutableList<ITransitionMonitor> = ALL_MONITORS.toMutableList()
+    private val traceMonitors: MutableList<ITransitionMonitor> = ALL_MONITORS.toMutableList(),
 ) {
     private var usingExistingTraces = false
 
@@ -76,7 +76,7 @@ class FlickerBuilder(
         transitionCommands.add(command)
     }
 
-    /** Adds JUnit rules to be executed with the provided transitions.*/
+    /** Adds JUnit rules to be executed with the provided transitions. */
     fun withRules(vararg rules: TestRule) {
         this.rules.addAll(rules)
     }
@@ -86,7 +86,7 @@ class FlickerBuilder(
         val perfetto: File,
         val wmTransitions: File,
         val shellTransitions: File,
-        val eventLog: File
+        val eventLog: File,
     )
 
     /** Use pre-executed results instead of running transitions to get the traces */
@@ -125,23 +125,23 @@ class FlickerBuilder(
             transitionCommands,
             teardownCommands,
             rules,
-            wmHelper
+            wmHelper,
         )
     }
 
     /** Returns a copy of the current builder with the changes of [block] applied */
     fun copy(block: FlickerBuilder.() -> Unit) =
         FlickerBuilder(
-            instrumentation,
-            outputDir.absoluteFile,
-            wmHelper,
-            setupCommands.toMutableList(),
-            transitionCommands.toMutableList(),
-            teardownCommands.toMutableList(),
-            device,
-            rules.toMutableList(),
-            traceMonitors.toMutableList(),
-        )
+                instrumentation,
+                outputDir.absoluteFile,
+                wmHelper,
+                setupCommands.toMutableList(),
+                transitionCommands.toMutableList(),
+                teardownCommands.toMutableList(),
+                device,
+                rules.toMutableList(),
+                traceMonitors.toMutableList(),
+            )
             .apply(block)
 
     private fun addMonitor(newMonitor: ITransitionMonitor?) {

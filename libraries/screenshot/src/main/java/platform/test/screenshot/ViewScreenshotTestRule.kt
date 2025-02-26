@@ -41,7 +41,7 @@ open class ViewScreenshotTestRule(
     pathManager: GoldenPathManager,
     private val matcher: BitmapMatcher = UnitTestBitmapMatcher,
     private val decorFitsSystemWindows: Boolean = false,
-    protected val screenshotRule: ScreenshotTestRule = ScreenshotTestRule(pathManager)
+    protected val screenshotRule: ScreenshotTestRule = ScreenshotTestRule(pathManager),
 ) : TestRule, BitmapDiffer by screenshotRule, ScreenshotAsserterFactory by screenshotRule {
     private val colorsRule = MaterialYouColorsRule()
     private val fontsRule = FontsRule()
@@ -144,7 +144,7 @@ open class ViewScreenshotTestRule(
                 false
             },
             subviewId,
-            viewProvider
+            viewProvider,
         )
 
     /**
@@ -169,6 +169,7 @@ open class ViewScreenshotTestRule(
     fun dialogScreenshotTest(
         goldenIdentifier: String,
         waitForIdle: () -> Unit = {},
+        waitingForDialog: (Dialog) -> Boolean = { _ -> false },
         dialogProvider: (Activity) -> Dialog,
     ) {
         dialogScreenshotTest(
@@ -178,6 +179,7 @@ open class ViewScreenshotTestRule(
             goldenIdentifier,
             waitForIdle,
             dialogProvider,
+            waitingForDialog,
         )
     }
 

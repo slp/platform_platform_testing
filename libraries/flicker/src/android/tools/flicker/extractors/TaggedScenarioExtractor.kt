@@ -34,7 +34,7 @@ class TaggedScenarioExtractor(
     private val ignoreIfNoMatchingTransition: Boolean = false,
 ) : ScenarioExtractor {
     companion object {
-        val LOG_TAG = "FlickerTaggedScenarioExtractor"
+        const val LOG_TAG = "FlickerTaggedScenarioExtractor"
     }
 
     override fun extract(reader: Reader): List<TraceSlice> {
@@ -60,7 +60,7 @@ class TaggedScenarioExtractor(
                     LOG_TAG,
                     "Got more than one associated transition: " +
                         "[${associatedTransitions?.joinToString()}]. " +
-                        "Picking first transition in list."
+                        "Picking first transition in list.",
                 )
             }
 
@@ -82,7 +82,7 @@ class TaggedScenarioExtractor(
                 startTimestamp,
                 endTimestamp,
                 associatedCuj = cujEntry.cuj,
-                associatedTransition = associatedTransition
+                associatedTransition = associatedTransition,
             )
         }
     }
@@ -90,7 +90,7 @@ class TaggedScenarioExtractor(
     private fun estimateScenarioStartTimestamp(
         cujEntry: Cuj,
         associatedTransition: Transition?,
-        reader: Reader
+        reader: Reader,
     ): Timestamp {
         val interpolatedStartTimestamp =
             if (associatedTransition != null) {
@@ -103,33 +103,33 @@ class TaggedScenarioExtractor(
             elapsedNanos =
                 min(
                     cujEntry.startTimestamp.elapsedNanos,
-                    interpolatedStartTimestamp?.elapsedNanos ?: cujEntry.startTimestamp.elapsedNanos
+                    interpolatedStartTimestamp?.elapsedNanos ?: cujEntry.startTimestamp.elapsedNanos,
                 ),
             systemUptimeNanos =
                 min(
                     cujEntry.startTimestamp.systemUptimeNanos,
                     interpolatedStartTimestamp?.systemUptimeNanos
-                        ?: cujEntry.startTimestamp.systemUptimeNanos
+                        ?: cujEntry.startTimestamp.systemUptimeNanos,
                 ),
             unixNanos =
                 min(
                     cujEntry.startTimestamp.unixNanos,
-                    interpolatedStartTimestamp?.unixNanos ?: cujEntry.startTimestamp.unixNanos
-                )
+                    interpolatedStartTimestamp?.unixNanos ?: cujEntry.startTimestamp.unixNanos,
+                ),
         )
     }
 
     private fun estimateScenarioEndTimestamp(
         cujEntry: Cuj,
         associatedTransition: Transition?,
-        reader: Reader
+        reader: Reader,
     ): Timestamp {
         val interpolatedEndTimestamp =
             if (associatedTransition != null) {
                 Utils.interpolateFinishTimestampFromTransition(
                     associatedTransition,
                     reader,
-                    cujEntry.toString()
+                    cujEntry.toString(),
                 )
             } else {
                 val layersTrace = reader.readLayersTrace() ?: error("Missing layers trace")
@@ -143,9 +143,9 @@ class TaggedScenarioExtractor(
             systemUptimeNanos =
                 max(
                     cujEntry.endTimestamp.systemUptimeNanos,
-                    interpolatedEndTimestamp.systemUptimeNanos
+                    interpolatedEndTimestamp.systemUptimeNanos,
                 ),
-            unixNanos = max(cujEntry.endTimestamp.unixNanos, interpolatedEndTimestamp.unixNanos)
+            unixNanos = max(cujEntry.endTimestamp.unixNanos, interpolatedEndTimestamp.unixNanos),
         )
     }
 }

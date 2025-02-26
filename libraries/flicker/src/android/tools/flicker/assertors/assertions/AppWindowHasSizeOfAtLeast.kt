@@ -24,14 +24,14 @@ import android.tools.flicker.assertors.ComponentTemplate
 class AppWindowHasSizeOfAtLeast(
     private val component: ComponentTemplate,
     private val minimumWidth: Int,
-    private val minimumHeight: Int
+    private val minimumHeight: Int,
 ) : AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
         flicker.assertLayersEnd {
             val minimumSize = Region(0, 0, minimumWidth, minimumHeight)
 
-            visibleRegion(component.build(scenarioInstance)).notSmallerThan(minimumSize)
+            visibleRegion(component.get(scenarioInstance)).notSmallerThan(minimumSize)
         }
     }
 }

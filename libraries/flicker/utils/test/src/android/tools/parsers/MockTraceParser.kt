@@ -23,7 +23,10 @@ import android.tools.traces.wm.WindowManagerTrace
 
 class MockTraceParser(private val data: WindowManagerTrace) :
     AbstractTraceParser<
-        WindowManagerTrace, WindowManagerState, WindowManagerState, WindowManagerTrace
+        WindowManagerTrace,
+        WindowManagerState,
+        WindowManagerState,
+        WindowManagerTrace,
     >() {
     override val traceName: String = "In memory trace"
 
@@ -31,10 +34,14 @@ class MockTraceParser(private val data: WindowManagerTrace) :
         WindowManagerTrace(entries)
 
     override fun doDecodeByteArray(bytes: ByteArray): WindowManagerTrace = data
+
     override fun doParseEntry(entry: WindowManagerState): WindowManagerState = entry
+
     override fun getEntries(input: WindowManagerTrace): Collection<WindowManagerState> =
         input.entries
+
     override fun getTimestamp(entry: WindowManagerState): Timestamp =
         Timestamps.from(elapsedNanos = entry.elapsedTimestamp)
+
     override fun onBeforeParse(input: WindowManagerTrace) {}
 }

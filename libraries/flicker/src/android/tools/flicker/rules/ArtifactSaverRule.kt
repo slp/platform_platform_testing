@@ -25,6 +25,7 @@ import org.junit.runner.Description
 
 class ArtifactSaverRule : TestWatcher() {
     private var handled = false
+
     override fun failed(e: Throwable, description: Description?) {
         if (handled) {
             return

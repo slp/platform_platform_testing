@@ -44,7 +44,7 @@ class WindowManagerTraceEntryBuilderTest {
                     KeyguardControllerState.from(
                         isAodShowing = false,
                         isKeyguardShowing = false,
-                        keyguardOccludedStates = mapOf()
+                        keyguardOccludedStates = mapOf(),
                     )
                 )
                 .setRealToElapsedTimeOffsetNs(500)
@@ -68,7 +68,7 @@ class WindowManagerTraceEntryBuilderTest {
                     KeyguardControllerState.from(
                         isAodShowing = false,
                         isKeyguardShowing = false,
-                        keyguardOccludedStates = mapOf()
+                        keyguardOccludedStates = mapOf(),
                     )
                 )
                 .build()

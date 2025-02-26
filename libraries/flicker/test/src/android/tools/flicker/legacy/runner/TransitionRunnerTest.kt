@@ -77,7 +77,7 @@ class TransitionRunnerTest {
                 setup = listOf(runSetup),
                 teardown = listOf(runTeardown),
                 transitions = listOf(runTransition),
-                extraMonitor = dummyMonitor
+                extraMonitor = dummyMonitor,
             )
         val result = runner.execute(mockedFlicker, Consts.description(this))
         val reader = ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)
@@ -98,7 +98,7 @@ class TransitionRunnerTest {
             createMockedFlicker(
                 setup = listOf(runSetup),
                 teardown = listOf(runTeardown),
-                extraMonitor = dummyMonitor
+                extraMonitor = dummyMonitor,
             )
         val result = runner.execute(mockedFlicker, Consts.description(this))
         val reader = ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)
@@ -119,7 +119,7 @@ class TransitionRunnerTest {
                 setup = listOf(runSetup),
                 teardown = listOf(runTeardown),
                 transitions = listOf(throwError),
-                extraMonitor = dummyMonitor
+                extraMonitor = dummyMonitor,
             )
         val result = runner.execute(mockedFlicker, Consts.description(this))
         val reader = ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)
@@ -140,7 +140,7 @@ class TransitionRunnerTest {
                 setup = listOf(runSetup, throwError),
                 teardown = listOf(runTeardown),
                 transitions = listOf(runTransition),
-                extraMonitor = dummyMonitor
+                extraMonitor = dummyMonitor,
             )
         val result = runner.execute(mockedFlicker, Consts.description(this))
         val reader = ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)
@@ -161,7 +161,7 @@ class TransitionRunnerTest {
                 setup = listOf(runSetup),
                 teardown = listOf(runTeardown, throwError),
                 transitions = listOf(runTransition),
-                extraMonitor = dummyMonitor
+                extraMonitor = dummyMonitor,
             )
         val result = runner.execute(mockedFlicker, Consts.description(this))
         val reader = ResultReader(result, TRACE_CONFIG_REQUIRE_CHANGES)

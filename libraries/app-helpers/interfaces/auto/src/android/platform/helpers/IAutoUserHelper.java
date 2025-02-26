@@ -69,6 +69,20 @@ public interface IAutoUserHelper extends IAppHelper {
     /**
      * Setup expectation: Profiles and Accounts setting is open.
      *
+     * <p>This method is to switch user using profile icon.
+     */
+    void switchUsingUserIcon(String user);
+
+    /**
+     * Setup expectation: Profiles and Accounts setting is open.
+     *
+     * <p>This returns username from profile and account settings.
+     */
+    String getProfileNameFromSettings();
+
+    /**
+     * Setup expectation: Profiles and Accounts setting is open.
+     *
      * <p>This method is to make an existing user admin.
      */
     void makeUserAdmin(String user);

@@ -41,7 +41,7 @@ import org.junit.runners.MethodSorters
 
 /**
  * Contains [FlickerServiceTracesCollector] tests. To run this test: `atest
- * FlickerLibTest:FlickerServiceTracesCollectorTest`
+ * FlickerLibTestE2e:FlickerServiceTracesCollectorTest`
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class FlickerServiceTracesCollectorTest {
@@ -115,10 +115,7 @@ class FlickerServiceTracesCollectorTest {
 
     companion object {
         val EXPECTED_TRACES_LAUNCHER_ONLY =
-            mutableListOf(
-                    TraceType.EVENT_LOG.fileName,
-                    TraceType.PERFETTO.fileName,
-                )
+            mutableListOf(TraceType.EVENT_LOG.fileName, TraceType.PERFETTO.fileName)
                 .also {
                     if (!android.tracing.Flags.perfettoProtologTracing()) {
                         it.add(TraceType.PROTOLOG.fileName)
@@ -140,13 +137,12 @@ class FlickerServiceTracesCollectorTest {
                 .toList()
 
         val EXPECTED_TRACES_LAUNCHER_FIRST =
-            mutableListOf(
-                    TraceType.WM.fileName,
-                    TraceType.PROTOLOG.fileName,
-                    TraceType.EVENT_LOG.fileName,
-                    TraceType.PERFETTO.fileName,
-                )
+            mutableListOf(TraceType.EVENT_LOG.fileName, TraceType.PERFETTO.fileName)
                 .also {
+                    if (!android.tracing.Flags.perfettoProtologTracing()) {
+                        it.add(TraceType.PROTOLOG.fileName)
+                    }
+
                     if (!android.tracing.Flags.perfettoTransitionTracing()) {
                         it.add(TraceType.LEGACY_WM_TRANSITION.fileName)
                         it.add(TraceType.LEGACY_SHELL_TRANSITION.fileName)
@@ -156,26 +152,32 @@ class FlickerServiceTracesCollectorTest {
                         it.add("${getLauncherPackageName()}_0.vc__view_capture_trace.winscope")
                         it.add("${getSystemUiUidName()}_1.vc__view_capture_trace.winscope")
                     }
+
+                    if (!android.tracing.Flags.perfettoWmTracing()) {
+                        it.add(TraceType.WM.fileName)
+                    }
                 }
                 .toList()
 
         val EXPECTED_TRACES_SYSUI_FIRST =
-            mutableListOf(
-                    TraceType.WM.fileName,
-                    TraceType.PROTOLOG.fileName,
-                    TraceType.EVENT_LOG.fileName,
-                    TraceType.PERFETTO.fileName,
-                )
-                .also {
-                    if (!android.tracing.Flags.perfettoTransitionTracing()) {
-                        it.add(TraceType.LEGACY_WM_TRANSITION.fileName)
-                        it.add(TraceType.LEGACY_SHELL_TRANSITION.fileName)
-                    }
-
-                    if (!android.tracing.Flags.perfettoViewCaptureTracing()) {
-                        it.add("${getSystemUiUidName()}_0.vc__view_capture_trace.winscope")
-                        it.add("${getLauncherPackageName()}_1.vc__view_capture_trace.winscope")
-                    }
+            mutableListOf(TraceType.EVENT_LOG.fileName, TraceType.PERFETTO.fileName).also {
+                if (!android.tracing.Flags.perfettoProtologTracing()) {
+                    it.add(TraceType.PROTOLOG.fileName)
                 }
+
+                if (!android.tracing.Flags.perfettoTransitionTracing()) {
+                    it.add(TraceType.LEGACY_WM_TRANSITION.fileName)
+                    it.add(TraceType.LEGACY_SHELL_TRANSITION.fileName)
+                }
+
+                if (!android.tracing.Flags.perfettoViewCaptureTracing()) {
+                    it.add("${getSystemUiUidName()}_0.vc__view_capture_trace.winscope")
+                    it.add("${getLauncherPackageName()}_1.vc__view_capture_trace.winscope")
+                }
+
+                if (!android.tracing.Flags.perfettoWmTracing()) {
+                    it.add(TraceType.WM.fileName)
+                }
+            }
     }
 }

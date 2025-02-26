@@ -38,6 +38,7 @@ data class WaitReport(val result: WaitResult, val iterations: Int)
  *
  * Those are meant to make tests more understandable from perfetto traces, and less flaky.
  */
+@Deprecated("Use uiautomatorhelpers, b/376676853")
 object WaitUtils {
     private val DEFAULT_DEADLINE = Duration.ofSeconds(10)
     private val POLLING_WAIT = Duration.ofMillis(100)

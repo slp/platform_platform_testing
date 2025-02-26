@@ -34,6 +34,6 @@ internal object Notification {
             NotificationRemove,
             NotificationRowExpand,
             NotificationRowSwipe,
-            NotificationScrollFling
+            NotificationScrollFling,
         )
 }

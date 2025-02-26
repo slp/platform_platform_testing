@@ -16,7 +16,7 @@
 
 @file:OptIn(
     androidx.benchmark.perfetto.ExperimentalPerfettoCaptureApi::class,
-    androidx.benchmark.traceprocessor.ExperimentalTraceProcessorApi::class
+    androidx.benchmark.traceprocessor.ExperimentalTraceProcessorApi::class,
 )
 
 package android.tools.traces.parsers.perfetto
@@ -41,6 +41,7 @@ class TraceProcessorSession(val session: TraceProcessor.Session) {
     }
 
     companion object {
+        @JvmStatic
         fun <T> loadPerfettoTrace(trace: ByteArray, predicate: (TraceProcessorSession) -> T): T {
             return withTracing("TraceProcessorSession#loadPerfettoTrace") {
                 val traceFile = File.createTempFile(TraceType.SF.fileName, "")

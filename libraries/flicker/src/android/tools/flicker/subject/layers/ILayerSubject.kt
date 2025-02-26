@@ -39,7 +39,7 @@ interface ILayerSubject<LayerSubjectType, RegionSubjectType> {
      */
     fun visibleRegion(
         componentMatcher: IComponentMatcher? = null,
-        useCompositionEngineRegionOnly: Boolean = true
+        useCompositionEngineRegionOnly: Boolean = true,
     ): RegionSubjectType
 
     /**

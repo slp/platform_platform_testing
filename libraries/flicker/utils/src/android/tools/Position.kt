@@ -21,5 +21,5 @@ enum class Position {
     BOTTOM,
     LEFT,
     RIGHT,
-    INVALID
+    INVALID,
 }

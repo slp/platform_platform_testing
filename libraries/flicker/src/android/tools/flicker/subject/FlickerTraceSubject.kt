@@ -20,6 +20,7 @@ import android.tools.Timestamps
 import android.tools.flicker.assertions.AssertionsChecker
 import android.tools.flicker.subject.exceptions.ExceptionMessageBuilder
 import android.tools.flicker.subject.exceptions.SubjectAssertionError
+import android.tools.function.AssertionPredicate
 
 /** Base subject for flicker trace assertions */
 abstract class FlickerTraceSubject<EntrySubject : FlickerSubject> : FlickerSubject() {
@@ -43,7 +44,7 @@ abstract class FlickerTraceSubject<EntrySubject : FlickerSubject> : FlickerSubje
     protected fun addAssertion(
         name: String,
         isOptional: Boolean = false,
-        assertion: (EntrySubject) -> Unit
+        assertion: AssertionPredicate<EntrySubject>,
     ) {
         if (newAssertionBlock) {
             assertionsChecker.add(name, isOptional, assertion)

@@ -19,15 +19,15 @@ package android.platform.helpers
 import android.content.Context
 import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-import android.platform.uiautomator_helpers.DeviceHelpers
 import android.platform.helpers.LaunchAppUtils.launchApp
+import android.platform.uiautomatorhelpers.DeviceHelpers
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
+import java.time.Duration
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
-import java.time.Duration
 
 /** Utilities to launch an [App]. */
 object LaunchAppUtils {
@@ -38,8 +38,7 @@ object LaunchAppUtils {
         val appIntent =
             packageManager.getLaunchIntentForPackage(app.packageName)?.apply {
                 flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
-            }
-                ?: error("Package ${app.packageName} not available")
+            } ?: error("Package ${app.packageName} not available")
 
         startActivity(appIntent)
         assertAppInForeground(app)
@@ -63,15 +62,11 @@ object LaunchAppUtils {
         get() = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 }
 
-/**
- * Rule that launches specified app and closes it after the test execution
- */
+/** Rule that launches specified app and closes it after the test execution */
 class LaunchAppRule(private val app: App) : TestWatcher() {
 
     override fun starting(description: Description?) {
-        InstrumentationRegistry.getInstrumentation()
-            .targetContext
-            .launchApp(app)
+        InstrumentationRegistry.getInstrumentation().targetContext.launchApp(app)
     }
 
     override fun finished(description: Description?) {
@@ -84,7 +79,7 @@ enum class App(internal val packageName: String) {
     CALCULATOR("com.google.android.calculator"),
     MAPS("com.google.android.apps.maps"),
     CAMERA("com.google.android.GoogleCamera"),
-    SETTINGS("com.android.settings")
+    SETTINGS("com.android.settings"),
 }
 
 private val MAX_TIMEOUT = Duration.ofSeconds(10)

@@ -28,9 +28,9 @@ import android.util.Log
 import java.io.File
 import kotlin.io.path.createTempDirectory
 
-class FlickerServiceTracesCollector(
-    private val outputDir: File = createTempDirectory().toFile(),
-) : TracesCollector {
+class FlickerServiceTracesCollector
+@JvmOverloads
+constructor(private val outputDir: File = createTempDirectory().toFile()) : TracesCollector {
     private var scenario: Scenario? = null
 
     private val traceMonitors = ALL_MONITORS.filter { it.traceType != TraceType.SCREEN_RECORDING }

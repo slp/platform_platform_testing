@@ -46,23 +46,17 @@ class TransitionTest {
                 shellData =
                     ShellTransitionData(
                         dispatchTime = Timestamps.from(22),
-                        handler = "DefaultHandler"
+                        handler = "DefaultHandler",
                     ),
             )
 
         val transition3 =
-            Transition(
-                id = 1,
-                wmData =
-                    WmTransitionData(
-                        finishTime = Timestamps.from(40),
-                    ),
-            )
+            Transition(id = 1, wmData = WmTransitionData(finishTime = Timestamps.from(40)))
 
         val mergedTransition =
             Transition.mergePartialTransitions(
                 Transition.mergePartialTransitions(transition1, transition2),
-                transition3
+                transition3,
             )
 
         Truth.assertThat(mergedTransition.createTime.elapsedNanos).isEqualTo(10)
@@ -95,7 +89,7 @@ class TransitionTest {
                         abortTime = Timestamps.from(24),
                         handler = "Handler1",
                         mergeTarget = 1,
-                    )
+                    ),
             )
 
         val transition2 =
@@ -120,7 +114,7 @@ class TransitionTest {
                         abortTime = Timestamps.from(240),
                         handler = "Handler2",
                         mergeTarget = 10,
-                    )
+                    ),
             )
 
         val mergedTransition = Transition.mergePartialTransitions(transition1, transition2)
@@ -149,8 +143,8 @@ class TransitionTest {
                 wmData =
                     WmTransitionData(
                         sendTime = Timestamps.from(1),
-                        startTransactionId = transactionId
-                    )
+                        startTransactionId = transactionId,
+                    ),
             )
 
         val transactions =
@@ -161,7 +155,7 @@ class TransitionTest {
                     uid = 0,
                     requestedVSyncId = 0,
                     postTime = 0,
-                    mergedTransactionIds = emptyList()
+                    mergedTransactionIds = emptyList(),
                 )
             )
         val transactionsTraceEntry =
@@ -169,7 +163,7 @@ class TransitionTest {
                 TransactionsTraceEntry(
                     timestamp = Timestamps.from(1),
                     vSyncId = 1,
-                    transactions = transactions
+                    transactions = transactions,
                 )
             )
         val transactionTrace = TransactionsTrace(transactionsTraceEntry)
@@ -188,8 +182,8 @@ class TransitionTest {
                 wmData =
                     WmTransitionData(
                         sendTime = Timestamps.from(1),
-                        startTransactionId = transactionId
-                    )
+                        startTransactionId = transactionId,
+                    ),
             )
 
         val transactions =
@@ -200,7 +194,7 @@ class TransitionTest {
                     uid = 0,
                     requestedVSyncId = 0,
                     postTime = 0,
-                    mergedTransactionIds = emptyList()
+                    mergedTransactionIds = emptyList(),
                 )
             )
         val transactionsTraceEntry =
@@ -208,7 +202,7 @@ class TransitionTest {
                 TransactionsTraceEntry(
                     timestamp = Timestamps.from(1),
                     vSyncId = 1,
-                    transactions = transactions
+                    transactions = transactions,
                 )
             )
         val transactionTrace = TransactionsTrace(transactionsTraceEntry)
@@ -227,8 +221,8 @@ class TransitionTest {
                 wmData =
                     WmTransitionData(
                         sendTime = Timestamps.from(1),
-                        startTransactionId = transactionId
-                    )
+                        startTransactionId = transactionId,
+                    ),
             )
 
         val transactions =
@@ -239,7 +233,7 @@ class TransitionTest {
                     uid = 0,
                     requestedVSyncId = 0,
                     postTime = 0,
-                    mergedTransactionIds = listOf(transactionId)
+                    mergedTransactionIds = listOf(transactionId),
                 )
             )
         val transactionsTraceEntry =
@@ -247,7 +241,7 @@ class TransitionTest {
                 TransactionsTraceEntry(
                     timestamp = Timestamps.from(1),
                     vSyncId = 1,
-                    transactions = transactions
+                    transactions = transactions,
                 )
             )
         val transactionTrace = TransactionsTrace(transactionsTraceEntry)
@@ -266,8 +260,8 @@ class TransitionTest {
                 wmData =
                     WmTransitionData(
                         sendTime = Timestamps.from(1),
-                        finishTransactionId = transactionId
-                    )
+                        finishTransactionId = transactionId,
+                    ),
             )
 
         val transactions =
@@ -278,7 +272,7 @@ class TransitionTest {
                     uid = 0,
                     requestedVSyncId = 0,
                     postTime = 0,
-                    mergedTransactionIds = emptyList()
+                    mergedTransactionIds = emptyList(),
                 )
             )
         val transactionsTraceEntry =
@@ -286,7 +280,7 @@ class TransitionTest {
                 TransactionsTraceEntry(
                     timestamp = Timestamps.from(1),
                     vSyncId = 1,
-                    transactions = transactions
+                    transactions = transactions,
                 )
             )
         val transactionTrace = TransactionsTrace(transactionsTraceEntry)
@@ -305,8 +299,8 @@ class TransitionTest {
                 wmData =
                     WmTransitionData(
                         sendTime = Timestamps.from(1),
-                        finishTransactionId = transactionId
-                    )
+                        finishTransactionId = transactionId,
+                    ),
             )
 
         val transactions =
@@ -317,7 +311,7 @@ class TransitionTest {
                     uid = 0,
                     requestedVSyncId = 0,
                     postTime = 0,
-                    mergedTransactionIds = emptyList()
+                    mergedTransactionIds = emptyList(),
                 )
             )
         val transactionsTraceEntry =
@@ -325,7 +319,7 @@ class TransitionTest {
                 TransactionsTraceEntry(
                     timestamp = Timestamps.from(1),
                     vSyncId = 1,
-                    transactions = transactions
+                    transactions = transactions,
                 )
             )
         val transactionTrace = TransactionsTrace(transactionsTraceEntry)
@@ -344,8 +338,8 @@ class TransitionTest {
                 wmData =
                     WmTransitionData(
                         sendTime = Timestamps.from(1),
-                        finishTransactionId = transactionId
-                    )
+                        finishTransactionId = transactionId,
+                    ),
             )
 
         val transactions =
@@ -356,7 +350,7 @@ class TransitionTest {
                     uid = 0,
                     requestedVSyncId = 0,
                     postTime = 0,
-                    mergedTransactionIds = listOf(transactionId)
+                    mergedTransactionIds = listOf(transactionId),
                 )
             )
         val transactionsTraceEntry =
@@ -364,7 +358,7 @@ class TransitionTest {
                 TransactionsTraceEntry(
                     timestamp = Timestamps.from(1),
                     vSyncId = 1,
-                    transactions = transactions
+                    transactions = transactions,
                 )
             )
         val transactionTrace = TransactionsTrace(transactionsTraceEntry)

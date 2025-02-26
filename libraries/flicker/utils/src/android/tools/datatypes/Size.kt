@@ -31,6 +31,7 @@ open class Size protected constructor(val width: Int, val height: Int) : DataTyp
     companion object {
         val EMPTY: Size
             get() = withCache { Size(width = 0, height = 0) }
-        fun from(width: Int, height: Int): Size = withCache { Size(width, height) }
+
+        @JvmStatic fun from(width: Int, height: Int): Size = withCache { Size(width, height) }
     }
 }

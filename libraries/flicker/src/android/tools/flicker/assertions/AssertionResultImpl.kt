@@ -26,5 +26,5 @@ internal data class AssertionResultImpl(
     override val assertionData: Collection<AssertionData>,
     override val assumptionViolations: Collection<AssumptionViolatedException>,
     override val assertionErrors: Collection<FlickerAssertionError>,
-    override val stabilityGroup: AssertionInvocationGroup
+    override val stabilityGroup: AssertionInvocationGroup,
 ) : AssertionResult

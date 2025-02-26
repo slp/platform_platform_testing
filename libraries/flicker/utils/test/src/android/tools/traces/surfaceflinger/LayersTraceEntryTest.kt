@@ -27,7 +27,9 @@ import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runners.MethodSorters
 
-/** Contains [LayerTraceEntry] tests. To run this test: `atest FlickerLibTest:LayersTraceTest` */
+/**
+ * Contains [LayerTraceEntry] tests. To run this test: `atest FlickerLibTest:LayersTraceEntryTest`
+ */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class LayersTraceEntryTest {
     @Before
@@ -125,7 +127,7 @@ class LayersTraceEntryTest {
             val reader =
                 getLayerTraceReaderFromAsset(
                     "layers_trace_orphanlayers.perfetto-trace",
-                    ignoreOrphanLayers = false
+                    ignoreOrphanLayers = false,
                 )
             reader.readLayersTrace()?.entries?.first()?.flattenedLayers
             error("Failed to detect orphaned layers.")
@@ -178,7 +180,7 @@ class LayersTraceEntryTest {
                 where = "",
                 displays = emptyList(),
                 vSyncId = 123,
-                _rootLayers = emptyList()
+                _rootLayers = emptyList(),
             )
         Truth.assertThat(entry.timestamp.elapsedNanos).isEqualTo(Timestamps.empty().elapsedNanos)
         Truth.assertThat(entry.timestamp.systemUptimeNanos).isEqualTo(100)
@@ -192,7 +194,7 @@ class LayersTraceEntryTest {
                 where = "",
                 displays = emptyList(),
                 vSyncId = 123,
-                _rootLayers = emptyList()
+                _rootLayers = emptyList(),
             )
         Truth.assertThat(entry.timestamp.elapsedNanos).isEqualTo(Timestamps.empty().elapsedNanos)
         Truth.assertThat(entry.timestamp.systemUptimeNanos).isEqualTo(100)
@@ -228,7 +230,7 @@ class LayersTraceEntryTest {
             trace.getEntryAt(
                 Timestamps.from(
                     elapsedNanos = 90485742427178,
-                    elapsedOffsetNanos = 1682359234732002451
+                    elapsedOffsetNanos = 1682359234732002451,
                 )
             )
         var coveredLayer = state.getLayerById(693) ?: error("Activity layer not found")

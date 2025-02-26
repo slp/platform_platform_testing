@@ -28,7 +28,7 @@ private constructor(
     val boundTop: Rect,
     val boundRight: Rect,
     val boundBottom: Rect,
-    val waterfallInsets: Insets
+    val waterfallInsets: Insets,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -72,7 +72,7 @@ private constructor(
             boundTop: Rect,
             boundRight: Rect,
             boundBottom: Rect,
-            waterfallInsets: Insets
+            waterfallInsets: Insets,
         ): DisplayCutout = withCache {
             DisplayCutout(insets, boundLeft, boundTop, boundRight, boundBottom, waterfallInsets)
         }

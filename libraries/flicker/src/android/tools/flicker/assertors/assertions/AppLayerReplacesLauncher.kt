@@ -34,10 +34,7 @@ class AppLayerReplacesLauncher(private val component: ComponentTemplate) :
     AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
-        flicker.assertLayers {
-            isVisible(ComponentNameMatcher.LAUNCHER)
-                .then()
-                .isVisible(component.build(scenarioInstance))
-        }
+        val matcher = component.get(scenarioInstance)
+        flicker.assertLayers { isVisible(ComponentNameMatcher.LAUNCHER).then().isVisible(matcher) }
     }
 }

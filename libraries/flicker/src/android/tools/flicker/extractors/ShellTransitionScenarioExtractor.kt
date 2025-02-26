@@ -18,9 +18,8 @@ package android.tools.flicker.extractors
 
 import android.tools.io.Reader
 
-class ShellTransitionScenarioExtractor(
-    private val transitionMatcher: ITransitionMatcher,
-) : ScenarioExtractor {
+class ShellTransitionScenarioExtractor(private val transitionMatcher: ITransitionMatcher) :
+    ScenarioExtractor {
     override fun extract(reader: Reader): List<TraceSlice> {
         val transitionsTrace = reader.readTransitionsTrace() ?: error("Missing transitions trace")
         val completeTransitions = transitionsTrace.entries.filter { !it.isIncomplete }

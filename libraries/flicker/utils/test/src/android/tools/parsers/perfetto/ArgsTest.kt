@@ -32,7 +32,7 @@ class ArgsTest {
                     Pair("int", 10),
                     Pair("long", 100L),
                     Pair("float", 10.1f),
-                    Pair("string", "text")
+                    Pair("string", "text"),
                 )
             )
 
@@ -61,11 +61,7 @@ class ArgsTest {
     fun getChildren() {
         val args =
             makeArgs(
-                listOf(
-                    Pair("children[0]", 10),
-                    Pair("children[1]", 11),
-                    Pair("children[2]", 12),
-                )
+                listOf(Pair("children[0]", 10), Pair("children[1]", 11), Pair("children[2]", 12))
             )
 
         Truth.assertThat(args.getChildren("invalidChildren")).isNull()

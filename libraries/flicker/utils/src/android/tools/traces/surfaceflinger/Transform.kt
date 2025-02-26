@@ -58,8 +58,10 @@ class Transform private constructor(val type: Int?, val matrix: Matrix33) {
 
     val isScaling: Boolean
         get() = type?.isFlagSet(SCALE_VAL) ?: false
+
     val isTranslating: Boolean
         get() = type?.isFlagSet(TRANSLATE_VAL) ?: false
+
     val isRotating: Boolean
         get() = type?.isFlagSet(ROTATE_VAL) ?: false
 
@@ -154,7 +156,7 @@ class Transform private constructor(val type: Int?, val matrix: Matrix33) {
             /* right */ arrayOf(leftTop.x, rightTop.x, leftBottom.x, rightBottom.x).minOrNull()
                 ?: 0f,
             /* bottom */ arrayOf(leftTop.y, rightTop.y, leftBottom.y, rightBottom.y).minOrNull()
-                ?: 0f
+                ?: 0f,
         )
     }
 
@@ -164,7 +166,7 @@ class Transform private constructor(val type: Int?, val matrix: Matrix33) {
         // |0    0     1 |     | 1 |
         return Vec2(
             matrix.dsdx * x + matrix.dsdy * y + matrix.tx,
-            matrix.dtdx * x + matrix.dtdy * y + matrix.ty
+            matrix.dtdx * x + matrix.dtdy * y + matrix.ty,
         )
     }
 
@@ -201,6 +203,7 @@ class Transform private constructor(val type: Int?, val matrix: Matrix33) {
         const val ROT_90_VAL = 0x0400 // (1 << 2 << 8)
         const val ROT_INVALID_VAL = 0x8000 // (0x80 << 8)
 
+        @JvmStatic
         fun isSimpleTransform(type: Int?): Boolean {
             return type?.isFlagClear(ROT_INVALID_VAL or SCALE_VAL) ?: false
         }
@@ -213,6 +216,7 @@ class Transform private constructor(val type: Int?, val matrix: Matrix33) {
             return this and bits == bits
         }
 
+        @JvmStatic
         fun from(type: Int?, matrix: Matrix33): Transform = withCache { Transform(type, matrix) }
     }
 }

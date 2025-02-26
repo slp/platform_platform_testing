@@ -147,7 +147,6 @@ class AssertionsCheckerTest {
 
         companion object {
             /** User-defined entry point */
-            @JvmStatic
             fun assertThat(entry: SimpleEntry): SimpleEntrySubject {
                 return SimpleEntrySubject(entry)
             }

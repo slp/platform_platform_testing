@@ -31,20 +31,20 @@ class AppLayerBecomesVisible(private val component: ComponentTemplate) :
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
         // The app launch transition can finish when the splashscreen or SnapshotStartingWindows
         // are shown before the app window and layers are actually shown. (b/284302118)
+        val matcher = component.get(scenarioInstance)
         flicker.assertLayers {
-            isInvisible(component.build(scenarioInstance))
+            isInvisible(matcher)
                 .then()
                 .isVisible(ComponentNameMatcher.SNAPSHOT, isOptional = true)
                 .then()
                 .isVisible(ComponentNameMatcher.SPLASH_SCREEN, isOptional = true)
                 .then()
-                .isVisible(component.build(scenarioInstance), isOptional = true)
+                .isVisible(matcher, isOptional = true)
         }
 
         flicker.assertLayersEnd {
             isVisible(
-                ComponentNameMatcher.SNAPSHOT.or(ComponentNameMatcher.SPLASH_SCREEN)
-                    .or(component.build(scenarioInstance))
+                ComponentNameMatcher.SNAPSHOT.or(ComponentNameMatcher.SPLASH_SCREEN).or(matcher)
             )
         }
     }

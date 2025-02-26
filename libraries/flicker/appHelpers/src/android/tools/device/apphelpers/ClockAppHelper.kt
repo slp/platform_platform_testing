@@ -22,6 +22,7 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.provider.AlarmClock
 import android.tools.traces.component.ComponentNameMatcher
+import android.tools.traces.component.IComponentNameMatcher
 import androidx.test.platform.app.InstrumentationRegistry
 
 /** Helper to launch the Camera app. */
@@ -29,13 +30,10 @@ class ClockAppHelper
 @JvmOverloads
 constructor(
     instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation(),
-    pkgManager: PackageManager = instrumentation.context.packageManager
-) :
-    StandardAppHelper(
-        instrumentation,
-        getClockLauncherName(pkgManager),
-        getClockComponent(pkgManager)
-    ) {
+    pkgManager: PackageManager = instrumentation.context.packageManager,
+    appName: String = getClockLauncherName(pkgManager),
+    appComponent: IComponentNameMatcher = getClockComponent(pkgManager),
+) : StandardAppHelper(instrumentation, appName, appComponent) {
 
     override val openAppIntent =
         pkgManager.getLaunchIntentForPackage(packageName)
@@ -51,7 +49,7 @@ constructor(
         private fun getClockComponent(pkgManager: PackageManager): ComponentNameMatcher =
             ComponentNameMatcher(
                 getResolveInfo(pkgManager).activityInfo.packageName,
-                className = ""
+                className = "",
             )
 
         private fun getClockLauncherName(pkgManager: PackageManager): String =

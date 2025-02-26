@@ -27,10 +27,7 @@ class LayerBecomesVisible(private val component: ComponentTemplate) :
     AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
-        flicker.assertLayers {
-            isInvisible(component.build(scenarioInstance))
-                .then()
-                .isVisible(component.build(scenarioInstance))
-        }
+        val matcher = component.get(scenarioInstance)
+        flicker.assertLayers { isInvisible(matcher).then().isVisible(matcher) }
     }
 }

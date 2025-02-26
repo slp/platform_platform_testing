@@ -44,7 +44,7 @@ private constructor(
     override val isRelativeOf: Boolean = false,
     override val zOrderRelativeOfId: Int = 0,
     override val stackId: Int = 0,
-    override val excludesCompositionState: Boolean = false
+    override val excludesCompositionState: Boolean = false,
 ) : ILayerProperties {
     override val isOpaque: Boolean = if (color.alpha() != 1.0f) false else _isOpaque
 
@@ -138,7 +138,7 @@ private constructor(
             isRelativeOf: Boolean,
             zOrderRelativeOfId: Int,
             stackId: Int,
-            excludesCompositionState: Boolean
+            excludesCompositionState: Boolean,
         ): ILayerProperties {
             return withCache {
                 LayerProperties(
@@ -160,7 +160,7 @@ private constructor(
                     isRelativeOf,
                     zOrderRelativeOfId,
                     stackId,
-                    excludesCompositionState
+                    excludesCompositionState,
                 )
             }
         }
