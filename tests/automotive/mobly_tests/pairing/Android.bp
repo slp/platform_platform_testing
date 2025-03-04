@@ -38,9 +38,4 @@ python_test_host {
         ":PhoneSnippet",
         "bt_discovery_config.yaml",
     ],
-    version: {
-        py3: {
-            embedded_launcher: true,
-        },
-    },
 }
