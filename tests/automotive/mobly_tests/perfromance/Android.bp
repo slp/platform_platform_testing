@@ -37,9 +37,4 @@ python_test_host {
         ":PhoneSnippet",
         "bt_performance_10_iterations.yaml",
     ],
-    version: {
-        py3: {
-            embedded_launcher: true,
-        },
-    },
 }
