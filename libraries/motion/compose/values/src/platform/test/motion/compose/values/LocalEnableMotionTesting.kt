@@ -25,9 +25,5 @@ internal val LocalEnableMotionTestValueCollection = staticCompositionLocalOf { f
 /** Enables capturing of test data provided to [motionTestValues]. */
 @Composable
 fun EnableMotionTestValueCollection(content: @Composable () -> Unit) {
-    CompositionLocalProvider(
-        LocalEnableMotionTestValueCollection provides true,
-    ) {
-        content()
-    }
+    CompositionLocalProvider(LocalEnableMotionTestValueCollection provides true) { content() }
 }

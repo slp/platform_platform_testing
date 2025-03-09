@@ -23,12 +23,19 @@ import android.tools.withTracing
 
 /** Base trace parser class */
 abstract class AbstractTraceParser<
-    InputTypeTrace, InputTypeEntry, OutputTypeEntry, OutputTypeTrace> :
-    AbstractParser<InputTypeTrace, OutputTypeTrace>() {
+    InputTypeTrace,
+    InputTypeEntry,
+    OutputTypeEntry,
+    OutputTypeTrace,
+> : AbstractParser<InputTypeTrace, OutputTypeTrace>() {
     protected open fun onBeforeParse(input: InputTypeTrace) {}
+
     protected abstract fun getEntries(input: InputTypeTrace): Collection<InputTypeEntry>
+
     protected abstract fun getTimestamp(entry: InputTypeEntry): Timestamp
+
     protected abstract fun doParseEntry(entry: InputTypeEntry): OutputTypeEntry
+
     protected abstract fun createTrace(entries: Collection<OutputTypeEntry>): OutputTypeTrace
 
     open fun shouldParseEntry(entry: InputTypeEntry) = true
@@ -39,7 +46,7 @@ abstract class AbstractTraceParser<
             from = Timestamps.min(),
             to = Timestamps.max(),
             addInitialEntry = true,
-            clearCache = clearCache
+            clearCache = clearCache,
         )
     }
 
@@ -49,7 +56,7 @@ abstract class AbstractTraceParser<
             from = Timestamps.min(),
             to = Timestamps.max(),
             addInitialEntry = true,
-            clearCache = clearCache
+            clearCache = clearCache,
         )
     }
 
@@ -58,7 +65,7 @@ abstract class AbstractTraceParser<
             input,
             from = Timestamps.min(),
             to = Timestamps.max(),
-            addInitialEntry = true
+            addInitialEntry = true,
         )
     }
 
@@ -74,7 +81,7 @@ abstract class AbstractTraceParser<
         input: InputTypeTrace,
         from: Timestamp,
         to: Timestamp,
-        addInitialEntry: Boolean
+        addInitialEntry: Boolean,
     ): OutputTypeTrace {
         onBeforeParse(input)
         val parsedEntries = mutableListOf<OutputTypeEntry>()
@@ -107,7 +114,7 @@ abstract class AbstractTraceParser<
         from: Timestamp,
         to: Timestamp,
         addInitialEntry: Boolean = true,
-        clearCache: Boolean = true
+        clearCache: Boolean = true,
     ): OutputTypeTrace {
         return withTracing("${this::class.simpleName}#parse") {
             try {
@@ -134,7 +141,7 @@ abstract class AbstractTraceParser<
         from: Timestamp,
         to: Timestamp,
         addInitialEntry: Boolean = true,
-        clearCache: Boolean = true
+        clearCache: Boolean = true,
     ): OutputTypeTrace {
         val input = decodeByteArray(bytes)
         return parse(input, from, to, addInitialEntry, clearCache)

@@ -44,7 +44,7 @@ class FlickerServiceTest {
             FlickerConfigEntry(
                 scenarioId = ScenarioId("TEST_SCENARIO"),
                 extractor = mockScenarioExtractor,
-                assertions = emptyMap()
+                assertions = emptyMap(),
             )
 
         val traceSlice =
@@ -68,7 +68,7 @@ class FlickerServiceTest {
             FlickerConfigEntry(
                 scenarioId = ScenarioId("TEST_SCENARIO"),
                 extractor = mockScenarioExtractor,
-                assertions = emptyMap()
+                assertions = emptyMap(),
             )
 
         val traceSlice =

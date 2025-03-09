@@ -23,7 +23,7 @@ class ConfigurationContainerImpl
 private constructor(
     override val overrideConfiguration: Configuration?,
     override val fullConfiguration: Configuration?,
-    override val mergedOverrideConfiguration: Configuration?
+    override val mergedOverrideConfiguration: Configuration?,
 ) : ConfigurationContainer {
     override val windowingMode: Int
         get() = fullConfiguration?.windowConfiguration?.windowingMode ?: 0
@@ -33,8 +33,7 @@ private constructor(
 
     override val isEmpty: Boolean
         get() =
-            (overrideConfiguration?.isEmpty
-                ?: true) &&
+            (overrideConfiguration?.isEmpty ?: true) &&
                 (fullConfiguration?.isEmpty ?: true) &&
                 (mergedOverrideConfiguration?.isEmpty ?: true)
 
@@ -70,12 +69,12 @@ private constructor(
         fun from(
             overrideConfiguration: Configuration?,
             fullConfiguration: Configuration?,
-            mergedOverrideConfiguration: Configuration?
+            mergedOverrideConfiguration: Configuration?,
         ): ConfigurationContainerImpl = withCache {
             ConfigurationContainerImpl(
                 overrideConfiguration,
                 fullConfiguration,
-                mergedOverrideConfiguration
+                mergedOverrideConfiguration,
             )
         }
     }

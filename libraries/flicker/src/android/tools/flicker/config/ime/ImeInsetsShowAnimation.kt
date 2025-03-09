@@ -34,10 +34,10 @@ val ImeInsetsShowAnimation =
             AssertionTemplates.COMMON_ASSERTIONS +
                 mapOf(
                     NonAppWindowBecomesVisible(IME) to AssertionInvocationGroup.BLOCKING,
-                    LayerBecomesVisible(IME) to AssertionInvocationGroup.BLOCKING
+                    LayerBecomesVisible(IME) to AssertionInvocationGroup.BLOCKING,
                 ),
         extractor =
             TaggedScenarioExtractorBuilder()
                 .setTargetTag(CujType.CUJ_IME_INSETS_SHOW_ANIMATION)
-                .build()
+                .build(),
     )

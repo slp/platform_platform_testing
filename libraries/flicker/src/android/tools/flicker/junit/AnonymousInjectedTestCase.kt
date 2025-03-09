@@ -23,7 +23,7 @@ class AnonymousInjectedTestCase(
     method: Method,
     name: String,
     injectedBy: IFlickerJUnitDecorator,
-    val assertion: () -> Unit
+    val assertion: () -> Unit,
 ) : InjectedTestCase(method, name, injectedBy) {
     override fun execute(description: Description) {
         assertion()

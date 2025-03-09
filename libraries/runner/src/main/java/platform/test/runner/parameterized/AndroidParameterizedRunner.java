@@ -18,9 +18,11 @@ package platform.test.runner.parameterized;
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
+import org.junit.rules.TestRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 
+import java.util.Collections;
 import java.util.List;
 
 /** Parameterized runner for Android instrumentation. */
@@ -66,5 +68,12 @@ public class AndroidParameterizedRunner extends AndroidJUnit4ClassRunner {
     @Override
     protected Object createTest() throws Exception {
         return mDelegate.createTestInstance(getTestClass());
+    }
+
+    @Override
+    protected List<TestRule> classRules() {
+        // We are already running ClassRules at the top class level, don't run them again
+        // on each parameter (b/377890695)
+        return Collections.emptyList();
     }
 }

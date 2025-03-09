@@ -22,8 +22,8 @@ import android.platform.helpers.foldable.FoldableState.HALF_FOLDED
 import android.platform.helpers.foldable.FoldableState.REAR_DISPLAY
 import android.platform.helpers.foldable.FoldableState.UNFOLDED
 import android.platform.test.rule.TestWatcher
-import android.platform.uiautomator_helpers.TracingUtils.trace
-import android.platform.uiautomator_helpers.WaitUtils.ensureThat
+import android.platform.uiautomatorhelpers.TracingUtils.trace
+import android.platform.uiautomatorhelpers.WaitUtils.ensureThat
 import androidx.annotation.FloatRange
 import java.util.concurrent.TimeUnit
 import org.junit.rules.TestRule
@@ -63,9 +63,10 @@ class FoldableRule(private val ensureScreenOn: Boolean = false) : TestWatcher() 
 
     /**
      * Folds a foldable device
+     *
      * @param turnOffDisplayAfterFold if true, then triggers the device to go to sleep
-     * @param ensureFinished if true, waits for the display switch to happen
-     *                       and for the fold animation to play
+     * @param ensureFinished if true, waits for the display switch to happen and for the fold
+     *   animation to play
      */
     @JvmOverloads
     fun fold(turnOffDisplayAfterFold: Boolean = true, ensureFinished: Boolean = true) {
@@ -130,7 +131,8 @@ class FoldableRule(private val ensureScreenOn: Boolean = false) : TestWatcher() 
         }
     }
 
-    fun unfold() {
+    @JvmOverloads
+    fun unfold(ensureFinished: Boolean = true) {
         trace("FoldableRule#unfold") {
             check(!controller.isUnfolded) { "Trying to unfold when already unfolded" }
             if (ensureScreenOn) {
@@ -140,6 +142,11 @@ class FoldableRule(private val ensureScreenOn: Boolean = false) : TestWatcher() 
             val initialState = currentState
 
             controller.unfold()
+
+            if (!ensureFinished) {
+                return
+            }
+
             SystemClock.sleep(ANIMATION_TIMEOUT) // Let's wait for the unfold animation to finish.
 
             ensureThat("screen is on after unfolding") { screenOn }

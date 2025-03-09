@@ -98,6 +98,8 @@ public abstract class PerfettoTracingStrategy {
     // For USB disconnected cases you may want this option to be true. This option makes sure
     // the device does not go to sleep while collecting.
     public static final String PERFETTO_START_BG_WAIT = "perfetto_start_bg_wait";
+    // Argument to indicate whenever to move the temp trace using tf contend provider.
+    public static final String SHOULD_USE_CONTENT_PROVIDER = "perfetto_should_use_content_provider";
 
     @VisibleForTesting
     static final String HOLD_WAKELOCK_WHILE_COLLECTING = "hold_wakelock_while_collecting";
@@ -429,7 +431,7 @@ public abstract class PerfettoTracingStrategy {
                 args.getString(PERFETTO_CONFIG_OUTPUT_FILE_PREFIX, DEFAULT_PERFETTO_PREFIX);
 
         mPerfettoHelper.setTrackPerfettoPidFlag(
-                Boolean.parseBoolean(args.getString(PERFETTO_PERSIST_PID_TRACK)));
+                Boolean.parseBoolean(args.getString(PERFETTO_PERSIST_PID_TRACK, "true")));
         if (mPerfettoHelper.getTrackPerfettoPidFlag()) {
             mPerfettoHelper.setTrackPerfettoRootDir(
                     args.getString(PERFETTO_PID_TRACK_ROOT, DEFAULT_PERFETTO_PID_TRACK_ROOT));
@@ -459,6 +461,11 @@ public abstract class PerfettoTracingStrategy {
         // By default, this flag is set to false to collect the metrics on test failure.
         mSkipTestFailureMetrics = "true".equals(args.getString(SKIP_TEST_FAILURE_METRICS));
         mSkipTestSuccessMetrics = "true".equals(args.getString(SKIP_TEST_SUCCESS_METRICS));
+
+        // By default, use content provider to move the trace file.
+        boolean shouldUseContentProvider =
+                Boolean.parseBoolean(args.getString(SHOULD_USE_CONTENT_PROVIDER, "true"));
+        mPerfettoHelper.setShouldUseContentProvider(shouldUseContentProvider);
     }
 
     /**

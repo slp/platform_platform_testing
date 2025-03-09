@@ -27,6 +27,7 @@ import android.tools.flicker.subject.exceptions.IncorrectVisibilityException
 import android.tools.flicker.subject.exceptions.InvalidElementException
 import android.tools.flicker.subject.exceptions.InvalidPropertyException
 import android.tools.flicker.subject.region.RegionSubject
+import android.tools.function.AssertionPredicate
 import android.tools.io.Reader
 import android.tools.traces.component.ComponentNameMatcher
 import android.tools.traces.component.ComponentSplashScreenMatcher
@@ -36,6 +37,7 @@ import android.tools.traces.surfaceflinger.Layer
 import android.tools.traces.surfaceflinger.LayerTraceEntry
 import android.tools.traces.surfaceflinger.LayersTrace
 import androidx.core.graphics.toRect
+import java.util.function.Predicate
 
 /**
  * Subject for [LayerTraceEntry] objects, used to make assertions over behaviors that occur on a
@@ -61,19 +63,22 @@ import androidx.core.graphics.toRect
  *        .invoke { myCustomAssertion(this) }
  * ```
  */
-class LayerTraceEntrySubject(
+class LayerTraceEntrySubject
+@JvmOverloads
+constructor(
     val entry: LayerTraceEntry,
     override val reader: Reader? = null,
     val trace: LayersTrace? = null,
 ) : FlickerSubject(), ILayerSubject<LayerTraceEntrySubject, RegionSubject> {
     override val timestamp = entry.timestamp
 
-    val subjects by lazy { entry.flattenedLayers.map { LayerSubject(reader, timestamp, it) } }
+    val subjects by lazy { entry.flattenedLayers.map { LayerSubject(timestamp, it, reader) } }
 
     /** Executes a custom [assertion] on the current subject */
-    operator fun invoke(assertion: (LayerTraceEntry) -> Unit): LayerTraceEntrySubject = apply {
-        assertion(this.entry)
-    }
+    operator fun invoke(assertion: AssertionPredicate<LayerTraceEntry>): LayerTraceEntrySubject =
+        apply {
+            assertion.verify(this.entry)
+        }
 
     /** {@inheritDoc} */
     override fun isEmpty(): LayerTraceEntrySubject = apply {
@@ -96,7 +101,7 @@ class LayerTraceEntrySubject(
     /** {@inheritDoc} */
     override fun visibleRegion(
         componentMatcher: IComponentMatcher?,
-        useCompositionEngineRegionOnly: Boolean
+        useCompositionEngineRegionOnly: Boolean,
     ): RegionSubject {
         val selectedLayers =
             if (componentMatcher == null) {
@@ -114,7 +119,7 @@ class LayerTraceEntrySubject(
                     .forSubject(this)
                     .forInvalidElement(
                         componentMatcher?.toLayerIdentifier() ?: "<any>",
-                        expectElementExists = true
+                        expectElementExists = true,
                     )
                     .addExtraDescription(
                         Fact("Use composition engine region", useCompositionEngineRegionOnly)
@@ -140,7 +145,7 @@ class LayerTraceEntrySubject(
                     .forSubject(this)
                     .forInvalidElement(
                         componentMatcher.toLayerIdentifier(),
-                        expectElementExists = true
+                        expectElementExists = true,
                     )
             throw InvalidElementException(errorMsgBuilder)
         }
@@ -157,7 +162,7 @@ class LayerTraceEntrySubject(
                     .forSubject(this)
                     .forInvalidElement(
                         componentMatcher.toLayerIdentifier(),
-                        expectElementExists = false
+                        expectElementExists = false,
                     )
                     .setActual(foundElements.map { Fact("Found", it) })
             throw InvalidElementException(errorMsgBuilder)
@@ -181,7 +186,7 @@ class LayerTraceEntrySubject(
                     .forSubject(this)
                     .forIncorrectVisibility(
                         componentMatcher.toLayerIdentifier(),
-                        expectElementVisible = true
+                        expectElementVisible = true,
                     )
                     .setActual(failedEntries)
             throw IncorrectVisibilityException(errorMsgBuilder)
@@ -212,7 +217,7 @@ class LayerTraceEntrySubject(
                 .forSubject(this)
                 .forIncorrectVisibility(
                     componentMatcher.toLayerIdentifier(),
-                    expectElementVisible = false
+                    expectElementVisible = false,
                 )
                 .setActual(failedEntries)
         throw IncorrectVisibilityException(errorMsgBuilder)
@@ -231,13 +236,13 @@ class LayerTraceEntrySubject(
             if (matchingSubjects.isEmpty()) {
                 errorMsgBuilder.forInvalidElement(
                     componentMatcher.toLayerIdentifier(),
-                    expectElementExists = true
+                    expectElementExists = true,
                 )
             } else {
                 errorMsgBuilder
                     .forIncorrectVisibility(
                         "Splash screen for ${componentMatcher.toLayerIdentifier()}",
-                        expectElementVisible = true
+                        expectElementVisible = true,
                     )
                     .setActual(
                         matchingSubjects
@@ -350,16 +355,8 @@ class LayerTraceEntrySubject(
      * @param predicate to search for a layer
      * @return [LayerSubject] that can be used to make assertions
      */
-    fun layer(predicate: (Layer) -> Boolean): LayerSubject? =
-        subjects.firstOrNull { predicate(it.layer) }
-
-    private fun getActivityRecordFor(layer: Layer): Layer? {
-        if (layer.name.startsWith("ActivityRecord{")) {
-            return layer
-        }
-        val parent = layer.parent ?: return null
-        return getActivityRecordFor(parent)
-    }
+    fun layer(predicate: Predicate<Layer>): LayerSubject? =
+        subjects.firstOrNull { predicate.test(it.layer) }
 
     override fun toString(): String {
         return "LayerTraceEntrySubject($entry)"

@@ -37,7 +37,7 @@ object LegacyFlickerTestFactory {
     fun nonRotationTests(
         supportedRotations: List<Rotation> = listOf(Rotation.ROTATION_0, Rotation.ROTATION_90),
         supportedNavigationModes: List<NavBar> = listOf(NavBar.MODE_3BUTTON, NavBar.MODE_GESTURAL),
-        extraArgs: Map<String, Any> = emptyMap()
+        extraArgs: Map<String, Any> = emptyMap(),
     ): List<FlickerTest> {
         return supportedNavigationModes.flatMap { navBarMode ->
             supportedRotations.map { rotation ->
@@ -56,7 +56,7 @@ object LegacyFlickerTestFactory {
     fun rotationTests(
         supportedRotations: List<Rotation> = listOf(Rotation.ROTATION_0, Rotation.ROTATION_90),
         supportedNavigationModes: List<NavBar> = listOf(NavBar.MODE_3BUTTON, NavBar.MODE_GESTURAL),
-        extraArgs: Map<String, Any> = emptyMap()
+        extraArgs: Map<String, Any> = emptyMap(),
     ): List<FlickerTest> {
         return supportedNavigationModes.flatMap { navBarMode ->
             supportedRotations
@@ -70,7 +70,7 @@ object LegacyFlickerTestFactory {
         navBarMode: NavBar,
         startRotation: Rotation,
         endRotation: Rotation,
-        extraArgs: Map<String, Any>
+        extraArgs: Map<String, Any>,
     ) =
         LegacyFlickerTest(
             ScenarioBuilder()

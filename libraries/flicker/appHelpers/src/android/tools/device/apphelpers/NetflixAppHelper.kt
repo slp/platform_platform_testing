@@ -22,6 +22,7 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.tools.traces.component.ComponentNameMatcher
+import android.tools.traces.component.IComponentNameMatcher
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
@@ -33,13 +34,10 @@ import androidx.test.uiautomator.Until
  */
 class NetflixAppHelper(
     instrumentation: Instrumentation,
-    pkgManager: PackageManager = instrumentation.context.packageManager
-) :
-    StandardAppHelper(
-        instrumentation,
-        getNetflixLauncherName(pkgManager),
-        getNetflixComponent(pkgManager),
-    ) {
+    pkgManager: PackageManager = instrumentation.context.packageManager,
+    appName: String = getNetflixLauncherName(pkgManager),
+    appComponent: IComponentNameMatcher = getNetflixComponent(pkgManager),
+) : BasePipAppHelper(instrumentation, appName, appComponent) {
 
     fun waitForVideoPlaying() {
         getPauseButton()
@@ -61,7 +59,7 @@ class NetflixAppHelper(
             val netflixVideoIntent =
                 Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse(String.format(INTENT_WATCH_VIDEO_PATTERN, videoId))
+                    Uri.parse(String.format(INTENT_WATCH_VIDEO_PATTERN, videoId)),
                 )
             netflixVideoIntent.setPackage(PACKAGE_NAME)
             netflixVideoIntent.setClassName(PACKAGE_NAME, WATCH_CLASS_NAME)
@@ -84,7 +82,7 @@ class NetflixAppHelper(
             val resolveInfo = getResolveInfo(pkgManager)
             return ComponentNameMatcher(
                 resolveInfo.activityInfo.packageName,
-                className = resolveInfo.activityInfo.name
+                className = resolveInfo.activityInfo.name,
             )
         }
 

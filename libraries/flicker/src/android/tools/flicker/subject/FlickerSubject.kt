@@ -29,8 +29,4 @@ abstract class FlickerSubject {
     fun check(lazyMessage: () -> String): CheckSubjectBuilder {
         return CheckSubjectBuilder(this.timestamp, this.selfFacts, this.reader, lazyMessage)
     }
-
-    companion object {
-        const val ASSERTION_TAG = "Assertion"
-    }
 }

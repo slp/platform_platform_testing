@@ -28,7 +28,7 @@ class KeyguardControllerState
 private constructor(
     val isAodShowing: Boolean,
     val isKeyguardShowing: Boolean,
-    val keyguardOccludedStates: Map<Int, Boolean>
+    val keyguardOccludedStates: Map<Int, Boolean>,
 ) {
     fun isKeyguardOccluded(displayId: Int): Boolean = keyguardOccludedStates[displayId] ?: false
 
@@ -55,10 +55,11 @@ private constructor(
     }
 
     companion object {
+        @JvmStatic
         fun from(
             isAodShowing: Boolean,
             isKeyguardShowing: Boolean,
-            keyguardOccludedStates: Map<Int, Boolean>
+            keyguardOccludedStates: Map<Int, Boolean>,
         ): KeyguardControllerState = withCache {
             KeyguardControllerState(isAodShowing, isKeyguardShowing, keyguardOccludedStates)
         }

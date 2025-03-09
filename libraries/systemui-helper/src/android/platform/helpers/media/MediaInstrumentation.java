@@ -16,7 +16,7 @@
 
 package android.platform.helpers.media;
 
-import static android.platform.uiautomator_helpers.DeviceHelpers.assertVisibility;
+import static android.platform.uiautomatorhelpers.DeviceHelpers.assertVisibility;
 
 import static org.junit.Assert.assertNotNull;
 

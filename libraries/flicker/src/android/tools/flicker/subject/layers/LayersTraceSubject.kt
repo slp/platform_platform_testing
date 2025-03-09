@@ -21,14 +21,17 @@ import android.tools.flicker.subject.exceptions.ExceptionMessageBuilder
 import android.tools.flicker.subject.exceptions.InvalidElementException
 import android.tools.flicker.subject.exceptions.InvalidPropertyException
 import android.tools.flicker.subject.region.RegionTraceSubject
+import android.tools.function.AssertionPredicate
 import android.tools.io.Reader
 import android.tools.traces.component.ComponentNameMatcher
 import android.tools.traces.component.EdgeExtensionComponentMatcher
 import android.tools.traces.component.IComponentMatcher
 import android.tools.traces.component.IComponentNameMatcher
+import android.tools.traces.component.SurfaceViewBackgroundMatcher
 import android.tools.traces.region.RegionTrace
 import android.tools.traces.surfaceflinger.Layer
 import android.tools.traces.surfaceflinger.LayersTrace
+import java.util.function.Predicate
 
 /**
  * Subject for [LayersTrace] objects, used to make assertions over behaviors that occur throughout a
@@ -55,7 +58,9 @@ import android.tools.traces.surfaceflinger.LayersTrace
  *    }
  * ```
  */
-class LayersTraceSubject(val trace: LayersTrace, override val reader: Reader? = null) :
+class LayersTraceSubject
+@JvmOverloads
+constructor(val trace: LayersTrace, override val reader: Reader? = null) :
     FlickerTraceSubject<LayerTraceEntrySubject>(),
     ILayerSubject<LayersTraceSubject, RegionTraceSubject> {
 
@@ -99,8 +104,8 @@ class LayersTraceSubject(val trace: LayersTrace, override val reader: Reader? = 
     /**
      * @return List of [LayerSubject]s matching [predicate] in the order they appear on the trace
      */
-    fun layers(predicate: (Layer) -> Boolean): List<LayerSubject> =
-        subjects.mapNotNull { it.layer { layer -> predicate(layer) } }
+    fun layers(predicate: Predicate<Layer>): List<LayerSubject> =
+        subjects.mapNotNull { it.layer { layer -> predicate.test(layer) } }
 
     /** Checks that all visible layers are shown for more than one consecutive entry */
     fun visibleLayersShownMoreThanOneConsecutiveEntry(
@@ -202,11 +207,11 @@ class LayersTraceSubject(val trace: LayersTrace, override val reader: Reader? = 
     /** See [isSplashScreenVisibleFor] */
     fun isSplashScreenVisibleFor(
         componentMatcher: IComponentNameMatcher,
-        isOptional: Boolean
+        isOptional: Boolean,
     ): LayersTraceSubject = apply {
         addAssertion(
             "isSplashScreenVisibleFor(${componentMatcher.toLayerIdentifier()})",
-            isOptional
+            isOptional,
         ) {
             it.isSplashScreenVisibleFor(componentMatcher)
         }
@@ -223,14 +228,14 @@ class LayersTraceSubject(val trace: LayersTrace, override val reader: Reader? = 
     /** {@inheritDoc} */
     override fun visibleRegion(
         componentMatcher: IComponentMatcher?,
-        useCompositionEngineRegionOnly: Boolean
+        useCompositionEngineRegionOnly: Boolean,
     ): RegionTraceSubject {
         val regionTrace =
             RegionTrace(
                 componentMatcher,
                 subjects.map {
                     it.visibleRegion(componentMatcher, useCompositionEngineRegionOnly).regionEntry
-                }
+                },
             )
         return RegionTraceSubject(regionTrace, reader)
     }
@@ -256,10 +261,11 @@ class LayersTraceSubject(val trace: LayersTrace, override val reader: Reader? = 
     }
 
     /** Executes a custom [assertion] on the current subject */
+    @JvmOverloads
     operator fun invoke(
         name: String,
         isOptional: Boolean = false,
-        assertion: (LayerTraceEntrySubject) -> Unit
+        assertion: AssertionPredicate<LayerTraceEntrySubject>,
     ): LayersTraceSubject = apply { addAssertion(name, isOptional, assertion) }
 
     fun hasFrameSequence(name: String, frameNumbers: Iterable<Long>): LayersTraceSubject =
@@ -267,7 +273,7 @@ class LayersTraceSubject(val trace: LayersTrace, override val reader: Reader? = 
 
     fun hasFrameSequence(
         componentMatcher: IComponentMatcher,
-        frameNumbers: Iterable<Long>
+        frameNumbers: Iterable<Long>,
     ): LayersTraceSubject = apply {
         val firstFrame = frameNumbers.first()
         val entries =
@@ -297,7 +303,7 @@ class LayersTraceSubject(val trace: LayersTrace, override val reader: Reader? = 
                     .forSubject(this)
                     .forInvalidElement(
                         componentMatcher.toLayerIdentifier(),
-                        expectElementExists = true
+                        expectElementExists = true,
                     )
                     .addExtraDescription("With frame sequence", frameNumbers.joinToString(","))
             throw InvalidElementException(errorMsgBuilder)
@@ -316,9 +322,10 @@ class LayersTraceSubject(val trace: LayersTrace, override val reader: Reader? = 
      *
      * @param timestamp of the entry
      */
+    @JvmOverloads
     fun getEntryBySystemUpTime(
         timestamp: Long,
-        byElapsedTimestamp: Boolean = false
+        byElapsedTimestamp: Boolean = false,
     ): LayerTraceEntrySubject {
         return if (byElapsedTimestamp) {
             subjects.first { it.entry.elapsedTimestamp == timestamp }
@@ -328,6 +335,7 @@ class LayersTraceSubject(val trace: LayersTrace, override val reader: Reader? = 
     }
 
     companion object {
+        @JvmField
         val VISIBLE_FOR_MORE_THAN_ONE_ENTRY_IGNORE_LAYERS =
             listOf(
                 ComponentNameMatcher.SPLASH_SCREEN,
@@ -339,7 +347,8 @@ class LayersTraceSubject(val trace: LayersTrace, override val reader: Reader? = 
                 ComponentNameMatcher.TRANSITION_SNAPSHOT,
                 ComponentNameMatcher.FLOATING_ROTATION_BUTTON,
                 ComponentNameMatcher.WIRED_CHARGING_ANIMATION,
-                EdgeExtensionComponentMatcher()
+                EdgeExtensionComponentMatcher(),
+                SurfaceViewBackgroundMatcher(),
             )
     }
 }

@@ -29,10 +29,17 @@ import org.junit.runners.MethodSorters
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class MonitorUtilsTest {
     private val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+
     @Test
     fun withTracing() {
+        val debugFile =
+            InstrumentationRegistry.getInstrumentation()
+                .targetContext
+                .filesDir
+                .resolve("uiTrace-MonitorUtilsTest-withTracing.winscope")
+
         val trace =
-            android.tools.traces.monitors.withTracing {
+            android.tools.traces.monitors.withTracing(debugFile = debugFile) {
                 device.pressHome()
                 device.pressRecentApps()
             }

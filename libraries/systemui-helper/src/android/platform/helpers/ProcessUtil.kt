@@ -1,7 +1,7 @@
 package android.platform.helpers
 
-import android.platform.uiautomator_helpers.DeviceHelpers.shell
-import android.platform.uiautomator_helpers.WaitUtils.ensureThat
+import android.platform.uiautomatorhelpers.DeviceHelpers.shell
+import android.platform.uiautomatorhelpers.WaitUtils.ensureThat
 import android.util.Log
 import java.time.Duration
 
@@ -18,11 +18,11 @@ class ProcessUtil(private val packageName: String) {
                 Log.d(TAG, "Result of \"$killCmd\": \"$result\"")
             }
         ensureThat("All sysui process stopped", Duration.ofSeconds(30L)) {
-           allProcessesStopped(initialPids)
+            allProcessesStopped(initialPids)
         }
         ensureThat("All sysui process restarted", Duration.ofSeconds(30L)) {
-           hasProcessRestarted(initialPids)
-       }
+            hasProcessRestarted(initialPids)
+        }
     }
 
     private fun getPids(logTag: String): List<String> {

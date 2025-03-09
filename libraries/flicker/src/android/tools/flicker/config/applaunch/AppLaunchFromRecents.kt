@@ -35,5 +35,5 @@ val AppLaunchFromRecents =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(TransitionFilters.OPEN_APP_TRANSITION_FILTER)
                 )
-                .build()
+                .build(),
     )

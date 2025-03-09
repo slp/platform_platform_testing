@@ -25,6 +25,6 @@ class AppWindowIsInvisibleAtEnd(private val component: ComponentTemplate) :
     AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
-        flicker.assertWmEnd { isAppWindowInvisible(component.build(scenarioInstance)) }
+        flicker.assertWmEnd { isAppWindowInvisible(component.get(scenarioInstance)) }
     }
 }

@@ -34,7 +34,7 @@ object TransitionFilters {
         ts.filter { t ->
             t.changes.any {
                 it.transitMode == TransitionType.OPEN || // cold launch
-                it.transitMode == TO_FRONT // warm launch
+                    it.transitMode == TO_FRONT // warm launch
             }
         }
     }
@@ -95,7 +95,9 @@ object TransitionFilters {
                             isLauncherTopLevelTaskLayer(it.layerId, layersTrace)
                     } == 1 &&
                     (openingAppLayers.count() == 1 || openingAppLayers.count() == 5) &&
-                    (closingAppLayers.count() == 1 || closingAppLayers.count() == 5)
+                    // Fullscreen: 1 app + 1 recents
+                    // SplitScreen: 2 apps + 2 split containers + 1 split root + 1 recents
+                    (closingAppLayers.count() == 2 || closingAppLayers.count() == 6)
             }
 
         var quickswitchFromLauncherTransitions =
@@ -127,10 +129,10 @@ object TransitionFilters {
                         it.wmData.merge(
                             WmTransitionData(
                                 createTime = createTimeAdjustedForTolerance,
-                                sendTime = createTimeAdjustedForTolerance
+                                sendTime = createTimeAdjustedForTolerance,
                             )
                         ),
-                    shellData = it.shellData
+                    shellData = it.shellData,
                 )
             }
 
@@ -177,7 +179,7 @@ object TransitionFilters {
                     type = transition.wmData.type,
                     changes = listOf(closingAppChange, openingAppChange),
                 ),
-                transition.shellData
+                transition.shellData,
             )
         )
     }
@@ -188,8 +190,7 @@ object TransitionFilters {
                 entry.flattenedLayers.firstOrNull { layer ->
                     ComponentNameMatcher.LAUNCHER.or(ComponentNameMatcher.AOSP_LAUNCHER)
                         .layerMatchesAnyOf(layer)
-                }
-                    ?: return@any false
+                } ?: return@any false
 
             var curLayer = launcherLayer
             while (!curLayer.isTask && curLayer.parent != null) {

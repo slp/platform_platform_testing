@@ -87,9 +87,9 @@ public class SwitchToExistingSecondaryUser {
         Assume.assumeTrue(
                 String.format(
                         Locale.US,
-                        "DEFAULT_INITIAL_USER is user %d but must be user 10",
+                        "DEFAULT_INITIAL_USER is user id %d but must be greater or equal to 10",
                         MultiUserConstants.DEFAULT_INITIAL_USER),
-                MultiUserConstants.DEFAULT_INITIAL_USER == 10);
+                MultiUserConstants.DEFAULT_INITIAL_USER >= 10);
         Assume.assumeTrue(
                 String.format(
                         Locale.US,

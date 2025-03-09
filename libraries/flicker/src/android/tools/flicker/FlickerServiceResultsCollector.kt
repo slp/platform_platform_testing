@@ -40,13 +40,15 @@ import org.junit.runner.notification.Failure
  * Collects all the Flicker Service's metrics which are then uploaded for analysis and monitoring to
  * the CrystalBall database.
  */
-class FlickerServiceResultsCollector(
+class FlickerServiceResultsCollector
+@JvmOverloads
+constructor(
     private val tracesCollector: TracesCollector,
     private val flickerService: FlickerService =
         FlickerService(FlickerConfig().use(FlickerServiceConfig.DEFAULT)),
     instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation(),
     private val collectMetricsPerTest: Boolean = true,
-    private val reportOnlyForPassingTests: Boolean = true
+    private val reportOnlyForPassingTests: Boolean = true,
 ) : BaseMetricListener(), IFlickerServiceResultsCollector {
     private var hasFailedTest = false
     private var testSkipped = false
@@ -151,7 +153,7 @@ class FlickerServiceResultsCollector(
                 testData,
                 results,
                 testScenario ?: error("Test scenario should not be null"),
-                testData
+                testData,
             )
         }
     }
@@ -175,7 +177,7 @@ class FlickerServiceResultsCollector(
                 runData,
                 results,
                 testRunScenario ?: error("Test run scenario should not be null"),
-                runData
+                runData,
             )
         }
     }
@@ -183,7 +185,7 @@ class FlickerServiceResultsCollector(
     private fun collectFlickerMetrics(
         dataRecord: DataRecord,
         reader: Reader,
-        description: Description? = null
+        description: Description? = null,
     ): Collection<AssertionResult>? {
         return errorReportingBlock {
             return@errorReportingBlock try {
@@ -239,7 +241,7 @@ class FlickerServiceResultsCollector(
 
     private fun collectMetrics(
         data: DataRecord,
-        aggregatedResults: Map<String, AggregatedFlickerResult>
+        aggregatedResults: Map<String, AggregatedFlickerResult>,
     ) {
         val it = aggregatedResults.entries.iterator()
 
@@ -284,7 +286,7 @@ class FlickerServiceResultsCollector(
         record: DataRecord,
         results: Collection<AssertionResult>?,
         scenario: Scenario,
-        dataRecord: DataRecord
+        dataRecord: DataRecord,
     ) {
         val status = if (executionErrors.isEmpty()) OK_STATUS_CODE else EXECUTION_ERROR_STATUS_CODE
         record.addStringMetric(FAAS_STATUS_KEY, status.toString())

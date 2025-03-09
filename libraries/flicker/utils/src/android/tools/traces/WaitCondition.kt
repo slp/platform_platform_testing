@@ -16,6 +16,11 @@
 
 package android.tools.traces
 
+import java.util.function.BiConsumer
+import java.util.function.Consumer
+import java.util.function.Predicate
+import java.util.function.Supplier
+
 /**
  * The utility class to wait a condition with customized options. The default retry policy is 5
  * times with interval 1 second.
@@ -46,28 +51,28 @@ package android.tools.traces
  */
 class WaitCondition<T>
 private constructor(
-    private val supplier: () -> T,
+    private val supplier: Supplier<T>,
     private val condition: Condition<T>,
     private val retryLimit: Int,
-    private val onLog: ((String, Boolean) -> Unit)?,
-    private val onFailure: ((T) -> Any)?,
-    private val onRetry: ((T) -> Any)?,
-    private val onSuccess: ((T) -> Any)?,
-    private val onStart: ((String) -> Any)?,
-    private val onEnd: (() -> Any)?
+    private val onLog: BiConsumer<String, Boolean>?,
+    private val onFailure: Consumer<T>?,
+    private val onRetry: Consumer<T>?,
+    private val onSuccess: Consumer<T>?,
+    private val onStart: Consumer<String>?,
+    private val onEnd: Consumer<String>?,
 ) {
     /** @return `false` if the condition does not satisfy within the time limit. */
     fun waitFor(): Boolean {
-        onStart?.invoke("waitFor")
+        onStart?.accept("waitFor")
         try {
             return doWaitFor()
         } finally {
-            onEnd?.invoke()
+            onEnd?.accept("done waitFor")
         }
     }
 
     private fun doWaitFor(): Boolean {
-        onLog?.invoke("***Waiting for $condition", false)
+        onLog?.accept("***Waiting for $condition", false)
         var currState: T? = null
         var success = false
         for (i in 0..retryLimit) {
@@ -77,7 +82,7 @@ private constructor(
             if (success) {
                 break
             } else if (i < retryLimit) {
-                onRetry?.invoke(currState)
+                onRetry?.accept(currState)
             }
         }
 
@@ -90,20 +95,20 @@ private constructor(
     }
 
     private fun doWaitForRetry(retryNr: Int): Pair<Boolean, T> {
-        onStart?.invoke("doWaitForRetry")
+        onStart?.accept("doWaitForRetry")
         try {
-            val currState = supplier.invoke()
+            val currState = supplier.get()
             return if (condition.isSatisfied(currState)) {
-                onLog?.invoke("***Waiting for $condition ... Success!", false)
-                onSuccess?.invoke(currState)
+                onLog?.accept("***Waiting for $condition ... Success!", false)
+                onSuccess?.accept(currState)
                 Pair(true, currState)
             } else {
                 val detailedMessage = condition.getMessage(currState)
-                onLog?.invoke("***Waiting for $detailedMessage... retry=${retryNr + 1}", true)
+                onLog?.accept("***Waiting for $detailedMessage... retry=${retryNr + 1}", true)
                 Pair(false, currState)
             }
         } finally {
-            onEnd?.invoke()
+            onEnd?.accept("done doWaitForRetry")
         }
     }
 
@@ -114,25 +119,25 @@ private constructor(
             } else {
                 condition.toString()
             }
-        onLog?.invoke("***Waiting for $detailedMessage ... Failed!", true)
+        onLog?.accept("***Waiting for $detailedMessage ... Failed!", true)
         if (onFailure != null) {
             require(currState != null) { "Missing last result for failure notification" }
-            onFailure.invoke(currState)
+            onFailure.accept(currState)
         }
     }
 
-    class Builder<T>(private val supplier: () -> T, private var retryLimit: Int) {
+    class Builder<T>(private var retryLimit: Int, private val supplier: Supplier<T>) {
         private val conditions = mutableListOf<Condition<T>>()
-        private var onStart: ((String) -> Any)? = null
-        private var onEnd: (() -> Any)? = null
-        private var onFailure: ((T) -> Any)? = null
-        private var onRetry: ((T) -> Any)? = null
-        private var onSuccess: ((T) -> Any)? = null
-        private var onLog: ((String, Boolean) -> Unit)? = null
+        private var onStart: Consumer<String>? = null
+        private var onEnd: Consumer<String>? = null
+        private var onFailure: Consumer<T>? = null
+        private var onRetry: Consumer<T>? = null
+        private var onSuccess: Consumer<T>? = null
+        private var onLog: BiConsumer<String, Boolean>? = null
 
         fun withCondition(condition: Condition<T>) = apply { conditions.add(condition) }
 
-        fun withCondition(message: String, condition: (T) -> Boolean) = apply {
+        fun withCondition(message: String, condition: Predicate<T>) = apply {
             withCondition(Condition(message, condition))
         }
 
@@ -149,21 +154,19 @@ private constructor(
          * Executes the action when the condition does not satisfy within the time limit. The passed
          * object to the consumer will be the last result from the supplier.
          */
-        fun onFailure(onFailure: (T) -> Any): Builder<T> = apply { this.onFailure = onFailure }
+        fun onFailure(onFailure: Consumer<T>): Builder<T> = apply { this.onFailure = onFailure }
 
-        fun onLog(onLog: (String, Boolean) -> Unit): Builder<T> = apply { this.onLog = onLog }
+        fun onLog(onLog: BiConsumer<String, Boolean>): Builder<T> = apply { this.onLog = onLog }
 
-        fun onRetry(onRetry: ((T) -> Any)? = null): Builder<T> = apply { this.onRetry = onRetry }
+        fun onRetry(onRetry: Consumer<T>? = null): Builder<T> = apply { this.onRetry = onRetry }
 
-        fun onStart(onStart: ((String) -> Any)? = null): Builder<T> = apply {
+        fun onStart(onStart: Consumer<String>? = null): Builder<T> = apply {
             this.onStart = onStart
         }
 
-        fun onEnd(onEnd: (() -> Any)? = null): Builder<T> = apply { this.onEnd = onEnd }
+        fun onEnd(onEnd: Consumer<String>? = null): Builder<T> = apply { this.onEnd = onEnd }
 
-        fun onSuccess(onRetry: ((T) -> Any)? = null): Builder<T> = apply {
-            this.onSuccess = onRetry
-        }
+        fun onSuccess(onRetry: Consumer<T>? = null): Builder<T> = apply { this.onSuccess = onRetry }
 
         fun build(): WaitCondition<T> =
             WaitCondition(
@@ -175,7 +178,7 @@ private constructor(
                 onRetry,
                 onSuccess,
                 onStart,
-                onEnd
+                onEnd,
             )
     }
 }

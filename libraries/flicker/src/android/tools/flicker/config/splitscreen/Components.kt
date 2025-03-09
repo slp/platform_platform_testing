@@ -88,7 +88,7 @@ object Components {
 
     private fun getSplitscreenOpeningComponentMatchers(
         associatedTransition: Transition,
-        layersTrace: LayersTrace
+        layersTrace: LayersTrace,
     ): List<IComponentMatcher> {
         // Task (part of changes)
         // - Task (part of changes)

@@ -30,7 +30,7 @@ class ShellTransitionTraceParser :
         WmShellTransitionTraceProto,
         Transition,
         android.tools.traces.wm.Transition,
-        TransitionsTrace
+        TransitionsTrace,
     >() {
     override val traceName: String = "Transition trace (shell)"
 
@@ -83,7 +83,7 @@ class ShellTransitionTraceParser :
         input: WmShellTransitionTraceProto,
         from: Timestamp,
         to: Timestamp,
-        addInitialEntry: Boolean
+        addInitialEntry: Boolean,
     ): TransitionsTrace {
         val uncompressedTransitionsTrace = super.doParse(input, from, to, addInitialEntry)
         return uncompressedTransitionsTrace.asCompressed()
@@ -124,8 +124,8 @@ class ShellTransitionTraceParser :
                             Timestamps.from(elapsedNanos = entry.abortTimeNs)
                         },
                     handler = handlerMapping[entry.handler],
-                    mergeTarget = if (entry.mergeTarget == 0) null else entry.mergeTarget
-                )
+                    mergeTarget = if (entry.mergeTarget == 0) null else entry.mergeTarget,
+                ),
         )
     }
 

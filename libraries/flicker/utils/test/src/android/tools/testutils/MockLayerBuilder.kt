@@ -92,7 +92,7 @@ class MockLayerBuilder(private val name: String) {
                 isRelativeOf = false,
                 zOrderRelativeOfId = -1,
                 stackId = 0,
-                excludesCompositionState = false
+                excludesCompositionState = false,
             )
 
         val layers = mutableListOf<Layer>()

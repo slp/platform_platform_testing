@@ -114,7 +114,7 @@ class ScreenRecorderTest {
                 0x4d,
                 0x45,
                 0x32,
-                0x23
+                0x23,
             ) // "#VV1NSC0PET1ME2#"
 
         @ClassRule @JvmField val ENV_CLEANUP = CleanFlickerEnvironmentRule()
@@ -202,14 +202,14 @@ class ScreenRecorderTest {
             flags: Int,
             size: Int,
             offset: Int,
-            cryptoData: MediaCodec.CryptoInfo?
+            cryptoData: MediaCodec.CryptoInfo?,
         ) {
             // do nothing
         }
 
         private fun processSampleData(
             inputReader: MediaParser.InputReader,
-            buffer: ArrayList<Byte>
+            buffer: ArrayList<Byte>,
         ) {
             while (inputReader.length > 0) {
                 val requestLength = kotlin.math.min(inputReader.length, auxBuffer.size.toLong())

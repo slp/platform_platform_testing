@@ -41,6 +41,7 @@ class TraceProcessorSession(val session: TraceProcessor.Session) {
     }
 
     companion object {
+        @JvmStatic
         fun <T> loadPerfettoTrace(trace: ByteArray, predicate: (TraceProcessorSession) -> T): T {
             return withTracing("TraceProcessorSession#loadPerfettoTrace") {
                 val traceFile = File.createTempFile(TraceType.SF.fileName, "")

@@ -28,6 +28,7 @@ class AssertionDataFactoryTest : AssertionStateDataFactoryTest() {
     override val wmAssertionFactory: AssertionStateDataFactory
         get() =
             AssertionDataFactory(WindowManagerStateSubject::class, WindowManagerTraceSubject::class)
+
     override val layersAssertionFactory: AssertionStateDataFactory
         get() = AssertionDataFactory(LayerTraceEntrySubject::class, LayersTraceSubject::class)
 
@@ -37,13 +38,13 @@ class AssertionDataFactoryTest : AssertionStateDataFactoryTest() {
             (wmAssertionFactory as AssertionDataFactory).createTraceAssertion {}
                 as AssertionDataImpl,
             WindowManagerTraceSubject::class,
-            Tag.ALL
+            Tag.ALL,
         )
         validate(
             (layersAssertionFactory as AssertionDataFactory).createTraceAssertion {}
                 as AssertionDataImpl,
             LayersTraceSubject::class,
-            Tag.ALL
+            Tag.ALL,
         )
     }
 }

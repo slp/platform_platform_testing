@@ -90,11 +90,11 @@ class FilmstripTest {
             listOf(
                 MotionScreenshot(
                     SupplementalFrameId("wide_before"),
-                    mockScreenshot(Color.RED, w, h)
+                    mockScreenshot(Color.RED, w, h),
                 ),
                 MotionScreenshot(
                     SupplementalFrameId("wide_after"),
-                    mockScreenshot(Color.BLUE, w, h)
+                    mockScreenshot(Color.BLUE, w, h),
                 ),
             )
 
@@ -261,6 +261,6 @@ class FilmstripTest {
         color: Int,
         width: Int = 400,
         height: Int = 200,
-        bitmapConfig: Bitmap.Config = Bitmap.Config.ARGB_8888
+        bitmapConfig: Bitmap.Config = Bitmap.Config.ARGB_8888,
     ) = Bitmap.createBitmap(width, height, bitmapConfig).also { Canvas(it).drawColor(color) }
 }

@@ -20,19 +20,16 @@ import static junit.framework.Assert.assertTrue;
 
 import android.content.pm.UserInfo;
 import android.os.SystemClock;
+import android.platform.helpers.AutomotiveConfigConstants;
 import android.platform.helpers.HelperAccessor;
 import android.platform.helpers.IAutoSettingHelper;
 import android.platform.helpers.IAutoUserHelper;
 import android.platform.helpers.MultiUserHelper;
 import android.platform.scenario.multiuser.MultiUserConstants;
-import android.platform.test.rules.ConditionalIgnore;
-import android.platform.test.rules.ConditionalIgnoreRule;
-import android.platform.test.rules.IgnoreOnPortrait;
 
 import androidx.test.runner.AndroidJUnit4;
 
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -42,10 +39,10 @@ import org.junit.runner.RunWith;
  */
 @RunWith(AndroidJUnit4.class)
 public class SwitchToGuestFromNonAdmin {
-    @Rule public ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     private static final String userName = MultiUserConstants.SECONDARY_USER_NAME;
     private static final String guestUser = MultiUserConstants.GUEST_NAME;
+    private static final String GUEST = AutomotiveConfigConstants.HOME_GUEST_BUTTON;
     private static final int WAIT_TIME = 10000;
     private final MultiUserHelper mMultiUserHelper = MultiUserHelper.getInstance();
     private HelperAccessor<IAutoUserHelper> mUsersHelper;
@@ -63,7 +60,6 @@ public class SwitchToGuestFromNonAdmin {
     }
 
     @Test
-    @ConditionalIgnore(condition = IgnoreOnPortrait.class)
     public void testSwitchToGuest() throws Exception {
         UserInfo initialUser = mMultiUserHelper.getCurrentForegroundUserInfo();
         // add new user
@@ -74,7 +70,7 @@ public class SwitchToGuestFromNonAdmin {
             mTargetUserId, MultiUserConstants.WAIT_FOR_IDLE_TIME_MS);
         UserInfo newUser = mMultiUserHelper.getCurrentForegroundUserInfo();
         // switch to guest from new user
-        mUsersHelper.get().switchUser(newUser.name, guestUser);
+        mUsersHelper.get().switchUsingUserIcon(GUEST);
         // verify the user switch
         UserInfo currentUser = mMultiUserHelper.getCurrentForegroundUserInfo();
         assertTrue(currentUser.name.equals(guestUser));

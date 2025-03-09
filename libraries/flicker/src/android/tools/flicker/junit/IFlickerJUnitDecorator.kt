@@ -34,5 +34,6 @@ interface IFlickerJUnitDecorator {
     fun getMethodInvoker(method: FrameworkMethod, test: Any): Statement
 
     fun shouldRunBeforeOn(method: FrameworkMethod): Boolean
+
     fun shouldRunAfterOn(method: FrameworkMethod): Boolean
 }

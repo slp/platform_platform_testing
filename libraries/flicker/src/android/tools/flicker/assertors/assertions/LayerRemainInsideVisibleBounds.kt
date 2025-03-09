@@ -28,12 +28,13 @@ class LayerRemainInsideVisibleBounds(private val component: ComponentTemplate) :
     AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
+        val matcher = component.get(scenarioInstance)
         flicker.assertLayers {
             subjects.forEach {
                 val displayBounds =
                     it.entry.physicalDisplayBounds ?: error("Missing physical display bounds")
 
-                it.visibleRegion(component.build(scenarioInstance)).coversAtMost(displayBounds)
+                it.visibleRegion(matcher).coversAtMost(displayBounds)
             }
         }
     }

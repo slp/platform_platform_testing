@@ -22,6 +22,7 @@ import androidx.test.platform.app.InstrumentationRegistry
  *
  * @param[permissions] the permission to adopt. Adopt all available permission is it's empty.
  */
+@Deprecated("Use uiautomatorhelpers, b/376676853")
 class ShellPrivilege(vararg permissions: String) : AutoCloseable {
 
     private val instrumentation = InstrumentationRegistry.getInstrumentation()

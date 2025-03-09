@@ -68,13 +68,14 @@
     "OPEN_APP_GRID_COMMAND": "am start -n com.android.car.carlauncher/.GASAppGridActivity",
     "OPEN_NOTIFICATIONS_COMMAND": "service call statusbar 1",
     "STOP_SETTING_APP_COMMAND": "am force-stop com.android.car.settings",
-    "OPEN_SETTINGS_COMMAND": "am start -a android.settings.SETTINGS",
+    "OPEN_SETTINGS_COMMAND": "am start -a android.settings.SETTINGS --user $user_id",
     "MEDIA_LAUNCH_COMMAND": "am start -a android.car.intent.action.MEDIA_TEMPLATE -e android.car.intent.extra.MEDIA_COMPONENT com.android.bluetooth/com.android.bluetooth.avrcpcontroller.BluetoothMediaBrowserService",
     "MEDIA_LAUNCH_BLUETOOTH_AUDIO_COMMAND": "am start -a android.car.intent.action.MEDIA_TEMPLATE -e android.car.intent.extra.MEDIA_COMPONENT com.google.android.bluetooth/com.android.bluetooth.avrcpcontroller.BluetoothMediaBrowserService",
     "NIGHT_MODE_COMMAND": "dumpsys activity service com.android.car/.CarService day-night-mode  night",
     "DAY_MODE_COMMAND": "dumpsys activity service com.android.car/.CarService day-night-mode  day",
     "OPEN_SYSTEM_UI": "am crash com.android.systemui",
-    "OPEN_CAR_UI": "am crash com.android.car"
+    "OPEN_CAR_UI": "am crash com.android.car",
+    "DATE_COMMAND": "date"
   },
   "UI_ELEMENTS": {
     "MAKE_CALL": {
@@ -564,6 +565,31 @@
     "HVAC_PANEL": {
       "TYPE": "RESOURCE_ID",
       "VALUE": "hvac_panel",
+      "PACKAGE": "com.android.systemui"
+    },
+    "STATUS_BAR_DISPLAY_SETTINGS": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "qc_display_footer_button",
+      "PACKAGE": "com.android.systemui"
+    },
+    "STATUS_BAR_WIFI_SETTINGS": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "qc_connectivity_footer_button",
+      "PACKAGE": "com.android.systemui"
+    },
+    "STATUS_BAR_SOUND_SETTINGS": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "qc_sound_footer_button",
+      "PACKAGE": "com.android.systemui"
+    },
+    "WIFI_FACET_BUTTON": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "connectivity_panel_button",
+      "PACKAGE": "com.android.systemui"
+    },
+    "SOUND_FACET_BUTTON": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "volume_panel",
       "PACKAGE": "com.android.systemui"
     },
     "NOTIFICATION_FACET_BUTTON": {
@@ -1429,7 +1455,7 @@
     },
     "MINIMIZED_MEDIA_CONTROLS": {
       "TYPE": "RESOURCE_ID",
-      "VALUE": "minimized_playback_controls",
+      "VALUE": "minimized_control_bar_layout",
       "PACKAGE": "com.android.car.media"
     },
     "ARTIST_TITLE": {
@@ -1583,6 +1609,11 @@
       "VALUE": "entity_header_summary",
       "PACKAGE": "com.android.car.settings"
     },
+    "DEVICE_HEADER_TITLE": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "entity_header_title",
+      "PACKAGE": "com.android.car.settings"
+    },
     "DEVICE_CONNECTION_TEXT": {
       "TYPE": "RESOURCE_ID",
       "VALUE": "button1Text",
@@ -1645,6 +1676,11 @@
     "SETTINGS_TITLE_TEXT": {
       "TYPE": "TEXT",
       "VALUE": "Settings"
+    },
+    "SETTINGS_BACK_NAV_ICON": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "car_ui_toolbar_nav_icon",
+      "PACKAGE": "com.chassis.car.ui.plugin"
     },
     "SETTINGS_SCROLL_FORWARD_BUTTON": {
       "TYPE": "RESOURCE_ID",
@@ -2222,6 +2258,11 @@
     "LANGUAGE_SYSTEM_SETTINGS_TEXT_TO_SPEECH_OUTPUT": {
       "TYPE": "TEXT",
       "VALUE": "Text-to-speech output"
+    },
+    "SOFT_KEYBOARD_HIDE_BUTTON": {
+      "TYPE": "RESOURCE_ID",
+      "VALUE": "key_pos_hide_keyboard",
+      "PACKAGE": "com.google.android.apps.automotive.inputmethod"
     },
     "UNIT_SYSTEM_SETTINGS_SPEED": {
       "TYPE": "TEXT",

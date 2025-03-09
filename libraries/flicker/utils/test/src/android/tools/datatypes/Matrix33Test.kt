@@ -33,7 +33,7 @@ class Matrix33Test : DatatypeTest<Matrix33>() {
             createManualMatrix = { tx, ty ->
                 Matrix33.from(dsdx = 1f, dtdx = 0f, tx, dsdy = 0f, dtdy = 1f, ty)
             },
-            createMatrix = { tx, ty -> Matrix33.identity(tx, ty) }
+            createMatrix = { tx, ty -> Matrix33.identity(tx, ty) },
         )
     }
 
@@ -43,7 +43,7 @@ class Matrix33Test : DatatypeTest<Matrix33>() {
             createManualMatrix = { tx, ty ->
                 Matrix33.from(dsdx = 0f, dtdx = 1f, tx, dsdy = -1f, dtdy = 0f, ty)
             },
-            createMatrix = { tx, ty -> Matrix33.rot90(tx, ty) }
+            createMatrix = { tx, ty -> Matrix33.rot90(tx, ty) },
         )
     }
 
@@ -53,7 +53,7 @@ class Matrix33Test : DatatypeTest<Matrix33>() {
             createManualMatrix = { tx, ty ->
                 Matrix33.from(dsdx = -1f, dtdx = 0f, tx, dsdy = 0f, dtdy = -1f, ty)
             },
-            createMatrix = { tx, ty -> Matrix33.rot180(tx, ty) }
+            createMatrix = { tx, ty -> Matrix33.rot180(tx, ty) },
         )
     }
 
@@ -63,13 +63,13 @@ class Matrix33Test : DatatypeTest<Matrix33>() {
             createManualMatrix = { tx, ty ->
                 Matrix33.from(dsdx = 0f, dtdx = -1f, tx, dsdy = 1f, dtdy = 0f, ty)
             },
-            createMatrix = { tx, ty -> Matrix33.rot270(tx, ty) }
+            createMatrix = { tx, ty -> Matrix33.rot270(tx, ty) },
         )
     }
 
     private fun validateCreation(
         createManualMatrix: (tx: Float, ty: Float) -> Matrix33,
-        createMatrix: (tx: Float, ty: Float) -> Matrix33
+        createMatrix: (tx: Float, ty: Float) -> Matrix33,
     ) {
         val tx = 1f
         val ty = 2f

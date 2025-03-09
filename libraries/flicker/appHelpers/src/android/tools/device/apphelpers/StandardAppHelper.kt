@@ -41,7 +41,7 @@ import com.android.launcher3.tapl.LauncherInstrumentation
 open class StandardAppHelper(
     val instrumentation: Instrumentation,
     val appName: String,
-    val componentMatcher: ComponentNameMatcher,
+    val componentMatcher: IComponentNameMatcher,
 ) : IStandardAppHelper, IComponentNameMatcher by componentMatcher {
     constructor(
         instr: Instrumentation,
@@ -61,8 +61,6 @@ open class StandardAppHelper(
         get() = instrumentation.context
 
     override val packageName = componentMatcher.packageName
-
-    val packageNameMatcher = ComponentNameMatcher(componentMatcher.packageName, "")
 
     override val className = componentMatcher.className
 
@@ -124,7 +122,7 @@ open class StandardAppHelper(
 
     private fun launchAppViaIntent(
         action: String? = null,
-        stringExtras: Map<String, String> = mapOf()
+        stringExtras: Map<String, String> = mapOf(),
     ) {
         withTracing("${this::class.simpleName}#launchAppViaIntent") {
             val intent = openAppIntent
@@ -138,7 +136,7 @@ open class StandardAppHelper(
     override fun launchViaIntent(
         expectedPackageName: String,
         action: String?,
-        stringExtras: Map<String, String>
+        stringExtras: Map<String, String>,
     ) {
         launchAppViaIntent(action, stringExtras)
         val appSelector = getAppSelector(expectedPackageName)
@@ -151,7 +149,7 @@ open class StandardAppHelper(
         launchedAppComponentMatcherOverride: IComponentMatcher?,
         action: String?,
         stringExtras: Map<String, String>,
-        waitConditionsBuilder: WindowManagerStateHelper.StateSyncBuilder
+        waitConditionsBuilder: WindowManagerStateHelper.StateSyncBuilder,
     ) {
         launchAppViaIntent(action, stringExtras)
         doWaitShown(launchedAppComponentMatcherOverride, waitConditionsBuilder)
@@ -162,7 +160,7 @@ open class StandardAppHelper(
         wmHelper: WindowManagerStateHelper,
         intent: Intent,
         launchedAppComponentMatcherOverride: IComponentMatcher?,
-        waitConditionsBuilder: WindowManagerStateHelper.StateSyncBuilder
+        waitConditionsBuilder: WindowManagerStateHelper.StateSyncBuilder,
     ) {
         withTracing("${this::class.simpleName}#launchViaIntent") {
             context.startActivity(intent)
@@ -172,7 +170,7 @@ open class StandardAppHelper(
 
     private fun doWaitShown(
         launchedAppComponentMatcherOverride: IComponentMatcher? = null,
-        waitConditionsBuilder: WindowManagerStateHelper.StateSyncBuilder
+        waitConditionsBuilder: WindowManagerStateHelper.StateSyncBuilder,
     ) {
         withTracing("${this::class.simpleName}#doWaitShown") {
             val expectedWindow = launchedAppComponentMatcherOverride ?: componentMatcher
@@ -196,7 +194,7 @@ open class StandardAppHelper(
 
     private fun doWaitShownHeavy(
         expectedWindow: IComponentMatcher,
-        waitConditionsBuilder: WindowManagerStateHelper.StateSyncBuilder
+        waitConditionsBuilder: WindowManagerStateHelper.StateSyncBuilder,
     ) {
         val builder = waitConditionsBuilder.withWindowSurfaceAppeared(expectedWindow)
         builder.waitForAndVerify()

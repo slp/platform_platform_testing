@@ -26,13 +26,15 @@ class AppWindowHasMaxBoundsInOnlyOneDimension(private val component: ComponentTe
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
         flicker.assertWmEnd {
-            val maxDisplayBounds = WindowUtils.getInsetDisplayBounds()
-            val windowBounds = visibleRegion(component.build(scenarioInstance)).region.bounds
+            val maxDisplayBounds = WindowUtils.getInsetDisplayBounds(scenarioInstance.startRotation)
+            val windowBounds = visibleRegion(component.get(scenarioInstance)).region.bounds
 
-            val hasMaxHeight = windowBounds.top == maxDisplayBounds.top
-                    && windowBounds.bottom == maxDisplayBounds.bottom
-            val hasMaxWidth = windowBounds.left == maxDisplayBounds.left
-                    && windowBounds.right == maxDisplayBounds.right
+            val hasMaxHeight =
+                windowBounds.top == maxDisplayBounds.top &&
+                    windowBounds.bottom == maxDisplayBounds.bottom
+            val hasMaxWidth =
+                windowBounds.left == maxDisplayBounds.left &&
+                    windowBounds.right == maxDisplayBounds.right
             val isMaxInOneDimension = hasMaxHeight.xor(hasMaxWidth)
 
             check { "only one max bounds" }.that(isMaxInOneDimension).isEqual(true)

@@ -38,7 +38,7 @@ object Utils {
         ConditionList(
             listOf(
                 ConditionsFactory.isWMStateComplete(),
-                ConditionsFactory.hasLayersAnimating().negate()
+                ConditionsFactory.hasLayersAnimating().negate(),
             )
         )
 
@@ -51,7 +51,7 @@ object Utils {
     internal fun notifyRunnerProgress(
         scenario: Scenario,
         msg: String,
-        instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
+        instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation(),
     ) {
         notifyRunnerProgress(scenario.key, msg, instrumentation)
     }
@@ -59,7 +59,7 @@ object Utils {
     internal fun notifyRunnerProgress(
         scenarioName: String,
         msg: String,
-        instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
+        instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation(),
     ) {
         Log.d(FLICKER_RUNNER_TAG, "$scenarioName - $msg")
         val results = Bundle()
@@ -71,6 +71,6 @@ object Utils {
         Description.createTestDescription(
             description?.className,
             "${description?.displayName}-$suffix",
-            description?.annotations?.toTypedArray()
+            description?.annotations?.toTypedArray(),
         )
 }

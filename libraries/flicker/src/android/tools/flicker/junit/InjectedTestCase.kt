@@ -23,7 +23,7 @@ import org.junit.runners.model.FrameworkMethod
 abstract class InjectedTestCase(
     method: Method,
     private val _name: String,
-    val injectedBy: IFlickerJUnitDecorator
+    val injectedBy: IFlickerJUnitDecorator,
 ) : FrameworkMethod(method) {
     override fun invokeExplosively(target: Any?, vararg params: Any?): Any {
         error("Shouldn't have reached here")
@@ -34,6 +34,7 @@ abstract class InjectedTestCase(
     abstract fun execute(description: Description)
 
     override fun toString() = _name
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is InjectedTestCase) return false

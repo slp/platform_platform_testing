@@ -24,9 +24,10 @@ import kotlin.math.abs
 class AppWindowReturnsToStartBoundsAndPosition(private val component: ComponentTemplate) :
     AssertionTemplateWithComponent(component) {
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
+        val matcher = component.get(scenarioInstance)
         flicker.assertLayers {
-            val startRegion = first().visibleRegion(component.build(scenarioInstance))
-            val endRegion = last().visibleRegion(component.build(scenarioInstance))
+            val startRegion = first().visibleRegion(matcher)
+            val endRegion = last().visibleRegion(matcher)
 
             val heightDiff = startRegion.region.bounds.height() - endRegion.region.bounds.height()
             val widthDiff = startRegion.region.bounds.width() - endRegion.region.bounds.width()

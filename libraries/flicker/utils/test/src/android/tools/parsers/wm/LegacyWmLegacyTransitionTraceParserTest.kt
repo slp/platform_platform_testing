@@ -21,6 +21,8 @@ import android.tools.Cache
 import android.tools.device.apphelpers.BrowserAppHelper
 import android.tools.testutils.CleanFlickerEnvironmentRule
 import android.tools.testutils.readAsset
+import android.tools.traces.SERVICE_TRACE_CONFIG
+import android.tools.traces.io.ResultReader
 import android.tools.traces.monitors.wm.LegacyWmTransitionTraceMonitor
 import android.tools.traces.parsers.wm.WmTransitionTraceParser
 import android.tracing.Flags
@@ -55,14 +57,16 @@ class LegacyWmLegacyTransitionTraceParserTest {
     fun canParseAllEntriesFromNewTrace() {
         val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
         val tapl = LauncherInstrumentation()
-        val data =
-            LegacyWmTransitionTraceMonitor().withTracing {
+        val reader =
+            LegacyWmTransitionTraceMonitor().withTracing(
+                resultReaderProvider = { ResultReader(it, SERVICE_TRACE_CONFIG) }
+            ) {
                 BrowserAppHelper(instrumentation).open()
                 tapl.goHome().switchToAllApps()
                 tapl.goHome()
             }
-        val trace = WmTransitionTraceParser().parse(data, clearCache = false)
-        Truth.assertThat(trace.entries).isNotEmpty()
+        val trace = reader.readTransitionsTrace()
+        Truth.assertThat(trace?.entries).isNotEmpty()
     }
 
     companion object {

@@ -47,7 +47,7 @@ constructor(
     private val targetOrientation: Rotation,
     private val resetOrientationAfterTest: Boolean = true,
     private val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation(),
-    private val clearCacheAfterParsing: Boolean = true
+    private val clearCacheAfterParsing: Boolean = true,
 ) : TestWatcher() {
     private var initialOrientation = Rotation.ROTATION_0
 
@@ -56,7 +56,7 @@ constructor(
             Log.v(
                 FLICKER_TAG,
                 "Changing display orientation to " +
-                    "$targetOrientation ${targetOrientation.description}"
+                    "$targetOrientation ${targetOrientation.description}",
             )
             val wm =
                 instrumentation.context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -82,8 +82,8 @@ constructor(
             wmHelper: WindowManagerStateHelper =
                 WindowManagerStateHelper(
                     instrumentation,
-                    clearCacheAfterParsing = clearCacheAfterParsing
-                )
+                    clearCacheAfterParsing = clearCacheAfterParsing,
+                ),
         ) {
             val device: UiDevice = UiDevice.getInstance(instrumentation)
 

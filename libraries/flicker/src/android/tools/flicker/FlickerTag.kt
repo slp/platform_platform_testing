@@ -17,6 +17,6 @@
 package android.tools.flicker
 
 object FlickerTag {
-    val TRANSITION_START = 89001
-    val TRANSITION_END = 89002
+    const val TRANSITION_START = 89001
+    const val TRANSITION_END = 89002
 }

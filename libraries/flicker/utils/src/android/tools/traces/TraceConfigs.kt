@@ -16,16 +16,18 @@
 
 package android.tools.traces
 
+import java.util.function.Consumer
+
 data class TraceConfigs(
     val wmTrace: TraceConfig,
     val layersTrace: TraceConfig,
     val transitionsTrace: TraceConfig,
-    val transactionsTrace: TraceConfig
+    val transactionsTrace: TraceConfig,
 ) {
-    fun applyToAll(function: (TraceConfig) -> Unit) {
-        function(wmTrace)
-        function(layersTrace)
-        function(transitionsTrace)
-        function(transactionsTrace)
+    fun applyToAll(function: Consumer<TraceConfig>) {
+        function.accept(wmTrace)
+        function.accept(layersTrace)
+        function.accept(transitionsTrace)
+        function.accept(transactionsTrace)
     }
 }

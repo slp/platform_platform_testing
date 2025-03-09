@@ -19,5 +19,5 @@ package android.tools.traces
 data class TraceConfig(
     var required: Boolean,
     var allowNoChange: Boolean,
-    var usingExistingTraces: Boolean
+    var usingExistingTraces: Boolean,
 )

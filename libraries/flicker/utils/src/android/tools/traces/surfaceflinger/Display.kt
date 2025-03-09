@@ -111,6 +111,7 @@ private constructor(
                 )
             }
 
+        @JvmStatic
         fun from(
             id: Long,
             name: String,

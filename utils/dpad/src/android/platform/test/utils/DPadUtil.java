@@ -141,6 +141,7 @@ public class DPadUtil {
         return mDevice.pressBack();
     }
 
+    /** Long press the given keycode */
     @SuppressLint("DefaultLocale")
     public boolean longPressKeyCode(int keyCode) {
         try {

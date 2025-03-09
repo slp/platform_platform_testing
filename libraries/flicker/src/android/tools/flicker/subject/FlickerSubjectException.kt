@@ -20,11 +20,10 @@ import android.tools.Timestamp
 import android.tools.flicker.assertions.Fact
 
 /** Exception thrown by flicker subjects */
-class FlickerSubjectException(
-    timestamp: Timestamp,
-    val facts: List<Fact>,
-    override val cause: Throwable? = null
-) : AssertionError() {
+class FlickerSubjectException
+@JvmOverloads
+constructor(timestamp: Timestamp, val facts: List<Fact>, override val cause: Throwable? = null) :
+    AssertionError() {
     private val errorType: String =
         if (cause == null) "Flicker assertion error" else "Unknown error"
     override val message = buildString {

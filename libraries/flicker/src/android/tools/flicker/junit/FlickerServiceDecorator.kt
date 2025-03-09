@@ -50,7 +50,7 @@ class FlickerServiceDecorator(
     private val skipNonBlocking: Boolean,
     inner: IFlickerJUnitDecorator?,
     instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation(),
-    flickerService: FlickerService? = null
+    flickerService: FlickerService? = null,
 ) : AbstractFlickerRunnerDecorator(testClass, inner, instrumentation) {
     private val flickerService by lazy { flickerService ?: FlickerService(getFlickerConfig()) }
 
@@ -86,7 +86,7 @@ class FlickerServiceDecorator(
                                 Utils.notifyRunnerProgress(
                                     testClassName,
                                     "Running setup",
-                                    instrumentation
+                                    instrumentation,
                                 )
                                 val befores = testClass.getAnnotatedMethods(Before::class.java)
                                 befores.forEach { it.invokeExplosively(test) }
@@ -94,7 +94,7 @@ class FlickerServiceDecorator(
                                 Utils.notifyRunnerProgress(
                                     testClassName,
                                     "Running transition",
-                                    instrumentation
+                                    instrumentation,
                                 )
                                 writer.setTransitionStartTime(now())
                                 method.invokeExplosively(test)
@@ -103,7 +103,7 @@ class FlickerServiceDecorator(
                                 Utils.notifyRunnerProgress(
                                     testClassName,
                                     "Running teardown",
-                                    instrumentation
+                                    instrumentation,
                                 )
                                 val afters = testClass.getAnnotatedMethods(After::class.java)
                                 afters.forEach { it.invokeExplosively(test) }
@@ -117,7 +117,7 @@ class FlickerServiceDecorator(
                         Utils.notifyRunnerProgress(
                             testClassName,
                             "Computing Flicker service tests",
-                            instrumentation
+                            instrumentation,
                         )
                         try {
                             flickerServiceMethodsFor[method] =
@@ -270,14 +270,13 @@ class FlickerServiceDecorator(
     private fun computeFlickerServiceTests(
         reader: Reader,
         testScenario: Scenario,
-        method: FrameworkMethod
+        method: FrameworkMethod,
     ): Collection<InjectedTestCase> {
         val expectedScenarios =
             (method.annotations
                     .filterIsInstance<ExpectedScenarios>()
                     .firstOrNull()
-                    ?.expectedScenarios
-                    ?: emptyArray())
+                    ?.expectedScenarios ?: emptyArray())
                 .map { ScenarioId(it) }
                 .toSet()
 
@@ -289,7 +288,7 @@ class FlickerServiceDecorator(
             flickerService,
             instrumentation,
             this,
-            skipNonBlocking
+            skipNonBlocking,
         )
     }
 
@@ -297,7 +296,7 @@ class FlickerServiceDecorator(
         private fun getDetectedScenarios(
             testScenario: Scenario,
             reader: Reader,
-            flickerService: FlickerService
+            flickerService: FlickerService,
         ): Collection<ScenarioId> {
             val groupedAssertions = getGroupedAssertions(testScenario, reader, flickerService)
             return groupedAssertions.keys.map { it.type }.distinct()
@@ -321,7 +320,7 @@ class FlickerServiceDecorator(
                 val groupedAssertions = detectedScenarios.associateWith { it.generateAssertions() }
                 android.tools.flicker.datastore.DataStore.addFlickerServiceAssertions(
                     testScenario,
-                    groupedAssertions
+                    groupedAssertions,
                 )
             }
 
@@ -379,7 +378,7 @@ class FlickerServiceDecorator(
                 AnonymousInjectedTestCase(
                     getCachedResultMethod(),
                     "FaaS_DetectedExpectedScenarios$paramString",
-                    injectedBy = caller
+                    injectedBy = caller,
                 ) {
                     val metricBundle = Bundle()
                     metricBundle.putString(FLICKER_ASSERTIONS_COUNT_KEY, "${faasTestCases.size}")

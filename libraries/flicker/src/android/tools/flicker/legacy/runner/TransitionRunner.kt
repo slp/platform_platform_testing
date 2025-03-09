@@ -41,7 +41,7 @@ import org.junit.runner.Description
 class TransitionRunner(
     private val scenario: Scenario,
     private val instrumentation: Instrumentation,
-    private val resultWriter: ResultWriter = android.tools.flicker.datastore.CachedResultWriter()
+    private val resultWriter: ResultWriter = android.tools.flicker.datastore.CachedResultWriter(),
 ) {
     /** Executes [flicker] transition and returns the result */
     fun execute(flicker: FlickerTestData, description: Description?): IResultData {
@@ -75,29 +75,30 @@ class TransitionRunner(
     private fun buildTestRuleChain(flicker: FlickerTestData): RuleChain {
         val errorRule = ArtifactSaverRule()
 
-        val rules = listOf(
-            StopAllTracesRule(),
-            UnlockScreenRule(),
-            NavigationModeRule(scenario.navBarMode.value, false),
-            LaunchAppRule(MessagingAppHelper(instrumentation), clearCacheAfterParsing = false),
-            RemoveAllTasksButHomeRule(),
-            ChangeDisplayOrientationRule(
-                scenario.startRotation,
-                resetOrientationAfterTest = false,
-                clearCacheAfterParsing = false
-            ),
-            PressHomeRule(),
-            TraceMonitorRule(
-                flicker.traceMonitors,
-                scenario,
-                flicker.wmHelper,
-                resultWriter,
-                instrumentation
-            ),
-            *flicker.rules.toTypedArray(),
-            SetupTeardownRule(flicker, resultWriter, scenario, instrumentation),
-            TransitionExecutionRule(flicker, resultWriter, scenario, instrumentation)
-        )
+        val rules =
+            listOf(
+                StopAllTracesRule(),
+                UnlockScreenRule(),
+                NavigationModeRule(scenario.navBarMode.value, false),
+                LaunchAppRule(MessagingAppHelper(instrumentation), clearCacheAfterParsing = false),
+                RemoveAllTasksButHomeRule(),
+                ChangeDisplayOrientationRule(
+                    scenario.startRotation,
+                    resetOrientationAfterTest = false,
+                    clearCacheAfterParsing = false,
+                ),
+                PressHomeRule(),
+                TraceMonitorRule(
+                    flicker.traceMonitors,
+                    scenario,
+                    flicker.wmHelper,
+                    resultWriter,
+                    instrumentation,
+                ),
+                *flicker.rules.toTypedArray(),
+                SetupTeardownRule(flicker, resultWriter, scenario, instrumentation),
+                TransitionExecutionRule(flicker, resultWriter, scenario, instrumentation),
+            )
 
         return rules.foldIndexed(RuleChain.outerRule(errorRule)) { index, chain, rule ->
             chain.around(rule).let {

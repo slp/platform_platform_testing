@@ -49,7 +49,13 @@ enum class TransitionType(val value: Int) {
     DESKTOP_MODE_CANCEL_DRAG_TO_DESKTOP(FIRST_CUSTOM.value + 13),
     DESKTOP_MODE_TOGGLE_RESIZE(FIRST_CUSTOM.value + 14),
     MOVE_TO_DESKTOP(FIRST_CUSTOM.value + 15),
-    RESIZE_PIP(FIRST_CUSTOM.value + 16);
+    RESIZE_PIP(FIRST_CUSTOM.value + 16),
+    TASK_FRAGMENT_DRAG_RESIZE(FIRST_CUSTOM.value + 17),
+    SPLIT_PASSTHROUGH(FIRST_CUSTOM.value + 18),
+    CLEANUP_PIP_EXIT(FIRST_CUSTOM.value + 19),
+    MINIMIZE(FIRST_CUSTOM.value + 20),
+    START_RECENTS_TRANSITION(FIRST_CUSTOM.value + 21),
+    END_RECENTS_TRANSITION(FIRST_CUSTOM.value + 22);
 
     companion object {
         fun fromInt(value: Int) = entries.first { it.value == value }

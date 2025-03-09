@@ -47,6 +47,12 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * Contains an integration test running a flicker service test using
+ * [FlickerServiceJUnit4ClassRunner].
+ *
+ * To run this test: `atest FlickerLibTestE2e:FullServiceRunTest`
+ */
 @RunWith(FlickerServiceJUnit4ClassRunner::class)
 class FullServiceRunTest {
     private val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
@@ -89,7 +95,7 @@ class FullServiceRunTest {
                         object : AssertionTemplate("internalWmCheck") {
                             override fun doEvaluate(
                                 scenarioInstance: ScenarioInstance,
-                                flicker: FlickerTest
+                                flicker: FlickerTest,
                             ) {
                                 var trace: WindowManagerTraceSubject? = null
                                 var executionCount = 0
@@ -118,7 +124,7 @@ class FullServiceRunTest {
                                     validateState(this, trace?.first())
                                     validateVisibleRegion(
                                         this.visibleRegion(),
-                                        trace?.first()?.visibleRegion()
+                                        trace?.first()?.visibleRegion(),
                                     )
 
                                     Truth.assertWithMessage("Execution count")
@@ -130,7 +136,7 @@ class FullServiceRunTest {
                                     validateState(this, trace?.last())
                                     validateVisibleRegion(
                                         this.visibleRegion(),
-                                        trace?.last()?.visibleRegion()
+                                        trace?.last()?.visibleRegion(),
                                     )
 
                                     Truth.assertWithMessage("Execution count")
@@ -142,7 +148,7 @@ class FullServiceRunTest {
                         object : AssertionTemplate("internalLayersCheck") {
                             override fun doEvaluate(
                                 scenarioInstance: ScenarioInstance,
-                                flicker: FlickerTest
+                                flicker: FlickerTest,
                             ) {
                                 var trace: LayersTraceSubject? = null
                                 var executionCount = 0
@@ -171,7 +177,7 @@ class FullServiceRunTest {
                                     validateState(this, trace?.first())
                                     validateVisibleRegion(
                                         this.visibleRegion(),
-                                        trace?.first()?.visibleRegion()
+                                        trace?.first()?.visibleRegion(),
                                     )
 
                                     Truth.assertWithMessage("Execution count")
@@ -183,7 +189,7 @@ class FullServiceRunTest {
                                     validateState(this, trace?.last())
                                     validateVisibleRegion(
                                         this.visibleRegion(),
-                                        trace?.last()?.visibleRegion()
+                                        trace?.last()?.visibleRegion(),
                                     )
 
                                     Truth.assertWithMessage("Execution count")
@@ -191,9 +197,9 @@ class FullServiceRunTest {
                                         .isEqualTo(4)
                                 }
                             }
-                        } to AssertionInvocationGroup.BLOCKING
+                        } to AssertionInvocationGroup.BLOCKING,
                     ),
-                enabled = true
+                enabled = true,
             )
 
         private fun validateState(actual: FlickerSubject?, expected: FlickerSubject?) {
@@ -201,10 +207,7 @@ class FullServiceRunTest {
             Truth.assertWithMessage("Expected state").that(expected).isNotNull()
         }
 
-        private fun validateVisibleRegion(
-            actual: RegionSubject?,
-            expected: RegionSubject?,
-        ) {
+        private fun validateVisibleRegion(actual: RegionSubject?, expected: RegionSubject?) {
             Truth.assertWithMessage("Actual visible region").that(actual).isNotNull()
             Truth.assertWithMessage("Expected visible region").that(expected).isNotNull()
             actual?.coversExactly(expected?.region ?: Region())

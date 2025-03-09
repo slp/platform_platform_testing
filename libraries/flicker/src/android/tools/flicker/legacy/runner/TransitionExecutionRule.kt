@@ -51,7 +51,7 @@ class TransitionExecutionRule(
     private val scenario: Scenario,
     private val instrumentation: Instrumentation = flicker.instrumentation,
     private val commands: List<FlickerTestData.() -> Any> = flicker.transitions,
-    private val wmHelper: WindowManagerStateHelper = flicker.wmHelper
+    private val wmHelper: WindowManagerStateHelper = flicker.wmHelper,
 ) : TestRule {
     private var tags = mutableSetOf<String>()
 
@@ -83,7 +83,7 @@ class TransitionExecutionRule(
                 FlickerTag.TRANSITION_START,
                 now.unixNanos,
                 now.elapsedNanos,
-                now.systemUptimeNanos
+                now.systemUptimeNanos,
             )
             flicker.setCreateTagListener { doCreateTag(it) }
             doValidate()
@@ -101,7 +101,7 @@ class TransitionExecutionRule(
                 FlickerTag.TRANSITION_END,
                 now.unixNanos,
                 now.elapsedNanos,
-                now.systemUptimeNanos
+                now.systemUptimeNanos,
             )
             flicker.clearTagListener()
         }

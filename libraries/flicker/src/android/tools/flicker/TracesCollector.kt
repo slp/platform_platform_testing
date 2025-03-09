@@ -21,6 +21,8 @@ import android.tools.io.Reader
 
 interface TracesCollector {
     fun start(scenario: Scenario)
+
     fun stop(): Reader
+
     fun cleanup()
 }

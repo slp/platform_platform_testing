@@ -24,7 +24,7 @@ import org.junit.AssumptionViolatedException
 
 class ReaderAssertionRunner(
     private val resultReader: Reader,
-    private val subjectsParser: SubjectsParser = SubjectsParser(resultReader)
+    private val subjectsParser: SubjectsParser = SubjectsParser(resultReader),
 ) : AssertionRunner {
     override fun runAssertion(assertion: AssertionData): Throwable? =
         withTracing("ReaderAssertionRunner#runAssertion") {

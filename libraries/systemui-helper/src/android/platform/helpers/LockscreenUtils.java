@@ -21,8 +21,8 @@ import static android.os.SystemClock.sleep;
 import static android.platform.helpers.CommonUtils.executeShellCommand;
 import static android.platform.helpers.Constants.SHORT_WAIT_TIME_IN_SECONDS;
 import static android.platform.helpers.ui.UiAutomatorUtils.getUiDevice;
-import static android.platform.uiautomator_helpers.DeviceHelpers.getContext;
-import static android.platform.uiautomator_helpers.WaitUtils.ensureThat;
+import static android.platform.uiautomatorhelpers.DeviceHelpers.getContext;
+import static android.platform.uiautomatorhelpers.WaitUtils.ensureThat;
 import static android.view.KeyEvent.KEYCODE_ENTER;
 
 import static com.google.common.truth.Truth.assertThat;

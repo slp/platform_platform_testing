@@ -24,6 +24,6 @@ internal object Launcher {
             LauncherAllAppsOpen,
             LauncherAllAppsScroll,
             LauncherRecentsScrolling,
-            LauncherUnlockEntranceAnimation
+            LauncherUnlockEntranceAnimation,
         )
 }

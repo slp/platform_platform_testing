@@ -23,10 +23,11 @@ import android.tools.flicker.assertions.ServiceFlickerTest
 import android.tools.flicker.assertions.SubjectsParser
 
 /** Base class for a FaaS assertion */
-abstract class AssertionTemplate(name: String? = null) {
+abstract class AssertionTemplate @JvmOverloads constructor(name: String? = null) {
     protected open val name =
         this::class.simpleName
-            ?: name ?: error("Must provide a name to assertions when using anonymous classes.")
+            ?: name
+            ?: error("Must provide a name to assertions when using anonymous classes.")
     val id
         get() = AssertionId(name)
 
@@ -71,5 +72,5 @@ abstract class AssertionTemplate(name: String? = null) {
 
 data class Assertion(
     val flickerAssertions: List<AssertionData>,
-    val genericAssertions: List<Throwable>
+    val genericAssertions: List<Throwable>,
 )

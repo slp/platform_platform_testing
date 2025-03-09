@@ -23,13 +23,26 @@ import android.tools.helpers.WindowUtils
 
 class AppWindowCoversRightHalfScreenAtEnd(
     private val component: ComponentTemplate,
+    private val coverageDifferenceThresholdRatio: Double? = null,
 ) : AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
         flicker.assertWmEnd {
-            // Build expected bounds of half the display
-            val expectedBounds = WindowUtils.getInsetDisplayBounds().apply { left = centerX() }
-            visibleRegion(component.build(scenarioInstance)).coversExactly(expectedBounds)
+            if (coverageDifferenceThresholdRatio == null) {
+                // Build expected bounds of half the display
+                val expectedBounds =
+                    WindowUtils.getInsetDisplayBounds(scenarioInstance.startRotation).apply {
+                        left = centerX()
+                    }
+                visibleRegion(component.get(scenarioInstance)).coversExactly(expectedBounds)
+            } else {
+                // Build expected bounds of half the display (minus given threshold)
+                val expectedBounds =
+                    WindowUtils.getInsetDisplayBounds(scenarioInstance.startRotation).apply {
+                        left = (centerX() * (1 + coverageDifferenceThresholdRatio)).toInt()
+                    }
+                visibleRegion(component.get(scenarioInstance)).coversAtLeast(expectedBounds)
+            }
         }
     }
 }

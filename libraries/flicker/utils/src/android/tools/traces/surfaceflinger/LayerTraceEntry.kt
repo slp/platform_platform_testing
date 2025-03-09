@@ -37,7 +37,7 @@ class LayerTraceEntry(
     val where: String,
     val displays: Collection<Display>,
     val vSyncId: Long,
-    _rootLayers: Collection<Layer>
+    _rootLayers: Collection<Layer>,
 ) : TraceEntry {
     override val timestamp =
         Timestamps.from(systemUptimeNanos = elapsedTimestamp, unixNanos = clockTimestamp)
@@ -85,7 +85,7 @@ class LayerTraceEntry(
      */
     fun isAnimating(
         prevState: LayerTraceEntry?,
-        componentMatcher: IComponentMatcher? = null
+        componentMatcher: IComponentMatcher? = null,
     ): Boolean {
         val curLayers =
             visibleLayers.filter {
@@ -167,8 +167,7 @@ class LayerTraceEntry(
                 displays
                     .firstOrNull { it.layerStackId == layer.stackId }
                     ?.layerStackSpace
-                    ?.toRectF()
-                    ?: RectF()
+                    ?.toRectF() ?: RectF()
 
             if (visible) {
                 val occludedBy =

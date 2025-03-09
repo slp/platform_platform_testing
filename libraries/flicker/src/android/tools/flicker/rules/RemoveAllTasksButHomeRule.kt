@@ -51,7 +51,7 @@ class RemoveAllTasksButHomeRule() : TestWatcher() {
                 WindowConfiguration.ACTIVITY_TYPE_STANDARD,
                 WindowConfiguration.ACTIVITY_TYPE_ASSISTANT,
                 WindowConfiguration.ACTIVITY_TYPE_RECENTS,
-                WindowConfiguration.ACTIVITY_TYPE_UNDEFINED
+                WindowConfiguration.ACTIVITY_TYPE_UNDEFINED,
             )
     }
 }

@@ -46,10 +46,15 @@ class Transition(
 
     override val timestamp =
         wmData.createTime
-            ?: wmData.sendTime ?: shellData.dispatchTime ?: shellData.mergeRequestTime
-                ?: shellData.mergeTime ?: shellData.abortTime ?: wmData.finishTime
-                ?: wmData.abortTime ?: wmData.startingWindowRemoveTime
-                ?: error("Missing non-null timestamp")
+            ?: wmData.sendTime
+            ?: shellData.dispatchTime
+            ?: shellData.mergeRequestTime
+            ?: shellData.mergeTime
+            ?: shellData.abortTime
+            ?: wmData.finishTime
+            ?: wmData.abortTime
+            ?: wmData.startingWindowRemoveTime
+            ?: error("Missing non-null timestamp")
 
     val createTime: Timestamp = wmData.createTime ?: Timestamps.min()
 
@@ -143,9 +148,9 @@ class Transition(
                         changes =
                             (wmData.changes?.toMutableList() ?: mutableListOf())
                                 .apply { addAll(transition.wmData.changes ?: emptyList()) }
-                                .toSet()
+                                .toSet(),
                     ),
-                shellData = shellData
+                shellData = shellData,
             )
 
         return mergedTransition
@@ -193,7 +198,7 @@ class Transition(
             return Transition(
                 id = transition1.id,
                 transition1.wmData.merge(transition2.wmData),
-                transition1.shellData.merge(transition2.shellData)
+                transition1.shellData.merge(transition2.shellData),
             )
         }
     }

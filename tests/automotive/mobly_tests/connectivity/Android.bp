@@ -170,3 +170,57 @@ python_test_host {
         ":PhoneSnippet",
     ],
 }
+
+python_test_host {
+    name: "BluetoothDisablePhoneAfterReconnectTest",
+    main: "connectivity_test_disconnected_phone_after_reconnect.py",
+    srcs: ["connectivity_test_disconnected_phone_after_reconnect.py"],
+    libs: [
+        "mobly",
+        "utilities",
+        "bluetooth_test",
+    ],
+    test_suites: [
+        "catbox",
+    ],
+    test_options: {
+        unit_test: false,
+    },
+    device_common_data: [
+        // Package the snippet with the mobly test
+        ":AutomotiveSnippet",
+        ":PhoneSnippet",
+    ],
+    version: {
+        py3: {
+            embedded_launcher: true,
+        },
+    },
+}
+
+python_test_host {
+    name: "BluetoothDisableMediaAfterReconnectTest",
+    main: "connectivity_test_disconnected_media_after_reconnect.py",
+    srcs: ["connectivity_test_disconnected_media_after_reconnect.py"],
+    libs: [
+        "mobly",
+        "utilities",
+        "bluetooth_test",
+    ],
+    test_suites: [
+        "catbox",
+    ],
+    test_options: {
+        unit_test: false,
+    },
+    device_common_data: [
+        // Package the snippet with the mobly test
+        ":AutomotiveSnippet",
+        ":PhoneSnippet",
+    ],
+    version: {
+        py3: {
+            embedded_launcher: true,
+        },
+    },
+}

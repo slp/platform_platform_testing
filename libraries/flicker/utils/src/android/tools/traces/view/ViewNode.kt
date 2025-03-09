@@ -41,7 +41,7 @@ private constructor(
     val clipChildren: Boolean,
     val visibility: Int,
     val elevation: Double,
-    val children: Collection<ViewNode>
+    val children: Collection<ViewNode>,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -85,6 +85,7 @@ private constructor(
         "ViewNode(classNameIndex=$classNameIndex, hashCode=$hashcode, id='$id', bounds=$bounds)"
 
     companion object {
+        @JvmStatic
         fun from(
             classNameIndex: Int,
             hashCode: Int,
@@ -98,7 +99,7 @@ private constructor(
             clipChildren: Boolean,
             visibility: Int,
             elevation: Double,
-            children: Collection<ViewNode>
+            children: Collection<ViewNode>,
         ): ViewNode = withCache {
             ViewNode(
                 classNameIndex,
@@ -113,7 +114,7 @@ private constructor(
                 clipChildren,
                 visibility,
                 elevation,
-                children
+                children,
             )
         }
     }

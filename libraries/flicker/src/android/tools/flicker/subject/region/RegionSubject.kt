@@ -28,6 +28,7 @@ import android.tools.datatypes.uncoveredRegion
 import android.tools.flicker.subject.FlickerSubject
 import android.tools.flicker.subject.exceptions.ExceptionMessageBuilder
 import android.tools.flicker.subject.exceptions.IncorrectRegionException
+import android.tools.function.AssertionPredicate
 import android.tools.io.Reader
 import android.tools.traces.region.RegionEntry
 import androidx.core.graphics.toRect
@@ -36,38 +37,44 @@ import kotlin.math.abs
 /**
  * Subject for [Region] objects, used to make assertions over behaviors that occur on a rectangle.
  */
-class RegionSubject(
+class RegionSubject
+@JvmOverloads
+constructor(
     val regionEntry: RegionEntry,
     override val timestamp: Timestamp,
     override val reader: Reader? = null,
 ) : FlickerSubject(), IRegionSubject {
 
     /** Custom constructor for existing android regions */
+    @JvmOverloads
     constructor(
         region: Region?,
         timestamp: Timestamp,
-        reader: Reader? = null
+        reader: Reader? = null,
     ) : this(RegionEntry(region ?: Region(), timestamp), timestamp, reader)
 
     /** Custom constructor for existing rects */
+    @JvmOverloads
     constructor(
         rect: Rect?,
         timestamp: Timestamp,
-        reader: Reader? = null
+        reader: Reader? = null,
     ) : this(Region(rect ?: Rect()), timestamp, reader)
 
     /** Custom constructor for existing rects */
+    @JvmOverloads
     constructor(
         rect: RectF?,
         timestamp: Timestamp,
-        reader: Reader? = null
+        reader: Reader? = null,
     ) : this(rect?.toRect(), timestamp, reader)
 
     /** Custom constructor for existing regions */
+    @JvmOverloads
     constructor(
         regions: Collection<Region>,
         timestamp: Timestamp,
-        reader: Reader? = null
+        reader: Reader? = null,
     ) : this(mergeRegions(regions), timestamp, reader)
 
     val region = regionEntry.region
@@ -109,6 +116,10 @@ class RegionSubject(
         }
     }
 
+    operator fun invoke(assertion: AssertionPredicate<Region>): RegionSubject = apply {
+        assertion.verify(regionEntry.region)
+    }
+
     /** Subtracts [other] from this subject [region] */
     fun minus(other: Region): RegionSubject {
         val remainingRegion = Region(this.region)
@@ -136,13 +147,13 @@ class RegionSubject(
             name = "top position. Expected to be higher or equal",
             other,
             { it.top },
-            { thisV, otherV -> thisV <= otherV }
+            { thisV, otherV -> thisV <= otherV },
         )
         assertCompare(
             name = "bottom position. Expected to be higher or equal",
             other,
             { it.bottom },
-            { thisV, otherV -> thisV <= otherV }
+            { thisV, otherV -> thisV <= otherV },
         )
     }
 
@@ -159,13 +170,13 @@ class RegionSubject(
             name = "top position. Expected to be lower or equal",
             other,
             { it.top },
-            { thisV, otherV -> thisV >= otherV }
+            { thisV, otherV -> thisV >= otherV },
         )
         assertCompare(
             name = "bottom position. Expected to be lower or equal",
             other,
             { it.bottom },
-            { thisV, otherV -> thisV >= otherV }
+            { thisV, otherV -> thisV >= otherV },
         )
     }
 
@@ -176,13 +187,13 @@ class RegionSubject(
             name = "left position. Expected to be lower or equal",
             other,
             { it.left },
-            { thisV, otherV -> thisV >= otherV }
+            { thisV, otherV -> thisV >= otherV },
         )
         assertCompare(
             name = "right position. Expected to be lower or equal",
             other,
             { it.right },
-            { thisV, otherV -> thisV >= otherV }
+            { thisV, otherV -> thisV >= otherV },
         )
     }
 
@@ -199,13 +210,13 @@ class RegionSubject(
             name = "top position. Expected to be higher",
             other,
             { it.top },
-            { thisV, otherV -> thisV < otherV }
+            { thisV, otherV -> thisV < otherV },
         )
         assertCompare(
             name = "bottom position. Expected to be higher",
             other,
             { it.bottom },
-            { thisV, otherV -> thisV < otherV }
+            { thisV, otherV -> thisV < otherV },
         )
     }
 
@@ -228,13 +239,13 @@ class RegionSubject(
             name = "top position. Expected to be lower",
             other,
             { it.top },
-            { thisV, otherV -> thisV > otherV }
+            { thisV, otherV -> thisV > otherV },
         )
         assertCompare(
             name = "bottom position. Expected to be lower",
             other,
             { it.bottom },
-            { thisV, otherV -> thisV > otherV }
+            { thisV, otherV -> thisV > otherV },
         )
     }
 
@@ -308,11 +319,11 @@ class RegionSubject(
                     .addExtraDescription("Threshold", threshold)
                     .addExtraDescription(
                         "Horizontally positioned to the right",
-                        horizontallyPositionedToTheRight
+                        horizontallyPositionedToTheRight,
                     )
                     .addExtraDescription(
                         "Vertically positioned to the bottom",
-                        verticallyPositionedToTheBottom
+                        verticallyPositionedToTheBottom,
                     )
             throw IncorrectRegionException(errorMsgBuilder)
         }
@@ -455,7 +466,7 @@ class RegionSubject(
     fun isSameAspectRatio(
         numerator: Int,
         denominator: Int,
-        threshold: Double = 0.1
+        threshold: Double = 0.1,
     ): RegionSubject {
         val region = Region()
         region.set(Rect(0, 0, numerator, denominator))
@@ -466,7 +477,7 @@ class RegionSubject(
         name: String,
         other: Region,
         valueProvider: (Rect) -> T,
-        boundsCheck: (T, T) -> Boolean
+        boundsCheck: (T, T) -> Boolean,
     ) {
         val thisValue = valueProvider(region.bounds)
         val otherValue = valueProvider(other.bounds)
@@ -486,7 +497,7 @@ class RegionSubject(
     private fun <T : Comparable<T>> assertEquals(
         name: String,
         other: Region,
-        valueProvider: (Rect) -> T
+        valueProvider: (Rect) -> T,
     ) = assertCompare(name, other, valueProvider) { thisV, otherV -> thisV == otherV }
 
     private fun assertLeftRightAndAreaEquals(other: Region) {

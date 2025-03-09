@@ -25,6 +25,6 @@ enum class TransitMode {
     TRANSIT_CHANGE;
 
     companion object {
-        fun fromInt(value: Int) = values().first { it.ordinal == value }
+        @JvmStatic fun fromInt(value: Int) = values().first { it.ordinal == value }
     }
 }

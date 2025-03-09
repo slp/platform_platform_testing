@@ -31,17 +31,13 @@ class IsMediaMetadataForNextAndPrevSongOnHuValid(bluetooth_base_test.BluetoothBa
         super().setup_class()
         self.media_utils = MediaUtils(self.target, self.discoverer)
         self.common_utils = CommonUtils(self.target, self.discoverer)
-        super().enable_recording()
         self.media_utils.enable_bt_media_debugging_logs()
 
     def setup_test(self):
         self.common_utils.grant_local_mac_address_permission()
-        logging.info("\tInitializing video services on Target")
-        self.video_utils_service_target = VideoRecording(self.target,self.__class__.__name__)
-        logging.info("Enabling video recording for Target")
-        self.video_utils_service_target.enable_screen_recording()
         self.common_utils.enable_wifi_on_phone_device()
         self.bt_utils.pair_primary_to_secondary()
+        super().enable_recording()
 
     def test_is_media_metadata_valid_on_hu(self):
         """Tests is media metadata on HU valid"""
@@ -49,12 +45,13 @@ class IsMediaMetadataForNextAndPrevSongOnHuValid(bluetooth_base_test.BluetoothBa
         self.call_utils.handle_bluetooth_audio_pop_up()
         self.media_utils.open_youtube_music_app()
         logging.info("Getting song title from phone device: %s", self.media_utils.get_song_title_from_phone())
-        self.call_utils.wait_with_log(5)
         self.media_utils.pause_media_on_hu()
 
         # Current song metadata validation
         current_phone_song_title = self.media_utils.get_song_title_from_phone()
         self.media_utils.maximize_now_playing()
+        self.call_utils.wait_with_log(3)
+        logging.info("MetaData Validation for Current Song")
         current_hu_song_title = self.media_utils.get_song_title_from_hu()
         asserts.assert_true(current_phone_song_title == current_hu_song_title,
                             'Invalid song titles. '
@@ -91,7 +88,7 @@ class IsMediaMetadataForNextAndPrevSongOnHuValid(bluetooth_base_test.BluetoothBa
         # Next song metadata validation
         self.media_utils.click_next_track_on_hu()
         self.media_utils.pause_media_on_hu()
-        # current_phone_next_song_title = self.media_utils.get_song_title_from_phone()
+        logging.info("MetaData Validation after clicking Next Song")
         current_hu_next_song_title = self.media_utils.get_song_title_from_hu()
         asserts.assert_true(current_phone_song_title != current_hu_next_song_title,
                             'Song title on phone device and HU should be different,'
@@ -101,6 +98,7 @@ class IsMediaMetadataForNextAndPrevSongOnHuValid(bluetooth_base_test.BluetoothBa
         self.media_utils.click_previous_track_on_hu()
         self.media_utils.click_previous_track_on_hu()
         self.media_utils.pause_media_on_hu()
+        logging.info("MetaData Validation after clicking Previous Song")
         current_hu_previous_song_title = self.media_utils.get_song_title_from_hu()
         asserts.assert_true(current_phone_song_title == current_hu_previous_song_title,
                             'Invalid song titles. '
@@ -131,17 +129,12 @@ class IsMediaMetadataForNextAndPrevSongOnHuValid(bluetooth_base_test.BluetoothBa
                                       '<' + actual_previous_current_song_max_playing_time + '>')
 
     def teardown_test(self):
+        self.media_utils.get_bt_dumpsys_metadata()
         # Minimize now_playing
         self.media_utils.minimize_now_playing()
         #  Close YouTube Music app
         self.media_utils.close_youtube_music_app()
         self.call_utils.press_home()
-        logging.info("Stopping the screen recording on Target")
-        self.video_utils_service_target.stop_screen_recording()
-        logging.info("Pull the screen recording from Target")
-        self.video_utils_service_target.pull_recording_file(self.log_path)
-        logging.info("delete the screen recording from the Target")
-        self.video_utils_service_target.delete_screen_recording_from_device()
         super().teardown_test()
 
 

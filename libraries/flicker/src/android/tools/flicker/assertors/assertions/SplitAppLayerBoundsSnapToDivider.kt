@@ -30,9 +30,10 @@ class SplitAppLayerBoundsSnapToDivider(private val component: ComponentTemplate)
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
         val wmTrace = scenarioInstance.reader.readWmTrace() ?: return
 
+        val matcher = component.get(scenarioInstance)
         flicker.assertLayers {
             invoke("splitAppLayerBoundsSnapToDivider") {
-                it.visibleRegion(component.build(scenarioInstance))
+                it.visibleRegion(matcher)
                     .coversAtMost(it.calculateExpectedDisplaySize(scenarioInstance, wmTrace))
             }
         }
@@ -41,13 +42,13 @@ class SplitAppLayerBoundsSnapToDivider(private val component: ComponentTemplate)
     companion object {
         private fun LayerTraceEntrySubject.calculateExpectedDisplaySize(
             scenarioInstance: ScenarioInstance,
-            wmTrace: WindowManagerTrace
+            wmTrace: WindowManagerTrace,
         ): Region {
             // TODO: Replace with always on tracing available data
             val landscapePosLeft = !wmTrace.isTablet
             val portraitPosTop = true // TODO: Figure out how to know if we are top or bottom app
 
-            val splitScreenDivider = SPLIT_SCREEN_DIVIDER.build(scenarioInstance)
+            val splitScreenDivider = SPLIT_SCREEN_DIVIDER.get(scenarioInstance)
 
             val displaySize =
                 entry.displays
@@ -65,14 +66,14 @@ class SplitAppLayerBoundsSnapToDivider(private val component: ComponentTemplate)
                         0,
                         0,
                         (dividerRegion.bounds.left + dividerRegion.bounds.right) / 2,
-                        displaySize.height
+                        displaySize.height,
                     )
                 } else {
                     Region(
                         (dividerRegion.bounds.left + dividerRegion.bounds.right) / 2,
                         0,
                         displaySize.width,
-                        displaySize.height
+                        displaySize.height,
                     )
                 }
             } else {
@@ -81,14 +82,14 @@ class SplitAppLayerBoundsSnapToDivider(private val component: ComponentTemplate)
                         0,
                         0,
                         displaySize.width,
-                        (dividerRegion.bounds.top + dividerRegion.bounds.bottom) / 2
+                        (dividerRegion.bounds.top + dividerRegion.bounds.bottom) / 2,
                     )
                 } else {
                     Region(
                         0,
                         (dividerRegion.bounds.top + dividerRegion.bounds.bottom) / 2,
                         displaySize.width,
-                        displaySize.height
+                        displaySize.height,
                     )
                 }
             }

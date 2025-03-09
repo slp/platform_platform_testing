@@ -24,6 +24,7 @@ private const val CUTTLEFISH_FACTOR = 5L
  *  For physical (non-emulator) devices, the timeout is unchanged,
  *  the if the Build.HARDWARE is Cuttlefish, we increase the factor by 5.
  */
+@Deprecated("Use uiautomatorhelpers, b/376676853")
 object DurationUtils {
 
     /**

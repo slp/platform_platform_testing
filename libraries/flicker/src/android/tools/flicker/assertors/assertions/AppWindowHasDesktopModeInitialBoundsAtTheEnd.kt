@@ -32,7 +32,7 @@ class AppWindowHasDesktopModeInitialBoundsAtTheEnd(private val component: Compon
         flicker.assertLayersEnd {
             val displayBounds =
                 entry.physicalDisplayBounds ?: error("Missing physical display bounds")
-            val stableBounds = WindowUtils.getInsetDisplayBounds()
+            val stableBounds = WindowUtils.getInsetDisplayBounds(scenarioInstance.startRotation)
             val desktopModeInitialBoundsScale =
                 SystemProperties.getInt("persist.wm.debug.desktop_mode_initial_bounds_scale", 75) /
                     100f
@@ -49,7 +49,7 @@ class AppWindowHasDesktopModeInitialBoundsAtTheEnd(private val component: Compon
             // Position the task in screen bounds
             outBounds.offset(xOffset, yOffset)
 
-            visibleRegion(component.build(scenarioInstance)).coversExactly(outBounds)
+            visibleRegion(component.get(scenarioInstance)).coversExactly(outBounds)
         }
     }
 }

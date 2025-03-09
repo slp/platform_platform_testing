@@ -133,7 +133,7 @@ class WindowManagerTraceTest {
                 "wm_trace_openchrome2",
                 from = 174686204723645,
                 to = 174686640998584,
-                legacyTrace = true
+                legacyTrace = true,
             )
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
 
@@ -149,7 +149,7 @@ class WindowManagerTraceTest {
                 "wm_trace_openchrome2",
                 from = 9213763541297,
                 to = 9215895891561,
-                legacyTrace = true
+                legacyTrace = true,
             )
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         assertThat(trace.entries).isEmpty()

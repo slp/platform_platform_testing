@@ -38,6 +38,7 @@ import java.time.Duration
 
 private const val TAG = "DeviceHelpers"
 
+@Deprecated("Use uiautomatorhelpers, b/376676853")
 object DeviceHelpers {
     private val SHORT_WAIT = Duration.ofMillis(1500)
     private val LONG_WAIT = Duration.ofSeconds(10)

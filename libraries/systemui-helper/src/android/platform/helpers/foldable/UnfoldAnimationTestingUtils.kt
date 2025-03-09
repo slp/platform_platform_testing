@@ -1,8 +1,8 @@
 package android.platform.helpers.foldable
 
 import android.graphics.Point
-import android.platform.uiautomator_helpers.DeviceHelpers.uiDevice
-import android.platform.uiautomator_helpers.WaitUtils.waitFor
+import android.platform.uiautomatorhelpers.DeviceHelpers.uiDevice
+import android.platform.uiautomatorhelpers.WaitUtils.waitFor
 import com.google.common.truth.Expect
 import com.google.common.truth.Truth.assertWithMessage
 import java.time.Duration
@@ -21,7 +21,7 @@ object UnfoldAnimationTestingUtils {
      */
     fun getIconPositionsAfterAnyIconMove(
         initialIcons: Set<Icon>,
-        currentProvider: () -> Set<Icon>
+        currentProvider: () -> Set<Icon>,
     ): Set<Icon> {
         return waitFor("Icons moving", Duration.ofSeconds(20)) {
             val newIcons = currentProvider()
@@ -92,7 +92,7 @@ object UnfoldAnimationTestingUtils {
     /** Describes axis (x or y) of a View */
     enum class Axis {
         X,
-        Y
+        Y,
     }
 
     /**

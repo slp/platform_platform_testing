@@ -74,7 +74,7 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
             listOf(
                 SurfaceFlingerLayersConfig.TraceFlag.TRACE_FLAG_INPUT,
                 SurfaceFlingerLayersConfig.TraceFlag.TRACE_FLAG_COMPOSITION,
-                SurfaceFlingerLayersConfig.TraceFlag.TRACE_FLAG_VIRTUAL_DISPLAYS
+                SurfaceFlingerLayersConfig.TraceFlag.TRACE_FLAG_VIRTUAL_DISPLAYS,
             )
 
         private val dataSourceConfigs = mutableSetOf<DataSourceConfig>()
@@ -134,7 +134,7 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
                     false,
                     defaultLogFrom,
                     groupOverrides,
-                    dataSourceName
+                    dataSourceName,
                 )
             )
         }
@@ -148,7 +148,7 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
         fun enableWindowManagerTrace(
             logFrequency: WindowManagerConfig.LogFrequency =
                 WindowManagerConfig.LogFrequency.LOG_FREQUENCY_FRAME,
-            dataSourceName: String = WINDOWMANAGER_DATA_SOURCE
+            dataSourceName: String = WINDOWMANAGER_DATA_SOURCE,
         ): Builder = apply {
             val config =
                 DataSourceConfig.newBuilder()
@@ -324,16 +324,19 @@ open class PerfettoTraceMonitor(val config: TraceConfig) : TraceMonitor() {
             return Builder()
         }
 
+        @JvmStatic
         fun stopAllSessions() {
             allPerfettoPidsLock.lock()
             try {
                 allPerfettoPids.forEach { killPerfettoProcess(it) }
                 allPerfettoPids.forEach { waitPerfettoProcessExits(it) }
+                allPerfettoPids.clear()
             } finally {
                 allPerfettoPidsLock.unlock()
             }
         }
 
+        @JvmStatic
         fun killPerfettoProcess(pid: Int) {
             if (isPerfettoProcessUp(pid)) {
                 executeShellCommand("kill $pid")

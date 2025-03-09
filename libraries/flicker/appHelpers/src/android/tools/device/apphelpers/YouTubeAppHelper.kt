@@ -23,6 +23,7 @@ import android.content.pm.ResolveInfo
 import android.graphics.Rect
 import android.net.Uri
 import android.tools.traces.component.ComponentNameMatcher
+import android.tools.traces.component.IComponentNameMatcher
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
@@ -34,13 +35,10 @@ import androidx.test.uiautomator.Until
  */
 class YouTubeAppHelper(
     instrumentation: Instrumentation,
-    pkgManager: PackageManager = instrumentation.context.packageManager
-) :
-    StandardAppHelper(
-        instrumentation,
-        getYoutubeLauncherName(pkgManager),
-        getYoutubeComponent(pkgManager),
-    ) {
+    pkgManager: PackageManager = instrumentation.context.packageManager,
+    appName: String = getYoutubeLauncherName(pkgManager),
+    appComponent: IComponentNameMatcher = getYoutubeComponent(pkgManager),
+) : BasePipAppHelper(instrumentation, appName, appComponent) {
 
     fun waitForVideoPlaying() {
         displayControls()
@@ -49,10 +47,7 @@ class YouTubeAppHelper(
 
     fun enterFullscreen() {
         displayControls()
-        val fullscreenButton = getFullscreenButton()
-        if (fullscreenButton != null) {
-            fullscreenButton.click()
-        }
+        getFullscreenButton()?.click()
     }
 
     /**
@@ -102,7 +97,7 @@ class YouTubeAppHelper(
             val youTubeVideoIntent =
                 Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse(String.format(INTENT_WATCH_VIDEO_PATTERN, videoId))
+                    Uri.parse(String.format(INTENT_WATCH_VIDEO_PATTERN, videoId)),
                 )
             youTubeVideoIntent.setPackage(PACKAGE_NAME)
             youTubeVideoIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -124,7 +119,7 @@ class YouTubeAppHelper(
             val resolveInfo = getResolveInfo(pkgManager)
             return ComponentNameMatcher(
                 resolveInfo.activityInfo.packageName,
-                className = resolveInfo.activityInfo.name
+                className = resolveInfo.activityInfo.name,
             )
         }
 

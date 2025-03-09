@@ -51,7 +51,7 @@ class TaggedScenarioExtractorBuilder {
             transitionMatcher,
             adjustCuj,
             additionalCujFilter,
-            ignoreIfNoMatchingTransition
+            ignoreIfNoMatchingTransition,
         )
     }
 }

@@ -66,7 +66,7 @@ class ViewToolkitTest {
                 animator,
                 sceneRoot.capture(evenlySampled(10)) {
                     onViewWithId(R.id.test_box) { feature(ViewFeatureCaptures.x, "box_x") }
-                }
+                },
             )
 
         motionRule.assertThat(recordedMotion).timeSeriesMatchesGolden("timeseries_simple_scene_box")
@@ -82,7 +82,7 @@ class ViewToolkitTest {
                 animator,
                 sceneRoot.captureWithoutScreenshot(evenlySampled(10)) {
                     onViewWithId(R.id.test_box) { feature(ViewFeatureCaptures.x, "box_x") }
-                }
+                },
             )
 
         motionRule.assertThat(recordedMotion).timeSeriesMatchesGolden("timeseries_simple_scene_box")
@@ -113,13 +113,6 @@ class ViewToolkitTest {
     companion object {
 
         private val emulationSpec =
-            DeviceEmulationSpec(
-                DisplaySpec(
-                    "phone",
-                    width = 320,
-                    height = 690,
-                    densityDpi = 160,
-                )
-            )
+            DeviceEmulationSpec(DisplaySpec("phone", width = 320, height = 690, densityDpi = 160))
     }
 }

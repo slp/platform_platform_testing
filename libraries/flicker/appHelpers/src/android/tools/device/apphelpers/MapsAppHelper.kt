@@ -22,6 +22,7 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.tools.traces.component.ComponentNameMatcher
+import android.tools.traces.component.IComponentNameMatcher
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiObject2
@@ -33,13 +34,10 @@ class MapsAppHelper
 @JvmOverloads
 constructor(
     instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation(),
-    pkgManager: PackageManager = instrumentation.context.packageManager
-) :
-    StandardAppHelper(
-        instrumentation,
-        getMapLauncherName(pkgManager),
-        getMapComponent(pkgManager)
-    ) {
+    pkgManager: PackageManager = instrumentation.context.packageManager,
+    appName: String = getMapLauncherName(pkgManager),
+    appComponent: IComponentNameMatcher = getMapComponent(pkgManager),
+) : BasePipAppHelper(instrumentation, appName, appComponent) {
 
     /** Search for a specific query in Maps and select the first address matching the query */
     fun doSearch(query: String) {
@@ -138,9 +136,8 @@ constructor(
             val firstAddressResult =
                 uiDevice.wait(
                     Until.findObject(By.pkg(UI_PACKAGE).clazz(UI_TEXTVIEW_CLASS).text(pattern)),
-                    if (retry == 0) SEARCH_TIMEOUT_IN_MSECS else 0
-                )
-                    ?: continue
+                    if (retry == 0) SEARCH_TIMEOUT_IN_MSECS else 0,
+                ) ?: continue
             firstAddressResult.click()
             uiDevice.waitForIdle()
             return
@@ -155,21 +152,21 @@ constructor(
     private fun getSelectableSearchBar(wait_time: Long = WAIT_TIMEOUT): UiObject2? {
         return uiDevice.wait(
             Until.findObject(By.res(UI_PACKAGE, UI_SELECTABLE_SEARCHBAR_ID)),
-            wait_time
+            wait_time,
         )
     }
 
     private fun getEditableSearchBar(wait_time: Long = WAIT_TIMEOUT): UiObject2? {
         return uiDevice.wait(
             Until.findObject(By.res(UI_PACKAGE, UI_EDITABLE_SEARCHBAR_ID)),
-            wait_time
+            wait_time,
         )
     }
 
     private fun getDirectionsButton(wait_time: Long = WAIT_TIMEOUT): UiObject2? {
         return uiDevice.wait(
             Until.findObject(By.descContains(UI_DIRECTIONS_BUTTON_DESC)),
-            wait_time
+            wait_time,
         )
     }
 
@@ -238,7 +235,7 @@ constructor(
             val resolveInfo = getResolveInfo(pkgManager)
             return ComponentNameMatcher(
                 resolveInfo.activityInfo.packageName,
-                className = resolveInfo.activityInfo.name
+                className = resolveInfo.activityInfo.name,
             )
         }
 

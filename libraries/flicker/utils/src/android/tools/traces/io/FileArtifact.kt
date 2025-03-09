@@ -69,6 +69,8 @@ internal constructor(private val scenario: Scenario, artifactFile: File, private
         }
     }
 
+    override fun readBytes(): ByteArray = file.readBytes()
+
     override fun deleteIfExists() {
         file.deleteIfExists()
     }

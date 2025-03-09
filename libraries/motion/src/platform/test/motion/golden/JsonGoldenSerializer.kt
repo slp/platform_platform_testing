@@ -56,11 +56,11 @@ object JsonGoldenSerializer {
         JSONObject().apply {
             put(
                 KEY_FRAME_IDS,
-                JSONArray().apply { golden.frameIds.map(::frameIdToJson).forEach(this::put) }
+                JSONArray().apply { golden.frameIds.map(::frameIdToJson).forEach(this::put) },
             )
             put(
                 KEY_FEATURES,
-                JSONArray().apply { golden.features.values.map(::featureToJson).forEach(this::put) }
+                JSONArray().apply { golden.features.values.map(::featureToJson).forEach(this::put) },
             )
         }
 
@@ -80,7 +80,7 @@ object JsonGoldenSerializer {
 
     private fun featureFromJson(
         jsonObject: JSONObject,
-        typeRegistry: Map<String, DataPointType<*>>
+        typeRegistry: Map<String, DataPointType<*>>,
     ): Feature<*> {
         val name = jsonObject.getString(KEY_FEATURE_NAME)
         val type = typeRegistry[jsonObject.optString(KEY_FEATURE_TYPE)] ?: unknownType
@@ -110,9 +110,10 @@ object JsonGoldenSerializer {
 
             put(
                 KEY_FEATURE_DATAPOINTS,
-                JSONArray().apply { feature.dataPoints.map { it.asJson() }.forEach(this::put) }
+                JSONArray().apply { feature.dataPoints.map { it.asJson() }.forEach(this::put) },
             )
         }
+
     private const val KEY_FRAME_IDS = "frame_ids"
     private const val KEY_FEATURES = "features"
     private const val KEY_FEATURE_NAME = "name"
@@ -123,7 +124,7 @@ object JsonGoldenSerializer {
         DataPointType(
             "unknown",
             jsonToValue = { throw UnknownTypeException() },
-            valueToJson = { throw AssertionError() }
+            valueToJson = { throw AssertionError() },
         )
 }
 
@@ -146,7 +147,7 @@ fun TimeSeries.createTypeRegistry(): Map<String, DataPointType<*>> = buildMap {
 
 private fun <I, O> JSONArray.convert(
     elementAccessor: JSONArray.(index: Int) -> I,
-    convertFn: (I) -> O
+    convertFn: (I) -> O,
 ) = buildList {
     for (i in 0 until length()) {
         add(convertFn(elementAccessor(i)))

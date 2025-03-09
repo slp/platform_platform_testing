@@ -34,5 +34,5 @@ val LockscreenPinDisappear =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(associatedTransitionRequired = false)
                 )
-                .build()
+                .build(),
     )

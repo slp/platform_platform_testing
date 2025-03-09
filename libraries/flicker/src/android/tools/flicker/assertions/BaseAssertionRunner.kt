@@ -28,7 +28,7 @@ import android.tools.withTracing
  */
 abstract class BaseAssertionRunner(
     private val resultReader: Reader,
-    private val innerRunner: AssertionRunner = ReaderAssertionRunner(resultReader)
+    private val innerRunner: AssertionRunner = ReaderAssertionRunner(resultReader),
 ) : AssertionRunner by innerRunner {
     protected abstract fun doUpdateStatus(newStatus: RunStatus)
 

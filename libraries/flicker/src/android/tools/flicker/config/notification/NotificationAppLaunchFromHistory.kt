@@ -35,5 +35,5 @@ val NotificationAppLaunchFromHistory =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(TransitionFilters.OPEN_APP_TRANSITION_FILTER)
                 )
-                .build()
+                .build(),
     )

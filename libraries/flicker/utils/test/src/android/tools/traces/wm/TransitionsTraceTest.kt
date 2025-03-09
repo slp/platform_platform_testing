@@ -46,16 +46,13 @@ class TransitionsTraceTest {
                             shellData =
                                 ShellTransitionData(
                                     dispatchTime = Timestamps.from(22),
-                                    handler = "DefaultHandler"
+                                    handler = "DefaultHandler",
                                 ),
                         ),
                         Transition(
                             id = 1,
-                            wmData =
-                                WmTransitionData(
-                                    finishTime = Timestamps.from(40),
-                                ),
-                        )
+                            wmData = WmTransitionData(finishTime = Timestamps.from(40)),
+                        ),
                     )
                 )
                 .asCompressed()

@@ -23,6 +23,9 @@ import android.tools.testutils.assertThatErrorContainsDebugInfo
 import android.tools.testutils.assertThrows
 import android.tools.testutils.getWmTraceReaderFromAsset
 import android.tools.traces.component.ComponentNameMatcher
+import android.tools.traces.component.SurfaceViewBackgroundMatcher
+import android.tools.traces.surfaceflinger.Layer
+import android.tools.traces.surfaceflinger.LayerProperties
 import com.google.common.truth.Truth
 import org.junit.Before
 import org.junit.ClassRule
@@ -159,7 +162,7 @@ class WindowManagerTraceSubjectTest {
             .doNotOverlap(
                 ComponentNameMatcher.IME,
                 ComponentNameMatcher.NAV_BAR,
-                TestComponents.IME_ACTIVITY
+                TestComponents.IME_ACTIVITY,
             )
             .forAllEntries()
     }
@@ -215,6 +218,43 @@ class WindowManagerTraceSubjectTest {
     }
 
     @Test
+    fun testSurfaceViewBackgroundMatcher() {
+        val cameraActivity =
+            "com.google.android.GoogleCamera/" +
+                "com.google.android.apps.camera.legacy.app.activity.main.CameraActivity"
+        val bg =
+            Layer(
+                name = "Background for e46b52e SurfaceView[$cameraActivity]#2064",
+                id = 1,
+                parentId = 3,
+                z = 4,
+                currFrame = 1,
+                properties = LayerProperties.EMPTY,
+            )
+        val sv =
+            Layer(
+                name = "e46b52e SurfaceView[$cameraActivity]#2063",
+                id = 2,
+                parentId = 3,
+                z = 6,
+                currFrame = 1,
+                properties = LayerProperties.EMPTY,
+            )
+
+        Truth.assertWithMessage("SurfaceView background layer match")
+            .that(SurfaceViewBackgroundMatcher().layerMatchesAnyOf(bg))
+            .isTrue()
+
+        Truth.assertWithMessage("SurfaceView layer should not match")
+            .that(SurfaceViewBackgroundMatcher().layerMatchesAnyOf(sv))
+            .isFalse()
+
+        Truth.assertWithMessage("SurfaceView and its background layer match as a set")
+            .that(SurfaceViewBackgroundMatcher().layerMatchesAnyOf(setOf(bg, sv)))
+            .isTrue()
+    }
+
+    @Test
     fun exceptionContainsDebugInfo() {
         val error =
             assertThrows<AssertionError> {
@@ -228,18 +268,18 @@ class WindowManagerTraceSubjectTest {
         val reader =
             getWmTraceReaderFromAsset(
                 "quick_switch_to_app_killed_in_background_trace",
-                legacyTrace = true
+                legacyTrace = true,
             )
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val app1 =
             ComponentNameMatcher(
                 "com.android.server.wm.flicker.testapp",
-                "com.android.server.wm.flicker.testapp.ImeActivity"
+                "com.android.server.wm.flicker.testapp.ImeActivity",
             )
         val app2 =
             ComponentNameMatcher(
                 "com.android.server.wm.flicker.testapp",
-                "com.android.server.wm.flicker.testapp.SimpleActivity"
+                "com.android.server.wm.flicker.testapp.SimpleActivity",
             )
         WindowManagerTraceSubject(trace, reader)
             .isAppWindowVisible(app1)
@@ -259,7 +299,7 @@ class WindowManagerTraceSubjectTest {
         val reader =
             getWmTraceReaderFromAsset(
                 "quick_switch_to_app_killed_in_background_trace",
-                legacyTrace = true
+                legacyTrace = true,
             )
         val trace = reader.readWmTrace() ?: error("Unable to read WM trace")
         val subject =
@@ -267,7 +307,7 @@ class WindowManagerTraceSubjectTest {
         val app =
             ComponentNameMatcher(
                 "com.android.server.wm.flicker.testapp",
-                "com.android.server.wm.flicker.testapp.SimpleActivity"
+                "com.android.server.wm.flicker.testapp.SimpleActivity",
             )
         subject.isAppWindowInvisible(app)
         subject.isAppWindowVisible(ComponentNameMatcher.SNAPSHOT)

@@ -28,7 +28,9 @@ import android.tools.traces.events.ICujType
 import android.tools.traces.wm.Transition
 import android.tools.withTracing
 
-data class ScenarioInstanceImpl(
+data class ScenarioInstanceImpl
+@JvmOverloads
+constructor(
     override val config: FlickerConfigEntry,
     override val startRotation: Rotation,
     override val endRotation: Rotation,
@@ -66,7 +68,7 @@ data class ScenarioInstanceImpl(
                     reader,
                     template.createAssertions(this),
                     stabilityGroup,
-                    assertionExtraData
+                    assertionExtraData,
                 )
             }
         }
@@ -74,10 +76,11 @@ data class ScenarioInstanceImpl(
     override fun toString() = key
 
     companion object {
+        @JvmStatic
         fun fromSlice(
             traceSlice: TraceSlice,
             reader: Reader,
-            config: FlickerConfigEntry
+            config: FlickerConfigEntry,
         ): ScenarioInstanceImpl {
             val layersTrace = reader.readLayersTrace() ?: error("Missing layers trace")
             val startTimestamp = traceSlice.startTimestamp
@@ -96,7 +99,7 @@ data class ScenarioInstanceImpl(
                 endTimestamp = endTimestamp,
                 associatedCuj = traceSlice.associatedCuj,
                 associatedTransition = traceSlice.associatedTransition,
-                reader = reader.slice(startTimestamp, endTimestamp)
+                reader = reader.slice(startTimestamp, endTimestamp),
             )
         }
     }

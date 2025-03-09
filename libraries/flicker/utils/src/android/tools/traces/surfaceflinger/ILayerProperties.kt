@@ -29,7 +29,7 @@ import android.tools.datatypes.isNotEmpty
  * than the full layers
  */
 interface ILayerProperties {
-    val visibleRegion: Region?
+    val visibleRegion: Region
     val activeBuffer: ActiveBuffer
     val flags: Int
     val bounds: RectF
@@ -51,8 +51,10 @@ interface ILayerProperties {
 
     val isScaling: Boolean
         get() = transform.isScaling
+
     val isTranslating: Boolean
         get() = transform.isTranslating
+
     val isRotating: Boolean
         get() = transform.isRotating
 
@@ -125,6 +127,7 @@ interface ILayerProperties {
         get() {
             return fillsColor || drawsShadows
         }
+
     /**
      * Checks if the [Layer] has zero requested or inherited alpha
      *

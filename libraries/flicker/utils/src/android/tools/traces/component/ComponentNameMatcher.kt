@@ -19,20 +19,25 @@ package android.tools.traces.component
 import android.tools.traces.surfaceflinger.Layer
 import android.tools.traces.wm.Activity
 import android.tools.traces.wm.WindowContainer
+import java.util.function.Predicate
 
 /** ComponentMatcher based on name */
 class ComponentNameMatcher(var component: ComponentName) : IComponentNameMatcher {
     override val packageName: String
         get() = component.packageName
+
     override val className: String
         get() = component.className
+
     override fun toActivityName(): String = component.toActivityName()
+
     override fun toWindowName(): String = component.toWindowName()
+
     override fun toLayerName(): String = component.toLayerName()
 
     constructor(
         packageName: String,
-        className: String
+        className: String,
     ) : this(ComponentName(packageName, className))
 
     constructor(className: String) : this("", className)
@@ -59,8 +64,8 @@ class ComponentNameMatcher(var component: ComponentName) : IComponentNameMatcher
     /** {@inheritDoc} */
     override fun check(
         layers: Collection<Layer>,
-        condition: (Collection<Layer>) -> Boolean
-    ): Boolean = condition(layers.filter { layerMatchesAnyOf(it) })
+        condition: Predicate<Collection<Layer>>,
+    ): Boolean = condition.test(layers.filter { layerMatchesAnyOf(it) })
 
     /** {@inheritDoc} */
     override fun toActivityIdentifier(): String = component.toActivityName()
@@ -94,61 +99,65 @@ class ComponentNameMatcher(var component: ComponentName) : IComponentNameMatcher
         get() = { it.contains(component.toLayerName()) }
 
     companion object {
-        val NAV_BAR = ComponentNameMatcher("", "NavigationBar0")
-        val TASK_BAR = ComponentNameMatcher("", "Taskbar")
-        val STATUS_BAR = ComponentNameMatcher("", "StatusBar")
-        val ROTATION = ComponentNameMatcher("", "RotationLayer")
-        val BACK_SURFACE = ComponentNameMatcher("", "BackColorSurface")
-        val IME = ComponentNameMatcher("", "InputMethod")
-        val IME_SNAPSHOT = ComponentNameMatcher("", "IME-snapshot-surface")
-        val SPLASH_SCREEN = ComponentNameMatcher("", "Splash Screen")
-        val SNAPSHOT = ComponentNameMatcher("", "SnapshotStartingWindow")
-        val SECONDARY_HOME_HANDLE = ComponentNameMatcher("", "SecondaryHomeHandle")
+        @JvmField val NAV_BAR = ComponentNameMatcher("", "NavigationBar0")
+        @JvmField val TASK_BAR = ComponentNameMatcher("", "Taskbar")
+        @JvmField val STATUS_BAR = ComponentNameMatcher("", "StatusBar")
+        @JvmField val ROTATION = ComponentNameMatcher("", "RotationLayer")
+        @JvmField val BACK_SURFACE = ComponentNameMatcher("", "BackColorSurface")
+        @JvmField val IME = ComponentNameMatcher("", "InputMethod")
+        @JvmField val IME_SNAPSHOT = ComponentNameMatcher("", "IME-snapshot-surface")
+        @JvmField val SPLASH_SCREEN = ComponentNameMatcher("", "Splash Screen")
+        @JvmField val SNAPSHOT = ComponentNameMatcher("", "SnapshotStartingWindow")
+        @JvmField val SECONDARY_HOME_HANDLE = ComponentNameMatcher("", "SecondaryHomeHandle")
 
-        val TRANSITION_SNAPSHOT = ComponentNameMatcher("", "transition snapshot")
-        val LETTERBOX = ComponentNameMatcher("", "Letterbox")
+        @JvmField val TRANSITION_SNAPSHOT = ComponentNameMatcher("", "transition snapshot")
+        @JvmField val LETTERBOX = ComponentNameMatcher("", "Letterbox")
 
-        val WALLPAPER_BBQ_WRAPPER = ComponentNameMatcher("", "Wallpaper BBQ wrapper")
+        @JvmField val WALLPAPER_BBQ_WRAPPER = ComponentNameMatcher("", "Wallpaper BBQ wrapper")
 
-        val PIP_CONTENT_OVERLAY = ComponentNameMatcher("", "PipContentOverlay")
+        @JvmField val PIP_CONTENT_OVERLAY = ComponentNameMatcher("", "PipContentOverlay")
 
-        val PIP_MENU_OVERLAY = ComponentNameMatcher("", "PipMenuView")
+        @JvmField val PIP_MENU_OVERLAY = ComponentNameMatcher("", "PipMenuView")
 
+        @JvmField
         val EDGE_BACK_GESTURE_HANDLER = ComponentNameMatcher("", "EdgeBackGestureHandler0")
 
-        val COLOR_FADE = ComponentNameMatcher("", "ColorFade")
+        @JvmField val COLOR_FADE = ComponentNameMatcher("", "ColorFade")
 
-        val WALLPAPER_WINDOW_TOKEN = ComponentNameMatcher("", "WallpaperWindowToken")
+        @JvmField val WALLPAPER_WINDOW_TOKEN = ComponentNameMatcher("", "WallpaperWindowToken")
 
-        val NOTIFICATION_SHADE = ComponentNameMatcher("", "NotificationShade")
+        @JvmField val NOTIFICATION_SHADE = ComponentNameMatcher("", "NotificationShade")
 
-        val VOLUME_DIALOG = ComponentNameMatcher("", "VolumeDialog")
+        @JvmField val VOLUME_DIALOG = ComponentNameMatcher("", "VolumeDialog")
 
-        val FLOATING_ROTATION_BUTTON = ComponentNameMatcher("", "FloatingRotationButton")
+        @JvmField val FLOATING_ROTATION_BUTTON = ComponentNameMatcher("", "FloatingRotationButton")
 
-        val SCREEN_DECOR_OVERLAY = ComponentNameMatcher("", "ScreenDecorHwcOverlay#")
+        @JvmField val SCREEN_DECOR_OVERLAY = ComponentNameMatcher("", "ScreenDecorHwcOverlay#")
 
-        val POINTER_LOCATION = ComponentNameMatcher("", "PointerLocation")
+        @JvmField val POINTER_LOCATION = ComponentNameMatcher("", "PointerLocation")
 
+        @JvmField
         val WIRED_CHARGING_ANIMATION = ComponentNameMatcher("", "Wired Charging Animation#")
 
-        val SCREEN_RECORDING_OVERLAYS = SCREEN_DECOR_OVERLAY.or(POINTER_LOCATION)
+        @JvmField val SCREEN_RECORDING_OVERLAYS = SCREEN_DECOR_OVERLAY.or(POINTER_LOCATION)
 
+        @JvmField
         val LAUNCHER =
             ComponentNameMatcher(
                 "com.google.android.apps.nexuslauncher",
-                "com.google.android.apps.nexuslauncher.NexusLauncherActivity"
+                "com.google.android.apps.nexuslauncher.NexusLauncherActivity",
             )
 
+        @JvmField
         val AOSP_LAUNCHER =
             ComponentNameMatcher(
                 "com.android.launcher3",
-                "com.android.launcher3.uioverrides.QuickstepLauncher"
+                "com.android.launcher3.uioverrides.QuickstepLauncher",
             )
 
-        val SPLIT_DIVIDER = ComponentNameMatcher("", "StageCoordinatorSplitDivider")
+        @JvmField val SPLIT_DIVIDER = ComponentNameMatcher("", "StageCoordinatorSplitDivider")
 
-        val DEFAULT_TASK_DISPLAY_AREA = ComponentNameMatcher("", "DefaultTaskDisplayArea")
+        @JvmField val DEFAULT_TASK_DISPLAY_AREA = ComponentNameMatcher("", "DefaultTaskDisplayArea")
 
         /**
          * Creates a component matcher from a window or layer name.
@@ -157,6 +166,7 @@ class ComponentNameMatcher(var component: ComponentName) : IComponentNameMatcher
          *
          * @param str Value to parse
          */
+        @JvmStatic
         fun unflattenFromString(str: String): ComponentNameMatcher {
             val sep = str.indexOf('/')
             if (sep < 0 || sep + 1 >= str.length) {
@@ -179,6 +189,7 @@ class ComponentNameMatcher(var component: ComponentName) : IComponentNameMatcher
          *
          * @param str Value to parse
          */
+        @JvmStatic
         fun unflattenFromStringWithJunk(str: String): ComponentNameMatcher {
             val sep = str.indexOf('/')
             if (sep < 0 || sep + 1 >= str.length) {

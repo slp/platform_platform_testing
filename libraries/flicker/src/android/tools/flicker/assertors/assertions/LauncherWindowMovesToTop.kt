@@ -16,6 +16,7 @@
 
 package android.tools.flicker.assertors.assertions
 
+import android.tools.flicker.config.common.Components
 import android.tools.flicker.config.common.Components.LAUNCHER
 
 /** Checks that [Components.LAUNCHER] starts not on top and moves to top during the transition */

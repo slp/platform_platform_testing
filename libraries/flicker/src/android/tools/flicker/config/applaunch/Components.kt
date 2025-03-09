@@ -32,14 +32,14 @@ object Components {
             openingAppFrom(
                 scenarioInstance.associatedTransition ?: error("Missing associated transition"),
                 scenarioInstance.reader.readLayersTrace(),
-                scenarioInstance.reader.readWmTrace()
+                scenarioInstance.reader.readWmTrace(),
             )
         }
 
     private fun openingAppFrom(
         transition: Transition,
         layersTrace: LayersTrace?,
-        wmTrace: WindowManagerTrace?
+        wmTrace: WindowManagerTrace?,
     ): IComponentMatcher {
         val targetChanges =
             transition.changes.filter {

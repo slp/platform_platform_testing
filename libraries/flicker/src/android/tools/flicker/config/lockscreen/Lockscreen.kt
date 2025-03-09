@@ -29,6 +29,6 @@ internal object Lockscreen {
             LockscreenPinDisappear,
             LockscreenTransitionFromAod,
             LockscreenTransitionToAod,
-            LockscreenUnlockAnimation
+            LockscreenUnlockAnimation,
         )
 }

@@ -31,7 +31,7 @@ object DataStore {
     data class Backup(
         val cachedResults: MutableMap<Scenario, IResultData>,
         val cachedFlickerServiceAssertions:
-            MutableMap<Scenario, Map<ScenarioInstance, Collection<ScenarioAssertion>>>
+            MutableMap<Scenario, Map<ScenarioInstance, Collection<ScenarioAssertion>>>,
     )
 
     @VisibleForTesting
@@ -43,7 +43,7 @@ object DataStore {
     fun backup(): android.tools.flicker.datastore.DataStore.Backup {
         return android.tools.flicker.datastore.DataStore.Backup(
             android.tools.flicker.datastore.DataStore.cachedResults.toMutableMap(),
-            android.tools.flicker.datastore.DataStore.cachedFlickerServiceAssertions.toMutableMap()
+            android.tools.flicker.datastore.DataStore.cachedFlickerServiceAssertions.toMutableMap(),
         )
     }
 
@@ -97,7 +97,7 @@ object DataStore {
 
     fun addFlickerServiceAssertions(
         scenario: Scenario,
-        groupedAssertions: Map<ScenarioInstance, Collection<ScenarioAssertion>>
+        groupedAssertions: Map<ScenarioInstance, Collection<ScenarioAssertion>>,
     ) {
         if (android.tools.flicker.datastore.DataStore.containsFlickerServiceResult(scenario)) {
             error("Result for $scenario already in data store")

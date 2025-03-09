@@ -36,11 +36,11 @@ val SplitScreenResize =
                     TaggedCujTransitionMatcher(
                         TransitionFilters.RESIZE_SPLIT_SCREEN_FILTER,
                         // No match will be found when resizing all the way to dismissing
-                        associatedTransitionRequired = false
+                        associatedTransitionRequired = false,
                     )
                 )
                 // If we don't find a matching transition, we probably dismissed splitscreen so
                 // don't consider as a splitscreen resize scenario.
                 .setIgnoreIfNoMatchingTransition(true)
-                .build()
+                .build(),
     )

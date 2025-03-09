@@ -35,7 +35,7 @@ private constructor(
     val tx: Float = 0F,
     val dsdy: Float,
     val dtdy: Float,
-    val ty: Float = 0F
+    val ty: Float = 0F,
 ) : DataType() {
     override val isEmpty =
         dsdx == 0f && dtdx == 0f && tx == 0f && dsdy == 0f && dtdy == 0f && ty == 0f
@@ -53,29 +53,34 @@ private constructor(
         val EMPTY: Matrix33
             get() = withCache { from(dsdx = 0f, dtdx = 0f, tx = 0f, dsdy = 0f, dtdy = 0f, ty = 0f) }
 
+        @JvmStatic
         fun identity(x: Float, y: Float): Matrix33 = withCache {
             from(dsdx = 1f, dtdx = 0f, x, dsdy = 0f, dtdy = 1f, y)
         }
 
+        @JvmStatic
         fun rot270(x: Float, y: Float): Matrix33 = withCache {
             from(dsdx = 0f, dtdx = -1f, x, dsdy = 1f, dtdy = 0f, y)
         }
 
+        @JvmStatic
         fun rot180(x: Float, y: Float): Matrix33 = withCache {
             from(dsdx = -1f, dtdx = 0f, x, dsdy = 0f, dtdy = -1f, y)
         }
 
+        @JvmStatic
         fun rot90(x: Float, y: Float): Matrix33 = withCache {
             from(dsdx = 0f, dtdx = 1f, x, dsdy = -1f, dtdy = 0f, y)
         }
 
+        @JvmStatic
         fun from(
             dsdx: Float,
             dtdx: Float,
             tx: Float,
             dsdy: Float,
             dtdy: Float,
-            ty: Float
+            ty: Float,
         ): Matrix33 = withCache { Matrix33(dsdx, dtdx, tx, dsdy, dtdy, ty) }
     }
 }

@@ -67,7 +67,7 @@ internal class RuleContainer {
         method: FrameworkMethod?,
         description: Description?,
         target: Any?,
-        statement: Statement
+        statement: Statement,
     ): Statement {
         if (methodRules.isEmpty() && testRules.isEmpty()) {
             return statement

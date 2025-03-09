@@ -30,7 +30,7 @@ class LegacyFlickerDecorator(
     testClass: TestClass,
     val scenario: Scenario?,
     val transitionRunner: ITransitionRunner,
-    inner: IFlickerJUnitDecorator? = null
+    inner: IFlickerJUnitDecorator? = null,
 ) : AbstractFlickerRunnerDecorator(testClass, inner) {
     override fun getChildDescription(method: FrameworkMethod): Description {
         return inner?.getChildDescription(method)

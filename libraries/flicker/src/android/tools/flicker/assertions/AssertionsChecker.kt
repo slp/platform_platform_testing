@@ -19,6 +19,7 @@ package android.tools.flicker.assertions
 import android.tools.flicker.subject.FlickerSubject
 import android.tools.flicker.subject.exceptions.ExceptionMessageBuilder
 import android.tools.flicker.subject.exceptions.SubjectAssertionError
+import android.tools.function.AssertionPredicate
 
 /**
  * Runs sequences of assertions on sequences of subjects.
@@ -35,12 +36,12 @@ class AssertionsChecker<T : FlickerSubject> {
     internal fun isEmpty() = assertions.isEmpty()
 
     /** Add [assertion] to a new [CompoundAssertion] block. */
-    fun add(name: String, isOptional: Boolean = false, assertion: (T) -> Unit) {
+    fun add(name: String, isOptional: Boolean = false, assertion: AssertionPredicate<T>) {
         assertions.add(CompoundAssertion(assertion, name, isOptional))
     }
 
     /** Append [assertion] to the last existing set of assertions. */
-    fun append(name: String, isOptional: Boolean = false, assertion: (T) -> Unit) {
+    fun append(name: String, isOptional: Boolean = false, assertion: AssertionPredicate<T>) {
         assertions.last().add(assertion, name, isOptional)
     }
 

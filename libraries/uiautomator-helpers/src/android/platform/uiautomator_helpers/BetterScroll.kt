@@ -9,11 +9,13 @@ import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
 import java.time.Duration
 
+
 /**
  * A scroll utility that should be used instead of [UiObject2.scroll] for more reliable scrolls.
  *
  * See [BetterSwipe] for more details on the problem of [UiObject2.scroll].
  */
+@Deprecated("Use uiautomatorhelpers, b/376676853")
 object BetterScroll {
     private const val DEFAULT_PERCENTAGE = 0.8f
     private val DEFAULT_WAIT_TIMEOUT = Duration.ofSeconds(1)

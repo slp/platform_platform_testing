@@ -71,6 +71,7 @@ class IsCategoriesPlaylistsSelectable(bluetooth_base_test.BluetoothBaseTest):
                                                                  'present on HU')
 
     def teardown_test(self):
+        self.media_utils.get_bt_dumpsys_metadata()
         #  Close YouTube Music app
         self.media_utils.close_youtube_music_app()
         self.call_utils.press_home()

@@ -29,7 +29,7 @@ import kotlin.reflect.KClass
  */
 class AssertionDataFactory(
     stateSubject: KClass<out FlickerSubject>,
-    private val traceSubject: KClass<out FlickerTraceSubject<*>>
+    private val traceSubject: KClass<out FlickerTraceSubject<*>>,
 ) : AssertionStateDataFactory(stateSubject) {
 
     /**
@@ -48,7 +48,7 @@ class AssertionDataFactory(
         return AssertionDataImpl(
             tag = Tag.ALL,
             expectedSubjectClass = traceSubject,
-            assertion = closedAssertion as FlickerSubject.() -> Unit
+            assertion = closedAssertion as FlickerSubject.() -> Unit,
         )
     }
 }

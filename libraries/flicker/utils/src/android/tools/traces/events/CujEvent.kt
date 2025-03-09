@@ -53,20 +53,20 @@ class CujEvent(
             uid: String,
             threadId: Int,
             eventTag: String,
-            data: String
+            data: String,
         ): CujEvent {
             return CujEvent(
                 Timestamps.from(
                     elapsedNanos = getElapsedTimestampFromData(data, eventTag.asCujType()),
                     systemUptimeNanos = getSystemUptimeNanosFromData(data, eventTag.asCujType()),
-                    unixNanos = getUnixTimestampFromData(data, eventTag.asCujType())
+                    unixNanos = getUnixTimestampFromData(data, eventTag.asCujType()),
                 ),
                 getCujMarkerFromData(data, eventTag.asCujType()),
                 processId,
                 uid,
                 threadId,
                 eventTag,
-                getCujTagFromData(data, eventTag.asCujType())
+                getCujTagFromData(data, eventTag.asCujType()),
             )
         }
 
@@ -144,7 +144,7 @@ class CujEvent(
         enum class Type {
             START,
             END,
-            CANCEL
+            CANCEL,
         }
 
         const val JANK_CUJ_BEGIN_TAG = "jank_cuj_events_begin_request"

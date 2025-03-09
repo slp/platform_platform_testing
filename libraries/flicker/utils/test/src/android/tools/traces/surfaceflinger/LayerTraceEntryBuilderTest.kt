@@ -103,7 +103,7 @@ class LayerTraceEntryBuilderTest {
                     isRelativeOf = false,
                     zOrderRelativeOfId = 0,
                     stackId = offDisplayStackId,
-                    excludesCompositionState = true
+                    excludesCompositionState = true,
                 )
             )
 

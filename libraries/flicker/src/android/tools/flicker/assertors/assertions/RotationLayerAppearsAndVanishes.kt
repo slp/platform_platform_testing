@@ -29,12 +29,13 @@ class RotationLayerAppearsAndVanishes(private val component: ComponentTemplate) 
     AssertionTemplateWithComponent(component) {
     /** {@inheritDoc} */
     override fun doEvaluate(scenarioInstance: ScenarioInstance, flicker: FlickerTest) {
+        val matcher = component.get(scenarioInstance)
         flicker.assertLayers {
-            isVisible(component.build(scenarioInstance))
+            isVisible(matcher)
                 .then()
                 .isVisible(ComponentNameMatcher.ROTATION)
                 .then()
-                .isVisible(component.build(scenarioInstance))
+                .isVisible(matcher)
                 .isInvisible(ComponentNameMatcher.ROTATION)
         }
     }

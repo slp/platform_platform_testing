@@ -28,7 +28,7 @@ class AppWindowCoversFullScreenAtStart(private val component: ComponentTemplate)
             val displayBounds =
                 entry.physicalDisplayBounds ?: error("Missing physical display bounds")
 
-            visibleRegion(component.build(scenarioInstance)).coversExactly(displayBounds)
+            visibleRegion(component.get(scenarioInstance)).coversExactly(displayBounds)
         }
     }
 }

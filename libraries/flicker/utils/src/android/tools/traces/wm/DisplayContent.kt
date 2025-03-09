@@ -52,7 +52,7 @@ class DisplayContent(
     val lastOrientation: Int,
     val cutout: DisplayCutout?,
     val insetsSourceProviders: Array<InsetsSourceProvider>,
-    private val windowContainer: WindowContainer
+    private val windowContainer: WindowContainer,
 ) : WindowContainer by windowContainer {
     override val name: String = displayId.toString()
     override val isVisible: Boolean = false
@@ -178,6 +178,7 @@ class DisplayContent(
         /** From [com.android.systemui.shared.recents.utilities.Utilities] */
         const val TABLET_MIN_DPS = 600f
 
+        @JvmStatic
         fun dpiFromPx(size: Float, densityDpi: Int): Float {
             val densityRatio: Float = densityDpi.toFloat() / DENSITY_DEFAULT
             return size / densityRatio

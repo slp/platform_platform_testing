@@ -22,6 +22,7 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.tools.traces.component.ComponentNameMatcher
+import android.tools.traces.component.IComponentNameMatcher
 import androidx.test.platform.app.InstrumentationRegistry
 
 /** Helper to launch the Calendar app. */
@@ -29,13 +30,10 @@ class CalendarAppHelper
 @JvmOverloads
 constructor(
     instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation(),
-    pkgManager: PackageManager = instrumentation.context.packageManager
-) :
-    StandardAppHelper(
-        instrumentation,
-        getCalendarLauncherName(pkgManager),
-        getCalendarComponent(pkgManager)
-    ) {
+    pkgManager: PackageManager = instrumentation.context.packageManager,
+    appName: String = getCalendarLauncherName(pkgManager),
+    appComponent: IComponentNameMatcher = getCalendarComponent(pkgManager),
+) : StandardAppHelper(instrumentation, appName, appComponent) {
     companion object {
         private fun getCalendarIntent(): Intent {
             val epochEventStartTime = 0
@@ -57,7 +55,7 @@ constructor(
             val resolveInfo = getResolveInfo(pkgManager)
             return ComponentNameMatcher(
                 resolveInfo.activityInfo.packageName,
-                className = resolveInfo.activityInfo.name
+                className = resolveInfo.activityInfo.name,
             )
         }
 

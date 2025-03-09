@@ -58,6 +58,7 @@ private val PAUSE_DURATION: Duration = Duration.of(250, MILLIS)
  * swipe.to(anotherPoint).release()
  * ```
  */
+@Deprecated("Use uiautomatorhelpers, b/376676853")
 object BetterSwipe {
 
     private val lastPointerId = AtomicInteger(0)

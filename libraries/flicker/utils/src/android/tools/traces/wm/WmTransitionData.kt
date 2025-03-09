@@ -47,6 +47,6 @@ data class WmTransitionData(
             wmData.startTransactionId ?: startTransactionId,
             wmData.finishTransactionId ?: finishTransactionId,
             wmData.type ?: type,
-            wmData.changes ?: changes
+            wmData.changes ?: changes,
         )
 }

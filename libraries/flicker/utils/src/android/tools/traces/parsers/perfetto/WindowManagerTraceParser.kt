@@ -26,7 +26,7 @@ class WindowManagerTraceParser :
         TraceProcessorSession,
         WindowManagerState,
         WindowManagerState,
-        WindowManagerTrace
+        WindowManagerTrace,
     >() {
     override val traceName: String = "WM Trace"
 

@@ -35,8 +35,8 @@ val Quickswitch =
                 .setTransitionMatcher(
                     TaggedCujTransitionMatcher(
                         TransitionFilters.QUICK_SWITCH_TRANSITION_FILTER,
-                        finalTransform = TransitionFilters.QUICK_SWITCH_TRANSITION_POST_PROCESSING
+                        finalTransform = TransitionFilters.QUICK_SWITCH_TRANSITION_POST_PROCESSING,
                     )
                 )
-                .build()
+                .build(),
     )

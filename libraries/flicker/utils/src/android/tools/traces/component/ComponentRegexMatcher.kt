@@ -19,14 +19,12 @@ package android.tools.traces.component
 import android.tools.traces.surfaceflinger.Layer
 import android.tools.traces.wm.Activity
 import android.tools.traces.wm.WindowContainer
+import java.util.function.Predicate
 
 /** ComponentMatcher based on a regular expression for a name */
-data class ComponentRegexMatcher(
-    private val regex: Regex
-) : IComponentMatcher {
+data class ComponentRegexMatcher(private val regex: Regex) : IComponentMatcher {
 
-    private val identifierDescription: String =
-        "Regular expression: $regex"
+    private val identifierDescription: String = "Regular expression: $regex"
 
     /** {@inheritDoc} */
     override fun windowMatchesAnyOf(windows: Collection<WindowContainer>): Boolean =
@@ -43,8 +41,8 @@ data class ComponentRegexMatcher(
     /** {@inheritDoc} */
     override fun check(
         layers: Collection<Layer>,
-        condition: (Collection<Layer>) -> Boolean
-    ): Boolean = condition(layers.filter { layerMatchesAnyOf(it) })
+        condition: Predicate<Collection<Layer>>,
+    ): Boolean = condition.test(layers.filter { layerMatchesAnyOf(it) })
 
     /** {@inheritDoc} */
     override fun toActivityIdentifier(): String = identifierDescription
@@ -56,9 +54,8 @@ data class ComponentRegexMatcher(
     override fun toLayerIdentifier(): String = identifierDescription
 
     companion object {
+        @JvmField
         val FOLD_OVERLAY_MATCHER =
-            ComponentRegexMatcher(
-                regex = "^fold-animation-overlay.*".toRegex()
-            )
+            ComponentRegexMatcher(regex = "^fold-animation-overlay.*".toRegex())
     }
 }

@@ -16,6 +16,8 @@
 
 package android.tools.flicker.assertions
 
+import android.tools.function.AssertionPredicate
+
 /**
  * Utility class to store assertions with an identifier to help generate more useful debug data when
  * dealing with multiple assertions.
@@ -25,11 +27,12 @@ package android.tools.flicker.assertions
  * @param isOptional If the assertion is optional (can fail) or not (must pass)
  */
 open class NamedAssertion<T>(
-    val predicate: (T) -> Unit,
+    val predicate: AssertionPredicate<T>,
     override val name: String,
-    override val isOptional: Boolean = false
+    override val isOptional: Boolean = false,
 ) : Assertion<T> {
-    override operator fun invoke(target: T) = predicate(target)
+    override operator fun invoke(target: T) = predicate.verify(target)
+
     override fun toString(): String = "Assertion($name)${if (isOptional) "[optional]" else ""}"
 
     /**

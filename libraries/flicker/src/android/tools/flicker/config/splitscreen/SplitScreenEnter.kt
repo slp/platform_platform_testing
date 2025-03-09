@@ -30,5 +30,5 @@ val SplitScreenEnter =
         extractor =
             ShellTransitionScenarioExtractor(
                 transitionMatcher = TransitionFilters.ENTER_SPLIT_SCREEN_MATCHER
-            )
+            ),
     )
