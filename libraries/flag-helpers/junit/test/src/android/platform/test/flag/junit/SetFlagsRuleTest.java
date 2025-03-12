@@ -43,9 +43,11 @@ public final class SetFlagsRuleTest {
 
     public SetFlagsRuleTest(boolean isInitWithDefault) {
         this.mIsInitWithDefault = isInitWithDefault;
-        mSetFlagsRule = new SetFlagsRule(isInitWithDefault
-                ? SetFlagsRule.DefaultInitValueType.DEVICE_DEFAULT
-                : SetFlagsRule.DefaultInitValueType.NULL_DEFAULT);
+        mSetFlagsRule =
+                new SetFlagsRule(
+                        isInitWithDefault
+                                ? SetFlagsRule.DefaultInitValueType.DEVICE_DEFAULT
+                                : SetFlagsRule.DefaultInitValueType.NULL_DEFAULT);
     }
 
     @Test
@@ -123,6 +125,15 @@ public final class SetFlagsRuleTest {
                 AssumptionViolatedException.class,
                 () -> {
                     mSetFlagsRule.disableFlags(Flags.FLAG_RO_DISABLED);
+                });
+    }
+
+    @Test
+    public void skipFinalizedFlag() {
+        assertThrows(
+                AssumptionViolatedException.class,
+                () -> {
+                    mSetFlagsRule.disableFlags(Flags.FLAG_FLAG_FINALIZED);
                 });
     }
 }

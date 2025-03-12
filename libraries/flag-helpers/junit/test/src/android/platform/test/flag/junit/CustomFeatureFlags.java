@@ -17,8 +17,10 @@
 package android.platform.test.flag.junit;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -58,21 +60,30 @@ public class CustomFeatureFlags implements FeatureFlags {
 
     public List<String> getFlagNames() {
         return Arrays.asList(
-            Flags.FLAG_FLAG_NAME3,
-            Flags.FLAG_FLAG_NAME4,
-            Flags.FLAG_RO_ENABLED,
-            Flags.FLAG_RO_DISABLED
-        );
+                Flags.FLAG_FLAG_NAME3,
+                Flags.FLAG_FLAG_NAME4,
+                Flags.FLAG_RO_ENABLED,
+                Flags.FLAG_RO_DISABLED,
+                Flags.FLAG_FLAG_FINALIZED);
     }
 
     public boolean isFlagReadOnlyOptimized(String flagName) {
         return mReadOnlyFlagSet.contains(flagName);
     }
 
-    private Set<String> mReadOnlyFlagSet = new HashSet<>(
-        Arrays.asList(
-            Flags.FLAG_RO_ENABLED,
-            Flags.FLAG_RO_DISABLED,
-            "")
-        );
+    private Set<String> mReadOnlyFlagSet =
+            new HashSet<>(Arrays.asList(Flags.FLAG_RO_ENABLED, Flags.FLAG_RO_DISABLED, ""));
+
+    private Map<String, Integer> mFinalizedFlags =
+            new HashMap<>(
+                    Map.ofEntries(
+                            Map.entry(Flags.FLAG_FLAG_FINALIZED, 36),
+                            Map.entry("", Integer.MAX_VALUE)));
+
+    public boolean isFlagFinalized(String flagName) {
+        if (!mFinalizedFlags.containsKey(flagName)) {
+            return false;
+        }
+        return 99 >= mFinalizedFlags.get(flagName);
+    }
 }

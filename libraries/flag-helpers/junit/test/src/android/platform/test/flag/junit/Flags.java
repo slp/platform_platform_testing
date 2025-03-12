@@ -23,6 +23,8 @@ public class Flags {
     public static final String FLAG_FLAG_NAME4 = "android.platform.test.flag.junit.flag_name4";
     public static final String FLAG_RO_ENABLED = "android.platform.test.flag.junit.ro_enabled";
     public static final String FLAG_RO_DISABLED = "android.platform.test.flag.junit.ro_disabled";
+    public static final String FLAG_FLAG_FINALIZED =
+            "android.platform.test.flag.junit.flag_finalized";
 
     /** Returns the flag value. */
     public static boolean flagName3() {

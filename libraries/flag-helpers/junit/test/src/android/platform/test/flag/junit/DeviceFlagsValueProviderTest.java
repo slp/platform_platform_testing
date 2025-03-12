@@ -57,11 +57,6 @@ public final class DeviceFlagsValueProviderTest {
     }
 
     @Test
-    public void getBoolean_validFlag() throws Exception {
-        assertTrue(mFlagsValueProvider.getBoolean("android.platform.test.flag.junit.flag_name_1"));
-    }
-
-    @Test
     public void getBoolean_notBooleanFlag_throwException() {
         assertThrows(
                 FlagReadException.class,

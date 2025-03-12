@@ -52,6 +52,7 @@ public final class SetFlagsRule implements TestRule {
     private static final String FLAG_CONSTANT_PREFIX = "FLAG_";
     private static final String SET_FLAG_METHOD_NAME = "setFlag";
     private static final String RESET_ALL_METHOD_NAME = "resetAll";
+    private static final String IS_FLAG_FINALIZED_METHOD_NAME = "isFlagFinalized";
     private static final String IS_FLAG_READ_ONLY_OPTIMIZED_METHOD_NAME = "isFlagReadOnlyOptimized";
 
     // Store instances for entire life of a SetFlagsRule instance
@@ -147,7 +148,6 @@ public final class SetFlagsRule implements TestRule {
      *
      * @param fullFlagNames The name of the flags in the flag class with the format
      *     {packageName}.{flagName}
-     *
      * @deprecated Annotate your test or class with <code>@EnableFlags(String...)</code> instead
      */
     @Deprecated
@@ -168,7 +168,6 @@ public final class SetFlagsRule implements TestRule {
      *
      * @param fullFlagNames The name of the flags in the flag class with the format
      *     {packageName}.{flagName}
-     *
      * @deprecated Annotate your test or class with <code>@DisableFlags(String...)</code> instead
      */
     @Deprecated
@@ -337,7 +336,8 @@ public final class SetFlagsRule implements TestRule {
         // TODO(b/337449119): SetFlagsRule should still run tests that are consistent with the
         // read-only values of flags. But be careful, if a ClassRule exists, the value returned by
         // the original FeatureFlags instance may be overridden, and reading it may not be allowed.
-        boolean isOptimized = verifyFlagReadOnlyAndOptimized(fakeFlagsImplInstance, flag);
+        boolean isOptimized =
+                verifyFlag(fakeFlagsImplInstance, flag, IS_FLAG_READ_ONLY_OPTIMIZED_METHOD_NAME);
         assumeFalse(
                 String.format(
                         "Flag %s is read_only, and the code is optimized. "
@@ -345,6 +345,16 @@ public final class SetFlagsRule implements TestRule {
                                 + " Skip this test.",
                         flag.fullFlagName()),
                 isOptimized);
+
+        boolean isFinalized =
+                verifyFlag(fakeFlagsImplInstance, flag, IS_FLAG_FINALIZED_METHOD_NAME);
+        assumeFalse(
+                String.format(
+                        "Flag %s is finalized on this device. "
+                                + " The flag value should not be turned off on this device"
+                                + " Skip this test.",
+                        flag.fullFlagName()),
+                isFinalized && !value);
 
         // Set desired flag value in the FakeFeatureFlagsImpl
         setFlagValueInFakeFeatureFlagsImpl(fakeFlagsImplInstance, flag, value);
@@ -443,15 +453,14 @@ public final class SetFlagsRule implements TestRule {
         }
     }
 
-    private static boolean verifyFlagReadOnlyAndOptimized(Object fakeFeatureFlagsImpl, Flag flag) {
+    private static boolean verifyFlag(Object fakeFeatureFlagsImpl, Flag flag, String methodName) {
         String fullFlagName = flag.fullFlagName();
         try {
             boolean result =
                     (Boolean)
                             fakeFeatureFlagsImpl
                                     .getClass()
-                                    .getMethod(
-                                            IS_FLAG_READ_ONLY_OPTIMIZED_METHOD_NAME, String.class)
+                                    .getMethod(methodName, String.class)
                                     .invoke(fakeFeatureFlagsImpl, fullFlagName);
             return result;
         } catch (NoSuchMethodException e) {
@@ -466,9 +475,9 @@ public final class SetFlagsRule implements TestRule {
             throw new FlagSetException(
                     fullFlagName,
                     String.format(
-                            "Cannot check whether flag is optimized. "
+                            "Cannot invoke %s. "
                                     + "Flag implementation %s is not fake implementation",
-                            fakeFeatureFlagsImpl.getClass().getName()),
+                            methodName, fakeFeatureFlagsImpl.getClass().getName()),
                     e);
         } catch (ReflectiveOperationException e) {
             throw new FlagSetException(fullFlagName, e);
