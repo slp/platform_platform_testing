@@ -471,17 +471,17 @@ public class PerfettoHelper {
      * @return true if the trace file copied successfully otherwise false.
      */
     private boolean copyFileOutput(String destinationFile) {
+        // Create the destination directory if it doesn't already exist.
         Path path = Paths.get(destinationFile);
         String destDirectory = path.getParent().toString();
-        // Check if the directory already exists
-        File directory = new File(destDirectory);
-        if (!directory.exists()) {
-            boolean success = directory.mkdirs();
-            if (!success) {
-                Log.e(LOG_TAG, String.format(
-                        "Result output directory %s not created successfully.", destDirectory));
-                return false;
-            }
+        try {
+            mUIDevice.executeShellCommand(String.format("mkdir -p %s", destDirectory));
+        } catch (IOException ioe) {
+            Log.e(
+                    LOG_TAG,
+                    String.format("Failed to create destination directory %s", destDirectory),
+                    ioe);
+            return false;
         }
 
         // Copy the collected trace from /data/misc/perfetto-traces/trace_output.perfetto-trace to

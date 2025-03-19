@@ -81,7 +81,7 @@ public abstract class PerfettoTracingStrategy {
     // Destination directory to save the trace results.
     private static final String TEST_OUTPUT_ROOT = "test_output_root";
     // Default output folder to store the perfetto output traces.
-    private static final String DEFAULT_OUTPUT_ROOT = "/sdcard/test_results";
+    private static final String DEFAULT_OUTPUT_ROOT = "/data/local/tmp/perfetto-traces";
     // Default wait time before stopping the perfetto trace.
     private static final String DEFAULT_WAIT_TIME_MSECS = "0";
     // Argument to get custom time in millisecs to wait before starting the
